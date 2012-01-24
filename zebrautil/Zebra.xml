@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui-definition>
+	<All_filter_name>All Files</All_filter_name>
+	<Does_not_exist>не существует..</Does_not_exist>
+	<Exit>Выход\tAlt+X</Exit>
+	<File>Файл</File>
+	<File_menu_title>&amp;Файл</File_menu_title>
+	<File_not_found>Файл не найден:</File_not_found>
+	<Find>Найти...\tCtrl+F</Find>
+	<Find_next>Найти следующий...\tF3</Find_next>
+	<Goods_barcode>Шрих-код товара</Goods_barcode>
+	<Goods_name>Наименование товара</Goods_name>
+	<IO_error_close>Зарытие файла из-зи ошибки IO:</IO_error_close>
+	<IO_error_read>Ошибка IO чтения файла:</IO_error_read>
+	<Title_bar>Выберите файл с этикетками</Title_bar>
+	<Number_copies>Число копий</Number_copies>
+	<Open_zebra_file>Открыть файл с этикетками\tCtrl+O</Open_zebra_file>
+	<Close_zebra_file>Закрыть файл с этикетками\tCtrl+W</Close_zebra_file>
+	<Print_zebra_file>Печать этикеток\tCtrl+P</Print_zebra_file>
+	<Config_print_file>Настройка печати</Config_print_file>
+	<Zebra_filter_name>Файл этикеток для ZebrЫ</Zebra_filter_name>
+	<About>&amp;О программе печать этикеток Zebra...</About>
+	<About_1>Zebra1...</About_1>
+	<About_2>Zebra2...</About_2>
+	<Help_menu_title>&amp;Помощь</Help_menu_title>
+	<OK>OK</OK>
+	<Cancel>Отменить</Cancel>
+	<ZebraPrintBegin>^XA^EF^FS^XZ^\r\n</ZebraPrintBegin>
+	<ZebraPrintFormHeader>^XA^CI33^MD11\r\n</ZebraPrintFormHeader>
+	<ZebraPrintFormTale>^XZ\r\n</ZebraPrintFormTale>
+	<ZebraPrintFormName>^FO40\,18^A@N\,21\,20\,E:CONSOLA.FNT^FB340\,2\,0\,C^FD%NAME%^FS\r\n</ZebraPrintFormName>
+	<ZebraPrintFormEAN>^FO80\,65^BY3^BEN\,100\,Y\,N^FD%EAN%^FS\r\n</ZebraPrintFormEAN>
+	<ZebraPrintFormNCPY>^PQ%NUMCPY%\r\n</ZebraPrintFormNCPY>
+</ui-definition>
