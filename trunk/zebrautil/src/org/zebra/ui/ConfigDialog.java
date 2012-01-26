@@ -2,12 +2,12 @@ package org.zebra.ui;
 
 //import org.apache.commons.configuration.XMLConfiguration;
 //import org.apache.commons.configuration.Configuration;
+import org.config.MXMLConfiguration;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-import org.mconfig.MXMLConfiguration;
 
 public class ConfigDialog {
 	MXMLConfiguration confZebra;

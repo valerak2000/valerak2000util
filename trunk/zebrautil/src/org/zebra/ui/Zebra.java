@@ -26,8 +26,8 @@ import org.apache.commons.configuration.ConfigurationException;
 //import org.apache.commons.configuration.XMLConfiguration;
 
 import org.zebra.util.FormPrintUnilever;
+import org.config.MXMLConfiguration;
 import org.csvutil.CSV;
-import org.mconfig.MXMLConfiguration;
 
 public class Zebra {
 	private static MXMLConfiguration confZebra = null;
