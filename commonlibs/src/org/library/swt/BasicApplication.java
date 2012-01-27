@@ -5,17 +5,21 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CBanner;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.PopupList;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -25,11 +29,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
@@ -41,7 +48,12 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tracker;
 import org.eclipse.swt.widgets.Widget;
+
+// TODO: add JavaDoc
 
 /**
  * Base class for standalone SWT aplications.
@@ -127,7 +139,7 @@ abstract public class BasicApplication extends Composite {
      * @param w Widget to print
      */
     public void displayTree(PrintWriter pw, Widget w) {
-        displayTree(pw, w, 0);
+        displayTree(pw, w, 0, true);
     }
     /**
      * Output a GUI component tree
@@ -135,15 +147,18 @@ abstract public class BasicApplication extends Composite {
      * @param w Widget to print
      * @param level Indentation amount
      */
-    public void displayTree(PrintWriter pw, Widget w, int level) {
+    public void displayTree(PrintWriter pw, Widget w, int level, boolean printLevel) {
         indent(pw, level);
+        if (printLevel) {
+			pw.print(level + ": ");
+		}
         pw.println(w.toString());
         Item[] items = getItems(w);
         if (items != null && items.length > 0) {
             //indent(pw, level);
             //pw.println("Items:");
             for (int i = 0; i < items.length; i++) {
-                displayTree(pw, items[i], level + 1);
+                displayTree(pw, items[i], level + 1, printLevel);
             }
         }
 
@@ -152,7 +167,7 @@ abstract public class BasicApplication extends Composite {
             //indent(pw, level);
             //pw.println("Children:");
             for (int i = 0; i < children.length; i++) {
-                displayTree(pw, children[i], level + 1);
+                displayTree(pw, children[i], level + 1, printLevel);
             }
         }
 
@@ -161,7 +176,7 @@ abstract public class BasicApplication extends Composite {
             indent(pw, level);
             pw.println("Child shells:");
             for (int i = 0; i < shells.length; i++) {
-                displayTree(pw, shells[i], level + 1);
+                displayTree(pw, shells[i], level + 1, printLevel);
             }
         }
     }
@@ -208,6 +223,11 @@ abstract public class BasicApplication extends Composite {
         }
         catch (Exception e) {
         }
+    }
+    
+    
+    protected Image createImage(Device device, String path) {
+    	return new Image(device, path);
     }
 
     /**
@@ -471,6 +491,20 @@ abstract public class BasicApplication extends Composite {
         return createCLabel(parent, text, null);
     }
 
+    protected Button createButton(Composite parent, int style, String text, Image icon, SelectionListener listener) {
+        Button b = new Button(parent, style);
+        if (text != null) {
+            b.setText(text);
+        }
+        if (icon != null) {
+            b.setImage(icon);
+        }
+        if (listener != null) {
+            b.addSelectionListener(listener);
+        }
+        return b;
+    }
+
     protected Button createButton(Composite parent, int style, String text, Image icon, String callback) {
         Button b = new Button(parent, style);
         if (text != null) {
@@ -588,6 +622,82 @@ abstract public class BasicApplication extends Composite {
         return t;
     }
 
+    protected ToolBar createVToolBar(Composite parent, int style) {
+    	return new ToolBar(parent, style | SWT.VERTICAL);
+    }
+
+    protected ToolBar createHToolBar(Composite parent, int style) {
+    	return new ToolBar(parent, style | SWT.HORIZONTAL);
+    }
+    
+    protected ToolItem createToolItem(ToolBar bar, int style, String text, Image image, String tooltip, SelectionListener listener) {
+    	if (image != null && (text == null && tooltip == null)) {
+			throw new IllegalArgumentException("image only items require a tool tip");
+		}
+    	ToolItem ti = new ToolItem(bar, style);
+    	if (image != null) {
+			ti.setImage(image);
+		}
+    	else {
+        	if (text != null) {
+    			ti.setText(text);
+    		}
+    	}
+    	if (tooltip != null) {
+			ti.setToolTipText(tooltip);
+		}
+    	if (listener != null) {
+        	ti.addSelectionListener(listener);
+		}
+    	return ti;
+    }
+
+    protected CoolBar createCoolBar(Composite parent, int style) {
+    	return new CoolBar(parent, style);
+    }
+    
+    protected CoolItem createCoolItem(CoolBar bar, int style, String text, Image image, SelectionListener listener) {
+    	CoolItem ci = new CoolItem(bar, style);
+    	if (text != null) {
+			ci.setText(text);
+		}
+    	if (image != null) {
+			ci.setImage(image);
+		}
+    	return ci;
+    }
+    
+    protected Link createLink(Composite parent, String text, SelectionListener listener) {
+    	Link l = new Link(parent, SWT.NONE);
+    	if (text != null) {
+			l.setText(text);
+		}
+    	if (listener != null) {
+        	l.addSelectionListener(listener);
+		}
+    	//l.setEnabled(true);
+    	return l;
+    }
+    
+    protected CBanner createCBanner(Composite parent) {
+    	return new CBanner(parent, SWT.NONE);
+    }
+    
+    protected Tracker createTracker(Composite parent, int style) {
+    	return createTracker(parent, style, null, null);
+    }
+    protected Tracker createTracker(Composite parent, int style, ControlListener cl, KeyListener kl) {
+    	Tracker t = new Tracker(parent, style);
+    	if (cl != null) {
+			t.addControlListener(cl);
+		}
+    	if (kl != null) {
+			t.addKeyListener(kl);
+		}
+    	return t;
+    }
+    
+    
     /** Create the GUI */
     protected void createGui(String[] args) {
         setLayout(new FillLayout());
