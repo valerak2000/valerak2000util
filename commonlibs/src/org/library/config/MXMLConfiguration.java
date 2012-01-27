@@ -1,4 +1,4 @@
-package org.config;
+package org.library.config;
 
 import org.apache.commons.configuration.XMLConfiguration;
 
