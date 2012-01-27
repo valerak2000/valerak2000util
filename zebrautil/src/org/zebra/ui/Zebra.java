@@ -23,16 +23,17 @@ import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 
 import org.apache.commons.configuration.ConfigurationException;
-//import org.apache.commons.configuration.XMLConfiguration;
 
-import org.zebra.util.FormPrintUnilever;
-import org.config.MXMLConfiguration;
+import org.library.config.MXMLConfiguration;
+import org.library.swt.BasicApplication;
 import org.csvutil.CSV;
 
-public class Zebra {
+import org.zebra.util.FormPrintUnilever;
+
+public class Zebra extends BasicApplication {
 	private static MXMLConfiguration confZebra = null;
 
-	private Shell shell;
+//	private Shell shell;
 	private Table table;
 
 	private static final String[] columnNames = new String[3];
@@ -41,7 +42,18 @@ public class Zebra {
 
 	private static HashMap<String, Image> hashImages;
 
-	public Zebra() throws ConfigurationException {
+	public Zebra(Shell shell, int style) throws ConfigurationException {
+        super(shell, style);   // must always supply parent and style
+//		this.shell = shell;
+
+		hashImages = new HashMap<String, Image>();
+		hashImages.put("open", createImage(shell.getDisplay(), "/org/images/fileopen.png"));
+		hashImages.put("close", createImage(shell.getDisplay(), "/org/images/fileclose.png"));
+		hashImages.put("print", createImage(shell.getDisplay(), "/org/images/fileprint.png"));
+		hashImages.put("configure", createImage(shell.getDisplay(), "/org/images/configure.png"));
+		hashImages.put("help", createImage(shell.getDisplay(), "/org/images/help.png"));
+		hashImages.put("exit", createImage(shell.getDisplay(), "/org/images/exit.png"));
+
 		try	{
 			confZebra = new MXMLConfiguration();
 			confZebra.setFile(new File("Zebra.xml"));
@@ -70,7 +82,14 @@ public class Zebra {
 		return (Image) hashImages.get(cmd.toLowerCase());
 	}
 
-	void createShell(Display display) {
+    protected void createGui(Zebra app) {
+		createMenuBar();
+		createToolBar();
+
+		table = createTable(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
+    }
+
+ /*   void createShell(Display display) {
 		shell = new Shell (display);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 1;
@@ -81,9 +100,17 @@ public class Zebra {
 				e.doit = closeZebraFile();
 			}
 		});
-	}
+	}*/
 
-	public Shell initGui(Display display) {
+    /** Allow subclasses to initialize the GUI */
+    protected void initGui() {
+		shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
+		shell.open();
+
+//		return shell;
+    }
+
+/*	public Shell initGui(Display display) {
 		createShell(display);
 		createMenuBar();
 		createToolBar();
@@ -94,7 +121,7 @@ public class Zebra {
 		shell.open();
 
 		return shell;
-	}
+	}*/
 
 	protected Table createTable(Composite parent, int mode) {
 	    table = new Table(parent, mode | SWT.SINGLE | SWT.FULL_SELECTION | 
@@ -531,30 +558,32 @@ public class Zebra {
 	 * @throws ConfigurationException
 	 */
 	public static void main(String[] args) throws FileNotFoundException, PrintException, IOException, ConfigurationException {
-		Zebra appZebra = new Zebra();
+//		Zebra appZebra = new Zebra();
 
 		if(args.length > 0) {
-			new FormPrintUnilever(appZebra, args[0], null);
+//			new FormPrintUnilever(appZebra, args[0], null);
 		}
 		else {
-			Display display = new Display();
+		    run(Zebra.class.getName(), "Zebra...", SWT.NONE, 600, 300, args);
+//		    Display display = new Display();
 
-			hashImages = new HashMap<String, Image>();
-			hashImages.put("open", new Image(display, Zebra.class.getResourceAsStream("/org/images/fileopen.png")));
-			hashImages.put("close", new Image(display, Zebra.class.getResourceAsStream("/org/images/fileclose.png")));
-			hashImages.put("print", new Image(display, Zebra.class.getResourceAsStream("/org/images/fileprint.png")));
-			hashImages.put("configure", new Image(display, Zebra.class.getResourceAsStream("/org/images/configure.png")));
-			hashImages.put("help", new Image(display, Zebra.class.getResourceAsStream("/org/images/help.png")));
-			hashImages.put("exit", new Image(display, Zebra.class.getResourceAsStream("/org/images/exit.png")));
+//			hashImages = new HashMap<String, Image>();
+//			hashImages.put("open", createImage(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileopen.png")));
+//			hashImages.put("open", new Image(display, Zebra.class.getResourceAsStream("/org/images/fileopen.png")));
+//			hashImages.put("close", new Image(display, Zebra.class.getResourceAsStream("/org/images/fileclose.png")));
+//			hashImages.put("print", new Image(display, Zebra.class.getResourceAsStream("/org/images/fileprint.png")));
+//			hashImages.put("configure", new Image(display, Zebra.class.getResourceAsStream("/org/images/configure.png")));
+//			hashImages.put("help", new Image(display, Zebra.class.getResourceAsStream("/org/images/help.png")));
+//			hashImages.put("exit", new Image(display, Zebra.class.getResourceAsStream("/org/images/exit.png")));
 
-			Shell shell = appZebra.initGui(display);
+//			Shell shell = appZebra.initGui(display);
 
-			while(!shell.isDisposed()) {
-				if(!display.readAndDispatch())
-					display.sleep();
-			}
+//			while(!shell.isDisposed()) {
+//				if(!display.readAndDispatch())
+//					display.sleep();
+//			}
 
-			display.dispose();
+//			display.dispose();
 		}
 	}
 }
