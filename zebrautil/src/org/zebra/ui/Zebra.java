@@ -83,7 +83,7 @@ public class Zebra extends BasicApplication {
 	}
 
     protected void createGui(Zebra app) {
-		createMenuBar();
+    	createMenuBar();
 		createToolBar();
 
 		table = createTable(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
@@ -180,7 +180,7 @@ public class Zebra extends BasicApplication {
 	//вывод сообщения об ошибке
 	private void displayError(String msg) {
 		try {
-			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
+			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 			box.setMessage(msg);
 			box.open();
 		}
@@ -191,7 +191,6 @@ public class Zebra extends BasicApplication {
 
 	private ToolBar createToolBar() {
 		ToolBar toolBar = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
-
 		toolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
