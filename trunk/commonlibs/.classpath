@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/swt"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/config"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jface"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
