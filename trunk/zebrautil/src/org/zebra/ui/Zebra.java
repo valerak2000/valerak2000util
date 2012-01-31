@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.*;
 import org.apache.commons.configuration.ConfigurationException;
 
 import org.library.config.MXMLConfiguration;
+import org.library.csv.CSV;
 import org.library.swt.BasicApplication;
-import org.csvutil.CSV;
 
 import org.zebra.util.FormPrintUnilever;
 
