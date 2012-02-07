@@ -14,6 +14,7 @@ import java.util.HashMap;
 import javax.print.PrintException;
 //import javax.xml.transform.OutputKeys;
 
+import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -30,7 +31,7 @@ import org.library.swt.BasicApplication;
 
 import org.zebra.util.FormPrintUnilever;
 
-public class Zebra extends BasicApplication {
+public class Zebra  extends ApplicationWindow {
 	private static MXMLConfiguration confZebra = null;
 
 //	private Shell shell;
@@ -42,17 +43,17 @@ public class Zebra extends BasicApplication {
 
 	private static HashMap<String, Image> hashImages;
 
-	public Zebra(Shell shell, int style) throws ConfigurationException {
-        super(shell, style);   // must always supply parent and style
+	public Zebra() throws ConfigurationException {
+	   super(null);
 //		this.shell = shell;
 
 		hashImages = new HashMap<String, Image>();
-		hashImages.put("open", createImage(shell.getDisplay(), "/org/images/fileopen.png"));
-		hashImages.put("close", createImage(shell.getDisplay(), "/org/images/fileclose.png"));
-		hashImages.put("print", createImage(shell.getDisplay(), "/org/images/fileprint.png"));
-		hashImages.put("configure", createImage(shell.getDisplay(), "/org/images/configure.png"));
-		hashImages.put("help", createImage(shell.getDisplay(), "/org/images/help.png"));
-		hashImages.put("exit", createImage(shell.getDisplay(), "/org/images/exit.png"));
+		hashImages.put("open", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileopen.png")));
+		hashImages.put("close", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileclose.png")));
+		hashImages.put("print", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileprint.png")));
+		hashImages.put("configure", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/configure.png")));
+		hashImages.put("help", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/help.png")));
+		hashImages.put("exit", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/exit.png")));
 
 		try	{
 			confZebra = new MXMLConfiguration();
@@ -72,6 +73,55 @@ public class Zebra extends BasicApplication {
 
 			return;
 		}
+
+		createMenuBar();
+		createToolBar();
+	}
+
+	public void run() {
+	    // Don't return from open() until window closes
+		setBlockOnOpen(true);
+	    // Open the main window
+	    open();
+	    // Dispose the display
+	    Display.getCurrent().dispose();
+	}
+
+	protected void configureShell(Shell shell) {
+		super.configureShell(shell);
+
+		// Set the title bar text and the size
+		shell.setText("");
+		shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
+	}
+
+	protected Control createContents(Composite parent) {
+/*	    Composite composite = new Composite(parent, SWT.NONE);
+	    composite.setLayout(new GridLayout(1, false));
+
+	    // Add a checkbox to toggle whether the labels preserve case
+	    Button preserveCase = new Button(composite, SWT.CHECK);
+	    preserveCase.setText("&Preserve case");
+
+	    // Create the tree viewer to display the file tree
+	    final TreeViewer tv = new TreeViewer(composite);
+	    tv.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
+	    tv.setContentProvider(new FileTreeContentProvider());
+	    tv.setLabelProvider(new FileTreeLabelProvider());
+	    tv.setInput("root"); // pass a non-null that will be ignored
+
+	    // When user checks the checkbox, toggle the preserve case attribute
+	    // of the label provider
+	    preserveCase.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent event) {
+	        boolean preserveCase = ((Button) event.widget).getSelection();
+	        FileTreeLabelProvider ftlp = (FileTreeLabelProvider) tv
+	            .getLabelProvider();
+	        ftlp.setPreserveCase(preserveCase);
+	      }
+	    });*/
+
+	    return composite;
 	}
 
 	public MXMLConfiguration getConfZebra() {
@@ -83,9 +133,6 @@ public class Zebra extends BasicApplication {
 	}
 
     protected void createGui(Zebra app) {
-    	createMenuBar();
-		createToolBar();
-
 		table = createTable(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
     }
 
@@ -563,7 +610,8 @@ public class Zebra extends BasicApplication {
 //			new FormPrintUnilever(appZebra, args[0], null);
 		}
 		else {
-		    run(Zebra.class.getName(), "Zebra...", SWT.NONE, 600, 300, args);
+			new Zebra().run();
+//		    run(Zebra.class.getName(), "Zebra...", SWT.NONE, 600, 300, args);
 //		    Display display = new Display();
 
 //			hashImages = new HashMap<String, Image>();
