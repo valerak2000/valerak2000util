@@ -2,7 +2,6 @@
 <ui-definition>
 	<All_filter_name>All Files</All_filter_name>
 	<Does_not_exist>не существует..</Does_not_exist>
-	<Exit>Выход\tAlt+X</Exit>
 	<File>Файл</File>
 	<File_menu_title>&amp;Файл</File_menu_title>
 	<File_not_found>Файл не найден:</File_not_found>
@@ -22,6 +21,7 @@
 	<About>&amp;О программе печать этикеток Zebra...</About>
 	<About_1>Zebra1...</About_1>
 	<About_2>Zebra2...</About_2>
+	<Exit>&amp;Выход@Alt+X</Exit>
 	<Help_menu_title>&amp;Помощь</Help_menu_title>
 	<OK>OK</OK>
 	<Cancel>Отменить</Cancel>
