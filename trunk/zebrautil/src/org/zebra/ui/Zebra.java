@@ -14,6 +14,13 @@ import java.util.HashMap;
 import javax.print.PrintException;
 //import javax.xml.transform.OutputKeys;
 
+import org.eclipse.jface.action.CoolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.StatusLineManager;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -27,33 +34,57 @@ import org.apache.commons.configuration.ConfigurationException;
 
 import org.library.config.MXMLConfiguration;
 import org.library.csv.CSV;
-import org.library.swt.BasicApplication;
+//import org.library.swt.BasicApplication;
 
 import org.zebra.util.FormPrintUnilever;
 
-public class Zebra  extends ApplicationWindow {
+public class Zebra extends ApplicationWindow {
+	// A static instance to the running application
+	private static Zebra APP;
+
+	// The actions
+/*	private NewAction newAction;
+	private OpenAction openAction;
+	private SaveAction saveAction;
+	private SaveAsAction saveAsAction;
+	private AddBookAction addBookAction;
+	private RemoveBookAction removeBookAction;
+	private ShowBookCountAction showBookCountAction;*/
+	private AboutAction aboutAction;
+	private ExitAction exitAction;
+
 	private static MXMLConfiguration confZebra = null;
 
-//	private Shell shell;
+	private Shell shell;
 	private Table table;
 
 	private static final String[] columnNames = new String[3];
 	private File file = null;
 	private CSV csv = new CSV(';');
 
-	private static HashMap<String, Image> hashImages;
+	private static HashMap<String, ImageDescriptor> hashImages;
+
+	/**
+	 * Gets the running application
+	*/
+	public static final Zebra getApp() {
+	    return APP;
+	}
 
 	public Zebra() throws ConfigurationException {
 	   super(null);
-//		this.shell = shell;
 
-		hashImages = new HashMap<String, Image>();
-		hashImages.put("open", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileopen.png")));
+	    APP = this;
+
+	    hashImages = new HashMap<String, ImageDescriptor>();
+/*		hashImages.put("open", new Image(shell.getDisplay(), new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileopen.png")));
 		hashImages.put("close", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileclose.png")));
 		hashImages.put("print", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileprint.png")));
 		hashImages.put("configure", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/configure.png")));
 		hashImages.put("help", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/help.png")));
-		hashImages.put("exit", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/exit.png")));
+		hashImages.put("exit", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/exit.png")));*/
+		hashImages.put("help", ImageDescriptor.createFromFile(Zebra.class, "/org/images/help.png"));
+		hashImages.put("exit", ImageDescriptor.createFromFile(Zebra.class, "/org/images/exit.png"));
 
 		try	{
 			confZebra = new MXMLConfiguration();
@@ -69,13 +100,25 @@ public class Zebra  extends ApplicationWindow {
 			columnNames[2] = confZebra.getString("Number_copies");
 		} catch(ConfigurationException cex)	{
 		    // something went wrong, e.g. the file was not found
-			displayError(cex.getMessage());
+			showError(cex.getMessage());
 
 			return;
 		}
 
-		createMenuBar();
-		createToolBar();
+/*	    // Create the actions
+	    newAction = new NewAction();
+	    openAction = new OpenAction();
+	    saveAction = new SaveAction();
+	    saveAsAction = new SaveAsAction();
+	    addBookAction = new AddBookAction();
+	    removeBookAction = new RemoveBookAction();
+	    showBookCountAction = new ShowBookCountAction();*/
+//	    aboutAction = new AboutAction();
+	    exitAction = new ExitAction();
+
+//	    addMenuBar();
+	    addCoolBar(SWT.NONE);
+	    addStatusLine();
 	}
 
 	public void run() {
@@ -89,17 +132,26 @@ public class Zebra  extends ApplicationWindow {
 
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
+		this.shell = shell;
 
 		// Set the title bar text and the size
 		shell.setText("");
-		shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
+//		shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
+
+		shell.addShellListener(new ShellAdapter() {
+			public void shellClosed(ShellEvent e) {
+				e.doit = closeZebraFile();
+			}
+		});
 	}
 
 	protected Control createContents(Composite parent) {
-/*	    Composite composite = new Composite(parent, SWT.NONE);
+	    Composite composite = new Composite(parent, SWT.NONE);
 	    composite.setLayout(new GridLayout(1, false));
 
-	    // Add a checkbox to toggle whether the labels preserve case
+/*
+		table = createTable(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
+ * 	    // Add a checkbox to toggle whether the labels preserve case
 	    Button preserveCase = new Button(composite, SWT.CHECK);
 	    preserveCase.setText("&Preserve case");
 
@@ -124,51 +176,13 @@ public class Zebra  extends ApplicationWindow {
 	    return composite;
 	}
 
+	public ImageDescriptor getImageFor(String cmd) {
+		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
+	}
+
 	public MXMLConfiguration getConfZebra() {
-		return confZebra;
+		return (MXMLConfiguration) confZebra;
 	}
-
-	private Image getImageFor(String cmd) {
-		return (Image) hashImages.get(cmd.toLowerCase());
-	}
-
-    protected void createGui(Zebra app) {
-		table = createTable(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
-    }
-
- /*   void createShell(Display display) {
-		shell = new Shell (display);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		shell.setLayout(layout);
-
-		shell.addShellListener(new ShellAdapter() {
-			public void shellClosed(ShellEvent e) {
-				e.doit = closeZebraFile();
-			}
-		});
-	}*/
-
-    /** Allow subclasses to initialize the GUI */
-    protected void initGui() {
-		shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
-		shell.open();
-
-//		return shell;
-    }
-
-/*	public Shell initGui(Display display) {
-		createShell(display);
-		createMenuBar();
-		createToolBar();
-
-		table = createTable(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
-
-		shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
-		shell.open();
-
-		return shell;
-	}*/
 
 	protected Table createTable(Composite parent, int mode) {
 	    table = new Table(parent, mode | SWT.SINGLE | SWT.FULL_SELECTION | 
@@ -224,7 +238,15 @@ public class Zebra  extends ApplicationWindow {
 		return parsedLine;
 	}
 
-	//вывод сообщения об ошибке
+	/**
+	 * Shows an error
+	 *
+	 * @param msg the error
+	*/
+	public void showError(String msg) {
+	    MessageDialog.openError(getShell(), "Error", msg);
+	}
+/*	//вывод сообщения об ошибке
 	private void displayError(String msg) {
 		try {
 			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -234,9 +256,9 @@ public class Zebra  extends ApplicationWindow {
 		catch (Exception ex) {
 			System.out.println("Error:" + msg);			
 		}
-	}
+	}*/
 
-	private ToolBar createToolBar() {
+/*	private ToolBar createCoolBar() {
 		ToolBar toolBar = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT);
 		toolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
@@ -291,23 +313,213 @@ public class Zebra  extends ApplicationWindow {
 		});
 
 		return toolBar;
-	}
+	}*/
+
 	/**
 	 * Creates the menu at the top of the shell where most
 	 * of the programs functionality is accessed.
 	 *
 	 * @return		The <code>Menu</code> widget that was created
 	 */
-	private Menu createMenuBar() {
-		Menu menuBar = new Menu(shell, SWT.BAR);
+	  protected MenuManager createMenuManager() {
+	    // Create the main menu
+	    MenuManager mmng = new MenuManager();
+
+	    // Create the File menu
+	    MenuManager fileMenu = new MenuManager("File");
+	    mmng.add(fileMenu);
+
+/*	    // Add the actions to the File menu
+	    fileMenu.add(newAction);
+	    fileMenu.add(openAction);
+	    fileMenu.add(saveAction);
+	    fileMenu.add(saveAsAction);
+	    fileMenu.add(new Separator());
+	    fileMenu.add(exitAction);
+
+	    // Create the Book menu
+	    MenuManager bookMenu = new MenuManager("Book");
+	    mm.add(bookMenu);
+
+	    // Add the actions to the Book menu
+	    bookMenu.add(addBookAction);
+	    bookMenu.add(removeBookAction);
+
+	    // Create the View menu
+	    MenuManager viewMenu = new MenuManager("View");
+	    mm.add(viewMenu);
+
+	    // Add the actions to the View menu
+	    viewMenu.add(showBookCountAction);*/
+
+	    // Create the Help menu
+	    MenuManager helpMenu = new MenuManager("Help");
+	    mmng.add(helpMenu);
+
+	    // Add the actions to the Help menu
+	    helpMenu.add(aboutAction);
+
+	    return mmng;
+
+/*	    Menu menuBar = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menuBar);
 		
 		//create each header and subMenu for the menuBar
 		createFileMenu(menuBar);
 		createHelpMenu(menuBar);
 		
-		return menuBar;
+		return menuBar;*/
 	}
+
+	  /**
+	   * Creates the toolbar for the application
+	   */
+	protected ToolBarManager createToolBarManager(int style) {
+	    // Create the toolbar manager
+	    ToolBarManager tbm = new ToolBarManager(style);
+	    // Add the file actions
+/*	    tbm.add(newAction);
+	    tbm.add(openAction);
+	    tbm.add(saveAction);
+	    tbm.add(saveAsAction);*/
+
+	    // Add a separator
+	    tbm.add(new Separator());
+
+	    // Add the book actions
+/*	    tbm.add(addBookAction);
+	    tbm.add(removeBookAction);*/
+
+	    // Add a separator
+	    tbm.add(new Separator());
+
+	    // Add the show book count, which will appear as a toggle button
+/*	    tbm.add(showBookCountAction);
+
+	    // Add a separator
+	    tbm.add(new Separator());*/
+
+	    // Add the about action
+//	    tbm.add(aboutAction);
+	    tbm.add(new Separator());
+	    tbm.add(exitAction);
+
+	    return tbm;
+	}
+
+	/**
+	* Creates the coolbar for the application
+	*/
+	protected CoolBarManager createCoolBarManager(int style) {
+		// Create the coolbar manager
+		CoolBarManager cbm = new CoolBarManager(style);
+
+		// Add the toolbar
+		cbm.add(createToolBarManager(SWT.FLAT));
+
+		return cbm;
+	}
+
+	/**
+	* Creates the status line manager
+	*/
+	protected StatusLineManager createStatusLineManager() {
+		return new StatusLineManager();
+	}
+
+/*	private void createFileMenu(Menu menuBar) {
+		//File menu.
+		MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
+		item.setText(confZebra.getMString("File_menu_title"));
+		Menu menu = new Menu(shell, SWT.DROP_DOWN);
+		item.setMenu(menu);
+		menu.addMenuListener(new MenuAdapter() {
+			public void menuShown(MenuEvent e) {
+				Menu menu = (Menu)e.widget;
+				MenuItem[] items = menu.getItems();
+				items[1].setEnabled(table.getSelectionCount() != 0); // edit contact
+				items[5].setEnabled((file != null) && isModified); // save
+				items[6].setEnabled(table.getItemCount() != 0); // save as 
+			}
+		});
+		
+		//File -> Open
+		MenuItem subItem = new MenuItem(menu, SWT.NONE);
+		subItem.setText(confZebra.getMString("Open_zebra_file"));
+		subItem.setImage(getImageFor("open"));
+		subItem.setAccelerator(SWT.MOD1 + 'O');
+		subItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				choiceZebraFile();
+			}
+		});
+
+		//File -> Close
+		subItem = new MenuItem(menu, SWT.NONE);
+		subItem.setText(confZebra.getMString("Close_zebra_file"));
+		subItem.setImage(getImageFor("close"));
+		subItem.setAccelerator(SWT.MOD1 + 'W');
+		subItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				closeZebraFile();
+			}
+		});
+
+		//File -> Config.
+		subItem = new MenuItem(menu, SWT.NONE);
+		subItem.setText(confZebra.getMString("Config_print_file"));
+		subItem.setImage(getImageFor("configure"));
+		subItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				configZebraFile();
+			}
+		});
+
+		//File -> Print.
+		subItem = new MenuItem(menu, SWT.NONE);
+		subItem.setText(confZebra.getMString("Print_zebra_file"));
+		subItem.setImage(getImageFor("print"));
+		subItem.setAccelerator(SWT.MOD1 + 'P');
+		subItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				printZebraFile();
+			}
+		});
+
+		new MenuItem(menu, SWT.SEPARATOR);
+		
+		//File -> Exit.
+		subItem = new MenuItem(menu, SWT.NONE);
+		subItem.setText(confZebra.getMString("Exit"));
+		subItem.setImage(getImageFor("exit"));
+		subItem.setAccelerator(SWT.ALT + 'X');
+		subItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				shell.close();
+			}
+		});
+	}*/
+
+/*	private void createHelpMenu(Menu menuBar) {
+		//Help Menu
+		MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
+		item.setText(confZebra.getString("Help_menu_title"));	
+		Menu menu = new Menu(shell, SWT.DROP_DOWN);
+		item.setMenu(menu);
+		
+		//Help -> About Text Editor
+		MenuItem subItem = new MenuItem(menu, SWT.NONE);
+		subItem.setText(confZebra.getString("About"));
+		subItem.setImage(getImageFor("help"));
+		subItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				MessageBox box = new MessageBox(shell, SWT.NONE);
+				box.setText(confZebra.getString("About_1"));
+				box.setMessage(confZebra.getString("About_2") + shell.getText());
+				box.open();
+			}
+		});
+	}*/
 
 	private void choiceZebraFile() {
 		//закрыть старый файл
@@ -350,11 +562,11 @@ public class Zebra  extends ApplicationWindow {
 			bufferedReader.close();
 			fileReader.close();
 		} catch(FileNotFoundException e) {
-			displayError(confZebra.getString("File_not_found") + "\n" + file.getName());
+			showError(confZebra.getString("File_not_found") + "\n" + file.getName());
 
 			return;
 		} catch(IOException ioe) {
-			displayError(confZebra.getString("IO_error_read") + "\n" + file.getName());
+			showError(confZebra.getString("IO_error_read") + "\n" + file.getName());
 
 			return;
 		} finally {
@@ -435,128 +647,12 @@ public class Zebra  extends ApplicationWindow {
 				System.out.println(stringWriter.toString());
 			} catch(ConfigurationException cex) {
 			    // something went wrong, e.g. the file was not found
-				displayError(cex.getMessage());
+				showError(cex.getMessage());
 			}
 //			isModified = true;
 		}
 
 		return false;
-	}
-
-	/**
-	 * Creates all the items located in the File submenu and
-	 * associate all the menu items with their appropriate
-	 * functions.
-	 *
-	 * @param	menuBar Menu
-	 *				the <code>Menu</code> that file contain
-	 *				the File submenu.
-	 */
-	private void createFileMenu(Menu menuBar) {
-		//File menu.
-		MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
-		item.setText(confZebra.getMString("File_menu_title"));
-		Menu menu = new Menu(shell, SWT.DROP_DOWN);
-		item.setMenu(menu);
-		/** 
-		 * Adds a listener to handle enabling and disabling 
-		 * some items in the Edit submenu.
-		 */
-		menu.addMenuListener(new MenuAdapter() {
-			public void menuShown(MenuEvent e) {
-/*				Menu menu = (Menu)e.widget;
-				MenuItem[] items = menu.getItems();
-				items[1].setEnabled(table.getSelectionCount() != 0); // edit contact
-				items[5].setEnabled((file != null) && isModified); // save
-				items[6].setEnabled(table.getItemCount() != 0); // save as */
-			}
-		});
-		
-		//File -> Open
-		MenuItem subItem = new MenuItem(menu, SWT.NONE);
-		subItem.setText(confZebra.getMString("Open_zebra_file"));
-		subItem.setImage(getImageFor("open"));
-		subItem.setAccelerator(SWT.MOD1 + 'O');
-		subItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				choiceZebraFile();
-			}
-		});
-
-		//File -> Close
-		subItem = new MenuItem(menu, SWT.NONE);
-		subItem.setText(confZebra.getMString("Close_zebra_file"));
-		subItem.setImage(getImageFor("close"));
-		subItem.setAccelerator(SWT.MOD1 + 'W');
-		subItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				closeZebraFile();
-			}
-		});
-
-		//File -> Config.
-		subItem = new MenuItem(menu, SWT.NONE);
-		subItem.setText(confZebra.getMString("Config_print_file"));
-		subItem.setImage(getImageFor("configure"));
-		subItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				configZebraFile();
-			}
-		});
-
-		//File -> Print.
-		subItem = new MenuItem(menu, SWT.NONE);
-		subItem.setText(confZebra.getMString("Print_zebra_file"));
-		subItem.setImage(getImageFor("print"));
-		subItem.setAccelerator(SWT.MOD1 + 'P');
-		subItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				printZebraFile();
-			}
-		});
-
-		new MenuItem(menu, SWT.SEPARATOR);
-		
-		//File -> Exit.
-		subItem = new MenuItem(menu, SWT.NONE);
-		subItem.setText(confZebra.getMString("Exit"));
-		subItem.setImage(getImageFor("exit"));
-		subItem.setAccelerator(SWT.ALT + 'X');
-		subItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				shell.close();
-			}
-		});
-	}
-
-	/**
-	 * Creates all the items located in the Help submenu and
-	 * associate all the menu items with their appropriate
-	 * functions.
-	 *
-	 * @param	menuBar	Menu
-	 *				the <code>Menu</code> that file contain
-	 *				the Help submenu.
-	 */
-	private void createHelpMenu(Menu menuBar) {
-		//Help Menu
-		MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
-		item.setText(confZebra.getString("Help_menu_title"));	
-		Menu menu = new Menu(shell, SWT.DROP_DOWN);
-		item.setMenu(menu);
-		
-		//Help -> About Text Editor
-		MenuItem subItem = new MenuItem(menu, SWT.NONE);
-		subItem.setText(confZebra.getString("About"));
-		subItem.setImage(getImageFor("help"));
-		subItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				MessageBox box = new MessageBox(shell, SWT.NONE);
-				box.setText(confZebra.getString("About_1"));
-				box.setMessage(confZebra.getString("About_2") + shell.getText());
-				box.open();
-			}
-		});
 	}
 
 	/**
@@ -590,19 +686,29 @@ public class Zebra  extends ApplicationWindow {
 	}
 
 	/**
-	 * @param args
-	 * @throws IOException 
-	 * @throws PrintException 
-	 * @throws FileNotFoundException 
-	 * @throws ConfigurationException 
-	 */
+	 * Closes the application
+	*/
+	public boolean close() {
+	    return super.close();
+	}
+
 	/**
-	 * @param args
-	 * @throws FileNotFoundException
-	 * @throws PrintException
-	 * @throws IOException
-	 * @throws ConfigurationException
-	 */
+	 * Enables or disables the actions
+	 *
+	 * @param enable true to enable, false to disable
+	*/
+	private void enableActions(boolean enable) {
+/*	    newAction.setEnabled(enable);
+	    openAction.setEnabled(enable);
+	    saveAction.setEnabled(enable);
+	    saveAsAction.setEnabled(enable);
+	    addBookAction.setEnabled(enable);
+	    removeBookAction.setEnabled(enable);
+	    aboutAction.setEnabled(enable);
+	    showBookCountAction.setEnabled(enable);*/
+	    exitAction.setEnabled(enable);
+	}
+
 	public static void main(String[] args) throws FileNotFoundException, PrintException, IOException, ConfigurationException {
 //		Zebra appZebra = new Zebra();
 
