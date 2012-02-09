@@ -53,17 +53,11 @@ All Files
 Число копий
     </Number_copies>
 
-    <Open_zebra_file>
-Открыть файл с этикетками\tCtrl+O
-    </Open_zebra_file>
+    <Open_zebra_file>Открыть файл с этикетками@Ctrl+O</Open_zebra_file>
 
-    <Close_zebra_file>
-Закрыть файл с этикетками\tCtrl+W
-    </Close_zebra_file>
+    <Close_zebra_file>Закрыть файл с этикетками@Ctrl+W</Close_zebra_file>
 
-    <Print_zebra_file>
-Печать этикеток\tCtrl+P
-    </Print_zebra_file>
+    <Print_zebra_file>Печать этикеток@Ctrl+P</Print_zebra_file>
 
     <Config_print_file>
 Настройка печати

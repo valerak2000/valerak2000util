@@ -8,21 +8,21 @@ import org.eclipse.jface.resource.ImageDescriptor;
  * This action class shows an About box
  */
 public class AboutAction extends Action {
-  /**
-   * AboutAction constructor
-   */
-  public AboutAction() {
-    super(Zebra.getApp().getConfZebra().getMString("About"), Zebra.getApp().getImageFor("about"));
-    setDisabledImageDescriptor(ImageDescriptor.createFromFile(AboutAction.class,
-        "/images/disabledAbout.gif"));
-    setToolTipText("About");
-  }
+	/**
+	 * AboutAction constructor
+	 */
+	public AboutAction() {
+		super(Zebra.getApp().getConfZebra().getMString("About"), Zebra.getApp().getImageFor("about"));
+/*    setDisabledImageDescriptor(ImageDescriptor.createFromFile(AboutAction.class,
+        "/images/disabledAbout.gif"));*/
+		setToolTipText(Zebra.getApp().getConfZebra().getMString("About"));
+	}
 
-  /**
-   * Shows an about box
-   */
-  public void run() {
-    MessageDialog.openInformation(Zebra.getApp().getShell(), Zebra.getApp().getConfZebra().getMString("About"),
-        "Zebra--to manage your books");
-  }
+	/**
+	 * Shows an about box
+	 */
+	public void run() {
+		MessageDialog.openInformation(Zebra.getApp().getShell(), Zebra.getApp().getConfZebra().getMString("About"),
+				"Zebra--to manage your books");
+	}
 }
