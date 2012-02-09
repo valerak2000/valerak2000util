@@ -77,13 +77,12 @@ public class Zebra extends ApplicationWindow {
 	    APP = this;
 
 	    hashImages = new HashMap<String, ImageDescriptor>();
-/*		hashImages.put("open", new Image(shell.getDisplay(), new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileopen.png")));
-		hashImages.put("close", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileclose.png")));
-		hashImages.put("print", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/fileprint.png")));
-		hashImages.put("configure", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/configure.png")));
-		hashImages.put("help", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/help.png")));
-		hashImages.put("exit", new Image(shell.getDisplay(), Zebra.class.getResourceAsStream("/org/images/exit.png")));*/
+		hashImages.put("open", ImageDescriptor.createFromFile(Zebra.class, "/org/images/fileopen.png"));
+		hashImages.put("close", ImageDescriptor.createFromFile(Zebra.class, "/org/images/fileclose.png"));
+		hashImages.put("print", ImageDescriptor.createFromFile(Zebra.class, "/org/images/fileprint.png"));
+		hashImages.put("configure", ImageDescriptor.createFromFile(Zebra.class, "/org/images/configure.png"));
 		hashImages.put("help", ImageDescriptor.createFromFile(Zebra.class, "/org/images/help.png"));
+		hashImages.put("about", ImageDescriptor.createFromFile(Zebra.class, "/org/images/about.png"));
 		hashImages.put("exit", ImageDescriptor.createFromFile(Zebra.class, "/org/images/exit.png"));
 
 		try	{
