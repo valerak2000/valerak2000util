@@ -21,7 +21,7 @@
 	<About>&amp;О программе печать этикеток Zebra...</About>
 	<About_1>Zebra1...</About_1>
 	<About_2>Zebra2...</About_2>
-	<Exit>&amp;Выход@Alt+X</Exit>
+	<Exit>&amp;Выход&#64;Alt+X</Exit>
 	<Help_menu_title>&amp;Помощь</Help_menu_title>
 	<OK>OK</OK>
 	<Cancel>Отменить</Cancel>
