@@ -21,7 +21,12 @@ import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColorCellEditor;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -39,8 +44,8 @@ import org.library.csv.CSV;
 
 import org.zebra.util.FormPrintUnilever;
 
-import examples.ch14.PersonContentProvider;
-import examples.ch14.PersonLabelProvider;
+import examples.ch14.AgeRange;
+import examples.ch14.PersonCellModifier;
 
 public class Zebra extends ApplicationWindow {
 	// A static instance to the running application
@@ -149,39 +154,18 @@ public class Zebra extends ApplicationWindow {
 	    // Add the TableViewer
 	    final TableViewer tv = new TableViewer(composite, SWT.FULL_SELECTION);
 //	    tv.setContentProvider(new PersonContentProvider());
-//	    tv.setLabelProvider(new PersonLabelProvider());
+	    tv.setLabelProvider(new ZebraLabelProvider());
 //	    tv.setInput(people);
 
 	    // Set up the table
 	    Table table = tv.getTable();
 	    table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-	    table = createTable(composite, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
+	    table = createTable(tv, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION | 
+                				SWT.V_SCROLL | SWT.H_SCROLL);
 
 	    //set size of window like table
 	    getShell().setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
-
-/* 	    // Add a checkbox to toggle whether the labels preserve case
-	    Button preserveCase = new Button(composite, SWT.CHECK);
-	    preserveCase.setText("&Preserve case");
-
-	    // Create the tree viewer to display the file tree
-	    final TreeViewer tv = new TreeViewer(composite);
-	    tv.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
-	    tv.setContentProvider(new FileTreeContentProvider());
-	    tv.setLabelProvider(new FileTreeLabelProvider());
-	    tv.setInput("root"); // pass a non-null that will be ignored
-
-	    // When user checks the checkbox, toggle the preserve case attribute
-	    // of the label provider
-	    preserveCase.addSelectionListener(new SelectionAdapter() {
-	      public void widgetSelected(SelectionEvent event) {
-	        boolean preserveCase = ((Button) event.widget).getSelection();
-	        FileTreeLabelProvider ftlp = (FileTreeLabelProvider) tv
-	            .getLabelProvider();
-	        ftlp.setPreserveCase(preserveCase);
-	      }
-	    });*/
 
 	    return composite;
 	}
@@ -194,20 +178,31 @@ public class Zebra extends ApplicationWindow {
 		return (MXMLConfiguration) confZebra;
 	}
 
-	protected Table createTable(Composite parent, int mode) {
-	    table = new Table(parent, mode | SWT.SINGLE | SWT.FULL_SELECTION | 
-	                      SWT.V_SCROLL | SWT.H_SCROLL);
-
+	protected Table createTable(TableViewer tv, int mode) {
+	    table = tv.getTable();
 	    table.setLayoutData(new GridData(GridData.FILL_BOTH));
-		table.setHeaderVisible(true);	
 
 		for(int i = 0; i < columnNames.length; i++) {
 		    createTableColumn(table, SWT.NONE, columnNames[i], 150);
 		}
 
 //		addTableContents(new Object[] {new String[] {""}});
+	    table.setHeaderVisible(true);
+	    table.setLinesVisible(true);
 
-		return table;
+/*	    // Create the cell editors
+	    CellEditor[] editors = new CellEditor[4];
+	    editors[0] = new TextCellEditor(table);
+	    editors[1] = new CheckboxCellEditor(table);
+	    editors[2] = new ComboBoxCellEditor(table, AgeRange.INSTANCES, SWT.READ_ONLY);
+	    editors[3] = new ColorCellEditor(table);
+
+	    // Set the editors, cell modifier, and column properties
+	    tv.setColumnProperties(columnNames);
+	    tv.setCellModifier(new PersonCellModifier(tv));
+	    tv.setCellEditors(editors);*/
+
+	    return table;
 	}
 
 	protected TableColumn createTableColumn(Table table, int style, String title, int width) {
@@ -215,6 +210,7 @@ public class Zebra extends ApplicationWindow {
 	    tc.setText(title);
 	    tc.setResizable(true);
 	    tc.setWidth(width);
+	    tc.pack();
 
 	    return tc;
 	}	
