@@ -13,7 +13,8 @@ public class ZebraContentProvider implements IStructuredContentProvider {
    * Returns the Person objects
    */
   public Object[] getElements(Object inputElement) {
-    return ((List) inputElement).toArray();
+    List<ZebraLabel> list = (List<ZebraLabel>) inputElement;
+	return list.toArray();
   }
 
   /**

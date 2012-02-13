@@ -27,7 +27,7 @@ public class ZebraLabelProvider implements ITableLabelProvider {
    * @return String
    */
   public String getColumnText(Object element, int columnIndex) {
-    Person person = (Person) element;
+    ZebraLabel person = (ZebraLabel) element;
     switch (columnIndex) {
     case 0:
       return person.getName();
