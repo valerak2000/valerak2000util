@@ -44,9 +44,6 @@ import org.library.csv.CSV;
 
 import org.zebra.util.FormPrintUnilever;
 
-import examples.ch14.AgeRange;
-import examples.ch14.PersonCellModifier;
-
 public class Zebra extends ApplicationWindow {
 	// A static instance to the running application
 	private static Zebra APP;
@@ -153,9 +150,9 @@ public class Zebra extends ApplicationWindow {
 
 	    // Add the TableViewer
 	    final TableViewer tv = new TableViewer(composite, SWT.FULL_SELECTION);
-//	    tv.setContentProvider(new PersonContentProvider());
-	    tv.setLabelProvider(new ZebraLabelProvider());
-//	    tv.setInput(people);
+	    tv.setContentProvider(new ZebraContentProvider());
+//	    tv.setLabelProvider(new ZebraLabelProvider());
+//	    tv.setSorter(new ZebraViewerSorter());
 
 	    // Set up the table
 	    Table table = tv.getTable();
