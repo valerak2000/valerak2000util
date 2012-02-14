@@ -59,7 +59,8 @@ public class Zebra extends ApplicationWindow {
 	private static MXMLConfiguration confZebra = null;
 
 //	private Shell shell;
-	private Table table;
+	private TableViewer tv;
+//	private Table table;
 
 	private static final String[] columnNames = new String[3];
 	private File file = null;
@@ -155,14 +156,12 @@ public class Zebra extends ApplicationWindow {
 //	    tv.setSorter(new ZebraViewerSorter());
 
 	    // Set up the table
-	    Table table = tv.getTable();
-	    table.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-	    table = createTable(tv, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION | 
-                				SWT.V_SCROLL | SWT.H_SCROLL);
+//	    Table table = tv.getTable();
+	    createTable(tv, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION | 
+                		SWT.V_SCROLL | SWT.H_SCROLL);
 
 	    //set size of window like table
-	    getShell().setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
+	    getShell().setSize(tv.getTable().computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
 
 	    return composite;
 	}
@@ -176,8 +175,8 @@ public class Zebra extends ApplicationWindow {
 	}
 
 	protected Table createTable(TableViewer tv, int mode) {
-	    table = tv.getTable();
-	    table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		Table table = tv.getTable();
+		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		for(int i = 0; i < columnNames.length; i++) {
 		    createTableColumn(table, SWT.NONE, columnNames[i], 150);
@@ -214,11 +213,11 @@ public class Zebra extends ApplicationWindow {
 
 	protected void addTableContents(Object[] items) {
 		//обнулить таблицу
-        table.setItemCount(0);
+		tv.getTable().setItemCount(0);
 
         for(int i = 0; i < items.length; i++) {
 	        String[] item = (String[])items[i];
-	        TableItem ti = new TableItem(table, SWT.NONE);
+	        TableItem ti = new TableItem(tv.getTable(), SWT.NONE);
 	        ti.setText(item);
 	    }
 	}
@@ -229,11 +228,11 @@ public class Zebra extends ApplicationWindow {
 	private String[] decodeLine(String line) {
 		if(line == null) return null;
 		
-		String[] parsedLine = new String[table.getColumnCount()];
+		String[] parsedLine = new String[tv.getTable().getColumnCount()];
 		Iterator<String> e = csv.parse(line).iterator();
     	int i = 0;
 
-		while(e.hasNext() && i < table.getColumnCount()) {
+		while(e.hasNext() && i < tv.getTable().getColumnCount()) {
 			parsedLine[i] = e.next().toString().trim();
 			i++;
 		}
@@ -379,11 +378,11 @@ public class Zebra extends ApplicationWindow {
 	}
 
 	private void loadZebraFile(String name) {	
-		if(name == null) return;
-		file = new File(name);
-
 		Cursor waitCursor = new Cursor(getShell().getDisplay(), SWT.CURSOR_WAIT);
 		getShell().setCursor(waitCursor);
+
+/*		if(name == null) return;
+		file = new File(name);
 
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
@@ -413,10 +412,7 @@ public class Zebra extends ApplicationWindow {
 
 			return;
 		} finally {
-			getShell().setCursor(null);
-			waitCursor.dispose();
-		
-/*			if(fileReader != null) {
+			if(fileReader != null) {
 				try {
 					fileReader.close();
 				} catch(IOException e) {
@@ -424,7 +420,7 @@ public class Zebra extends ApplicationWindow {
 					return;
 				}
 			}
-*/		}
+		}
 		//заполнить массив tableInfo с данными таблицы
         String[][] tableInfo = new String[data.length][table.getColumnCount()];
 		int writeIndex = 0;
@@ -441,13 +437,18 @@ public class Zebra extends ApplicationWindow {
 		}
 		//сортировка данных
 		Arrays.sort(tableInfo, new RowComparator(0));
-		//загрузить массив в грид
-		addTableContents(tableInfo);
+*/		//загрузить массив в грид
+//		addTableContents(tableInfo);
+        tv.setInput(ZebraTableModel.INSTANCE.getLabels());  
+
+        getShell().setCursor(null);
+		waitCursor.dispose();
+	
 	}
 
 	public boolean closeZebraFile() {
 		//обнулить таблицу
-        table.setItemCount(0); 
+		tv.getTable().setItemCount(0); 
         file = null;
 
         return true;
@@ -498,28 +499,28 @@ public class Zebra extends ApplicationWindow {
 		return false;
 	}
 
-	/**
+/*	*//**
 	 * To compare entries (rows) by the given column
-	 */
+	 *//*
 	private class RowComparator implements Comparator<String []> {
 		private int column;
 		
-		/**
+		*//**
 		 * Constructs a RowComparator given the column index
 		 * @param col The index (starting at zero) of the column
-		 */
+		 *//*
 		public RowComparator(int col) {
 			column = col;
 		}
 		
-		/**
+		*//**
 		 * Compares two rows (type String[]) using the specified
 		 * column entry.
 		 * @param obj1 First row to compare
 		 * @param obj2 Second row to compare
 		 * @return negative if obj1 less than obj2, positive if
 		 * 			obj1 greater than obj2, and zero if equal.
-		 */
+		 *//*
 		public int compare(String[] row1, String[] row2) {
 //			String[] row1 = (String[])obj1;
 //			String[] row2 = (String[])obj2;
@@ -527,7 +528,7 @@ public class Zebra extends ApplicationWindow {
 			return row1[column].compareTo(row2[column]);
 		}
 	}
-
+*/
 	/**
 	 * Closes the application
 	*/
