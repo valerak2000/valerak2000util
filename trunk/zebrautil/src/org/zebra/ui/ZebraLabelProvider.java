@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * This class provides the labels for the person table
+ * This class provides the labels for Zebra table
  */
 public class ZebraLabelProvider implements ITableLabelProvider {
   /**
@@ -27,16 +27,15 @@ public class ZebraLabelProvider implements ITableLabelProvider {
    * @return String
    */
   public String getColumnText(Object element, int columnIndex) {
-    ZebraLabel person = (ZebraLabel) element;
+    ZebraLabel zebras = (ZebraLabel) element;
+ 
     switch (columnIndex) {
     case 0:
-      return person.getName();
+      return zebras.getGoods_name();
     case 1:
-      return Boolean.toString(person.isMale());
+      return zebras.getGoods_barcode();
     case 2:
-      return AgeRange.INSTANCES[person.getAgeRange().intValue()];
-    case 3:
-      return person.getShirtColor().toString();
+      return zebras.getNumber_copies().toString();
     }
     return null;
   }
