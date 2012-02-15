@@ -47,6 +47,7 @@ import org.zebra.util.FormPrintUnilever;
 public class Zebra extends ApplicationWindow {
 	// A static instance to the running application
 	private static Zebra APP;
+	private TableViewer tv;
 
 	// The actions
 	private OpenAction openAction;
@@ -58,12 +59,7 @@ public class Zebra extends ApplicationWindow {
 
 	private static MXMLConfiguration confZebra = null;
 
-//	private Shell shell;
-	private TableViewer tv;
-//	private Table table;
-
 	private static final String[] columnNames = new String[3];
-	private File file = null;
 	private CSV csv = new CSV(';');
 
 	private static HashMap<String, ImageDescriptor> hashImages;
@@ -76,7 +72,7 @@ public class Zebra extends ApplicationWindow {
 	}
 
 	public Zebra() throws ConfigurationException {
-	   super(null);
+		super(null);
 
 	    APP = this;
 
@@ -136,10 +132,10 @@ public class Zebra extends ApplicationWindow {
 
 		// Set the title bar text and the size
 		shell.setText("");
-
+		//reaction on close main window by "close button" 
 		shell.addShellListener(new ShellAdapter() {
 			public void shellClosed(ShellEvent e) {
-				e.doit = closeZebraFile();
+//				e.doit = closeZebraFile();
 			}
 		});
 	}
@@ -152,11 +148,10 @@ public class Zebra extends ApplicationWindow {
 	    // Add the TableViewer
 	    final TableViewer tv = new TableViewer(composite, SWT.FULL_SELECTION);
 	    tv.setContentProvider(new ZebraContentProvider());
-//	    tv.setLabelProvider(new ZebraLabelProvider());
+	    tv.setLabelProvider(new ZebraLabelProvider());
 //	    tv.setSorter(new ZebraViewerSorter());
 
 	    // Set up the table
-//	    Table table = tv.getTable();
 	    createTable(tv, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION | 
                 		SWT.V_SCROLL | SWT.H_SCROLL);
 
@@ -214,30 +209,14 @@ public class Zebra extends ApplicationWindow {
 	protected void addTableContents(Object[] items) {
 		//обнулить таблицу
 		tv.getTable().setItemCount(0);
+		//назначить новые данные таблице
+		tv.setInput(ZebraTableModel.INSTANCE.getLabels());  
 
-        for(int i = 0; i < items.length; i++) {
+/*        for(int i = 0; i < items.length; i++) {
 	        String[] item = (String[])items[i];
 	        TableItem ti = new TableItem(tv.getTable(), SWT.NONE);
 	        ti.setText(item);
-	    }
-	}
-
-	/**
-	 * Converts an encoded <code>String</code> to a String array representing a table entry.
-	 */
-	private String[] decodeLine(String line) {
-		if(line == null) return null;
-		
-		String[] parsedLine = new String[tv.getTable().getColumnCount()];
-		Iterator<String> e = csv.parse(line).iterator();
-    	int i = 0;
-
-		while(e.hasNext() && i < tv.getTable().getColumnCount()) {
-			parsedLine[i] = e.next().toString().trim();
-			i++;
-		}
-
-		return parsedLine;
+	    }*/
 	}
 
 	/**
@@ -364,9 +343,6 @@ public class Zebra extends ApplicationWindow {
 	}*/
 
 	public void choiceZebraFile() {
-		//закрыть старый файл
-		closeZebraFile();
-
 		FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
 
 		fileDialog.setFilterExtensions(new String[] {"*.csv;", "*.*"});
@@ -439,19 +415,12 @@ public class Zebra extends ApplicationWindow {
 		Arrays.sort(tableInfo, new RowComparator(0));
 */		//загрузить массив в грид
 //		addTableContents(tableInfo);
-        tv.setInput(ZebraTableModel.INSTANCE.getLabels());  
+
+		tv.setInput(ZebraTableModel.INSTANCE.getLabels());  
 
         getShell().setCursor(null);
 		waitCursor.dispose();
 	
-	}
-
-	public boolean closeZebraFile() {
-		//обнулить таблицу
-		tv.getTable().setItemCount(0); 
-        file = null;
-
-        return true;
 	}
 
 	public boolean printZebraFile() {

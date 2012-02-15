@@ -21,6 +21,7 @@ public enum ZebraTableModel {
     INSTANCE;  
 	private CSV csv = new CSV(';');
     private List<ZebraLabel> labels;  
+	private File file = null;
 
   /**
    * Constructs a PlayerTableModel Fills the model with data
@@ -30,17 +31,13 @@ public enum ZebraTableModel {
     	// Image here some fancy database access to read the persons and to  
     	// put them into the model  
     	labels.add(new ZebraLabel("Rainer", "Zufall", 1));  
-    	labels.add(new ZebraLabel("Reiner", "Babbel", 1));  
-    	labels.add(new ZebraLabel("Marie", "Dortmund", 1));  
-    	labels.add(new ZebraLabel("Holger", "Adams", 1));  
-    	labels.add(new ZebraLabel("Juliane", "Adams", 1));
-    	labels.clear();
     }  
 
 	public List<ZebraLabel> getLabels() {  
 		return labels;  
 	}  
 	private void loadZebraFile(String name) {	
+    	labels.clear();
 		if(name == null) return;
 		file = new File(name);
 
@@ -129,4 +126,31 @@ public enum ZebraTableModel {
 			return row1[column].compareTo(row2[column]);
 		}
 	}
+
+	/**
+	 * Converts an encoded <code>String</code> to a String array representing a table entry.
+	 */
+	private String[] decodeLine(String line) {
+		if(line == null) return null;
+		
+		String[] parsedLine = new String[tv.getTable().getColumnCount()];
+		Iterator<String> e = csv.parse(line).iterator();
+    	int i = 0;
+
+		while(e.hasNext() && i < tv.getTable().getColumnCount()) {
+			parsedLine[i] = e.next().toString().trim();
+			i++;
+		}
+
+		return parsedLine;
+	}
+
+	public boolean closeZebraFile() {
+		//обнулить таблицу
+		tv.getTable().setItemCount(0); 
+        file = null;
+
+        return true;
+	}
+
 }
