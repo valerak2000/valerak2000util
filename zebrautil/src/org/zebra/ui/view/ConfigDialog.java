@@ -1,4 +1,4 @@
-package org.zebra.ui;
+package org.zebra.ui.view;
 
 //import org.apache.commons.configuration.XMLConfiguration;
 //import org.apache.commons.configuration.Configuration;
@@ -7,6 +7,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.library.config.MXMLConfiguration;
+import org.zebra.ui.Zebra;
 
 
 public class ConfigDialog {

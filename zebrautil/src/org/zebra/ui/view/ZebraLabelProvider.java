@@ -1,4 +1,4 @@
-package org.zebra.ui;
+package org.zebra.ui.view;
 
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;

@@ -1,28 +1,29 @@
-package org.zebra.ui;
+package org.zebra.ui.view;
 
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.zebra.ui.Zebra;
 
 /**
- * This action class responds to close zebra-format a file
+ * This action class responds to print zebra-format a file
  */
-public class CloseAction extends Action {
+public class PrintAction extends Action {
 	/**
 	 * CloseAction constructor
    	*/
-	public CloseAction() {
-		super(Zebra.getApp().getConfZebra().getMString("Close_zebra_file"), Zebra.getApp().getImageFor("close"));
+	public PrintAction() {
+		super(Zebra.getApp().getConfZebra().getMString("Print_zebra_file"), Zebra.getApp().getImageFor("print"));
  /*   setDisabledImageDescriptor(ImageDescriptor.createFromFile(OpenAction.class,
         "/images/disabledOpen.gif"));*/
-		setToolTipText("Close_zebra_file");
+		setToolTipText("Print_zebra_file");
 	}
 
 	/**
 	 * Close an zebra-format file
 	 */
 	public void run() {
-		Zebra.getApp().closeZebraFile();
+		Zebra.getApp().printZebraFile();
 	}
 }
