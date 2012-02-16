@@ -1,6 +1,7 @@
-package org.zebra.ui;
+package org.zebra.ui.view;
 
 import org.eclipse.jface.action.*;
+import org.zebra.ui.Zebra;
 
 /**
  * This action class exits the application

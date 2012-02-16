@@ -1,4 +1,4 @@
-package org.zebra.ui;
+package org.zebra.ui.model;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +13,7 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.library.csv.CSV;
+import org.zebra.ui.view.ZebraLabel;
 
 /**
  * This class contains the data model for the ZebraTable

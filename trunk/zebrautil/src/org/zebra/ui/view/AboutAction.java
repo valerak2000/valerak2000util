@@ -1,8 +1,9 @@
-package org.zebra.ui;
+package org.zebra.ui.view;
 
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.zebra.ui.Zebra;
 
 /**
  * This action class shows an About box
