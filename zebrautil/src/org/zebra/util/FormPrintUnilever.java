@@ -31,8 +31,7 @@ public class FormPrintUnilever {
 				System.out.println(prnName + " is not found!");
 	
 				return;
-			}
-			else
+			} else
 				prnForm(csv, new BufferedReader(new FileReader(fileName)));
 		} catch (FileNotFoundException fnfe) {
 			// TODO Auto-generated catch block
@@ -73,12 +72,12 @@ public class FormPrintUnilever {
 				//кодировка 1251, плотность печати 11
 				s = s + confZebra.getString("ZebraPrintFormHeader");
 
-				for(Iterator<String> e = csv.parse(line).iterator(); e.hasNext(); ) {
-		    		switch(i++) {
+				for (Iterator<String> e = csv.parse(line).iterator(); e.hasNext();) {
+		    		switch (i++) {
 		    		case 0:
 		    			nameGoodsCSV = e.next().toString().trim();
 		    			//форматим строку
-		    			if(nameGoodsCSV.length() >= 30) {
+		    			if (nameGoodsCSV.length() >= 30) {
 		    				nameGoods = nameGoodsCSV.substring(0, 30)
 		    						   .concat("\\&")
 		    						   .concat(nameGoodsCSV.substring(30, nameGoodsCSV.length() >= 60 ? 60: nameGoodsCSV.length()));
@@ -107,7 +106,7 @@ public class FormPrintUnilever {
 							numCpy = 0;
 						}
 	
-		    	    	if(numCpy > 1)
+		    	    	if (numCpy > 1)
 			    			s = s.concat(confZebra.getString("ZebraPrintFormNCPY").replace("%NUMCPY%", Integer.toString(numCpy)));
 //		    	    		s = s.concat("^PQ" + numCpy + "\r\n");
 		    		}

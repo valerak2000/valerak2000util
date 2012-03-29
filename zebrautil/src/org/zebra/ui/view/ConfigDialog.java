@@ -99,7 +99,7 @@ public class ConfigDialog {
 
 		int numItems = Math.min(values.length, itemInfo.length);
 
-		for(int i = 0; i < numItems; i++) {
+		for (int i = 0; i < numItems; i++) {
 			values[i] = itemInfo[i];
 		}	
 	}
@@ -116,8 +116,8 @@ public class ConfigDialog {
 
 		Display display = shell.getDisplay();
 
-		while(!shell.isDisposed()){
-			if(!display.readAndDispatch())
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
 				display.sleep();
 		}
 		
