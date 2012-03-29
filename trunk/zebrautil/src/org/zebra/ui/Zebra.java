@@ -107,7 +107,7 @@ public class Zebra extends ApplicationWindow {
 			columnNames[0] = confZebra.getString("Goods_name");
 			columnNames[1] = confZebra.getString("Goods_barcode");
 			columnNames[2] = confZebra.getString("Number_copies");
-		} catch(ConfigurationException cex)	{
+		} catch (ConfigurationException cex) {
 		    // something went wrong, e.g. the file was not found
 			showError(cex.getMessage());
 
@@ -183,7 +183,7 @@ public class Zebra extends ApplicationWindow {
 		Table table = tv.getTable();
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		for(int i = 0; i < columnNames.length; i++) {
+		for (int i = 0; i < columnNames.length; i++) {
 		    createTableColumn(table, SWT.NONE, columnNames[i], 150);
 		}
 
@@ -435,7 +435,7 @@ public class Zebra extends ApplicationWindow {
 
 	public boolean printZebraFile() {
 		//проверить выбран ли файл?
-		if(file != null && file.exists()) {
+		if (file != null && file.exists()) {
 			PrintDialog dialog = new PrintDialog(getShell());
 			PrinterData prnSel = dialog.open();
 			new FormPrintUnilever(this, file.getAbsolutePath(), prnSel.name);
@@ -458,7 +458,7 @@ public class Zebra extends ApplicationWindow {
 
 		values = dialog.open();
 
-		if(values != null) {
+		if (values != null) {
 			//записать изменения в config
 			confZebra.setProperty("ZebraPrintFormName", values[0].replace(",", "\\,"));
 			confZebra.setProperty("ZebraPrintFormEAN", values[1].replace(",", "\\,"));
@@ -468,7 +468,7 @@ public class Zebra extends ApplicationWindow {
 //				confZebra.setOutputProperty(OutputKeys.INDENT, "yes");
 				confZebra.save(stringWriter);
 				System.out.println(stringWriter.toString());
-			} catch(ConfigurationException cex) {
+			} catch (ConfigurationException cex) {
 			    // something went wrong, e.g. the file was not found
 				showError(cex.getMessage());
 			}
@@ -535,7 +535,7 @@ public class Zebra extends ApplicationWindow {
 	public static void main(String[] args) throws FileNotFoundException, PrintException, IOException, ConfigurationException {
 //		Zebra appZebra = new Zebra();
 
-		if(args.length > 0) {
+		if (args.length > 0) {
 //			new FormPrintUnilever(appZebra, args[0], null);
 		}
 		else {

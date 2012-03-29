@@ -23,8 +23,7 @@ public class ZebraLabel {
         this.number_copies = number_copies;  
     }  
   
-    public void addPropertyChangeListener(String propertyName,  
-            PropertyChangeListener listener) {  
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {  
         propertyChangeSupport.addPropertyChangeListener(propertyName, listener);  
     }  
   

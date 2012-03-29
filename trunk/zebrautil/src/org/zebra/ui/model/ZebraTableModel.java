@@ -39,7 +39,7 @@ public enum ZebraTableModel {
 	}  
 	private void loadZebraFile(String name) {	
     	labels.clear();
-		if(name == null) return;
+		if (name == null) return;
 		file = new File(name);
 
 		FileReader fileReader = null;
@@ -51,7 +51,7 @@ public enum ZebraTableModel {
 			bufferedReader = new BufferedReader(fileReader);
 			String nextLine = bufferedReader.readLine();
 
-			while(nextLine != null) {
+			while (nextLine != null) {
 				String[] newData = new String[data.length + 1];
 				System.arraycopy(data, 0, newData, 0, data.length);
 				newData[data.length] = nextLine;
@@ -61,16 +61,15 @@ public enum ZebraTableModel {
 
 			bufferedReader.close();
 			fileReader.close();
-		} catch(FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			showError(confZebra.getString("File_not_found") + "\n" + file.getName());
 
 			return;
-		} catch(IOException ioe) {
+		} catch (IOException ioe) {
 			showError(confZebra.getString("IO_error_read") + "\n" + file.getName());
 
 			return;
 		} finally {
-		
 /*			if(fileReader != null) {
 				try {
 					fileReader.close();
@@ -84,12 +83,12 @@ public enum ZebraTableModel {
         String[][] tableInfo = new String[data.length][table.getColumnCount()];
 		int writeIndex = 0;
 
-		for(int i = 0; i < data.length; i++) {
+		for (int i = 0; i < data.length; i++) {
 			String[] line = decodeLine(data[i]);
 			if (line != null) tableInfo[writeIndex++] = line;
 		}
 		//обрезать пустой кусок массива 
-		if(writeIndex != data.length) {
+		if (writeIndex != data.length) {
 			String[][] result = new String[writeIndex][table.getColumnCount()];
 			System.arraycopy(tableInfo, 0, result, 0, writeIndex);
 			tableInfo = result;
@@ -132,13 +131,13 @@ public enum ZebraTableModel {
 	 * Converts an encoded <code>String</code> to a String array representing a table entry.
 	 */
 	private String[] decodeLine(String line) {
-		if(line == null) return null;
+		if (line == null) return null;
 		
 		String[] parsedLine = new String[tv.getTable().getColumnCount()];
 		Iterator<String> e = csv.parse(line).iterator();
     	int i = 0;
 
-		while(e.hasNext() && i < tv.getTable().getColumnCount()) {
+		while (e.hasNext() && i < tv.getTable().getColumnCount()) {
 			parsedLine[i] = e.next().toString().trim();
 			i++;
 		}
@@ -153,5 +152,4 @@ public enum ZebraTableModel {
 
         return true;
 	}
-
 }
