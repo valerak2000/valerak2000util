@@ -241,11 +241,13 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
         }
     }
 
- 	if (ndd) {
+ 	if (ndd && ticket != -1) {
     	//изменить ордер - выставить стоп и профит
+    	int cntAttempt = 10;
     	Repeat = true;
 
-    	while (Repeat) {
+    	while (Repeat && cntAttempt > 0) {
+    		cntAttempt--;
     		//обновить цены
         	RefreshRates();
 
@@ -267,6 +269,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
             	tp = 0;
         	}
 
+// && (sl != OrderStopLoss() && tp != OrderTakeProfit())
         	if (IsTradeAllowed()) {
         		if (OrderModify(ticket, OrderOpenPrice(), sl, tp, CLR_NONE) == true) {
             		Repeat = false;
@@ -296,30 +299,37 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 
 //закрыть ордер и локирующую позицию
 bool closeOrder(int ticket, double lots, double price, int slipPage, color clrMarker) {
-	//проверить есть ли локирующий ордер
-	int opposite = findLockOrder(ticket);
+	if (OrderClose(ticket, lots, price, slipPage, clrMarker) == true) {
+		//проверить есть ли локирующий ордер
+		int opposite = findLockOrder(ticket);
 	
-	if (opposite == -1) {
-		//лока нет
-		if (OrderClose(ticket, lots, price, slipPage, clrMarker) == false) {
-			chkError(GetLastError());
+		if (opposite != -1) {
+			//есть лок - установить ему профит
+			string comment = OrderComment();
+			int endTicket = StringFind(comment, "#Tp#");
+       		double tp = StrToDouble(StringSubstr(comment, endTicket + 4));
 
-			return (false);
-		}
+			if (OrderModify(opposite, OrderOpenPrice(), 0, tp, CLR_NONE) == false) {
+       			chkError(GetLastError());
+    		}
+    	}
 	} else {
-		//есть лок
-		if (OrderCloseBy(ticket, opposite, clrMarker) == false) {
-			chkError(GetLastError());
+		chkError(GetLastError());
 
-			return (false);
-		}
+		return (false);
 	}
 
+	/*		if (OrderCloseBy(ticket, opposite, clrMarker) == false) {
+				chkError(GetLastError());
+
+				return (false);
+			}
+	*/	
 	return (true);
 }
 
 //номер бара последнего открытого ордера
-int getNumberOfBarLastorder(string symb = "", int tf = 0, int cmd = -1, int magicNum = -1) {
+int getNumberOfBarLastOrder(string symb = "", int tf = 0, int cmd = -1, int magicNum = -1) {
 	datetime tmOpenOrder;
 
 	if (symb == "")
@@ -346,56 +356,113 @@ int getNumberOfBarLastorder(string symb = "", int tf = 0, int cmd = -1, int magi
 int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeriod, int teethShift, int lipsPeriod,
 					   int lipsShift, double dltAligBuy, double dltAligSell) {
 	int signal = 0;
-	double valMAGr, valMARd, valMARd1, valMAGr1, valMABl, valMABl1; 
+	double valMAGrNow, valMARdNow, valMARdHist, valMAGrHist, valMABlNow, valMABlHist; 
 
 	if (symb == "")
 		symb = Symbol();
 
-	valMAGr = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_SMMA, PRICE_CLOSE, MODE_GATORLIPS, 1); // зелёная
-	valMARd = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_SMMA, PRICE_CLOSE, MODE_GATORTEETH, 1); // красная линия
-	valMARd1 = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_SMMA, PRICE_CLOSE, MODE_GATORTEETH, 2); // красная
-	valMAGr1 = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_SMMA, PRICE_CLOSE, MODE_GATORLIPS, 2); // зелёная
-	valMABl = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_SMMA, PRICE_CLOSE, MODE_GATORJAW, 1); // синия линия
-	valMABl1 = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_SMMA, PRICE_CLOSE, MODE_GATORJAW, 2); // синия линия
+	//MODE_SMMA, PRICE_CLOSE
+	//MODE_LWMA, PRICE_WEIGHTED
+	valMAGrNow = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_LWMA, PRICE_WEIGHTED, MODE_GATORLIPS, 0); // зелёная -3
+	valMARdNow = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_LWMA, PRICE_WEIGHTED, MODE_GATORTEETH, 0); // красная линия -4
+	valMARdHist = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_LWMA, PRICE_WEIGHTED, MODE_GATORTEETH, 0 + 1); // красная
+	valMAGrHist = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_LWMA, PRICE_WEIGHTED, MODE_GATORLIPS, 0 + 1); // зелёная
+	valMABlNow = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_LWMA, PRICE_WEIGHTED, MODE_GATORJAW, 0); // синия линия -8
+	valMABlHist = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_LWMA, PRICE_WEIGHTED, MODE_GATORJAW, 0 + 1); // синия линия
 
+	//индикация тренда "было"
+	ObjectDelete("aligHistUp_object");
+	ObjectCreate("aligHistUp_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("aligHistUp_object", OBJPROP_CORNER, 1);
+	ObjectSet("aligHistUp_object", OBJPROP_XDISTANCE, 37);
+	ObjectSet("aligHistUp_object", OBJPROP_YDISTANCE, 12);
+
+	ObjectDelete("aligHistDown_object");
+	ObjectCreate("aligHistDown_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("aligHistDown_object", OBJPROP_CORNER, 1);
+	ObjectSet("aligHistDown_object", OBJPROP_XDISTANCE, 37);
+	ObjectSet("aligHistDown_object", OBJPROP_YDISTANCE, 17);
+
+	if (valMARdHist > valMAGrHist) {
+		ObjectSetText("aligHistUp_object", CharToStr(218), 10, "Wingdings");//
+		ObjectSet("aligHistUp_object", OBJPROP_COLOR, Red);
+
+		ObjectSetText("aligHistDown_object", CharToStr(218), 10, "Wingdings");//
+		ObjectSet("aligHistDown_object", OBJPROP_COLOR, Lime);
+	} else {
+		ObjectSetText("aligHistUp_object", CharToStr(217), 10, "Wingdings");//
+		ObjectSet("aligHistUp_object", OBJPROP_COLOR, Lime);
+
+		ObjectSetText("aligHistDown_object", CharToStr(217), 10, "Wingdings");//
+		ObjectSet("aligHistDown_object", OBJPROP_COLOR, Red);
+	}
+	//индикация тренда "сейчас"
+	ObjectDelete("aligNowUp_object");
+	ObjectCreate("aligNowUp_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("aligNowUp_object", OBJPROP_CORNER, 1);
+	ObjectSet("aligNowUp_object", OBJPROP_XDISTANCE, 30);
+	ObjectSet("aligNowUp_object", OBJPROP_YDISTANCE, 12);
+
+	ObjectDelete("aligNowDown_object");
+	ObjectCreate("aligNowDown_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("aligNowDown_object", OBJPROP_CORNER, 1);
+	ObjectSet("aligNowDown_object", OBJPROP_XDISTANCE, 30);
+	ObjectSet("aligNowDown_object", OBJPROP_YDISTANCE, 17);
+
+	if (valMARdNow > valMAGrNow) {
+		ObjectSetText("aligNowUp_object", CharToStr(218), 10, "Wingdings");//
+		ObjectSet("aligNowUp_object", OBJPROP_COLOR, Red);
+
+		ObjectSetText("aligNowDown_object", CharToStr(218), 10, "Wingdings");//
+		ObjectSet("aligNowDown_object", OBJPROP_COLOR, Lime);
+	} else {
+		ObjectSetText("aligNowUp_object", CharToStr(217), 10, "Wingdings");//
+		ObjectSet("aligNowUp_object", OBJPROP_COLOR, Lime);
+
+		ObjectSetText("aligNowDown_object", CharToStr(217), 10, "Wingdings");//
+		ObjectSet("aligNowDown_object", OBJPROP_COLOR, Red);
+	}
+	//Print("Gr=", valMAGr, " Red=", valMARd, " Gr1=", valMAGr1, " Red1=", valMARd1, " Bl=", valMABl, " Bl1=", valMABl1);
 	//up CCI > 70 или алиг красн пересекает зеленую снизу вверх, то покупать
 	//down CCI < -70 или алиг красн пересекает зеленую сверху вниз, то продавать
 
-/*    if (valMAGr - valMARd >= NormalizeDouble(dltAligBuy * Point, Digits)
-    		&& valMARd1 - valMAGr1 < NormalizeDouble(dltAligBuy * Point, Digits)) {
+    if (valMAGrNow - valMARdNow >= NormalizeDouble(dltAligBuy * Point, Digits)
+    		&& ((valMARdHist - valMAGrHist >= NormalizeDouble(dltAligBuy * Point, Digits)))) {
+    			//|| (valMAGr1 - valMARd1 >= NormalizeDouble(dltAligBuy * Point, Digits)))
     	//зеленая над красной и пред. зеленая под красной
-        signal = signal | sgnlBuyOpen;
+        signal = signal | sgnlBuyOpen | sgnlSellClose;
 	}
 
-    if (valMARd - valMAGr <= NormalizeDouble(dltAligSell * Point, Digits) 
-    		&& valMAGr1 - valMARd1 < NormalizeDouble(dltAligSell * Point, Digits)) {
+    if (valMARdNow - valMAGrNow >= NormalizeDouble(dltAligSell * Point, Digits) 
+    		&& ((valMAGrHist - valMARdHist >= NormalizeDouble(dltAligSell * Point, Digits)))) {
+    			//|| (valMARd1 - valMAGr1 >= NormalizeDouble(dltAligSell * Point, Digits)))
     	//зеленая под красной и пред. зеленая над красной
-        signal = signal | sgnlSellOpen;
+        signal = signal | sgnlSellOpen | sgnlBuyClose;
 	}
-*/
+
 	//
-    if (valMAGr - valMABl >= NormalizeDouble(dltAligBuy * Point, Digits)
-    		&& valMAGr1 - valMABl1 < NormalizeDouble(dltAligBuy * Point, Digits)) {
+    if (valMAGrNow - valMABlNow >= NormalizeDouble(dltAligBuy * Point, Digits)
+    		&& valMAGrHist - valMABlHist < NormalizeDouble(dltAligBuy * Point, Digits)) {
     	//зеленая над синей и предыдущая зеленая под синей
 		signal = signal | sgnlBuyOpen | sgnlSellClose;
     }
 
-    if (valMAGr - valMABl <= NormalizeDouble(dltAligSell * Point, Digits)
-    		&& valMAGr1 - valMABl1 > NormalizeDouble(dltAligSell * Point, Digits)) {
+    if (valMAGrNow - valMABlNow <= NormalizeDouble(dltAligSell * Point, Digits)
+    		&& valMAGrHist - valMABlHist > NormalizeDouble(dltAligSell * Point, Digits)) {
     	//зеленая под синей и пред. зеленая над синей
 		signal = signal | sgnlSellOpen | sgnlBuyClose;
    	}
 
-    if (valMAGr - valMARd <= NormalizeDouble(dltAligBuy * Point, Digits)
-    		&& valMAGr1 - valMARd1 > NormalizeDouble(dltAligBuy * Point, Digits)) {
+    if (valMAGrNow - valMARdNow <= NormalizeDouble(dltAligBuy * Point, Digits)
+    		&& valMAGrHist - valMARdHist > NormalizeDouble(dltAligBuy * Point, Digits)) {
     	//зеленая под красной и пред. зеленая над красной
-        signal = signal | sgnlBuyClose;
+        signal = signal | sgnlSellOpen | sgnlBuyClose;
     }
 
-	if (valMAGr - valMARd >= NormalizeDouble(dltAligSell * Point, Digits)
-			&& valMAGr1 - valMARd1 < NormalizeDouble(dltAligSell * Point, Digits)) {
+	if (valMAGrNow - valMARdNow >= NormalizeDouble(dltAligSell * Point, Digits)
+			&& valMAGrHist - valMARdHist < NormalizeDouble(dltAligSell * Point, Digits)) {
     	//зеленая над красной и пред. зеленая под красной
-        signal = signal | sgnlSellClose;
+        signal = signal | sgnlBuyOpen | sgnlSellClose;
 	}
 
 /*
@@ -437,20 +504,21 @@ int chkLongSignal(string symb) {
 	if (symb == "")
 		symb = Symbol();
 
-//	if(TimeHour(TimeCurrent()) > tradeTime)
-//		cantrade=true;
+/*	if(TimeHour(TimeCurrent()) > tradeTime)
+		cantrade=true;
 
-//    if(TimeHour(TimeCurrent()) == tradeTime && cantrade) {
+    if(TimeHour(TimeCurrent()) == tradeTime && cantrade) {
+*/
     	if (Open[t1] - Open[t2] > NormalizeDouble(delta_S * Point, Digits)) {
         	//condition is fulfilled, enter a short position:
-			signal = signal | sgnlSellOpen | sgnlBuyClose;
+			signal = signal | sgnlSellOpen;// | sgnlBuyClose;
         
         	cantrade = false; //prohibit repeated trade until the next bar
     	}
 
       	if (Open[t2] - Open[t1] > NormalizeDouble(delta_L * Point, Digits)) {
         	// condition is fulfilled, enter a long position
-			signal = signal | sgnlBuyOpen | sgnlSellClose;
+			signal = signal | sgnlBuyOpen;// | sgnlSellClose;
         
         	cantrade = false;
       	}
@@ -462,31 +530,73 @@ int chkLongSignal(string symb) {
 //проверка сигналов Tarzan
 int chkTarzanSignal(string symb) {
 	int signal = 0;
+	bool destUpHist, destUpNow;
 
 	if (symb == "")
 		symb = Symbol();
+	//настоящее
+    double valTarzanRsi = iCustom(symb, 0, "TARZAN", 0, 5, 6, 50, 3, 5, 0, 0);
+    double valTarzanMa = iCustom(symb, 0, "TARZAN", 0, 5, 6, 50, 3, 5, 1, 0);
 
-    double valTarzan = iCustom(symb, 0, "TARZAN", 0, 5, 4, 50, 1, 5, 2, 0);
-    double valTarzan1 = iCustom(symb, 0, "TARZAN", 0, 5, 4, 50, 1, 5, 2, 1);
+	if (valTarzanRsi > valTarzanMa)
+		destUpNow = true;
+	else
+		destUpNow = false;
+	//прошлое
+    double valTarzanRsi1 = iCustom(symb, 0, "TARZAN", 0, 5, 6, 50, 3, 5, 0, 1);
+    double valTarzanMa1 = iCustom(symb, 0, "TARZAN", 0, 5, 6, 50, 3, 5, 1, 1);
 
-    if (valTarzan > 50 && valTarzan1 > 50 ) {
+	if (valTarzanRsi1 > valTarzanMa1)
+		destUpHist = true;
+	else
+		destUpHist = false;
+	//индикация состояния
+	//индикация тренда "было"
+	ObjectDelete("trandHist_object");
+	ObjectCreate("trandHist_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("trandHist_object", OBJPROP_CORNER, 1);
+	ObjectSet("trandHist_object", OBJPROP_XDISTANCE, 20);
+	ObjectSet("trandHist_object", OBJPROP_YDISTANCE, 15);
+
+	if (destUpHist) {
+		ObjectSetText("trandHist_object", CharToStr(236), 10, "Wingdings");//
+		ObjectSet("trandHist_object", OBJPROP_COLOR, Lime);
+	} else {
+		ObjectSetText("trandHist_object", CharToStr(238), 10, "Wingdings");//
+		ObjectSet("trandHist_object", OBJPROP_COLOR, Red);
+	}
+	//индикация тренда "сейчас"
+	ObjectCreate("trandNow_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("trandNow_object", OBJPROP_CORNER, 1);
+	ObjectSet("trandNow_object", OBJPROP_XDISTANCE, 10);
+	ObjectSet("trandNow_object", OBJPROP_YDISTANCE, 15);
+
+	if (destUpNow) {
+		ObjectSetText("trandNow_object", CharToStr(236), 10, "Wingdings");//
+		ObjectSet("trandNow_object", OBJPROP_COLOR, Lime);
+	} else {
+		ObjectSetText("trandNow_object", CharToStr(238), 10, "Wingdings");//
+		ObjectSet("trandNow_object", OBJPROP_COLOR, Red);
+	}
+	//рассчет сигнала
+    if (destUpHist && destUpNow) {
     	//устойчивый восходящий тренд
-		signal = signal | sgnlBuyOpen;// | sgnlSellClose;
+		signal = signal | sgnlBuyOpen | sgnlSellClose;
     }
 
-    if (valTarzan < 50 && valTarzan1 < 50 ) {
+    if (!destUpHist && !destUpNow) {
     	//устойчивый нисходящий тренд
-		signal = signal | sgnlSellOpen;// | sgnlBuyClose;
+		signal = signal | sgnlSellOpen | sgnlBuyClose;
     }
 
-    if (valTarzan < 50 && valTarzan1 > 50 ) {
+    if (!destUpHist && destUpNow) {
     	//тренд повернул вверх
-		signal = signal | sgnlSellClose;
+		signal = signal | sgnlBuyOpen | sgnlSellClose;
     }
 
-    if (valTarzan > 50 && valTarzan1 < 50 ) {
+    if (destUpHist && !destUpNow) {
     	//тренд переломился вниз
-		signal = signal | sgnlBuyClose;
+		signal = signal | sgnlSellOpen | sgnlBuyClose;
     }
 
 	return (signal);
@@ -497,7 +607,6 @@ int findLockOrder(int ticket) {
 	string commentLocked, commentChk;
 
    	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
-
 		switch(OrderType()) {
 		case OP_BUY:
 			commentLocked = "LckdB#" + DoubleToStr(ticket, 0);
@@ -514,8 +623,9 @@ int findLockOrder(int ticket) {
   		for (int i = 0; i < OrdersTotal(); i++) {
     		if (OrderSelect(i, SELECT_BY_POS) == true) {
     			commentChk = OrderComment();
+    			int endTicket = StringFind(commentChk, "#Tp#");
 
-        		if (commentChk == commentLocked) {
+        		if (StringSubstr(commentChk, 0, endTicket - 1) == commentLocked) {
         			return (OrderTicket());
         		}
         	} else {
@@ -530,17 +640,24 @@ int findLockOrder(int ticket) {
 }
 
 //найти локируюмый ордер для данной позиции
-int findLockedOrder(int ticket) {
+int findLockedOrder(int ticket, string commentLock) {
 	int ticketlckd = -1;
-	string commentLock;
 
-   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
-       	commentLock = OrderComment();
-
-		if (StringFind(commentLock, "Lckd") == -1) {
-			//это лок
-			ticketlckd = StrToInteger(StringSubstr(commentLock, 7));
+	if (commentLock == "") {
+	   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
+	       	commentLock = OrderComment();
 		}
+	}
+
+	if (StringFind(commentLock, "Lckd") != -1) {
+		//это лок
+		ticketlckd = StrToInteger(StringSubstr(commentLock, 6, 10));
+
+	   	if (OrderSelect(ticketlckd, SELECT_BY_TICKET, MODE_TRADES) == false) {
+	   		//привязка устарела
+	   		ticketlckd = -1;
+	   	} else {
+	   	}
 	}
 
 	return (ticketlckd);
@@ -552,7 +669,7 @@ bool createIndicator(string expertName) {
 	ObjectSet("labelproj_object", OBJPROP_CORNER, 1);
 	ObjectSet("labelproj_object", OBJPROP_XDISTANCE, 50);
 	ObjectSet("labelproj_object", OBJPROP_YDISTANCE, 6);
-	ObjectSetText("labelproj_object", expertName, 10, "@Luxi Mono");
+	ObjectSetText("labelproj_object", expertName, 8, "@Luxi Mono");
 	ObjectSet("labelproj_object", OBJPROP_COLOR, White);
 }
 
@@ -572,6 +689,6 @@ bool changeIndicatorState(string text) {
    clrIndx++;
    Print(clrIndx);
 */
-	ObjectSetText("labelproj_object", text, 10, "@Luxi Mono");
+	ObjectSetText("labelproj_object", text, 8, "@Luxi Mono");
 //	ObjectSet("indicator_object", OBJPROP_COLOR, Green); //цвета DarkGreen Green ForestGreen LimeGreen Lime - Red Maroon - Black
 }
