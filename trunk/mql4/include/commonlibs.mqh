@@ -5,10 +5,11 @@
 //+------------------------------------------------------------------+
 #import "commonlibs.ex4"
 bool chkError(int error);
-bool chkMoney(string symb, int cmd, double lot = 0.01);
+bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01);
 
 double getSl(string symb, int cmd, double stopLossKoef, int stopLoss);
 double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit);
+bool setProfitToLockOrder(int ticket);
 bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1, bool ndd = true, 
 			   double stopLossKoef = 0.0, double stopLoss = 0.0, double takeProfitKoef = 0.0, double takeProfit = 0.0,
 			   bool dsplMsg = true, string comment = "");
@@ -22,6 +23,7 @@ int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeri
 					   double dltAligBuy, double dltAligSell);
 int chkLongSignal(string symb);
 int chkTarzanSignal(string symb);
+int chkPatternSignal(string symb);
 
 bool createIndicator(string expertName);
 bool closeIndicator();
