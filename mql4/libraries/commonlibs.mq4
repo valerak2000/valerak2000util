@@ -75,11 +75,15 @@ bool chkError(int error) {
 }
 
 //проверка доступных средств
-bool chkMoney(string symb, int cmd, double lot = 0.01) {
+bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 	if (symb == "")
 		symb = Symbol();
-
-	return (!(AccountFreeMarginCheck(symb, cmd, lot) <= 0 || GetLastError() == ERR_NOT_ENOUGH_MONEY));
+//AccountFreeMargin()
+//средства / залог * 100 = уровень
+	if ((AccountEquity() / AccountBalance()) * 100 <= marginPercent)
+		return (false);
+	else
+		return (!(AccountFreeMarginCheck(symb, cmd, lot) <= 0 || GetLastError() == ERR_NOT_ENOUGH_MONEY));
 }
 
 //расчет профита
@@ -269,8 +273,8 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
             	tp = 0;
         	}
 
-// && (sl != OrderStopLoss() && tp != OrderTakeProfit())
-        	if (IsTradeAllowed()) {
+//
+        	if (IsTradeAllowed() && (sl != 0 || tp != 0)) {
         		if (OrderModify(ticket, OrderOpenPrice(), sl, tp, CLR_NONE) == true) {
             		Repeat = false;
         		} else {
@@ -284,17 +288,38 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
     }
 
 	if (dsplMsg && ticket > 0)
-		Print("ticket=", ticket, " ndd=", ndd, " comment=", comment,
+		Print("ticket=", ticket,
+//			" ndd=", ndd,
+			" comment=", comment,
 			" spread=", DoubleToStr(MarketInfo(symb, MODE_SPREAD), Digits), 
-      		" stoplevel=", DoubleToStr(MarketInfo(symb, MODE_STOPLEVEL), Digits),
+//      		" stoplevel=", DoubleToStr(MarketInfo(symb, MODE_STOPLEVEL), Digits),
       		" Ask=", DoubleToStr(Ask, Digits), " Bid=", DoubleToStr(Bid, Digits),
-      		" !tp=", DoubleToStr(takeProfit, Digits),
-      		" !sl=", DoubleToStr(stopLoss, Digits),
+//      		" !tp=", DoubleToStr(takeProfit, Digits),
+//      		" !sl=", DoubleToStr(stopLoss, Digits),
       		" tp=", DoubleToStr(tp, Digits),
       		" sl=", DoubleToStr(sl, Digits),
-      		" point=", DoubleToStr(NormalizeDouble(Point, Digits), Digits));
+//      		" point=", DoubleToStr(NormalizeDouble(Point, Digits), Digits),
+//      		" balance=", AccountBalance(),
+//			" margin=", AccountFreeMargin(),
+      		" %=", (AccountEquity() / AccountBalance()) * 100);
+//      		" %=", (AccountFreeMargin() / AccountBalance()) * 100,
 
     return (ticket);
+}
+
+//установить локу его профит
+bool setProfitToLockOrder(int ticket) {
+   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
+		string comment = OrderComment();
+		int endTicketInComment = StringFind(comment, "#Tp#");
+		double tp = StrToDouble(StringSubstr(comment, endTicketInComment + 4));
+
+		if (OrderModify(ticket, OrderOpenPrice(), 0, tp, CLR_NONE) == false) {
+			chkError(GetLastError());
+
+			return (false);
+		}
+	}
 }
 
 //закрыть ордер и локирующую позицию
@@ -303,15 +328,8 @@ bool closeOrder(int ticket, double lots, double price, int slipPage, color clrMa
 		//проверить есть ли локирующий ордер
 		int opposite = findLockOrder(ticket);
 	
-		if (opposite != -1) {
-			//есть лок - установить ему профит
-			string comment = OrderComment();
-			int endTicket = StringFind(comment, "#Tp#");
-       		double tp = StrToDouble(StringSubstr(comment, endTicket + 4));
-
-			if (OrderModify(opposite, OrderOpenPrice(), 0, tp, CLR_NONE) == false) {
-       			chkError(GetLastError());
-    		}
+		if (opposite != -1 && setProfitToLockOrder(opposite) == false) {
+			return (false);
     	}
 	} else {
 		chkError(GetLastError());
@@ -350,6 +368,85 @@ int getNumberOfBarLastOrder(string symb = "", int tf = 0, int cmd = -1, int magi
 
 //	return (iBarShift(symb, tf, tmOpenOrder, true));
 	return (iBarShift(symb, tf, tmOpenOrder, false));
+}
+
+//найти локирующий ордер для данной позиции
+int findLockOrder(int ticket) {
+	string commentLocked, commentChk;
+
+   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
+		switch(OrderType()) {
+		case OP_BUY:
+			commentLocked = "LckdB#" + DoubleToStr(ticket, 0);
+
+			break;
+		case OP_SELL:
+			commentLocked = "LckdS#" + DoubleToStr(ticket, 0);
+
+			break;
+		default:
+			commentLocked = "Noting";
+		}
+
+  		for (int i = 0; i < OrdersTotal(); i++) {
+    		if (OrderSelect(i, SELECT_BY_POS) == true) {
+    			commentChk = OrderComment();
+    			int endTicket = StringFind(commentChk, "#Tp#");
+
+				if (endTicket != -1 && StringSubstr(commentChk, 0, endTicket) == commentLocked) {
+       				return (OrderTicket());
+        		}
+        	} else {
+	    		chkError(GetLastError());
+        	}
+  		}
+	} else {
+		chkError(GetLastError());
+	}
+
+	return (-1);
+}
+
+//найти локируюмый ордер для данной позиции
+int findLockedOrder(int ticket, string commentLock) {
+	int ticketLckd = -1;
+
+	if (commentLock == "") {
+	   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
+	       	commentLock = OrderComment();
+		}
+	}
+
+	if (StringFind(commentLock, "Lckd") != -1) {
+		//это лок
+		int endTicket = StringFind(commentLock, "#Tp#");
+
+		ticketLckd = StrToInteger(StringSubstr(commentLock, 6, endTicket - 6));
+
+	   	if (ticketLckd != -1)
+	   		if (OrderSelect(ticketLckd, SELECT_BY_TICKET) == true && OrderCloseTime() == 0) {
+	   			//ордер не закрыт
+//	   			chkError(GetLastError());
+	   		} else {
+	   			//привязка устарела
+	   			ticketLckd = -1;
+//	   			chkError(GetLastError());
+//				if (ticket == 8)
+//					Print("findLockedOrder=", ticketLckd);
+	   		}
+	}
+
+	return (ticketLckd);
+}
+
+//создать объект "индикатор-работы"
+bool createIndicator(string expertName) {
+	ObjectCreate("labelproj_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("labelproj_object", OBJPROP_CORNER, 1);
+	ObjectSet("labelproj_object", OBJPROP_XDISTANCE, 50);
+	ObjectSet("labelproj_object", OBJPROP_YDISTANCE, 6);
+	ObjectSetText("labelproj_object", expertName, 8, "@Luxi Mono");
+	ObjectSet("labelproj_object", OBJPROP_COLOR, White);
 }
 
 //проверка сигналов аллигатора
@@ -602,75 +699,16 @@ int chkTarzanSignal(string symb) {
 	return (signal);
 }
 
-//найти локирующий ордер для данной позиции
-int findLockOrder(int ticket) {
-	string commentLocked, commentChk;
+//проверка сигналов от шаблонов
+int chkPatternSignal(string symb) {
+//3 последовательных падающих бара: (O=H)>(L=C) причем O1>O2>O3 и C1>C2>C3 - будет расти
+//3 последовательно растущих бара: (O=L)<(H=C) причем O1<O2<O3 и C1<C2<C3 - будет падать
+	int signal = 0;
 
-   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
-		switch(OrderType()) {
-		case OP_BUY:
-			commentLocked = "LckdB#" + DoubleToStr(ticket, 0);
+	if (symb == "")
+		symb = Symbol();
 
-			break;
-		case OP_SELL:
-			commentLocked = "LckdS#" + DoubleToStr(ticket, 0);
-
-			break;
-		default:
-			commentLocked = "Noting";
-		}
-
-  		for (int i = 0; i < OrdersTotal(); i++) {
-    		if (OrderSelect(i, SELECT_BY_POS) == true) {
-    			commentChk = OrderComment();
-    			int endTicket = StringFind(commentChk, "#Tp#");
-
-        		if (StringSubstr(commentChk, 0, endTicket - 1) == commentLocked) {
-        			return (OrderTicket());
-        		}
-        	} else {
-	    		chkError(GetLastError());
-        	}
-  		}
-	} else {
-		chkError(GetLastError());
-	}
-
-	return (-1);
-}
-
-//найти локируюмый ордер для данной позиции
-int findLockedOrder(int ticket, string commentLock) {
-	int ticketlckd = -1;
-
-	if (commentLock == "") {
-	   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
-	       	commentLock = OrderComment();
-		}
-	}
-
-	if (StringFind(commentLock, "Lckd") != -1) {
-		//это лок
-		ticketlckd = StrToInteger(StringSubstr(commentLock, 6, 10));
-
-	   	if (OrderSelect(ticketlckd, SELECT_BY_TICKET, MODE_TRADES) == false) {
-	   		//привязка устарела
-	   		ticketlckd = -1;
-	   	} else {
-	   	}
-	}
-
-	return (ticketlckd);
-}
-
-//создать объект "индикатор-работы"
-bool createIndicator(string expertName) {
-	ObjectCreate("labelproj_object", OBJ_LABEL, 0, 0, 0);
-	ObjectSet("labelproj_object", OBJPROP_CORNER, 1);
-	ObjectSet("labelproj_object", OBJPROP_XDISTANCE, 50);
-	ObjectSet("labelproj_object", OBJPROP_YDISTANCE, 6);
-	ObjectSetText("labelproj_object", expertName, 8, "@Luxi Mono");
-	ObjectSet("labelproj_object", OBJPROP_COLOR, White);
+	return (signal);
 }
 
 //удалить объект "индикатор-работы" 

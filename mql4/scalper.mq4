@@ -25,11 +25,12 @@ extern int maxSpread = 4;
 
 //extern int openDistanceTic = 20; //расстояние между открытиями ордеров (в тиках)
 extern int openDistanceBar = 1; //расстояние между открытиями ордеров (в барах) - имеет больший приоритет. Отсчет от нуля
-extern int minMarginPercent = 30; //Процент свободной маржи от Баланса при котором новые ордера не выставляются
+extern int minMarginPercent = 80; //Процент свободной маржи от Баланса при котором новые ордера не выставляются
 
 //Локер
 extern bool lockUse = false; //использовать локирование
 extern int lockLevel = 10; //уровень локирования позиции
+extern bool lockMangement = true; //использовать управление локами
 
 //Трал
 extern bool trailingUse = false;
@@ -66,11 +67,12 @@ int init() {
         stopLoss *= 10;
         dltAligBuy *= 10;
         dltAligSell *= 10;
+//    	takeProfitKoef *= 10;
+//    	stopLossKoef *= 10;
+     	lockLevel *= 10;
      } else {
     	fiveSign = false;
      	numSign = 1;
-     	takeProfitKoef *= 10;
-     	stopLossKoef *= 10;
      }
 
     if (tradeLot < minLot)
@@ -150,7 +152,8 @@ void doSolveWithOpened(int mrktState) {
         	int ticket = OrderTicket(),
         		cmd = OrderType();
         	string comment = OrderComment();
-        	double prof = OrderProfit(),
+        	double profOrd = OrderProfit(),
+        		   takeProfOrd = OrderTakeProfit(),
         		   lots = OrderLots(),
         		   opPrice = OrderOpenPrice();
 			bool allowLock, thisLock;
@@ -164,8 +167,14 @@ void doSolveWithOpened(int mrktState) {
 			if (StringFind(comment, "Lckd") == -1) {
 				thisLock = false;
 			} else {
+//					if (ticket == 8)
+//						Print("prof=", OrderSelect(3, SELECT_BY_TICKET, MODE_TRADES));
 				if (findLockedOrder(ticket, comment) == -1) {
 					thisLock = false;
+					//проверить установлен ли профит для бывшего лока - если нет то установить его
+					if (takeProfOrd == 0) { // && (takeProfitKoef != 0 || takeProfit != 0)) {
+						setProfitToLockOrder(ticket);
+					}
 				} else {
 					//это лок
 					thisLock = true;
@@ -176,7 +185,7 @@ void doSolveWithOpened(int mrktState) {
 				//это основной ордер
 				switch(cmd) {
 				case OP_BUY:
-        			if (prof >= 0) {
+        			if (profOrd >= 0) {
 	        			if (mrktState & sgnlBuyClose != 0) {
         					//закрыть открытый бай, если есть профит
         					closeOrder(ticket, lots, Bid, slipPage, Yellow);
@@ -186,15 +195,15 @@ void doSolveWithOpened(int mrktState) {
 						//цена меньше допустимой и тренд вниз
 //						Print("BuyLckd=", (mrktState & sgnlSellOpen != 0), " prof=", prof, " if=", opPrice - NormalizeDouble(lockLevel * Point, Digits), " Ask=", Ask);
 
-						if (allowLock && ((opPrice - NormalizeDouble(lockLevel * Point, Digits)) >= Ask)
-								&& (mrktState & sgnlSellOpen != 0)) {	
+						if (allowLock && ((opPrice - NormalizeDouble(lockLevel * Point, Digits)) >= Ask)) {
+								//&& (mrktState & sgnlSellOpen != 0)) {	
 							mkLockOrder(OP_BUY, ticket, magicNum, dsplMsg);
 						}
 					}
 
 					break;
 				case OP_SELL:
-        			if (prof >= 0) {
+        			if (profOrd >= 0) {
         				if (mrktState & sgnlSellClose != 0) {
         					//закрыть открытый sell, если есть профит
         					closeOrder(ticket, lots, Ask, slipPage, Yellow);
@@ -202,8 +211,8 @@ void doSolveWithOpened(int mrktState) {
         			} else {
 						//выставить лок или нет?
 						//цена больше допустимой и тренд вверх
-						if (allowLock && ((opPrice + NormalizeDouble(lockLevel * Point, Digits)) <= Bid)
-								&& (mrktState & sgnlBuyOpen != 0)) {
+						if (allowLock && ((opPrice + NormalizeDouble(lockLevel * Point, Digits)) <= Bid)) {
+								//&& (mrktState & sgnlBuyOpen != 0)) {
 							mkLockOrder(OP_SELL, ticket, magicNum, dsplMsg);
 						}
 					}
@@ -213,26 +222,27 @@ void doSolveWithOpened(int mrktState) {
 				}
 			} else {
 				//это лок -- ориентируемся по направлению тренда
-/*				switch(cmd) {
-				case OP_BUY:
-        			if (prof > 0 && (mrktState & sgnlBuyClose != 0)) {
-    					//закрыть открытый бай, если есть профит
-    					closeOrder(ticket, lots, Bid, slipPage, Yellow);
-        			} else {
-					}
+				if (lockMangement == true) {
+					switch(cmd) {
+					case OP_BUY:
+        				if (profOrd > 0 && (mrktState & sgnlBuyClose != 0)) {
+    						//закрыть открытый бай, если есть профит
+    						closeOrder(ticket, lots, Bid, slipPage, Yellow);
+        				} else {
+						}
 
-					break;
-				case OP_SELL:
-        			if (prof > 0 && (mrktState & sgnlSellClose != 0)) {
-    					//закрыть открытый sell, если есть профит
-    					closeOrder(ticket, lots, Ask, slipPage, Yellow);
-        			} else {
-					}
+						break;
+					case OP_SELL:
+        				if (profOrd > 0 && (mrktState & sgnlSellClose != 0)) {
+    						//закрыть открытый sell, если есть профит
+    						closeOrder(ticket, lots, Ask, slipPage, Yellow);
+        				} else {
+						}
 
-					break;
-				//default:
+						break;
+					//default:
+					}
 				}
-*/
 			}
     		//Трейлинг Профита
     		if (trailingUse) {
@@ -355,10 +365,9 @@ int mkLockOrder(int cmd, int ticket, int magicNum, bool dsplMsg = true) {
 bool chkAllowNewOrder(string symb, int cmd, double lot = 0.01, int magicNum = -1) {
 	if (symb == "")
 		symb = Symbol();
-
-	//не нужно открывать позицию если есть похожая(расстояние лока или профита) по цене в том же направлении
-//	if (getNumberOfBarLastOrder(symb, 0, cmd, magicNum) > openDistanceBar && chkMoney(symb, cmd, lot) == true)
-	if (findLikePriceOrder(symb, cmd, magicNum) == false && chkMoney(symb, cmd, lot) == true)
+	//"текущий профит" должен быть "выше" профита некоторого уже открытого ордера (в том же направлении) на 25%, для текущих цен
+//	if (getNumberOfBarLastOrder(symb, 0, cmd, magicNum) > openDistanceBar && chkMoney(symb, cmd, minMarginPercent, lot) == true)
+	if (findLikePriceOrder(symb, cmd, magicNum) == false && chkMoney(symb, cmd, minMarginPercent, lot) == true)
 		return (true);
 	else
 		return (false);
@@ -370,6 +379,8 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1) {
 
 	if (symb == "")
 		symb = Symbol();
+	//значения цены профита для текущих цен
+	//tp = getTp(symb, cmd, takeProfitKoef, takeProfit);
 
 	switch (cmd) {
 	case OP_BUY:
@@ -381,13 +392,14 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1) {
 
         break;
     }
-
-	tp = MathAbs(getTp(symb, cmd, takeProfitKoef, takeProfit) - price) / 2;
+	//дельта цены для получения требуемого профита
+	tp = MathAbs(getTp(symb, cmd, takeProfitKoef, takeProfit) - price) * 0.75;
 
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
 			if (OrderSymbol() == symb && OrderType() == cmd
-					&& MathAbs(OrderOpenPrice() - price) <= tp) {
+					&& MathAbs(OrderTakeProfit() - price) >= tp) {
+				//"текущий профит" должен быть "выше" профита некоторого уже открытого ордера на 25%, для текущих цен
 				return (true);
 			}
 		}
