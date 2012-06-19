@@ -88,15 +88,13 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 
 //расчет профита
 double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit) {
-	double tp, spread, minStop;
+	double tp, spread;
 
 	if (symb == "")
 		symb = Symbol();
 
 	//спред уже в пунктах с учетом значности котировок 
 	spread = MarketInfo(symb, MODE_SPREAD);
-	//мин.дистанция
-	minStop = MarketInfo(symb, MODE_STOPLEVEL);
 
 	switch (cmd) {
 	case OP_BUY:
@@ -309,7 +307,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 
 //установить локу его профит
 bool setProfitToLockOrder(int ticket) {
-   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
+   	if (OrderSelect(ticket, SELECT_BY_TICKET) == true) {
 		string comment = OrderComment();
 		int endTicketInComment = StringFind(comment, "#Tp#");
 		double tp = StrToDouble(StringSubstr(comment, endTicketInComment + 4));
@@ -374,7 +372,7 @@ int getNumberOfBarLastOrder(string symb = "", int tf = 0, int cmd = -1, int magi
 int findLockOrder(int ticket) {
 	string commentLocked, commentChk;
 
-   	if (OrderSelect(ticket, SELECT_BY_TICKET, MODE_TRADES) == true) {
+   	if (OrderSelect(ticket, SELECT_BY_TICKET) == true) {
 		switch(OrderType()) {
 		case OP_BUY:
 			commentLocked = "LckdB#" + DoubleToStr(ticket, 0);
@@ -389,7 +387,7 @@ int findLockOrder(int ticket) {
 		}
 
   		for (int i = 0; i < OrdersTotal(); i++) {
-    		if (OrderSelect(i, SELECT_BY_POS) == true) {
+    		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
     			commentChk = OrderComment();
     			int endTicket = StringFind(commentChk, "#Tp#");
 
@@ -439,14 +437,43 @@ int findLockedOrder(int ticket, string commentLock) {
 	return (ticketLckd);
 }
 
-//создать объект "индикатор-работы"
-bool createIndicator(string expertName) {
-	ObjectCreate("labelproj_object", OBJ_LABEL, 0, 0, 0);
-	ObjectSet("labelproj_object", OBJPROP_CORNER, 1);
-	ObjectSet("labelproj_object", OBJPROP_XDISTANCE, 50);
-	ObjectSet("labelproj_object", OBJPROP_YDISTANCE, 6);
-	ObjectSetText("labelproj_object", expertName, 8, "@Luxi Mono");
-	ObjectSet("labelproj_object", OBJPROP_COLOR, White);
+//есть ли ордер с близкой ценой открытия?
+bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProfitKoef = 0.0, double takeProfit = 0.0) {
+	double tp, price;
+
+	if (symb == "")
+		symb = Symbol();
+	//значения цены профита для текущих цен
+	//tp = getTp(symb, cmd, takeProfitKoef, takeProfit);
+
+	switch (cmd) {
+	case OP_BUY:
+    	price = Ask;
+
+        break;
+	case OP_SELL:
+    	price = Bid;
+
+        break;
+    }
+	//дельта цены для получения требуемого профита
+	tp = NormalizeDouble(MathAbs(getTp(symb, cmd, takeProfitKoef, takeProfit) - price) * 0.75, Digits);
+
+	for (int i = 0; i < OrdersTotal(); i++) {
+		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
+			if (OrderSymbol() == symb && OrderType() == cmd) {
+				double ordProf = OrderTakeProfit();
+				
+				if (ordProf > 0)
+					if (MathAbs(OrderTakeProfit() - price) >= tp) {
+						//"текущий профит" должен быть "выше" 75% профита некоторого уже открытого ордера, для текущих цен
+						return (true);
+					}
+			}
+		}
+	}
+
+	return (false);
 }
 
 //проверка сигналов аллигатора
@@ -675,13 +702,17 @@ int chkTarzanSignal(string symb) {
 		ObjectSetText("trandNow_object", CharToStr(238), 10, "Wingdings");//
 		ObjectSet("trandNow_object", OBJPROP_COLOR, Red);
 	}
+	//учесть CCI для определения направления тренда
+    double valCCINew = iCCI(symb, 0, 22, PRICE_WEIGHTED, 0),
+    	   valCCIOld = iCCI(symb, 0, 22, PRICE_WEIGHTED, 1);
+
 	//рассчет сигнала
-    if (destUpHist && destUpNow) {
+    if ((destUpHist && destUpNow) && (valCCINew > valCCIOld)) {
     	//устойчивый восходящий тренд
 		signal = signal | sgnlBuyOpen | sgnlSellClose;
     }
 
-    if (!destUpHist && !destUpNow) {
+    if ((!destUpHist && !destUpNow) && (valCCINew < valCCIOld)) {
     	//устойчивый нисходящий тренд
 		signal = signal | sgnlSellOpen | sgnlBuyClose;
     }
@@ -709,6 +740,16 @@ int chkPatternSignal(string symb) {
 		symb = Symbol();
 
 	return (signal);
+}
+
+//создать объект "индикатор-работы"
+bool createIndicator(string expertName) {
+	ObjectCreate("labelproj_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("labelproj_object", OBJPROP_CORNER, 1);
+	ObjectSet("labelproj_object", OBJPROP_XDISTANCE, 50);
+	ObjectSet("labelproj_object", OBJPROP_YDISTANCE, 4);
+	ObjectSetText("labelproj_object", expertName, 8, "@Luxi Mono");
+	ObjectSet("labelproj_object", OBJPROP_COLOR, White);
 }
 
 //удалить объект "индикатор-работы" 

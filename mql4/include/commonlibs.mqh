@@ -17,6 +17,7 @@ bool closeOrder(int ticket, double lots, double price, int slipPage, color clrMa
 
 int findLockOrder(int ticket);
 int findLockedOrder(int ticket, string commentLock);
+bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProfitKoef = 0.0, double takeProfit = 0.0);
 int getNumberOfBarLastOrder(string symb = "", int tf = 0, int op = -1, int mn = -1);
 
 int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeriod, int teethShift, int lipsPeriod, int lipsShift,
