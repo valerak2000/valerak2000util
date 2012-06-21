@@ -35,7 +35,7 @@ extern bool lockOpenBySignal = false; //открывать лок только по сигналам
 
 //Трал
 extern bool trailingUse = false;
-extern int trailingProfStart = 12;
+extern int trailingProfStart = 12; //эти величины расчитывать как величину "шума" цены
 extern int trailingProfStep = 15;
 extern bool trailingLoss = false;
 
@@ -202,7 +202,7 @@ void doSolveWithOpened(int mrktState) {
 						//цена меньше допустимой и тренд вниз
 //						Print("BuyLckd=", (mrktState & sgnlSellOpen != 0), " prof=", prof, " if=", opPrice - NormalizeDouble(lockLevel * Point, Digits), " Ask=", Ask);
 
-						if (allowLock && (opPrice - NormalizeDouble(lockLevel * Point, Digits)) >= Ask) {
+						if (allowLock == true && (opPrice - NormalizeDouble(lockLevel * Point, Digits)) >= Ask) {
 							if (lockOpenBySignal == true) {
 								if (mrktState & sgnlSellOpen != 0) { 
 									mkLockOrder(OP_BUY, ticket, magicNum, dsplMsg);
@@ -223,7 +223,7 @@ void doSolveWithOpened(int mrktState) {
         			} else {
 						//выставить лок или нет?
 						//цена больше допустимой и тренд вверх
-						if (allowLock && (opPrice + NormalizeDouble(lockLevel * Point, Digits)) <= Bid) {
+						if (allowLock == true && (opPrice + NormalizeDouble(lockLevel * Point, Digits)) <= Bid) {
 							if (lockOpenBySignal == true) {
 								if (mrktState & sgnlBuyOpen != 0) {
 									mkLockOrder(OP_SELL, ticket, magicNum, dsplMsg);
@@ -338,7 +338,7 @@ int mkLockOrder(int cmd, int ticket, int magicNum, bool dsplMsg = true) {
 
 					break;
 				} else {
-					if (chkError(GetLastError())) {
+					if (chkError(GetLastError()) == true) {
 						//серьезная ошибка
 						break;
 					}
@@ -409,7 +409,9 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
 
         	if (tp - OrderTakeProfit() >= NormalizeDouble(trailingProfStart * Point, Digits)) {
         		if (trailingLoss == true) {
-	       			sl = getSl(symb, OP_BUY, 0, trailingProfStep);
+					//более прибыльный вариант №2
+//	       			sl = getSl(symb, OP_BUY, 0, trailingProfStart + trailingProfStep); //1
+	       			sl = getSl(symb, OP_BUY, 0, trailingProfStep); //2
 	       		
 	       			if (OrderOpenPrice() >= sl)
 	       				sl = OrderStopLoss();
@@ -417,8 +419,8 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
        				sl = OrderStopLoss();
 	       		}
         		//новый прфт
-            	if (!OrderModify(ticket, OrderOpenPrice(),
-            					 sl, NormalizeDouble(OrderTakeProfit() + trailingProfStep * Point, Digits), CLR_NONE)) {
+            	if (OrderModify(ticket, OrderOpenPrice(),
+            					sl, NormalizeDouble(OrderTakeProfit() + trailingProfStep * Point, Digits), CLR_NONE) == false) {
 		    		chkError(GetLastError());
                 }
         	}
@@ -430,17 +432,17 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
 
             if (OrderTakeProfit() - tp >= NormalizeDouble(trailingProfStart * Point, Digits)) {
         		if (trailingLoss == true) {
-	       			sl = getSl(symb, OP_SELL, 0, trailingProfStep);
-//if(ticket==11)
-//Print(OrderOpenPrice(), " ", sl);
+					//более прибыльный вариант №2
+//	       			sl = getSl(symb, OP_SELL, 0, trailingProfStart + trailingProfStep); //1
+	       			sl = getSl(symb, OP_SELL, 0, trailingProfStep); //2
 	       			if (OrderOpenPrice() <= sl)
 	       				sl = OrderStopLoss();
 	       		} else {
        				sl = OrderStopLoss();
 	       		}
         		//новый прфт    
-             	if (!OrderModify(ticket, OrderOpenPrice(),
-            					 sl, NormalizeDouble(OrderTakeProfit() - trailingProfStep * Point, Digits), CLR_NONE)) {
+             	if (OrderModify(ticket, OrderOpenPrice(),
+            					sl, NormalizeDouble(OrderTakeProfit() - trailingProfStep * Point, Digits), CLR_NONE) == false) {
 		    		chkError(GetLastError());
 		    	}
             }
