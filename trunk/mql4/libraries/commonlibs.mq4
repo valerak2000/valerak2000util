@@ -192,15 +192,15 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 		symb = Symbol();
 
     //создать ордер    
-    while (Repeat) {
-        if (IsTradeAllowed())
+    while (Repeat == true) {
+        if (IsTradeAllowed() == true)
             switch (cmd) {
             case OP_BUY:
                 //покупать
                 if (comment == "")
                 	comment = "BUY";
 
-                if (ndd) {
+                if (ndd == true) {
                 	ticket = OrderSend(symb, OP_BUY, lot, NormalizeDouble(Ask, Digits), slipPage, 0, 0, comment, magicNum, 0, Blue);
                 } else {
             		tp = getTp(symb, OP_BUY, takeProfitKoef, takeProfit);
@@ -215,7 +215,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
                 if (comment == "")
                 	comment = "SELL";
 
-                if (ndd) {
+                if (ndd == true) {
 	                ticket = OrderSend(symb, OP_SELL, lot, NormalizeDouble(Bid, Digits), slipPage, 0, 0, comment, magicNum, 0, Red);
                 } else {
             		tp = getTp(symb, OP_SELL, takeProfitKoef, takeProfit);
@@ -230,7 +230,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
             }
     
         if (ticket == -1) {  
-            if (chkError(GetLastError()))
+            if (chkError(GetLastError()) == true)
                 Repeat = false;
             else
                 RefreshRates();      
@@ -243,12 +243,12 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
         }
     }
 
- 	if (ndd && ticket != -1) {
+ 	if (ndd == true && ticket != -1) {
     	//изменить ордер - выставить стоп и профит
     	int cntAttempt = 10;
     	Repeat = true;
 
-    	while (Repeat && cntAttempt > 0) {
+    	while (Repeat == true && cntAttempt > 0) {
     		cntAttempt--;
     		//обновить цены
         	RefreshRates();
@@ -272,11 +272,11 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
         	}
 
 //
-        	if (IsTradeAllowed() && (sl != 0 || tp != 0)) {
+        	if (IsTradeAllowed() == true && (sl != 0 || tp != 0)) {
         		if (OrderModify(ticket, OrderOpenPrice(), sl, tp, CLR_NONE) == true) {
             		Repeat = false;
         		} else {
-	           		if (chkError(GetLastError())) {
+	           		if (chkError(GetLastError()) == true) {
             			//критическая ощибка
             			Repeat = false;
             		}
@@ -285,7 +285,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
     	}
     }
 
-	if (dsplMsg && ticket > 0)
+	if (dsplMsg == true && ticket > 0)
 		Print("ticket=", ticket,
 //			" ndd=", ndd,
 			" comment=", comment,
@@ -457,7 +457,7 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
         break;
     }
 	//дельта цены для получения требуемого профита
-	tp = NormalizeDouble(MathAbs(getTp(symb, cmd, takeProfitKoef, takeProfit) - price) * 0.75, Digits);
+	tp = NormalizeDouble(MathAbs(getTp(symb, cmd, takeProfitKoef, takeProfit) - price) * 0.25, Digits);
 
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
@@ -465,7 +465,7 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 				double ordProf = OrderTakeProfit();
 				
 				if (ordProf > 0)
-					if (MathAbs(OrderTakeProfit() - price) >= tp) {
+					if (MathAbs(ordProf - price) >= tp) {
 						//"текущий профит" должен быть "выше" 75% профита некоторого уже открытого ордера, для текущих цен
 						return (true);
 					}
@@ -682,7 +682,7 @@ int chkTarzanSignal(string symb) {
 	ObjectSet("trandHist_object", OBJPROP_XDISTANCE, 20);
 	ObjectSet("trandHist_object", OBJPROP_YDISTANCE, 15);
 
-	if (destUpHist) {
+	if (destUpHist == true) {
 		ObjectSetText("trandHist_object", CharToStr(236), 10, "Wingdings");//
 		ObjectSet("trandHist_object", OBJPROP_COLOR, Lime);
 	} else {
@@ -695,7 +695,7 @@ int chkTarzanSignal(string symb) {
 	ObjectSet("trandNow_object", OBJPROP_XDISTANCE, 10);
 	ObjectSet("trandNow_object", OBJPROP_YDISTANCE, 15);
 
-	if (destUpNow) {
+	if (destUpNow == true) {
 		ObjectSetText("trandNow_object", CharToStr(236), 10, "Wingdings");//
 		ObjectSet("trandNow_object", OBJPROP_COLOR, Lime);
 	} else {
@@ -707,22 +707,22 @@ int chkTarzanSignal(string symb) {
     	   valCCIOld = iCCI(symb, 0, 22, PRICE_WEIGHTED, 1);
 
 	//рассчет сигнала
-    if ((destUpHist && destUpNow) && (valCCINew > valCCIOld)) {
+    if ((destUpHist == true && destUpNow == true) && (valCCINew > valCCIOld)) {
     	//устойчивый восходящий тренд
 		signal = signal | sgnlBuyOpen | sgnlSellClose;
     }
 
-    if ((!destUpHist && !destUpNow) && (valCCINew < valCCIOld)) {
+    if ((destUpHist == false && destUpNow == false) && (valCCINew < valCCIOld)) {
     	//устойчивый нисходящий тренд
 		signal = signal | sgnlSellOpen | sgnlBuyClose;
     }
 
-    if (!destUpHist && destUpNow) {
+    if (destUpHist == false && destUpNow == true) {
     	//тренд повернул вверх
 		signal = signal | sgnlBuyOpen | sgnlSellClose;
     }
 
-    if (destUpHist && !destUpNow) {
+    if (destUpHist == true && destUpNow == false) {
     	//тренд переломился вниз
 		signal = signal | sgnlSellOpen | sgnlBuyClose;
     }
