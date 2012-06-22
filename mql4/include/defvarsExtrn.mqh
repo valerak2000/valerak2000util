@@ -3,12 +3,12 @@ extern bool dsplSgnl = false; //выводить информацию о сигналах
 extern int magicNum = 777;
 extern int slipPage = 1; //Максимально допустимое отклонение цены для рыночных ордеров
 extern bool tradingOpen = true;
-extern bool tradingManagement = true;
+extern bool tradingManagement = false;
 extern bool ndd = false;
 //stop & profit
-extern int stopLoss = 6000; //уровень SL, если 0, то SL не выставляется
+extern int stopLoss = 0; //уровень SL, если 0, то SL не выставляется
 extern double stopLossKoef = 0; //коэффициент SL от спреда
-extern int takeProfit = 27; //уровень TP, если 0, то TP не выставляется
+extern int takeProfit = 7; //уровень TP, если 0, то TP не выставляется
 extern double takeProfitKoef = 0; //коэффициент профита от спреда
 //Аллигатор
 extern double dltAligBuy = 2; //ширина "зева" Alligator'а на открытие ордера - дельта погрешности показаний алигатора

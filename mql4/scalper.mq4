@@ -28,15 +28,15 @@ extern int openDistanceBar = 1; //расстояние между открытиями ордеров (в барах) 
 extern int minMarginPercent = 80; //Процент свободной маржи от Баланса при котором новые ордера не выставляются
 
 //Локер
-extern bool lockUse = true; //использовать локирование
+extern bool lockUse = false; //использовать локирование
 extern int lockLevel = 10; //уровень локирования позиции
 extern bool lockManagement = false; //использовать управление локами
 extern bool lockOpenBySignal = false; //открывать лок только по сигналам
 
 //Трал
 extern bool trailingUse = false;
-extern int trailingProfStart = 12; //эти величины расчитывать как величину "шума" цены
-extern int trailingProfStep = 15;
+extern int trailingProfStart = 7; //эти величины расчитывать как величину "шума" цены
+extern int trailingProfStep = 10;
 extern bool trailingLoss = false;
 
 //переменные советника
@@ -57,16 +57,22 @@ int init() {
 	minLot = MarketInfo(workSymb, MODE_MINLOT);
 	//размер max допустимого лота
     maxLot = MarketInfo(workSymb, MODE_MAXLOT);
+/*	//при трайлинге профит = трайлингстарт
+	if (trailingUse == true) {
+		takeProfit = trailingProfStart;
+		takeProfitKoef = 0;
+	}
+*/
     //Учитываем работу 5-ти знака
     if (MarketInfo(workSymb, MODE_DIGITS) == 3 || MarketInfo(workSymb, MODE_DIGITS) == 5) {
     	fiveSign = true;
         numSign = 10;
         slipPage *= 10;
         maxSpread *= 10;
-        trailingProfStart *= 10;
-        trailingProfStep *= 10;
         takeProfit *= 10;
         stopLoss *= 10;
+        trailingProfStart *= 10;
+        trailingProfStep *= 10;
         dltAligBuy *= 10;
         dltAligSell *= 10;
 //    	takeProfitKoef *= 10;
@@ -278,6 +284,7 @@ int doOpenNew(int mrktState) {
     if (mrktState & sgnlBuyOpen != 0) {
 		if (chkAllowNewOrder(workSymb, OP_BUY, tradeLot, magicNum) == true) {
 			//покупка
+
    			ticket = openOrder(workSymb, OP_BUY, tradeLot, magicNum, slipPage, ndd,
          					   stopLossKoef, stopLoss, takeProfitKoef, takeProfit, dsplMsg, "");
    		}
@@ -312,12 +319,12 @@ int chkMarketState() {
 
 //	return (signalLong); //плохо
 //	return (signalLong | (signalAlligator & signalTarzan));
-	return (signalLong | signalTarzan); //+ красивый график(M1-грааль, M5, H24),
+//	return (signalLong | signalTarzan); //+ красивый график(M1-грааль, M5, H24),
 										//но распознало слишком мало "лочных" ситуаций - за счет этого сливает
 //	return (signalAlligator); //много ложных срабатываний
 //	return (signalAlligator | signalTarzan); //за счет тарзана график роста более ровный,
 											 //но распознало слишком мало "лочных" ситуаций - за счет этого сливает
-//	return (signalTarzan); //++ убыток пропорционален только размеру лока
+	return (signalTarzan); //++ убыток пропорционален только размеру лока
 }
 
 //создать локирующий ордер с привязкой в комментариях
@@ -435,6 +442,7 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
 					//более прибыльный вариант №2
 //	       			sl = getSl(symb, OP_SELL, 0, trailingProfStart + trailingProfStep); //1
 	       			sl = getSl(symb, OP_SELL, 0, trailingProfStep); //2
+
 	       			if (OrderOpenPrice() <= sl)
 	       				sl = OrderStopLoss();
 	       		} else {
