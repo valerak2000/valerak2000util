@@ -35,8 +35,8 @@ extern bool lockOpenBySignal = false; //открывать лок только по сигналам
 
 //“рал
 extern bool trailingUse = false;
-extern int trailingProfStart = 7; //эти величины расчитывать как величину "шума" цены
-extern int trailingProfStep = 10;
+extern int trailingProfStart = 7; //первичный порог дл€ увеличени€ профита;эти величины расчитывать как величину "шума" цены
+extern int trailingProfStep = 10; //порог дальнешего увеличени€ профита(дельта)
 extern bool trailingLoss = false;
 
 //переменные советника
@@ -57,12 +57,12 @@ int init() {
 	minLot = MarketInfo(workSymb, MODE_MINLOT);
 	//размер max допустимого лота
     maxLot = MarketInfo(workSymb, MODE_MAXLOT);
-/*	//при трайлинге профит = трайлингстарт
+	//при трайлинге профит = трайлингстарт
 	if (trailingUse == true) {
-		takeProfit = trailingProfStart;
+//		takeProfit = trailingProfStart;
 		takeProfitKoef = 0;
 	}
-*/
+
     //”читываем работу 5-ти знака
     if (MarketInfo(workSymb, MODE_DIGITS) == 3 || MarketInfo(workSymb, MODE_DIGITS) == 5) {
     	fiveSign = true;
@@ -134,6 +134,7 @@ int start() {
 			  " SellOpenLong=", (signalLong & sgnlSellOpen != 0),
 			  " SellCloseLong=", (signalLong & sgnlSellClose != 0));
 */
+	//найти величину профита на интервале(экстремумы и разница между ними)
 	//решить что делать с открытыми позици€ми
   	doSolveWithOpened(mrktState);
 	//проверка разрешений открыти€ новой позиции
@@ -208,7 +209,8 @@ void doSolveWithOpened(int mrktState) {
 						//цена меньше допустимой и тренд вниз
 //						Print("BuyLckd=", (mrktState & sgnlSellOpen != 0), " prof=", prof, " if=", opPrice - NormalizeDouble(lockLevel * Point, Digits), " Ask=", Ask);
 
-						if (allowLock == true && (opPrice - NormalizeDouble(lockLevel * Point, Digits)) >= Ask) {
+						if (allowLock == true
+								&& (NormalizeDouble(opPrice - NormalizeDouble(lockLevel * Point, Digits), Digits)) >= Ask) {
 							if (lockOpenBySignal == true) {
 								if (mrktState & sgnlSellOpen != 0) { 
 									mkLockOrder(OP_BUY, ticket, magicNum, dsplMsg);
@@ -229,7 +231,8 @@ void doSolveWithOpened(int mrktState) {
         			} else {
 						//выставить лок или нет?
 						//цена больше допустимой и тренд вверх
-						if (allowLock == true && (opPrice + NormalizeDouble(lockLevel * Point, Digits)) <= Bid) {
+						if (allowLock == true
+								&& (NormalizeDouble(opPrice + NormalizeDouble(lockLevel * Point, Digits), Digits)) <= Bid) {
 							if (lockOpenBySignal == true) {
 								if (mrktState & sgnlBuyOpen != 0) {
 									mkLockOrder(OP_SELL, ticket, magicNum, dsplMsg);
@@ -284,7 +287,6 @@ int doOpenNew(int mrktState) {
     if (mrktState & sgnlBuyOpen != 0) {
 		if (chkAllowNewOrder(workSymb, OP_BUY, tradeLot, magicNum) == true) {
 			//покупка
-
    			ticket = openOrder(workSymb, OP_BUY, tradeLot, magicNum, slipPage, ndd,
          					   stopLossKoef, stopLoss, takeProfitKoef, takeProfit, dsplMsg, "");
    		}
@@ -319,12 +321,12 @@ int chkMarketState() {
 
 //	return (signalLong); //плохо
 //	return (signalLong | (signalAlligator & signalTarzan));
-//	return (signalLong | signalTarzan); //+ красивый график(M1-грааль, M5, H24),
+	return (signalLong | signalTarzan); //+ красивый график(M1-грааль, M5, H24),
 										//но распознало слишком мало "лочных" ситуаций - за счет этого сливает
 //	return (signalAlligator); //много ложных срабатываний
-//	return (signalAlligator | signalTarzan); //за счет тарзана график роста более ровный,
+//	return (signalAlligator & signalTarzan); //за счет тарзана график роста более ровный,
 											 //но распознало слишком мало "лочных" ситуаций - за счет этого сливает
-	return (signalTarzan); //++ убыток пропорционален только размеру лока
+//	return (signalTarzan); //++ убыток пропорционален только размеру лока
 }
 
 //создать локирующий ордер с прив€зкой в комментари€х
@@ -401,33 +403,48 @@ bool chkAllowNewOrder(string symb, int cmd, double lot = 0.01, int magicNum = -1
 //управление прибылью
 void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double takeProfit = 0.0,
 				  double trailingProfStart = 0.0, double trailingProfStep = 0.0) {
-    double tp, sl;
+    double tp, sl, takeProfOrd, opPrice, trail;
 
    	if (OrderSelect(ticket, SELECT_BY_TICKET) == true) {
         RefreshRates();
 
+		takeProfOrd = OrderTakeProfit();
+		opPrice = OrderOpenPrice();
 		/*-прфт“екущей÷ены - прфтќрдера >= TrailingProfStart
 		прфт ордера += trailingProfStep
 	    */
 		switch (OrderType()) {
 		case OP_BUY:
 		    //прфт текущей цены
-        	tp = NormalizeDouble(Ask + takeProfit * Point, Digits);
+			tp = getTp(symb, OP_BUY, 0, takeProfit); //;
+//        	tp = NormalizeDouble(Ask + takeProfit * Point, Digits);
 
-        	if (tp - OrderTakeProfit() >= NormalizeDouble(trailingProfStart * Point, Digits)) {
+			//цена выше или ниже порога срабатывани€ трейлинга?
+        	if (NormalizeDouble(takeProfOrd - opPrice, Digits) <= NormalizeDouble(tp - Ask, Digits)) {
+        		//первый порог
+        		trail = trailingProfStart;
+        	} else {
+        		//второй порог
+        		trail = trailingProfStep;
+        	}
+
+        	if (NormalizeDouble(tp - takeProfOrd, Digits) >= NormalizeDouble(trail * Point, Digits)) {
         		if (trailingLoss == true) {
 					//более прибыльный вариант є2
 //	       			sl = getSl(symb, OP_BUY, 0, trailingProfStart + trailingProfStep); //1
 	       			sl = getSl(symb, OP_BUY, 0, trailingProfStep); //2
-	       		
-	       			if (OrderOpenPrice() >= sl)
+
+	       			if (opPrice >= sl)
 	       				sl = OrderStopLoss();
 	       		} else {
        				sl = OrderStopLoss();
 	       		}
+
+//	       		if (IsTesting())
+//	       			Sleep(1000);
         		//новый прфт
-            	if (OrderModify(ticket, OrderOpenPrice(),
-            					sl, NormalizeDouble(OrderTakeProfit() + trailingProfStep * Point, Digits), CLR_NONE) == false) {
+            	if (OrderModify(ticket, opPrice,
+            					sl, NormalizeDouble(takeProfOrd + trailingProfStep * Point, Digits), CLR_NONE) == false) {
 		    		chkError(GetLastError());
                 }
         	}
@@ -435,22 +452,43 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         	break;
 		case OP_SELL:
 		    //прфт текущей цены
-        	tp = NormalizeDouble(Bid - takeProfit * Point, Digits);
+			tp = getTp(symb, OP_SELL, 0, takeProfit);
+//        	tp = NormalizeDouble(Bid - takeProfit * Point, Digits);
 
-            if (OrderTakeProfit() - tp >= NormalizeDouble(trailingProfStart * Point, Digits)) {
+			//цена выше или ниже порога срабатывани€ трейлинга?
+        	if (NormalizeDouble(opPrice - takeProfOrd, Digits) <= NormalizeDouble(Bid - tp, Digits)) {
+        		//первый порог
+        		trail = trailingProfStart;
+        	} else {
+        		//второй порог
+        		trail = trailingProfStep;
+        	}
+
+//            if (OrderTakeProfit() - tp >= NormalizeDouble(trailingProfStart * Point, Digits)) {
+/*			if (ticket == 7 && takeProfOrd - tp > 0)
+				Print(ticket,
+						" ", NormalizeDouble(opPrice - takeProfOrd, Digits), " ", NormalizeDouble(Bid - tp, Digits),
+						" ", NormalizeDouble(trail * Point, Digits), " ", NormalizeDouble(takeProfOrd - tp, Digits),
+						" ", NormalizeDouble(takeProfOrd - tp, Digits) >= NormalizeDouble(trail * Point, Digits));
+*/
+            if (NormalizeDouble(takeProfOrd - tp, Digits) >= NormalizeDouble(trail * Point, Digits)) {
         		if (trailingLoss == true) {
 					//более прибыльный вариант є2
 //	       			sl = getSl(symb, OP_SELL, 0, trailingProfStart + trailingProfStep); //1
 	       			sl = getSl(symb, OP_SELL, 0, trailingProfStep); //2
 
-	       			if (OrderOpenPrice() <= sl)
+	       			if (opPrice <= sl)
 	       				sl = OrderStopLoss();
 	       		} else {
        				sl = OrderStopLoss();
 	       		}
+
+//	       		if (IsTesting())
+//	       			Sleep(1000);
+//				Print(ticket, " ", trail, " ", tp, " ", opPrice - takeProfOrd);
         		//новый прфт    
-             	if (OrderModify(ticket, OrderOpenPrice(),
-            					sl, NormalizeDouble(OrderTakeProfit() - trailingProfStep * Point, Digits), CLR_NONE) == false) {
+             	if (OrderModify(ticket, opPrice,
+            					sl, NormalizeDouble(takeProfOrd - trailingProfStep * Point, Digits), CLR_NONE) == false) {
 		    		chkError(GetLastError());
 		    	}
             }

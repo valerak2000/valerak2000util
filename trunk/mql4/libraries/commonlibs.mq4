@@ -175,7 +175,8 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss) {
 		sl = 0;    
     }
 
-	if (sl < 0) sl = 0;
+	if (sl < 0)
+		sl = 0;
 
     return (sl);
 }
@@ -183,6 +184,7 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss) {
 //создать ордер
 bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1, bool ndd = true, 
 			   double stopLossKoef = 0.0, double stopLoss = 0.0, double takeProfitKoef = 0.0, double takeProfit = 0.0,
+//			   bool trailingUse, int trailingProfStart,
 			   bool dsplMsg = true, string comment = "") {
     double sl, tp;
     int ticket;
@@ -201,12 +203,16 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
                 	comment = "BUY";
 
                 if (ndd == true) {
-                	ticket = OrderSend(symb, OP_BUY, lot, NormalizeDouble(Ask, Digits), slipPage, 0, 0, comment, magicNum, 0, Blue);
+                	ticket = OrderSend(symb, OP_BUY, lot, Ask, slipPage, 0, 0, comment, magicNum, 0, Blue);
                 } else {
             		tp = getTp(symb, OP_BUY, takeProfitKoef, takeProfit);
             		sl = getSl(symb, OP_BUY, stopLossKoef, stopLoss);
 
-                	ticket = OrderSend(symb, OP_BUY, lot, NormalizeDouble(Ask, Digits), slipPage, sl, tp, comment, magicNum, 0, Blue);
+/*					if (trailingUse == true) {
+						comment = comment +  "#TS#" + DoubleToStr(getTp(symb, OP_BUY, 0, trailingProfStart), Digits));
+					}
+*/
+                	ticket = OrderSend(symb, OP_BUY, lot, Ask, slipPage, sl, tp, comment, magicNum, 0, Blue);
                 }
 
                 break;
@@ -216,12 +222,16 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
                 	comment = "SELL";
 
                 if (ndd == true) {
-	                ticket = OrderSend(symb, OP_SELL, lot, NormalizeDouble(Bid, Digits), slipPage, 0, 0, comment, magicNum, 0, Red);
+	                ticket = OrderSend(symb, OP_SELL, lot, Bid, slipPage, 0, 0, comment, magicNum, 0, Red);
                 } else {
             		tp = getTp(symb, OP_SELL, takeProfitKoef, takeProfit);
             		sl = getSl(symb, OP_SELL, stopLossKoef, stopLoss);
 
-	                ticket = OrderSend(symb, OP_SELL, lot, NormalizeDouble(Bid, Digits), slipPage, sl, tp, comment, magicNum, 0, Red);
+/*					if (trailingUse == true) {
+						comment = comment +  "#TS#" + DoubleToStr(getTp(symb, OP_SELL, 0, trailingProfStart), Digits));
+					}
+*/
+	                ticket = OrderSend(symb, OP_SELL, lot, Bid, slipPage, sl, tp, comment, magicNum, 0, Red);
                 }
 
                 break;
@@ -457,7 +467,7 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
         break;
     }
 	//дельта цены для получения требуемого профита
-	tp = NormalizeDouble(MathAbs(getTp(symb, cmd, takeProfitKoef, takeProfit) - price) * 0.25, Digits);
+	tp = NormalizeDouble(MathAbs(NormalizeDouble(getTp(symb, cmd, takeProfitKoef, takeProfit) - price, Digits)) * 0.25, Digits);
 
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
@@ -465,7 +475,7 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 				double ordProf = OrderTakeProfit();
 				
 				if (ordProf > 0)
-					if (MathAbs(ordProf - price) >= tp) {
+					if (NormalizeDouble(MathAbs(NormalizeDouble(ordProf - price, Digits)), Digits) >= tp) {
 						//"текущий профит" должен быть "выше" 75% профита некоторого уже открытого ордера, для текущих цен
 						return (true);
 					}
@@ -550,41 +560,41 @@ int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeri
 	//up CCI > 70 или алиг красн пересекает зеленую снизу вверх, то покупать
 	//down CCI < -70 или алиг красн пересекает зеленую сверху вниз, то продавать
 
-    if (valMAGrNow - valMARdNow >= NormalizeDouble(dltAligBuy * Point, Digits)
-    		&& ((valMARdHist - valMAGrHist >= NormalizeDouble(dltAligBuy * Point, Digits)))) {
+    if (NormalizeDouble(valMAGrNow - valMARdNow, Digits) >= NormalizeDouble(dltAligBuy * Point, Digits)
+    		&& ((NormalizeDouble(valMARdHist - valMAGrHist, Digits) >= NormalizeDouble(dltAligBuy * Point, Digits)))) {
     			//|| (valMAGr1 - valMARd1 >= NormalizeDouble(dltAligBuy * Point, Digits)))
     	//зеленая над красной и пред. зеленая под красной
         signal = signal | sgnlBuyOpen | sgnlSellClose;
 	}
 
-    if (valMARdNow - valMAGrNow >= NormalizeDouble(dltAligSell * Point, Digits) 
-    		&& ((valMAGrHist - valMARdHist >= NormalizeDouble(dltAligSell * Point, Digits)))) {
+    if (NormalizeDouble(valMARdNow - valMAGrNow, Digits) >= NormalizeDouble(dltAligSell * Point, Digits) 
+    		&& ((NormalizeDouble(valMAGrHist - valMARdHist, Digits) >= NormalizeDouble(dltAligSell * Point, Digits)))) {
     			//|| (valMARd1 - valMAGr1 >= NormalizeDouble(dltAligSell * Point, Digits)))
     	//зеленая под красной и пред. зеленая над красной
         signal = signal | sgnlSellOpen | sgnlBuyClose;
 	}
 
 	//
-    if (valMAGrNow - valMABlNow >= NormalizeDouble(dltAligBuy * Point, Digits)
-    		&& valMAGrHist - valMABlHist < NormalizeDouble(dltAligBuy * Point, Digits)) {
+    if (NormalizeDouble(valMAGrNow - valMABlNow, Digits) >= NormalizeDouble(dltAligBuy * Point, Digits)
+    		&& NormalizeDouble(valMAGrHist - valMABlHist, Digits) < NormalizeDouble(dltAligBuy * Point, Digits)) {
     	//зеленая над синей и предыдущая зеленая под синей
 		signal = signal | sgnlBuyOpen | sgnlSellClose;
     }
 
-    if (valMAGrNow - valMABlNow <= NormalizeDouble(dltAligSell * Point, Digits)
-    		&& valMAGrHist - valMABlHist > NormalizeDouble(dltAligSell * Point, Digits)) {
+    if (NormalizeDouble(valMAGrNow - valMABlNow, Digits) <= NormalizeDouble(dltAligSell * Point, Digits)
+    		&& NormalizeDouble(valMAGrHist - valMABlHist, Digits) > NormalizeDouble(dltAligSell * Point, Digits)) {
     	//зеленая под синей и пред. зеленая над синей
 		signal = signal | sgnlSellOpen | sgnlBuyClose;
    	}
 
-    if (valMAGrNow - valMARdNow <= NormalizeDouble(dltAligBuy * Point, Digits)
-    		&& valMAGrHist - valMARdHist > NormalizeDouble(dltAligBuy * Point, Digits)) {
+    if (NormalizeDouble(valMAGrNow - valMARdNow, Digits) <= NormalizeDouble(dltAligBuy * Point, Digits)
+    		&& NormalizeDouble(valMAGrHist - valMARdHist, Digits) > NormalizeDouble(dltAligBuy * Point, Digits)) {
     	//зеленая под красной и пред. зеленая над красной
         signal = signal | sgnlSellOpen | sgnlBuyClose;
     }
 
-	if (valMAGrNow - valMARdNow >= NormalizeDouble(dltAligSell * Point, Digits)
-			&& valMAGrHist - valMARdHist < NormalizeDouble(dltAligSell * Point, Digits)) {
+	if (NormalizeDouble(valMAGrNow - valMARdNow, Digits) >= NormalizeDouble(dltAligSell * Point, Digits)
+			&& NormalizeDouble(valMAGrHist - valMARdHist, Digits) < NormalizeDouble(dltAligSell * Point, Digits)) {
     	//зеленая над красной и пред. зеленая под красной
         signal = signal | sgnlBuyOpen | sgnlSellClose;
 	}
@@ -633,14 +643,14 @@ int chkLongSignal(string symb) {
 
     if(TimeHour(TimeCurrent()) == tradeTime && cantrade) {
 */
-    	if (Open[t1] - Open[t2] > NormalizeDouble(delta_S * Point, Digits)) {
+    	if (NormalizeDouble(Open[t1] - Open[t2], Digits) > NormalizeDouble(delta_S * Point, Digits)) {
         	//condition is fulfilled, enter a short position:
 			signal = signal | sgnlSellOpen;// | sgnlBuyClose;
         
         	cantrade = false; //prohibit repeated trade until the next bar
     	}
 
-      	if (Open[t2] - Open[t1] > NormalizeDouble(delta_L * Point, Digits)) {
+      	if (NormalizeDouble(Open[t2] - Open[t1], Digits) > NormalizeDouble(delta_L * Point, Digits)) {
         	// condition is fulfilled, enter a long position
 			signal = signal | sgnlBuyOpen;// | sgnlSellClose;
         
