@@ -80,7 +80,7 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 		symb = Symbol();
 //AccountFreeMargin()
 //средства / залог * 100 = уровень
-	if ((AccountEquity() / AccountBalance()) * 100 <= marginPercent)
+	if (((AccountEquity() / AccountBalance()) * 100) <= marginPercent)
 		return (false);
 	else
 		return (!(AccountFreeMarginCheck(symb, cmd, lot) <= 0 || GetLastError() == ERR_NOT_ENOUGH_MONEY));
