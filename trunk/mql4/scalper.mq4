@@ -431,8 +431,8 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         	if (NormalizeDouble(tp - takeProfOrd, Digits) >= NormalizeDouble(trail * Point, Digits)) {
         		if (trailingLoss == true) {
 					//более прибыльный вариант №2
-//	       			sl = getSl(symb, OP_BUY, 0, trailingProfStart + trailingProfStep); //1
-	       			sl = getSl(symb, OP_BUY, 0, trailingProfStep); //2
+	       			sl = getSl(symb, OP_BUY, 0, trailingProfStart + trailingProfStep); //1
+//	       			sl = getSl(symb, OP_BUY, 0, trailingProfStep); //2
 
 	       			if (opPrice >= sl)
 	       				sl = OrderStopLoss();
@@ -465,17 +465,11 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         	}
 
 //            if (OrderTakeProfit() - tp >= NormalizeDouble(trailingProfStart * Point, Digits)) {
-/*			if (ticket == 7 && takeProfOrd - tp > 0)
-				Print(ticket,
-						" ", NormalizeDouble(opPrice - takeProfOrd, Digits), " ", NormalizeDouble(Bid - tp, Digits),
-						" ", NormalizeDouble(trail * Point, Digits), " ", NormalizeDouble(takeProfOrd - tp, Digits),
-						" ", NormalizeDouble(takeProfOrd - tp, Digits) >= NormalizeDouble(trail * Point, Digits));
-*/
             if (NormalizeDouble(takeProfOrd - tp, Digits) >= NormalizeDouble(trail * Point, Digits)) {
         		if (trailingLoss == true) {
 					//более прибыльный вариант №2
-//	       			sl = getSl(symb, OP_SELL, 0, trailingProfStart + trailingProfStep); //1
-	       			sl = getSl(symb, OP_SELL, 0, trailingProfStep); //2
+	       			sl = getSl(symb, OP_SELL, 0, trailingProfStart + trailingProfStep); //1
+//	       			sl = getSl(symb, OP_SELL, 0, trailingProfStep); //2
 
 	       			if (opPrice <= sl)
 	       				sl = OrderStopLoss();
@@ -483,9 +477,14 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
        				sl = OrderStopLoss();
 	       		}
 
+			if (ticket == 2)// && ((takeProfOrd - tp) > 0))
+				Print(ticket,
+						" ordprof=", NormalizeDouble(opPrice - takeProfOrd, Digits), " currprof=", NormalizeDouble(Bid - tp, Digits),
+						" trail=", NormalizeDouble(trail * Point, Digits), " delta=", NormalizeDouble(takeProfOrd - tp, Digits),
+						" ", NormalizeDouble(takeProfOrd - tp, Digits) >= NormalizeDouble(trail * Point, Digits));
+
 //	       		if (IsTesting())
 //	       			Sleep(1000);
-//				Print(ticket, " ", trail, " ", tp, " ", opPrice - takeProfOrd);
         		//новый прфт    
              	if (OrderModify(ticket, opPrice,
             					sl, NormalizeDouble(takeProfOrd - trailingProfStep * Point, Digits), CLR_NONE) == false) {
