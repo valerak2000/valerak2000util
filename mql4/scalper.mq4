@@ -38,6 +38,7 @@ extern bool trailingUse = false;
 extern int trailingProfStart = 7; //первичный порог для увеличения профита;эти величины расчитывать как величину "шума" цены
 extern int trailingProfStep = 10; //порог дальнешего увеличения профита(дельта)
 extern bool trailingLoss = false;
+extern int trailingLossLevel = 7;
 
 //переменные советника
 #include <defvars.mqh>
@@ -431,7 +432,8 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         	if (NormalizeDouble(tp - takeProfOrd, Digits) >= NormalizeDouble(trail * Point, Digits)) {
         		if (trailingLoss == true) {
 					//более прибыльный вариант №2
-	       			sl = getSl(symb, OP_BUY, 0, trailingProfStart + trailingProfStep); //1
+	       			sl = getSl(symb, OP_BUY, 0, trailingLossLevel);
+//	       			sl = getSl(symb, OP_BUY, 0, trailingProfStart + trailingProfStep); //1
 //	       			sl = getSl(symb, OP_BUY, 0, trailingProfStep); //2
 
 	       			if (opPrice >= sl)
@@ -468,7 +470,8 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
             if (NormalizeDouble(takeProfOrd - tp, Digits) >= NormalizeDouble(trail * Point, Digits)) {
         		if (trailingLoss == true) {
 					//более прибыльный вариант №2
-	       			sl = getSl(symb, OP_SELL, 0, trailingProfStart + trailingProfStep); //1
+	       			sl = getSl(symb, OP_SELL, 0, trailingLossLevel);
+//	       			sl = getSl(symb, OP_SELL, 0, trailingProfStart + trailingProfStep); //1
 //	       			sl = getSl(symb, OP_SELL, 0, trailingProfStep); //2
 
 	       			if (opPrice <= sl)
