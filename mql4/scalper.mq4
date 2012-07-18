@@ -74,6 +74,7 @@ int init() {
         stopLoss *= 10;
         trailingProfStart *= 10;
         trailingProfStep *= 10;
+        trailingLossLevel *= 10;
         dltAligBuy *= 10;
         dltAligSell *= 10;
 //    	takeProfitKoef *= 10;
@@ -480,12 +481,12 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
        				sl = OrderStopLoss();
 	       		}
 
-			if (ticket == 2)// && ((takeProfOrd - tp) > 0))
+/*			if (ticket == 2)// && ((takeProfOrd - tp) > 0))
 				Print(ticket,
 						" ordprof=", NormalizeDouble(opPrice - takeProfOrd, Digits), " currprof=", NormalizeDouble(Bid - tp, Digits),
 						" trail=", NormalizeDouble(trail * Point, Digits), " delta=", NormalizeDouble(takeProfOrd - tp, Digits),
 						" ", NormalizeDouble(takeProfOrd - tp, Digits) >= NormalizeDouble(trail * Point, Digits));
-
+*/
 //	       		if (IsTesting())
 //	       			Sleep(1000);
         		//םמגûי ןנפע    

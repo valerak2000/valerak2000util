@@ -486,6 +486,13 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 	return (false);
 }
 
+//расчет величины среднего профита на периоде
+int getProfitValue(int cntBars = 100) {
+	int avgProf;
+
+	return (avgProf);
+}
+
 //проверка сигналов аллигатора
 int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeriod, int teethShift, int lipsPeriod,
 					   int lipsShift, double dltAligBuy, double dltAligSell) {
