@@ -122,7 +122,7 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit) {
 		tp = 0;    
     }
 
-    return (tp);
+    return (NormalizeDouble(tp, Digits));
 }
 
 //расчет лосей
@@ -144,7 +144,8 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss) {
     	else
         	if (stopLossKoef != 0)
             	sl = MathFloor(stopLossKoef * spread);
-        	else sl = 0;
+        	else
+        		sl = 0;
     
     	if (sl != 0) {
     		if (minStop > sl)
@@ -161,7 +162,8 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss) {
     	else
         	if (stopLossKoef != 0)
             	sl = MathFloor(stopLossKoef * spread);
-        	else sl = 0;
+        	else
+        		sl = 0;
 
     	if (sl != 0) {
     		if (minStop > sl)
@@ -178,7 +180,7 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss) {
 	if (sl < 0)
 		sl = 0;
 
-    return (sl);
+    return (NormalizeDouble(sl, Digits));
 }
 
 //создать ордер
@@ -365,12 +367,17 @@ int getNumberOfBarLastOrder(string symb = "", int tf = 0, int cmd = -1, int magi
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
 			int ordType = OrderType();
 
-			if (OrderSymbol() == symb)
-				if (ordType == OP_BUY || ordType == OP_SELL)
-					if (cmd < 0 || ordType == cmd)
-						if (magicNum < 0 || OrderMagicNumber() == magicNum)
-							if (tmOpenOrder < OrderOpenTime())
+			if (OrderSymbol() == symb) {
+				if (ordType == OP_BUY || ordType == OP_SELL) {
+					if (cmd < 0 || ordType == cmd) {
+						if (magicNum < 0 || OrderMagicNumber() == magicNum) {
+							if (tmOpenOrder < OrderOpenTime()) {
 								tmOpenOrder = OrderOpenTime();
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -431,7 +438,7 @@ int findLockedOrder(int ticket, string commentLock) {
 
 		ticketLckd = StrToInteger(StringSubstr(commentLock, 6, endTicket - 6));
 
-	   	if (ticketLckd != -1)
+	   	if (ticketLckd != -1) {
 	   		if (OrderSelect(ticketLckd, SELECT_BY_TICKET) == true && OrderCloseTime() == 0) {
 	   			//ордер не закрыт
 //	   			chkError(GetLastError());
@@ -442,6 +449,7 @@ int findLockedOrder(int ticket, string commentLock) {
 //				if (ticket == 8)
 //					Print("findLockedOrder=", ticketLckd);
 	   		}
+	   	}
 	}
 
 	return (ticketLckd);
@@ -474,11 +482,12 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 			if (OrderSymbol() == symb && OrderType() == cmd) {
 				double ordProf = OrderTakeProfit();
 				
-				if (ordProf > 0)
+				if (ordProf > 0) {
 					if (NormalizeDouble(MathAbs(NormalizeDouble(ordProf - price, Digits)), Digits) >= tp) {
 						//"текущий профит" должен быть "выше" 75% профита некоторого уже открытого ордера, для текущих цен
 						return (true);
 					}
+				}
 			}
 		}
 	}
@@ -486,11 +495,41 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 	return (false);
 }
 
-//расчет величины среднего профита на периоде
-int getProfitValue(int cntBars = 100) {
-	int avgProf;
+//расчет величины среднего профита на периоде, отдельно считается для sell и buy
+int getProfitValue(string symb, int cmd, int cntBars = 100) {
+	int retProfValue, avgProfBears, cntBarBears, avgProfBulls, cntBarBulls;
 
-	return (avgProf);
+	if (symb == "")
+		symb = Symbol();
+
+	for (int i = 1; i <= cntBars; i++) {
+		if (iClose[i] > iOpen[i]) {
+			//бычья свеча
+			avgProfBulls += iHigh[i] - iLow[i];
+			cntBarBulls++;
+		} else {
+			if (iClose[i] < iOpen[i]) {
+				//медвежья свеча
+				avgProfBears += iLow[i] - iHigh[i];
+				cntBarBears++;
+			}
+		}
+	}	
+
+	switch (cmd) {
+	case OP_BUY:
+		retProfValue = avgProfBulls / cntBarBulls;
+
+        break;
+	case OP_SELL:
+		retProfValue = avgProfBears / cntBarBears;
+
+        break;
+    default:
+    	retProfValue = 0;
+    }
+
+   	return (retProfValue);
 }
 
 //проверка сигналов аллигатора
