@@ -4,7 +4,7 @@ extern int magicNum = 777;
 extern int slipPage = 1; //Максимально допустимое отклонение цены для рыночных ордеров
 extern bool tradingOpen = true;
 extern bool tradingManagement = false;
-extern bool ndd = false;
+extern bool ndd = true;
 //stop & profit
 extern int stopLoss = 6000; //уровень SL, если 0, то SL не выставляется
 extern double stopLossKoef = 0; //коэффициент SL от спреда

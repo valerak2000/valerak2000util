@@ -318,13 +318,18 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 }
 
 //установить локу его профит
-bool setProfitToLockOrder(int ticket) {
+bool setProfitToLockOrder(int ticket, double stopLossKoef=0.0, int stopLoss=0) {
    	if (OrderSelect(ticket, SELECT_BY_TICKET) == true) {
 		string comment = OrderComment();
 		int endTicketInComment = StringFind(comment, "#Tp#");
-		double tp = StrToDouble(StringSubstr(comment, endTicketInComment + 4));
+		double tp = StrToDouble(StringSubstr(comment, endTicketInComment + 4)), sl;
 
-		if (OrderModify(ticket, OrderOpenPrice(), 0, tp, CLR_NONE) == false) {
+		if (stopLossKoef != 0 || stopLoss != 0)
+			sl = getSl(OrderSymbol(), OrderType(), stopLossKoef, stopLoss);
+		else
+			sl = 0.0;
+
+		if (OrderModify(ticket, OrderOpenPrice(), sl, tp, CLR_NONE) == false) {
 			chkError(GetLastError());
 
 			return (false);
@@ -333,12 +338,12 @@ bool setProfitToLockOrder(int ticket) {
 }
 
 //закрыть ордер и локирующую позицию
-bool closeOrder(int ticket, double lots, double price, int slipPage, color clrMarker) {
+bool closeOrder(int ticket, double lots, double price, int slipPage, color clrMarker, double stopLossKoef=0.0, int stopLoss=0) {
 	if (OrderClose(ticket, lots, price, slipPage, clrMarker) == true) {
 		//проверить есть ли локирующий ордер
 		int opposite = findLockOrder(ticket);
 	
-		if (opposite != -1 && setProfitToLockOrder(opposite) == false) {
+		if (opposite != -1 && setProfitToLockOrder(opposite, stopLossKoef, stopLoss) == false) {
 			return (false);
     	}
 	} else {
@@ -496,38 +501,45 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 }
 
 //расчет величины среднего профита на периоде, отдельно считается для sell и buy
-int getProfitValue(string symb, int cmd, int cntBars = 100) {
-	int retProfValue, avgProfBears, cntBarBears, avgProfBulls, cntBarBulls;
+int getProfitValue(string symb, int cmd, int controlPerod = 120) {
+	double retProfValue, avgProfBears, avgProfBulls;
+	int cntBarBears, cntBarBulls;
 
 	if (symb == "")
 		symb = Symbol();
+		
+	int i = 0;
 
-	for (int i = 1; i <= cntBars; i++) {
-		if (iClose[i] > iOpen[i]) {
+	while ((Time[0] - Time[i]) / 60 < controlPerod) {
+		if (Close[i] > Open[i]) {
 			//бычья свеча
-			avgProfBulls += iHigh[i] - iLow[i];
+			avgProfBulls += High[i] - Low[i];
 			cntBarBulls++;
 		} else {
-			if (iClose[i] < iOpen[i]) {
+			if (Close[i] < Open[i]) {
 				//медвежья свеча
-				avgProfBears += iLow[i] - iHigh[i];
+				avgProfBears += High[i] - Low[i];
 				cntBarBears++;
 			}
 		}
-	}	
+
+		i++;
+	}
 
 	switch (cmd) {
 	case OP_BUY:
-		retProfValue = avgProfBulls / cntBarBulls;
+		retProfValue = MathCeil(avgProfBulls / Point / cntBarBulls);
 
         break;
 	case OP_SELL:
-		retProfValue = avgProfBears / cntBarBears;
+		retProfValue = MathCeil(avgProfBears / Point / cntBarBears);
 
         break;
     default:
     	retProfValue = 0;
     }
+
+//	Print(avgProfBulls, " ", cntBarBulls, " ", avgProfBears, " ", cntBarBears);
 
    	return (retProfValue);
 }
