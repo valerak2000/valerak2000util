@@ -36,10 +36,10 @@ extern bool lockOpenBySignal = false; //открывать лок только по сигналам
 //Трал
 extern bool trailingProf = true; //вести профит вдоль цены
 extern int trailingProfStart = 10; //первичный порог для увеличения профита;эти величины расчитывать как величину "шума" цены
-extern int trailingProfStep = 3; //порог дальнешего увеличения профита(дельта)
+extern int trailingProfStep = 2; //порог дальнешего увеличения профита(дельта)
 extern bool trailingLoss = true; //вести лось вдоль цены
 extern int trailingLossStart = 13;
-extern int trailingLossStep = 3;
+extern int trailingLossStep = 2;
 
 //переменные советника
 #include <defvars.mqh>
@@ -63,6 +63,7 @@ int init() {
 	if (trailingProf == true) {
 //		takeProfit = trailingProfStart;
 		takeProfitKoef = 0;
+		stopLossKoef = 0;
 	}
 
     //Учитываем работу 5-ти знака
@@ -116,22 +117,28 @@ int start() {
 	minStop = MarketInfo(workSymb, MODE_STOPLEVEL);
 	//спред уже в пунктах с учетом значности котировок 
 	spread = MarketInfo(workSymb, MODE_SPREAD);
+	//расчет величин профита и лося на периоде 2ч
+	int takeProfitBuy = getProfitValue("", OP_BUY, 120) * 1.5;
+    int takeProfitSell = getProfitValue("", OP_SELL, 120) * 1.5;
+    takeProfit = MathMax(takeProfitBuy, takeProfitSell);
     //проверка торговых сигналов рынка - оракул
 	int mrktState = chkMarketState();
 	//моргнуть индикатором состояния
-	changeIndicatorState("sprd=" + DoubleToStr(spread, 0)
-						 + " BO=" + DoubleToStr(mrktState & sgnlBuyOpen != 0, 0)
-			  			 + " BC=" + DoubleToStr(mrktState & sgnlBuyClose != 0, 0)
-			  			 + " SO=" + DoubleToStr(mrktState & sgnlSellOpen != 0, 0)
-			  			 + " SC=" + DoubleToStr(mrktState & sgnlSellClose != 0, 0));
+	changeIndicatorState("sd=" + DoubleToStr(spread, 0)
+						 + " BO=" + DoubleToStr((mrktState & sgnlBuyOpen) != 0, 0)
+			  			 + " BC=" + DoubleToStr((mrktState & sgnlBuyClose) != 0, 0)
+			  			 + " SO=" + DoubleToStr((mrktState & sgnlSellOpen) != 0, 0)
+			  			 + " SC=" + DoubleToStr((mrktState & sgnlSellClose) != 0, 0)
+			  			 + " S=" + DoubleToStr(takeProfitSell, 0)
+			  			 + " B=" + DoubleToStr(takeProfitBuy, 0));
 
 //	int signalLong = chkLongSignal(workSymb);
 
 	if (dsplSgnl == true && mrktState > 0)
-		Print("BuyOpen=", (mrktState & sgnlBuyOpen != 0),
-			  " BuyClose=", (mrktState & sgnlBuyClose != 0),
-			  " SellOpen=", (mrktState & sgnlSellOpen != 0),
-			  " SellClose=", (mrktState & sgnlSellClose != 0),
+		Print("BuyOpen=", ((mrktState & sgnlBuyOpen) != 0),
+			  " BuyClose=", ((mrktState & sgnlBuyClose) != 0),
+			  " SellOpen=", ((mrktState & sgnlSellOpen) != 0),
+			  " SellClose=", ((mrktState & sgnlSellClose) != 0),
 			  " spread=", spread,
 			  " Ask=", Ask,
 			  " Bid=", Bid);
@@ -189,7 +196,7 @@ void doSolveWithOpened(int mrktState) {
 					thisLock = false;
 					//проверить установлен ли профит для бывшего лока - если нет то установить его
 					if (takeProfOrd == 0) { // && (takeProfitKoef != 0 || takeProfit != 0)) {
-						setProfitToLockOrder(ticket);
+						setProfitToLockOrder(ticket, stopLossKoef, stopLoss);
 					}
 				} else {
 					//это лок
@@ -209,7 +216,7 @@ void doSolveWithOpened(int mrktState) {
         			if (profOrd >= 0) {
 	        			if (tradingManagement == true && ((mrktState & sgnlBuyClose) != 0)) {
         					//закрыть открытый бай, если есть профит
-        					closeOrder(ticket, lots, Bid, slipPage, Yellow);
+        					closeOrder(ticket, lots, Bid, slipPage, Yellow, 0.0, 0);
         				}
         			} else {
 						//выставить лок или нет?
@@ -233,7 +240,7 @@ void doSolveWithOpened(int mrktState) {
         			if (profOrd >= 0) {
         				if (tradingManagement == true && ((mrktState & sgnlSellClose) != 0)) {
         					//закрыть открытый sell, если есть профит
-        					closeOrder(ticket, lots, Ask, slipPage, Yellow);
+        					closeOrder(ticket, lots, Ask, slipPage, Yellow, 0.0, 0);
         				}
         			} else {
 						//выставить лок или нет?
@@ -264,7 +271,7 @@ void doSolveWithOpened(int mrktState) {
 					case OP_BUY:
         				if (profOrd > 0 && ((mrktState & sgnlBuyClose) != 0)) {
     						//закрыть открытый бай, если есть профит
-    						closeOrder(ticket, lots, Bid, slipPage, Yellow);
+    						closeOrder(ticket, lots, Bid, slipPage, Yellow, stopLossKoef, stopLoss);
         				} else {
 						}
 
@@ -272,7 +279,7 @@ void doSolveWithOpened(int mrktState) {
 					case OP_SELL:
         				if (profOrd > 0 && ((mrktState & sgnlSellClose) != 0)) {
     						//закрыть открытый sell, если есть профит
-    						closeOrder(ticket, lots, Ask, slipPage, Yellow);
+    						closeOrder(ticket, lots, Ask, slipPage, Yellow, stopLossKoef, stopLoss);
         				} else {
 						}
 
