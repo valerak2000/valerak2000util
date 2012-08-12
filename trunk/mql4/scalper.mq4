@@ -60,7 +60,7 @@ int init() {
 	//размер max допустимого лота
     maxLot = MarketInfo(workSymb, MODE_MAXLOT);
 	//при трайлинге профит = трайлингстарт
-	if (trailingProf == true) {
+	if (trailingProf == true && takeProfitKoef > 0) {
 //		takeProfit = trailingProfStart;
 		takeProfitKoef = 0;
 		stopLossKoef = 0;
