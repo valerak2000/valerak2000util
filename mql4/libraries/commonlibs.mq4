@@ -87,8 +87,8 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 }
 
 //расчет профита
-double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit) {
-	double tp, spread;
+double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double inPrice = 0.0) {
+	double tp, spread, price;
 
 	if (symb == "")
 		symb = Symbol();
@@ -98,22 +98,33 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit) {
 
 	switch (cmd) {
 	case OP_BUY:
+		if (inPrice == 0.0) {
+			price = Ask;
+		} else {
+			price = inPrice;
+		}
+
     	if (takeProfit != 0)
-        	tp = NormalizeDouble(Ask + (spread + takeProfit) * Point, Digits);
+        	tp = NormalizeDouble(price + (spread + takeProfit) * Point, Digits);
     	else
-        	if (takeProfitKoef != 0)
-            	tp = NormalizeDouble(Ask + (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
+        	if (takeProfitKoef > 0)
+            	tp = NormalizeDouble(price + (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
         	else
         		tp = 0;
 
         break;
 	case OP_SELL:
-    	//продавать
+		if (inPrice == 0.0) {
+			price = Bid;
+		} else {
+			price = inPrice;
+		}
+
     	if (takeProfit != 0)
-        	tp = NormalizeDouble(Bid - (spread + takeProfit) * Point, Digits);
+        	tp = NormalizeDouble(price - (spread + takeProfit) * Point, Digits);
     	else
-        	if (takeProfitKoef != 0)
-            	tp = NormalizeDouble(Bid - (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
+        	if (takeProfitKoef > 0)
+            	tp = NormalizeDouble(price - (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
         	else
         		tp = 0;
 
@@ -126,8 +137,8 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit) {
 }
 
 //расчет лосей
-double getSl(string symb, int cmd, double stopLossKoef, int stopLoss) {
-	double sl, spread, minStop;
+double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inPrice = 0.0) {
+	double sl, spread, minStop, price;
 
 	if (symb == "")
 		symb = Symbol();
@@ -139,10 +150,16 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss) {
 
 	switch (cmd) {
 	case OP_BUY:
+		if (inPrice == 0.0) {
+			price = Bid;
+		} else {
+			price = inPrice;
+		}
+
     	if (stopLoss != 0)
     		sl = stopLoss;
     	else
-        	if (stopLossKoef != 0)
+        	if (stopLossKoef > 0)
             	sl = MathFloor(stopLossKoef * spread);
         	else
         		sl = 0;
@@ -156,11 +173,16 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss) {
     	
         break;
 	case OP_SELL:
-    	//продавать
+		if (inPrice == 0.0) {
+			price = Ask;
+		} else {
+			price = inPrice;
+		}
+
     	if (stopLoss != 0) 
         	sl = stopLoss;
     	else
-        	if (stopLossKoef != 0)
+        	if (stopLossKoef > 0)
             	sl = MathFloor(stopLossKoef * spread);
         	else
         		sl = 0;

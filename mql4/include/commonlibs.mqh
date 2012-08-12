@@ -7,8 +7,8 @@
 bool chkError(int error);
 bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01);
 
-double getSl(string symb, int cmd, double stopLossKoef, int stopLoss);
-double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit);
+double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inPrice = 0.0);
+double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double inPrice = 0.0);
 bool setProfitToLockOrder(int ticket, double stopLossKoef = 0.0, int stopLoss = 0);
 bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1, bool ndd = true, 
 			   double stopLossKoef = 0.0, double stopLoss = 0.0, double takeProfitKoef = 0.0, double takeProfit = 0.0,
