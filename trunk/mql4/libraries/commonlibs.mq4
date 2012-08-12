@@ -223,8 +223,9 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
             switch (cmd) {
             case OP_BUY:
                 //покупать
-                if (comment == "")
-                	comment = "BUY";
+                if (comment == "") {
+                	comment = "BUY"; //+ "#Tp#" + DoubleToStr(tp, Digits);
+                }
 
                 if (ndd == true) {
                 	ticket = OrderSend(symb, OP_BUY, lot, Ask, slipPage, 0, 0, comment, magicNum, 0, Blue);
@@ -232,10 +233,6 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
             		tp = getTp(symb, OP_BUY, takeProfitKoef, takeProfit);
             		sl = getSl(symb, OP_BUY, stopLossKoef, stopLoss);
 
-/*					if (trailingUse == true) {
-						comment = comment +  "#TS#" + DoubleToStr(getTp(symb, OP_BUY, 0, trailingProfStart), Digits));
-					}
-*/
                 	ticket = OrderSend(symb, OP_BUY, lot, Ask, slipPage, sl, tp, comment, magicNum, 0, Blue);
                 }
 
