@@ -496,7 +496,7 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         	if (trailingProf == true) {
         		//в случае если прибыль по ордеру <0 - нужно восстановить уровень профита в первоначальный вид
         		if (OrderProfit() < 0) {
-					tp = NormalizeDouble(getTp(symb, OP_BUY, 0, takeProfit, opPrice), Digits);
+					tp = NormalizeDouble(getTp(symb, OP_SELL, 0, takeProfit, opPrice), Digits);
 
         			if (takeProfOrd < tp) {
 	        			tp = takeProfOrd;
