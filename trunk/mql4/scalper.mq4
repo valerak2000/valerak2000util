@@ -438,7 +438,7 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         		if (OrderProfit() < 0) {
 					tp = NormalizeDouble(getTp(symb, OP_BUY, 0, takeProfit, opPrice), Digits);
 
-        		    if (MathAbs(tp - takeProfOrd) / takeProfOrd <= 0.01) {
+        		    if (NormalizeDouble(MathAbs(tp - takeProfOrd), Digits) <= NormalizeDouble(0.01 / numSign, Digits)) {
         		        //при отличии более чем на 1% профит изменять
         				tp = takeProfOrd;
 	        		}
@@ -499,7 +499,7 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         		if (OrderProfit() < 0) {
 					tp = NormalizeDouble(getTp(symb, OP_SELL, 0, takeProfit, opPrice), Digits);
 
-        		    if (MathAbs(tp - takeProfOrd) / takeProfOrd <= 0.01) {
+        		    if (NormalizeDouble(MathAbs(tp - takeProfOrd), Digits) <= NormalizeDouble(0.01 / numSign, Digits)) {
         		        //при отличии более чем на 1% профит изменять
         				tp = takeProfOrd;
         		    }

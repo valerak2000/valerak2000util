@@ -80,10 +80,11 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 		symb = Symbol();
 //AccountFreeMargin()
 //средства / залог * 100 = уровень
-	if (((AccountEquity() / AccountBalance()) * 100) <= marginPercent)
+	if (((AccountEquity() / AccountBalance()) * 100) <= marginPercent) {
 		return (false);
-	else
+	} else {
 		return (!(AccountFreeMarginCheck(symb, cmd, lot) <= 0 || GetLastError() == ERR_NOT_ENOUGH_MONEY));
+	}
 }
 
 //расчет профита
@@ -104,13 +105,15 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double
 			price = inPrice;
 		}
 
-    	if (takeProfit != 0)
+    	if (takeProfit != 0) {
         	tp = NormalizeDouble(price + (spread + takeProfit) * Point, Digits);
-    	else
-        	if (takeProfitKoef > 0)
+    	} else {
+        	if (takeProfitKoef > 0) {
             	tp = NormalizeDouble(price + (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
-        	else
+        	} else {
         		tp = 0;
+        	}
+        }
 
         break;
 	case OP_SELL:
@@ -120,13 +123,15 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double
 			price = inPrice;
 		}
 
-    	if (takeProfit != 0)
+    	if (takeProfit != 0) {
         	tp = NormalizeDouble(price - (spread + takeProfit) * Point, Digits);
-    	else
-        	if (takeProfitKoef > 0)
+    	} else {
+        	if (takeProfitKoef > 0) {
             	tp = NormalizeDouble(price - (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
-        	else
+        	} else {
         		tp = 0;
+        	}
+        }
 
         break;
     default:
@@ -148,6 +153,16 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inP
 	//мин.дистанция
 	minStop = MarketInfo(symb, MODE_STOPLEVEL);
 
+	if (stopLoss != 0) {
+		sl = stopLoss;
+	} else {
+    	if (stopLossKoef > 0) {
+        	sl = MathFloor(stopLossKoef * spread);
+    	} else {
+    		sl = 0;
+    	}
+    }
+
 	switch (cmd) {
 	case OP_BUY:
 		if (inPrice == 0.0) {
@@ -156,19 +171,12 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inP
 			price = inPrice;
 		}
 
-    	if (stopLoss != 0)
-    		sl = stopLoss;
-    	else
-        	if (stopLossKoef > 0)
-            	sl = MathFloor(stopLossKoef * spread);
-        	else
-        		sl = 0;
-    
     	if (sl != 0) {
-    		if (minStop > sl)
+    		if (minStop > sl) {
         		sl = minStop + Point;
+        	}
 
-	    	sl = NormalizeDouble(Bid - sl * Point, Digits);
+	    	sl = NormalizeDouble(price - sl * Point, Digits);
         }
     	
         break;
@@ -179,19 +187,12 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inP
 			price = inPrice;
 		}
 
-    	if (stopLoss != 0) 
-        	sl = stopLoss;
-    	else
-        	if (stopLossKoef > 0)
-            	sl = MathFloor(stopLossKoef * spread);
-        	else
-        		sl = 0;
-
     	if (sl != 0) {
-    		if (minStop > sl)
+    		if (minStop > sl) {
         		sl = minStop + Point;
+        	}
 
-    		sl = NormalizeDouble(Ask + sl * Point, Digits);
+    		sl = NormalizeDouble(price + sl * Point, Digits);
     	}
 
         break;
@@ -199,8 +200,9 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inP
 		sl = 0;    
     }
 
-	if (sl < 0)
+	if (sl < 0) {
 		sl = 0;
+	}
 
     return (NormalizeDouble(sl, Digits));
 }
@@ -219,7 +221,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 
     //создать ордер    
     while (Repeat == true) {
-        if (IsTradeAllowed() == true)
+        if (IsTradeAllowed() == true) {
             switch (cmd) {
             case OP_BUY:
                 //покупать
@@ -239,8 +241,9 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
                 break;
             case OP_SELL:
                 //продавать
-                if (comment == "")
+                if (comment == "") {
                 	comment = "SELL";
+                }
 
                 if (ndd == true) {
 	                ticket = OrderSend(symb, OP_SELL, lot, Bid, slipPage, 0, 0, comment, magicNum, 0, Red);
@@ -259,12 +262,14 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
             default:
                 ticket = -1;
             }
+        }
     
         if (ticket == -1) {  
-            if (chkError(GetLastError()) == true)
+            if (chkError(GetLastError()) == true) {
                 Repeat = false;
-            else
-                RefreshRates();      
+            } else {
+                RefreshRates();
+            }
         } else {
 //        	Print(GetLastError());
 /*        	if (GetLastError() != 0)
@@ -316,7 +321,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
     	}
     }
 
-	if (dsplMsg == true && ticket > 0)
+	if (dsplMsg == true && ticket > 0) {
 		Print("ticket=", ticket,
 //			" ndd=", ndd,
 			" comment=", comment,
@@ -332,6 +337,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 //			" margin=", AccountFreeMargin(),
       		" %=", (AccountEquity() / AccountBalance()) * 100);
 //      		" %=", (AccountFreeMargin() / AccountBalance()) * 100,
+	}
 
     return (ticket);
 }
@@ -341,12 +347,13 @@ bool setProfitToLockOrder(int ticket, double stopLossKoef=0.0, int stopLoss=0) {
    	if (OrderSelect(ticket, SELECT_BY_TICKET) == true) {
 		string comment = OrderComment();
 		int endTicketInComment = StringFind(comment, "#Tp#");
-		double tp = StrToDouble(StringSubstr(comment, endTicketInComment + 4)), sl;
+		double sl, tp = StrToDouble(StringSubstr(comment, endTicketInComment + 4));
 
-		if (stopLossKoef != 0 || stopLoss != 0)
-			sl = getSl(OrderSymbol(), OrderType(), stopLossKoef, stopLoss);
-		else
+		if (stopLossKoef != 0 || stopLoss != 0) {
+			sl = getSl(OrderSymbol(), OrderType(), stopLossKoef, stopLoss, 0.0);
+		} else {
 			sl = 0.0;
+		}
 
 		if (OrderModify(ticket, OrderOpenPrice(), sl, tp, CLR_NONE) == false) {
 			chkError(GetLastError());
