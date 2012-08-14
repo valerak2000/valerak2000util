@@ -438,13 +438,9 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         		if (OrderProfit() < 0) {
 					tp = NormalizeDouble(getTp(symb, OP_BUY, 0, takeProfit, opPrice), Digits);
 
-        			if (takeProfOrd < tp) {
-	        			tp = takeProfOrd;
-	        		} else {
-	        		    if (NormalizeDouble(NormalizeDouble(tp - takeProfOrd, Digits) / takeProfOrd, Digits) <= 0.2) {
-	        		        //при отличии более чем на 20% профит изменять
-	        				tp = takeProfOrd;
-	        		    }
+        		    if (MathAbs(tp - takeProfOrd) / takeProfOrd <= 0.01) {
+        		        //при отличии более чем на 1% профит изменять
+        				tp = takeProfOrd;
 	        		}
 	       		} else {
 		    		//прфт текущей цены
@@ -503,14 +499,10 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         		if (OrderProfit() < 0) {
 					tp = NormalizeDouble(getTp(symb, OP_SELL, 0, takeProfit, opPrice), Digits);
 
-        			if (takeProfOrd > tp) {
-	        			tp = takeProfOrd;
-	        		} else {
-	        		    if (NormalizeDouble(NormalizeDouble(takeProfOrd - tp, Digits) / tp, Digits) <= 0.2) {
-	        		        //при отличии более чем на 20% профит изменять
-	        				tp = takeProfOrd;
-	        		    }
-	        		}
+        		    if (MathAbs(tp - takeProfOrd) / takeProfOrd <= 0.01) {
+        		        //при отличии более чем на 1% профит изменять
+        				tp = takeProfOrd;
+        		    }
 	       		} else {
 		    		//прфт текущей цены
 					tp = NormalizeDouble(getTp(symb, OP_SELL, 0, takeProfit, 0.0), Digits);
