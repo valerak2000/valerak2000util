@@ -19,7 +19,7 @@ int findLockOrder(int ticket);
 int findLockedOrder(int ticket, string commentLock);
 bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProfitKoef = 0.0, double takeProfit = 0.0);
 int getNumberOfBarLastOrder(string symb = "", int tf = 0, int op = -1, int mn = -1);
-int getProfitValue(string symb, int cmd, int controlPerod = 120);
+int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProfit = 0.0);
 
 int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeriod, int teethShift, int lipsPeriod, int lipsShift,
 					   double dltAligBuy, double dltAligSell);

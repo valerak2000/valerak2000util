@@ -119,8 +119,8 @@ int start() {
 	
 	if (takeProfitKoef == -1.0) {
 		//расчет величин профита и лося на периоде 2ч
-		takeProfitBuy = getProfitValue(workSymb, OP_BUY, 120);
-    	takeProfitSell = getProfitValue(workSymb, OP_SELL, 120);
+		takeProfitBuy = getProfitValue(workSymb, OP_BUY, 120, takeProfit);
+    	takeProfitSell = getProfitValue(workSymb, OP_SELL, 120, takeProfit);
     	takeProfit = MathMax(takeProfitBuy, takeProfitSell) * 1.5;
     }
     //проверка торговых сигналов рынка - оракул
