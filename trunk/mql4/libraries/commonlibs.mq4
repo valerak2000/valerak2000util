@@ -111,7 +111,7 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double
         	if (takeProfitKoef > 0) {
             	tp = NormalizeDouble(price + (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
         	} else {
-        		tp = 0;
+        		tp = 0.0;
         	}
         }
 
@@ -129,13 +129,13 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double
         	if (takeProfitKoef > 0) {
             	tp = NormalizeDouble(price - (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
         	} else {
-        		tp = 0;
+        		tp = 0.0;
         	}
         }
 
         break;
     default:
-		tp = 0;    
+		tp = 0.0;    
     }
 
     return (NormalizeDouble(tp, Digits));
@@ -159,7 +159,7 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inP
     	if (stopLossKoef > 0) {
         	sl = MathFloor(stopLossKoef * spread);
     	} else {
-    		sl = 0;
+    		sl = 0.0;
     	}
     }
 
@@ -171,7 +171,7 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inP
 			price = inPrice;
 		}
 
-    	if (sl != 0) {
+    	if (sl != 0.0) {
     		if (minStop > sl) {
         		sl = minStop + Point;
         	}
@@ -187,7 +187,7 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inP
 			price = inPrice;
 		}
 
-    	if (sl != 0) {
+    	if (sl != 0.0) {
     		if (minStop > sl) {
         		sl = minStop + Point;
         	}
@@ -197,11 +197,11 @@ double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inP
 
         break;
     default:
-		sl = 0;    
+		sl = 0.0;    
     }
 
-	if (sl < 0) {
-		sl = 0;
+	if (sl < 0.0) {
+		sl = 0.0;
 	}
 
     return (NormalizeDouble(sl, Digits));
@@ -303,12 +303,12 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 
             	break;
             default:
-            	sl = 0;
-            	tp = 0;
+            	sl = 0.0;
+            	tp = 0.0;
         	}
 
 //
-        	if (IsTradeAllowed() == true && (sl != 0 || tp != 0)) {
+        	if (IsTradeAllowed() == true && (sl != 0.0 || tp != 0.0)) {
         		if (OrderModify(ticket, OrderOpenPrice(), sl, tp, CLR_NONE) == true) {
             		Repeat = false;
         		} else {
@@ -343,7 +343,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 }
 
 //установить локу его профит
-bool setProfitToLockOrder(int ticket, double stopLossKoef=0.0, int stopLoss=0) {
+bool setProfitToLockOrder(int ticket, double stopLossKoef = 0.0, int stopLoss = 0) {
    	if (OrderSelect(ticket, SELECT_BY_TICKET) == true) {
 		string comment = OrderComment();
 		int endTicketInComment = StringFind(comment, "#Tp#");
@@ -364,7 +364,7 @@ bool setProfitToLockOrder(int ticket, double stopLossKoef=0.0, int stopLoss=0) {
 }
 
 //закрыть ордер и локирующую позицию
-bool closeOrder(int ticket, double lots, double price, int slipPage, color clrMarker, double stopLossKoef=0.0, int stopLoss=0) {
+bool closeOrder(int ticket, double lots, double price, int slipPage, color clrMarker, double stopLossKoef = 0.0, int stopLoss = 0) {
 	if (OrderClose(ticket, lots, price, slipPage, clrMarker) == true) {
 		//проверить есть ли локирующий ордер
 		int opposite = findLockOrder(ticket);
@@ -529,12 +529,10 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 //расчет величины среднего профита на периоде, отдельно считается для sell и buy
 int getProfitValue(string symb, int cmd, int controlPerod = 120) {
 	double retProfValue, avgProfBears, avgProfBulls;
-	int cntBarBears, cntBarBulls;
+	int cntBarBears, cntBarBulls, i = 0;
 
 	if (symb == "")
 		symb = Symbol();
-		
-	int i = 0;
 
 	while ((Time[0] - Time[i]) / 60 < controlPerod) {
 		if (Close[i] > Open[i]) {
