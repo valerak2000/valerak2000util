@@ -527,7 +527,7 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 }
 
 //расчет величины среднего профита на периоде, отдельно считается для sell и buy
-int getProfitValue(string symb, int cmd, int controlPerod = 120) {
+int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProfit = 0.0) {
 	double retProfValue, avgProfBears, avgProfBulls;
 	int cntBarBears, cntBarBulls, i = 0;
 
@@ -552,11 +552,19 @@ int getProfitValue(string symb, int cmd, int controlPerod = 120) {
 
 	switch (cmd) {
 	case OP_BUY:
-		retProfValue = MathCeil(avgProfBulls / Point / cntBarBulls);
+		if (cntBarBulls == 0) {
+			retProfValue = takeProfit;
+		} else {
+			retProfValue = MathCeil(avgProfBulls / Point / cntBarBulls);
+		}
 
         break;
 	case OP_SELL:
-		retProfValue = MathCeil(avgProfBears / Point / cntBarBears);
+		if (cntBarBears == 0) {
+			retProfValue = takeProfit;
+		} else {
+			retProfValue = MathCeil(avgProfBears / Point / cntBarBears);
+		}
 
         break;
     default:
