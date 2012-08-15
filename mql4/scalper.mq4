@@ -119,8 +119,8 @@ int start() {
 	
 	if (takeProfitKoef == -1.0) {
 		//расчет величин профита и лося на периоде 2ч
-		takeProfitBuy = getProfitValue("", OP_BUY, 120);
-    	takeProfitSell = getProfitValue("", OP_SELL, 120);
+		takeProfitBuy = getProfitValue(workSymb, OP_BUY, 120);
+    	takeProfitSell = getProfitValue(workSymb, OP_SELL, 120);
     	takeProfit = MathMax(takeProfitBuy, takeProfitSell) * 1.5;
     }
     //проверка торговых сигналов рынка - оракул
@@ -472,24 +472,12 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
        				sl = takeLossOrd;
        			}
 				//если новый лоссь меньше цены открытия
-  				if ((opPrice >= sl))
+  				if (opPrice >= sl) {
        				sl = takeLossOrd;
+       			}
       		} else {
    				sl = takeLossOrd;
        		}
-    		//установить новый прфт или лоссь
-    		if ((takeLossOrd != sl) || (takeProfOrd != tp)) {
-        		if (OrderModify(ticket, opPrice, sl, tp, CLR_NONE) == false) {
-/*					Print(ticket, " Ask=", NormalizeDouble(Ask, Digits), " Bid=", NormalizeDouble(Bid, Digits),
-							" takeLossOrd=", NormalizeDouble(takeLossOrd, Digits), " takeProfOrd=", NormalizeDouble(takeProfOrd, Digits),
-							" opPrice=", NormalizeDouble(opPrice, Digits), 
-							" sl=", NormalizeDouble(sl, Digits), " tp=", NormalizeDouble(tp, Digits),
-							" currloss=", NormalizeDouble(opPrice - takeLossOrd, Digits),
-							" trailLoss=", NormalizeDouble(trailLoss * Point, Digits));
-*/
-	    			chkError(GetLastError());
-            	}
-            }
 
         	break;
 		case OP_SELL:
@@ -528,33 +516,37 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         	}
 			//управление лоссем
     		if (trailingLoss == true) {
+    			if (takeLossOrd == 0.0) {
+    				takeLossOrd = NormalizeDouble(1000000.0, Digits);
+    			}
+
 				sl = NormalizeDouble(getSl(symb, OP_SELL, 0, trailingLossStart, 0.0), Digits);
 				//если разница между предыдущим лоссем и новым >= trailingLossStep
        			if (NormalizeDouble(takeLossOrd - sl, Digits) < NormalizeDouble(trailingLossStep * Point, Digits)) {
        				sl = takeLossOrd;
        			}
 				//если новый лоссь меньше цены открытия
-  				if ((opPrice <= sl))
+  				if (opPrice <= sl) {
        				sl = takeLossOrd;
+       			}
        		} else {
    				sl = takeLossOrd;
        		}
-    		//установить новый прфт или лоссь
-    		if ((takeLossOrd != sl) || (takeProfOrd != tp)) {
-/*				if (ticket == 2)
-					Print(ticket, " Ask=", NormalizeDouble(Ask, Digits), " Bid=", NormalizeDouble(Bid, Digits),
-							" takeLossOrd=", NormalizeDouble(takeLossOrd, Digits), " takeProfOrd=", NormalizeDouble(takeProfOrd, Digits),
-							" opPrice=", NormalizeDouble(opPrice, Digits), 
-							" sl=", NormalizeDouble(sl, Digits), " tp=", NormalizeDouble(tp, Digits),
-							" currloss=", NormalizeDouble(takeLossOrd - sl, Digits), " currprof=", NormalizeDouble(opPrice - takeProfOrd, Digits),
-							" trailLoss=", NormalizeDouble(trailLoss * Point, Digits), " trailProf=", NormalizeDouble(trailProf * Point, Digits));
-*/
-       			if (OrderModify(ticket, opPrice, sl, tp, CLR_NONE) == false) {
-	    			chkError(GetLastError());
-           		}
-            }
 
         	break;
     	}
+		//установить новый прфт или лоссь
+		if ((takeLossOrd != sl) || (takeProfOrd != tp)) {
+    		if (OrderModify(ticket, opPrice, sl, tp, CLR_NONE) == false) {
+/*					Print(ticket, " Ask=", NormalizeDouble(Ask, Digits), " Bid=", NormalizeDouble(Bid, Digits),
+							" takeLossOrd=", NormalizeDouble(takeLossOrd, Digits), " takeProfOrd=", NormalizeDouble(takeProfOrd, Digits),
+							" opPrice=", NormalizeDouble(opPrice, Digits), 
+							" sl=", NormalizeDouble(sl, Digits), " tp=", NormalizeDouble(tp, Digits),
+							" currloss=", NormalizeDouble(opPrice - takeLossOrd, Digits),
+							" trailLoss=", NormalizeDouble(trailLoss * Point, Digits));
+*/
+    			chkError(GetLastError());
+        	}
+        }
     }
 }
