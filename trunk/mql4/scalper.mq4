@@ -516,13 +516,17 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         	}
 			//управление лоссем
     		if (trailingLoss == true) {
+			    double loss;
+
     			if (takeLossOrd == 0.0) {
-    				takeLossOrd = NormalizeDouble(1000000.0, Digits);
+    				loss = NormalizeDouble(1000000.0, Digits);
+    			} else {
+    				loss = takeLossOrd;
     			}
 
 				sl = NormalizeDouble(getSl(symb, OP_SELL, 0, trailingLossStart, 0.0), Digits);
 				//если разница между предыдущим лоссем и новым >= trailingLossStep
-       			if (NormalizeDouble(takeLossOrd - sl, Digits) < NormalizeDouble(trailingLossStep * Point, Digits)) {
+       			if (NormalizeDouble(loss - sl, Digits) < NormalizeDouble(trailingLossStep * Point, Digits)) {
        				sl = takeLossOrd;
        			}
 				//если новый лоссь меньше цены открытия
