@@ -9,7 +9,7 @@ extern bool ndd = true;
 extern int stopLoss = 6000; //уровень SL, если 0, то SL не выставляется
 extern double stopLossKoef = 0; //коэффициент SL от спреда
 extern int takeProfit = 15; //уровень TP, если 0, то TP не выставляется
-extern double takeProfitKoef = 0; //коэффициент профита от спреда
+extern double takeProfitKoef = -1; //коэффициент профита от спреда
 //Аллигатор
 extern double dltAligBuy = 2; //ширина "зева" Alligator'а на открытие ордера - дельта погрешности показаний алигатора
 extern double dltAligSell = 1; //ширина "зева" Alligator'а на закрытие ордера - дельта погрешности показаний алигатора
