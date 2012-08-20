@@ -36,10 +36,10 @@ extern bool lockOpenBySignal = false; //открывать лок только по сигналам
 //Трал
 extern bool trailingProf = true; //вести профит вдоль цены
 extern int trailingProfStart = 10; //первичный порог для увеличения профита;эти величины расчитывать как величину "шума" цены
-extern int trailingProfStep = 2; //порог дальнешего увеличения профита(дельта)
+extern int trailingProfStep = 6; //порог дальнешего увеличения профита(дельта)
 extern bool trailingLoss = true; //вести лось вдоль цены
 extern int trailingLossStart = 13;
-extern int trailingLossStep = 2;
+extern int trailingLossStep = 4;
 
 //переменные советника
 #include <defvars.mqh>
@@ -125,14 +125,21 @@ int start() {
     }
     //проверка торговых сигналов рынка - оракул
 	int mrktState = chkMarketState();
+	string state;
+
+	if ((mrktState & sgnlBuyOpen) != 0)
+		state = state + " BO";
+	if ((mrktState & sgnlBuyClose) != 0)
+		state = state + " BC";
+	if ((mrktState & sgnlSellOpen) != 0)
+		state = state + " SO";
+	if ((mrktState & sgnlSellClose) != 0)
+		state = state + " SC";
 	//моргнуть индикатором состояния
 	changeIndicatorState("sd=" + DoubleToStr(spread, 0)
-						 + " BO=" + DoubleToStr((mrktState & sgnlBuyOpen) != 0, 0)
-			  			 + " BC=" + DoubleToStr((mrktState & sgnlBuyClose) != 0, 0)
-			  			 + " SO=" + DoubleToStr((mrktState & sgnlSellOpen) != 0, 0)
-			  			 + " SC=" + DoubleToStr((mrktState & sgnlSellClose) != 0, 0)
-			  			 + " S=" + DoubleToStr(takeProfitSell, 0)
-			  			 + " B=" + DoubleToStr(takeProfitBuy, 0));
+						 + " S=" + DoubleToStr(takeProfitSell, 0)
+			  	   		 + " B=" + DoubleToStr(takeProfitBuy, 0)
+			  	   		 + " [" + state + " ]");
 
 //	int signalLong = chkLongSignal(workSymb);
 

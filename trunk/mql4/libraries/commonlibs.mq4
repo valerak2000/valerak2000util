@@ -352,7 +352,7 @@ bool setProfitToLockOrder(int ticket, double stopLossKoef = 0.0, int stopLoss = 
 		if (stopLossKoef != 0 || stopLoss != 0) {
 			sl = getSl(OrderSymbol(), OrderType(), stopLossKoef, stopLoss, 0.0);
 		} else {
-			sl = 0.0;
+			sl = NormalizeDouble(0.0, Digits);
 		}
 
 		if (OrderModify(ticket, OrderOpenPrice(), sl, tp, CLR_NONE) == false) {
@@ -488,7 +488,7 @@ int findLockedOrder(int ticket, string commentLock) {
 
 //есть ли ордер с близкой ценой открытия?
 bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProfitKoef = 0.0, double takeProfit = 0.0) {
-	double tp, price;
+	double tp, deltaTp, price;
 
 	if (symb == "")
 		symb = Symbol();
@@ -506,7 +506,8 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
         break;
     }
 	//дельта цены для получения требуемого профита
-	tp = NormalizeDouble(MathAbs(NormalizeDouble(getTp(symb, cmd, takeProfitKoef, takeProfit) - price, Digits)) * 0.25, Digits);
+	tp = NormalizeDouble(getTp(symb, cmd, takeProfitKoef, takeProfit), Digits);
+	deltaTp = NormalizeDouble(MathAbs(NormalizeDouble(tp - price, Digits)) * 0.25, Digits);
 
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
@@ -514,10 +515,30 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 				double ordProf = OrderTakeProfit();
 				
 				if (ordProf > 0) {
-					if (NormalizeDouble(MathAbs(NormalizeDouble(ordProf - price, Digits)), Digits) >= tp) {
+					//установлен профит
+					if (NormalizeDouble(MathAbs(NormalizeDouble(ordProf - price, Digits)), Digits) >= deltaTp) {
 						//"текущий профит" должен быть "выше" 75% профита некоторого уже открытого ордера, для текущих цен
-						return (true);
+						//диапазон от цены открытия(цо) до цены профита, т.е. если профит находится ниже цо ордера, то его можно делать
+						switch (cmd) {
+						case OP_BUY:
+							if (OrderOpenPrice() < tp) {
+								return (true);
+							}
+
+    						break;
+						case OP_SELL:
+//							Print("2 ", OrderTicket(), " ", OrderOpenPrice(), " ", tp);
+							if (OrderOpenPrice() > tp) {
+								return (true);
+							}
+
+    						break;
+						}					
+//						if (cmd == OP_SELL)
+//							Print("1 ", OrderTicket(), " ", ordProf, " ", price, " ", deltaTp);
+//						return (true);
 					}
+
 				}
 			}
 		}
@@ -534,7 +555,7 @@ int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProf
 	if (symb == "")
 		symb = Symbol();
 
-	while ((Time[0] - Time[i]) / 60 < controlPerod) {
+	while (((Time[0] - Time[i]) / 60) < controlPerod) {
 		if (Close[i] > Open[i]) {
 			//бычья свеча
 			avgProfBulls += High[i] - Low[i];
