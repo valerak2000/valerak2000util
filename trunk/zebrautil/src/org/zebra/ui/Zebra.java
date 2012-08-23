@@ -364,10 +364,12 @@ public class Zebra extends ApplicationWindow {
 	}
 
 	private void loadZebraFile(String name) {	
+		if (name == null) return;
+
 		Cursor waitCursor = new Cursor(getShell().getDisplay(), SWT.CURSOR_WAIT);
 		getShell().setCursor(waitCursor);
 
-/*		if(name == null) return;
+/*		
 		file = new File(name);
 
 		FileReader fileReader = null;
