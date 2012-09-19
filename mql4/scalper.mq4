@@ -122,6 +122,7 @@ int start() {
 		takeProfitBuy = getProfitValue(workSymb, OP_BUY, 120, takeProfit);
     	takeProfitSell = getProfitValue(workSymb, OP_SELL, 120, takeProfit);
     	takeProfit = MathMax(takeProfitBuy, takeProfitSell) * 2.0;
+    	trailingProfStart = MathMax(takeProfitBuy, takeProfitSell) * 1.5;
     }
     //проверка торговых сигналов рынка - оракул
 	int mrktState = chkMarketState();
