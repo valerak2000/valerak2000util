@@ -121,7 +121,7 @@ int start() {
 		//расчет величин профита и лося на периоде 2ч
 		takeProfitBuy = getProfitValue(workSymb, OP_BUY, 120, takeProfit);
     	takeProfitSell = getProfitValue(workSymb, OP_SELL, 120, takeProfit);
-    	takeProfit = MathMax(takeProfitBuy, takeProfitSell) * 1.5;
+    	takeProfit = MathMax(takeProfitBuy, takeProfitSell) * 2.0;
     }
     //проверка торговых сигналов рынка - оракул
 	int mrktState = chkMarketState();
