@@ -507,7 +507,7 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
     }
 	//дельта цены для получения требуемого профита
 	tp = NormalizeDouble(getTp(symb, cmd, takeProfitKoef, takeProfit), Digits);
-	deltaTp = NormalizeDouble(MathAbs(NormalizeDouble(tp - price, Digits)) * 0.25, Digits);
+	deltaTp = NormalizeDouble(MathAbs(NormalizeDouble(tp - price, Digits)) * 0.75, Digits);
 
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
