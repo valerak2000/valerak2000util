@@ -18,35 +18,38 @@
 
 #include <defvarsExtrn.mqh>
 //Параметры советника
-extern int сontrolPeriod = PERIOD_M5; //Период, на котором принимаем решение (работают индикаторы)
-extern int maxOpenOrders = 10; //max количество открытых ордеров
-extern double tradeLot = 0.1; //объем ордера
-extern int maxSpread = 4;
+extern int exControlPeriod = PERIOD_M5; //Период, на котором принимаем решение (работают индикаторы)
+extern int exMaxOpenOrders = 10; //max количество открытых ордеров
+extern double exTradeLot = 0.01; //объем ордера
+extern int exMaxSpread = 4;
 
 //extern int openDistanceTic = 20; //расстояние между открытиями ордеров (в тиках)
-extern int openDistanceBar = 1; //расстояние между открытиями ордеров (в барах) - имеет больший приоритет. Отсчет от нуля
-extern int minMarginPercent = 80; //Процент свободной маржи от Баланса при котором новые ордера не выставляются
+extern int exOpenDistanceBar = 1; //расстояние между открытиями ордеров (в барах) - имеет больший приоритет. Отсчет от нуля
+extern int exMinMarginPercent = 50; //Процент свободной маржи от Баланса при котором новые ордера не выставляются
 
 //Локер
-extern bool lockUse = false; //использовать локирование
-extern int lockLevel = 10; //уровень локирования позиции
-extern bool lockManagement = false; //использовать управление локами
-extern bool lockOpenBySignal = false; //открывать лок только по сигналам
+extern bool exLockUse = false; //использовать локирование
+extern int exLockLevel = 10; //уровень локирования позиции
+extern bool exLockManagement = false; //использовать управление локами
+extern bool exLockOpenBySignal = false; //открывать лок только по сигналам
 
 //Трал
-extern bool trailingProf = true; //вести профит вдоль цены
-extern int trailingProfStart = 10; //первичный порог для увеличения профита;эти величины расчитывать как величину "шума" цены
-extern int trailingProfStep = 6; //порог дальнешего увеличения профита(дельта)
-extern bool trailingLoss = true; //вести лось вдоль цены
-extern int trailingLossStart = 13;
-extern int trailingLossStep = 4;
+extern bool exTrailingProf = true; //вести профит вдоль цены
+extern int exTrailingProfStart = 0; //первичный порог для увеличения профита;расчитывается как величина "шума" цены * 1.5
+extern int exTrailingProfStep = 6; //порог дальнешего увеличения профита(дельта)
+extern bool exTrailingLoss = true; //вести лось вдоль цены
+extern int exTrailingLossStart = 10;
+extern int exTrailingLossStep = 2;
+
+//генератор сигналов, через #
+extern string exGovernor = "ALG#";
 
 //переменные советника
 #include <defvars.mqh>
 //время открытия ордера
 datetime prevOrderBar;
 //int ticCnt = 0;
-int numSign, takeProfitBuy, takeProfitSell;
+int numSign, stopLossVar, takeProfitVar, takeProfitBuyVar, takeProfitSellVar;
 
 #include "useFunction.mqh"
 //инициализация
@@ -60,42 +63,46 @@ int init() {
 	//размер max допустимого лота
     maxLot = MarketInfo(workSymb, MODE_MAXLOT);
 	//при трайлинге профит = трайлингстарт
-	if (trailingProf == true && takeProfitKoef > 0) {
+	if (exTrailingProf == true) {
 //		takeProfit = trailingProfStart;
-		takeProfitKoef = 0;
-		stopLossKoef = 0;
+		exTakeProfitKoef = 0;
+		exStopLossKoef = 0;
 	}
-
+	//инициаизация расчетных переменных
+	takeProfitVar = exTakeProfit;
+	stopLossVar = exStopLoss;
     //Учитываем работу 5-ти знака
     if (MarketInfo(workSymb, MODE_DIGITS) == 3 || MarketInfo(workSymb, MODE_DIGITS) == 5) {
     	fiveSign = true;
         numSign = 10;
-        slipPage *= 10;
-        maxSpread *= 10;
+        exSlipPage *= 10;
+        exMaxSpread *= 10;
  
-        takeProfit *= 10;
-        stopLoss *= 10;
+        takeProfitVar *= 10;
+        stopLossVar *= 10;
 
-        trailingProfStart *= 10;
-        trailingProfStep *= 10;
-        trailingLossStart *= 10;
-        trailingLossStep *= 10;
+        exTrailingProfStart *= 10;
+        exTrailingProfStep *= 10;
+        exTrailingLossStart *= 10;
+        exTrailingLossStep *= 10;
 
-        dltAligBuy *= 10;
-        dltAligSell *= 10;
-//    	takeProfitKoef *= 10;
-//    	stopLossKoef *= 10;
-     	lockLevel *= 10;
+        exDltAligBuy *= 10;
+        exDltAligSell *= 10;
+//    	exTakeProfitKoef *= 10;
+//    	exStopLossKoef *= 10;
+     	exLockLevel *= 10;
      } else {
     	fiveSign = false;
      	numSign = 1;
      }
 
-    if (tradeLot < minLot)
-    	tradeLot = minLot;
+    if (exTradeLot < minLot) {
+    	exTradeLot = minLot;
+    }
 
-    if (tradeLot > maxLot)
-    	tradeLot = maxLot;
+    if (exTradeLot > maxLot) {
+    	exTradeLot = maxLot;
+    }
 
     createIndicator(expert_name);
 
@@ -110,6 +117,7 @@ int deinit() {
 }
 
 int start() {
+	string state = "";
     //разрешение торговать
     bool allowTrade = false;
 	//мин.дистанция
@@ -117,34 +125,38 @@ int start() {
 	//спред уже в пунктах с учетом значности котировок 
 	spread = MarketInfo(workSymb, MODE_SPREAD);
 	
-	if (takeProfitKoef == -1.0) {
+	if (exTakeProfit == 0) {
 		//расчет величин профита и лося на периоде 2ч
-		takeProfitBuy = getProfitValue(workSymb, OP_BUY, 120, takeProfit);
-    	takeProfitSell = getProfitValue(workSymb, OP_SELL, 120, takeProfit);
-    	takeProfit = MathMax(takeProfitBuy, takeProfitSell) * 2.0;
-    	trailingProfStart = MathMax(takeProfitBuy, takeProfitSell) * 1.5;
+		takeProfitBuyVar = getProfitValue(workSymb, OP_BUY, 120, takeProfitVar);
+    	takeProfitSellVar = getProfitValue(workSymb, OP_SELL, 120, takeProfitVar);
+    	takeProfitVar = MathMax(takeProfitBuyVar, takeProfitSellVar) * 2.0;
+    	exTrailingProfStart = MathMax(takeProfitBuyVar, takeProfitSellVar) * 1.5;
     }
     //проверка торговых сигналов рынка - оракул
 	int mrktState = chkMarketState();
-	string state;
 
-	if ((mrktState & sgnlBuyOpen) != 0)
-		state = state + " BO";
-	if ((mrktState & sgnlBuyClose) != 0)
+	if ((mrktState & sgnlBuyOpen) != 0) {
+		state = " BO";
+	}
+	if ((mrktState & sgnlBuyClose) != 0) {
 		state = state + " BC";
-	if ((mrktState & sgnlSellOpen) != 0)
+	}
+	if ((mrktState & sgnlSellOpen) != 0) {
 		state = state + " SO";
-	if ((mrktState & sgnlSellClose) != 0)
+	}
+	if ((mrktState & sgnlSellClose) != 0) {
 		state = state + " SC";
+	}
 	//моргнуть индикатором состояния
-	changeIndicatorState("sd=" + DoubleToStr(spread, 0)
-						 + " S=" + DoubleToStr(takeProfitSell, 0)
-			  	   		 + " B=" + DoubleToStr(takeProfitBuy, 0)
+	changeIndicatorState("spr=" + DoubleToStr(spread, 0)
+						 + " S=" + DoubleToStr(takeProfitSellVar, 0)
+			  	   		 + " B=" + DoubleToStr(takeProfitBuyVar, 0)
+			  	   		 + " tps=" + DoubleToStr(exTrailingProfStart, 0)
 			  	   		 + " [" + state + " ]");
 
 //	int signalLong = chkLongSignal(workSymb);
 
-	if (dsplSgnl == true && mrktState > 0)
+	if (exDsplSgnl == true && mrktState > 0) {
 		Print("BuyOpen=", ((mrktState & sgnlBuyOpen) != 0),
 			  " BuyClose=", ((mrktState & sgnlBuyClose) != 0),
 			  " SellOpen=", ((mrktState & sgnlSellOpen) != 0),
@@ -158,16 +170,18 @@ int start() {
 			  " SellOpenLong=", (signalLong & sgnlSellOpen != 0),
 			  " SellCloseLong=", (signalLong & sgnlSellClose != 0));
 */
+	}
 	//найти величину профита на интервале(экстремумы и разница между ними)
 	//решить что делать с открытыми позициями
   	doSolveWithOpened(mrktState);
 	//проверка разрешений открытия новой позиции
-	if (tradingOpen == true
-			&& spread <= maxSpread
+	if (exTradingOpen == true
+			&& spread <= exMaxSpread
 			&& mrktState > 0
-			&& OrdersTotal() < maxOpenOrders
-			&& Time[0] != prevOrderBar)
+			&& OrdersTotal() < exMaxOpenOrders
+			&& Time[0] != prevOrderBar) {
         allowTrade = true;
+    }
 
    	if (allowTrade == true) {
 		doOpenNew(mrktState);
@@ -178,20 +192,28 @@ int start() {
 
 //Принятие решений о судьбе ордера
 void doSolveWithOpened(int mrktState) {
+	int ticket, cmd;
+	string comment;
+	double profOrd, takeProfOrd, lots, opPrice;
+	bool allowLock, thisLock;
+
   	for (int i = 0; i < OrdersTotal(); i++) {
     	if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true
         		&& OrderSymbol() == workSymb
-        		&& OrderMagicNumber() == magicNum) {
-        	int ticket = OrderTicket(),
-        		cmd = OrderType();
-        	string comment = OrderComment();
-        	double profOrd = OrderProfit(),
-        		   takeProfOrd = OrderTakeProfit(),
-        		   lots = OrderLots(),
-        		   opPrice = OrderOpenPrice();
-			bool allowLock, thisLock;
+        		&& OrderMagicNumber() == exMagicNum) {
+			ticket = OrderTicket();
+			cmd = OrderType();
+			comment = OrderComment();
+			profOrd = OrderProfit();
+		   	takeProfOrd = OrderTakeProfit();
+		   	lots = OrderLots();
+		   	opPrice = OrderOpenPrice();
+
+		   	if (StringLen(comment) == 0) {
+		   		comment = "";
+		   	}
 			//проверка разрешений лока
-			if (lockUse == true && OrdersTotal() < maxOpenOrders) {
+			if (exLockUse == true && OrdersTotal() < exMaxOpenOrders) {
         		allowLock = true;
     		} else {
         		allowLock = false;
@@ -200,13 +222,11 @@ void doSolveWithOpened(int mrktState) {
 			if (StringFind(comment, "Lckd") == -1) {
 				thisLock = false;
 			} else {
-//					if (ticket == 8)
-//						Print("prof=", OrderSelect(3, SELECT_BY_TICKET, MODE_TRADES));
 				if (findLockedOrder(ticket, comment) == -1) {
 					thisLock = false;
 					//проверить установлен ли профит для бывшего лока - если нет то установить его
 					if (takeProfOrd == 0) { // && (takeProfitKoef != 0 || takeProfit != 0)) {
-						setProfitToLockOrder(ticket, stopLossKoef, stopLoss);
+						setProfitToLockOrder(ticket, exStopLossKoef, stopLossVar);
 					}
 				} else {
 					//это лок
@@ -224,9 +244,9 @@ void doSolveWithOpened(int mrktState) {
 				switch(cmd) {
 				case OP_BUY:
         			if (profOrd >= 0) {
-	        			if (tradingManagement == true && ((mrktState & sgnlBuyClose) != 0)) {
+	        			if (exTradingManagement == true && ((mrktState & sgnlBuyClose) != 0)) {
         					//закрыть открытый бай, если есть профит
-        					closeOrder(ticket, lots, Bid, slipPage, Yellow, 0.0, 0);
+        					closeOrder(ticket, lots, Bid, exSlipPage, Yellow, 0.0, 0);
         				}
         			} else {
 						//выставить лок или нет?
@@ -234,13 +254,13 @@ void doSolveWithOpened(int mrktState) {
 //						Print("BuyLckd=", (mrktState & sgnlSellOpen != 0), " prof=", prof, " if=", opPrice - NormalizeDouble(lockLevel * Point, Digits), " Ask=", Ask);
 
 						if (allowLock == true
-								&& (NormalizeDouble(opPrice - NormalizeDouble(lockLevel * Point, Digits), Digits)) >= Ask) {
-							if (lockOpenBySignal == true) {
+								&& (NormalizeDouble(opPrice - NormalizeDouble(exLockLevel * Point, Digits), Digits)) >= Ask) {
+							if (exLockOpenBySignal == true) {
 								if (mrktState & sgnlSellOpen != 0) { 
-									mkLockOrder(OP_BUY, ticket, magicNum, dsplMsg);
+									mkLockOrder(OP_BUY, ticket, exMagicNum, exDsplMsg);
 								}
 							} else {
-								mkLockOrder(OP_BUY, ticket, magicNum, dsplMsg);
+								mkLockOrder(OP_BUY, ticket, exMagicNum, exDsplMsg);
 							}
 						}
 					}
@@ -248,21 +268,21 @@ void doSolveWithOpened(int mrktState) {
 					break;
 				case OP_SELL:
         			if (profOrd >= 0) {
-        				if (tradingManagement == true && ((mrktState & sgnlSellClose) != 0)) {
+        				if (exTradingManagement == true && ((mrktState & sgnlSellClose) != 0)) {
         					//закрыть открытый sell, если есть профит
-        					closeOrder(ticket, lots, Ask, slipPage, Yellow, 0.0, 0);
+        					closeOrder(ticket, lots, Ask, exSlipPage, Yellow, 0.0, 0);
         				}
         			} else {
 						//выставить лок или нет?
 						//цена больше допустимой и тренд вверх
 						if (allowLock == true
-								&& (NormalizeDouble(opPrice + NormalizeDouble(lockLevel * Point, Digits), Digits)) <= Bid) {
-							if (lockOpenBySignal == true) {
+								&& (NormalizeDouble(opPrice + NormalizeDouble(exLockLevel * Point, Digits), Digits)) <= Bid) {
+							if (exLockOpenBySignal == true) {
 								if ((mrktState & sgnlBuyOpen) != 0) {
-									mkLockOrder(OP_SELL, ticket, magicNum, dsplMsg);
+									mkLockOrder(OP_SELL, ticket, exMagicNum, exDsplMsg);
 								}
 							} else {
-								mkLockOrder(OP_SELL, ticket, magicNum, dsplMsg);
+								mkLockOrder(OP_SELL, ticket, exMagicNum, exDsplMsg);
 							}
 						}
 					}
@@ -271,17 +291,17 @@ void doSolveWithOpened(int mrktState) {
 				//default:
 				}
     			//Трейлинг Профита
-    			if (trailingProf == true || trailingLoss == true) {
-    				trailingProf(workSymb, ticket, takeProfitKoef, takeProfit, trailingProfStart, trailingProfStep);
+    			if (exTrailingProf == true || exTrailingLoss == true) {
+    				trailingProf(workSymb, ticket, exTakeProfitKoef, takeProfitVar, exTrailingProfStart, exTrailingProfStep);
 				}
 			} else {
 				//это лок -- ориентируемся по направлению тренда
-				if (lockUse == true && lockManagement == true) {
+				if (exLockUse == true && exLockManagement == true) {
 					switch(cmd) {
 					case OP_BUY:
         				if (profOrd > 0 && ((mrktState & sgnlBuyClose) != 0)) {
     						//закрыть открытый бай, если есть профит
-    						closeOrder(ticket, lots, Bid, slipPage, Yellow, stopLossKoef, stopLoss);
+    						closeOrder(ticket, lots, Bid, exSlipPage, Yellow, exStopLossKoef, stopLossVar);
         				} else {
 						}
 
@@ -289,7 +309,7 @@ void doSolveWithOpened(int mrktState) {
 					case OP_SELL:
         				if (profOrd > 0 && ((mrktState & sgnlSellClose) != 0)) {
     						//закрыть открытый sell, если есть профит
-    						closeOrder(ticket, lots, Ask, slipPage, Yellow, stopLossKoef, stopLoss);
+    						closeOrder(ticket, lots, Ask, exSlipPage, Yellow, exStopLossKoef, stopLossVar);
         				} else {
 						}
 
@@ -309,23 +329,28 @@ int doOpenNew(int mrktState) {
 	int ticket;
 	//проверять историю на 10 баров на разницу между open и closed, она должна быть >= takeprofit - если это не так то вероятен флет
     if ((mrktState & sgnlBuyOpen) != 0) {
-		if (chkAllowNewOrder(workSymb, OP_BUY, tradeLot, magicNum) == true) {
+		if (chkAllowNewOrder(workSymb, OP_BUY, exTradeLot, exMagicNum) == true) {
 			//покупка
-   			ticket = openOrder(workSymb, OP_BUY, tradeLot, magicNum, slipPage, ndd,
-         					   stopLossKoef, stopLoss, takeProfitKoef, takeProfit, dsplMsg, "");
+   			ticket = openOrder(workSymb, OP_BUY, exTradeLot, exMagicNum, exSlipPage, exNdd,
+         					   exStopLossKoef, stopLossVar, exTakeProfitKoef, takeProfitVar, exDsplMsg, "");
+   		} else {
+//   			Print("Ордер создавать нельзя!");
    		}
 	} else {
         if ((mrktState & sgnlSellOpen) != 0) {
-        	if (chkAllowNewOrder(workSymb, OP_SELL, tradeLot, magicNum) == true) {
+        	if (chkAllowNewOrder(workSymb, OP_SELL, exTradeLot, exMagicNum) == true) {
  				//продажа
-         		ticket = openOrder(workSymb, OP_SELL, tradeLot, magicNum, slipPage, ndd,
-         						   stopLossKoef, stopLoss, takeProfitKoef, takeProfit, dsplMsg, "");
+         		ticket = openOrder(workSymb, OP_SELL, exTradeLot, exMagicNum, exSlipPage, exNdd,
+         						   exStopLossKoef, stopLossVar, exTakeProfitKoef, takeProfitVar, exDsplMsg, "");
+   			} else {
+//   				Print("Ордер создавать нельзя!");
         	}
         }
     }
 
-	if (ticket > 0)
+	if (ticket > 0) {
 	   	prevOrderBar = Time[0]; //Свежий бар, запоминаем время
+	}
 
     return (ticket);
 }
@@ -333,16 +358,24 @@ int doOpenNew(int mrktState) {
 //Oracul - узнать сигналы рынка
 int chkMarketState() {
 	//комбинация сигналов от индикаторов
+	int signalTarzan, signalAlligator, signalLong;
 /*        //CCI
         double valCCI60 = iCCI(Symbol(), PERIOD_M1, 14, PRICE_TYPICAL, 0);
         double valCCI360 = iCCI(Symbol(), PERIOD_M5, 14, PRICE_TYPICAL, 0);
 */
-	int signalAlligator = chkAlligatorSignal(workSymb, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod,
-											 lipsShift, dltAligBuy, dltAligSell);
 
-	int signalLong = chkLongSignal(workSymb);
-	int signalTarzan = chkTarzanSignal(workSymb);
+	if (StringFind(exGovernor, "LNG#") != -1) {
+		signalLong = chkLongSignal(workSymb);
+	}
 
+	if (StringFind(exGovernor, "ALG#") != -1) {
+		signalAlligator = chkAlligatorSignal(workSymb, exJawsPeriod, exJawsShift, exTeethPeriod, exTeethShift, exLipsPeriod,
+											 exLipsShift, exDltAligBuy, exDltAligSell);
+	}
+
+	if (StringFind(exGovernor, "TRZ#") != -1) {
+		signalTarzan = chkTarzanSignal(workSymb);
+	}
 //	return (signalLong); //плохо
 //	return (signalLong | (signalAlligator & signalTarzan));
 //	return (signalLong | signalTarzan); //+ красивый график(M1-грааль, M5, H24),
@@ -350,13 +383,15 @@ int chkMarketState() {
 //	return (signalAlligator); //много ложных срабатываний
 //	return (signalAlligator & signalTarzan); //за счет тарзана график роста более ровный,
 											 //но распознало слишком мало "лочных" ситуаций - за счет этого сливает
-	return (signalTarzan); //++ убыток пропорционален только размеру лока
+//	return (signalTarzan); //++ убыток пропорционален только размеру лока
+
+	return (signalLong | signalAlligator | signalTarzan);
 }
 
 //создать локирующий ордер с привязкой в комментариях
 int mkLockOrder(int cmd, int ticket, int magicNum, bool dsplMsg = true) {
-	int nwTicket = -1;
-	int i = 0;
+	int nwTicket = -1,
+		i = 0;
 //	bool chngTake = false;
 //	int signalLong = chkTarzanSignal(workSymb);
 
@@ -378,7 +413,7 @@ int mkLockOrder(int cmd, int ticket, int magicNum, bool dsplMsg = true) {
 				}
 
 				i++;
-				Print("Попытка модификации ", i, " Loss=", OrderStopLoss(), " Prof=", OrderTakeProfit());
+//				Print("Попытка модификации ", i, " Loss=", OrderStopLoss(), " Prof=", OrderTakeProfit());
 			}
 
 			if (OrderStopLoss() == 0) {
@@ -390,15 +425,15 @@ int mkLockOrder(int cmd, int ticket, int magicNum, bool dsplMsg = true) {
 				switch(cmd) {
 				case OP_BUY:
 					//sl = (opPriceBsc - Ask) / Point;
-					tp = getTp(workSymb, OP_SELL, takeProfitKoef, takeProfit, 0.0);
-					nwTicket = openOrder(workSymb, OP_SELL, OrderLots(), magicNum, slipPage, ndd, 0, sl, 0, 0,
+					tp = getTp(workSymb, OP_SELL, exTakeProfitKoef, takeProfitVar, 0.0);
+					nwTicket = openOrder(workSymb, OP_SELL, OrderLots(), exMagicNum, exSlipPage, exNdd, 0, sl, 0, 0,
 							 			 dsplMsg, "LckdB#" + DoubleToStr(ticket, 0) + "#Tp#" + DoubleToStr(tp, Digits));
 
 					break;
 				case OP_SELL:
 					//sl = (Bid - opPriceBsc) / Point;
-				    tp = getTp(workSymb, OP_BUY, takeProfitKoef, takeProfit, 0.0);
-					nwTicket = openOrder(workSymb, OP_BUY, OrderLots(), magicNum, slipPage, ndd, 0, sl, 0, 0,
+				    tp = getTp(workSymb, OP_BUY, exTakeProfitKoef, takeProfitVar, 0.0);
+					nwTicket = openOrder(workSymb, OP_BUY, OrderLots(), magicNum, exSlipPage, exNdd, 0, sl, 0, 0,
 							 			 dsplMsg, "LckdS#" + DoubleToStr(ticket, 0) + "#Tp#" + DoubleToStr(tp, Digits));
 
 					break;
@@ -413,23 +448,25 @@ int mkLockOrder(int cmd, int ticket, int magicNum, bool dsplMsg = true) {
 
 //проверка разрешения открытия ордера
 bool chkAllowNewOrder(string symb, int cmd, double lot = 0.01, int magicNum = -1) {
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 	//"текущий профит" должен быть "выше" профита некоторого уже открытого ордера (в том же направлении) на 25%, для текущих цен
 //	if (getNumberOfBarLastOrder(symb, 0, cmd, magicNum) > openDistanceBar && chkMoney(symb, cmd, minMarginPercent, lot) == true)
-	if (findLikePriceOrder(symb, cmd, magicNum, takeProfitKoef, takeProfit) == false
-			&& chkMoney(symb, cmd, minMarginPercent, lot) == true)
+	if (findLikePriceOrder(symb, cmd, magicNum, exTakeProfitKoef, takeProfitVar) == false
+			&& chkMoney(symb, cmd, exMinMarginPercent, lot) == true) {
 		return (true);
-	else
+	} else {
 		return (false);
+	}
 }
 
 //управление прибылью
-//при уходе ордера в "-"-са профит возаращать в первоначальное значение
+//при уходе ордера в "-"-са профит возвращать в первоначальное значение
 void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double takeProfit = 0.0,
 				  double trailingProfStart = 0.0, double trailingProfStep = 0.0) {
     double tp, sl, takeProfOrd, takeLossOrd, opPrice, trailProf, trailLoss;
-
+//хранить массив ордеров ведущихся трейлингом, они будут игнорироваться при tradingManagement=true
    	if (OrderSelect(ticket, SELECT_BY_TICKET) == true) {
         RefreshRates();
 
@@ -441,7 +478,7 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
 		switch (OrderType()) {
 		case OP_BUY:
 			//управление профитом
-        	if (trailingProf == true) {
+        	if (exTrailingProf == true) {
         		//в случае если прибыль по ордеру <0 - нужно восстановить уровень профита в первоначальный вид
         		if (OrderProfit() < 0) {
 					tp = NormalizeDouble(getTp(symb, OP_BUY, 0, takeProfit, opPrice), Digits);
@@ -473,10 +510,10 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
        			tp = takeProfOrd;
         	}
 			//управление лоссем
-    		if (trailingLoss == true) {
-				sl = NormalizeDouble(getSl(symb, OP_BUY, 0, trailingLossStart, 0.0), Digits);
+    		if (exTrailingLoss == true) {
+				sl = NormalizeDouble(getSl(symb, OP_BUY, 0, exTrailingLossStart, 0.0), Digits);
 				//если разница между предыдущим лоссем и новым >= trailingLossStep
-       			if (NormalizeDouble(sl - takeLossOrd, Digits) < NormalizeDouble(trailingLossStep * Point, Digits)) {
+       			if (NormalizeDouble(sl - takeLossOrd, Digits) < NormalizeDouble(exTrailingLossStep * Point, Digits)) {
        				sl = takeLossOrd;
        			}
 				//если новый лоссь меньше цены открытия
@@ -490,7 +527,7 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
         	break;
 		case OP_SELL:
 			//управление профитом
-        	if (trailingProf == true) {
+        	if (exTrailingProf == true) {
         		//в случае если прибыль по ордеру <0 - нужно восстановить уровень профита в первоначальный вид
         		if (OrderProfit() < 0) {
 					tp = NormalizeDouble(getTp(symb, OP_SELL, 0, takeProfit, opPrice), Digits);
@@ -523,7 +560,7 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
        			tp = takeProfOrd;
         	}
 			//управление лоссем
-    		if (trailingLoss == true) {
+    		if (exTrailingLoss == true) {
 			    double loss;
 
     			if (takeLossOrd == 0.0) {
@@ -532,9 +569,9 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
     				loss = takeLossOrd;
     			}
 
-				sl = NormalizeDouble(getSl(symb, OP_SELL, 0, trailingLossStart, 0.0), Digits);
+				sl = NormalizeDouble(getSl(symb, OP_SELL, 0, exTrailingLossStart, 0.0), Digits);
 				//если разница между предыдущим лоссем и новым >= trailingLossStep
-       			if (NormalizeDouble(loss - sl, Digits) < NormalizeDouble(trailingLossStep * Point, Digits)) {
+       			if (NormalizeDouble(loss - sl, Digits) < NormalizeDouble(exTrailingLossStep * Point, Digits)) {
        				sl = takeLossOrd;
        			}
 				//если новый лоссь меньше цены открытия

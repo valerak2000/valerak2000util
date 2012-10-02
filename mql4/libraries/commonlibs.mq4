@@ -76,11 +76,14 @@ bool chkError(int error) {
 
 //проверка доступных средств
 bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
-//AccountFreeMargin()
-//средства / залог * 100 = уровень
-	if (((AccountEquity() / AccountBalance()) * 100) <= marginPercent) {
+	}
+//AccountEquity()
+// свободные средства/ средства на счету * 100 = уровень
+	if (((AccountFreeMargin() / AccountBalance()) * 100) <= marginPercent) {
+		Print("На счету свободных денег <" + DoubleToStr(marginPercent, 0) +"%");
+
 		return (false);
 	} else {
 		return (!(AccountFreeMarginCheck(symb, cmd, lot) <= 0 || GetLastError() == ERR_NOT_ENOUGH_MONEY));
@@ -91,8 +94,9 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double inPrice = 0.0) {
 	double tp, spread, price;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 
 	//спред уже в пунктах с учетом значности котировок 
 	spread = MarketInfo(symb, MODE_SPREAD);
@@ -145,8 +149,9 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double
 double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inPrice = 0.0) {
 	double sl, spread, minStop, price;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 
 	//спред уже в пунктах с учетом значности котировок 
 	spread = MarketInfo(symb, MODE_SPREAD);
@@ -216,9 +221,11 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
     int ticket;
     bool Repeat = true;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 
+//Print("FreeMagin=", AccountFreeMargin(), " AccountEquity=", AccountEquity(), " AccountBalance=", AccountBalance());
     //создать ордер    
     while (Repeat == true) {
         if (IsTradeAllowed() == true) {
@@ -335,7 +342,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 //      		" point=", DoubleToStr(NormalizeDouble(Point, Digits), Digits),
 //      		" balance=", AccountBalance(),
 //			" margin=", AccountFreeMargin(),
-      		" %=", (AccountEquity() / AccountBalance()) * 100);
+      		" %=", (AccountFreeMargin() / AccountBalance()) * 100);
 //      		" %=", (AccountFreeMargin() / AccountBalance()) * 100,
 	}
 
@@ -391,8 +398,9 @@ bool closeOrder(int ticket, double lots, double price, int slipPage, color clrMa
 int getNumberOfBarLastOrder(string symb = "", int tf = 0, int cmd = -1, int magicNum = -1) {
 	datetime tmOpenOrder;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
@@ -490,8 +498,9 @@ int findLockedOrder(int ticket, string commentLock) {
 bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProfitKoef = 0.0, double takeProfit = 0.0) {
 	double tp, deltaTp, price;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 	//значения цены профита для текущих цен
 	//tp = getTp(symb, cmd, takeProfitKoef, takeProfit);
 
@@ -507,18 +516,18 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
     }
 	//дельта цены для получения требуемого профита
 	tp = NormalizeDouble(getTp(symb, cmd, takeProfitKoef, takeProfit), Digits);
-	deltaTp = NormalizeDouble(MathAbs(NormalizeDouble(tp - price, Digits)) * 0.75, Digits);
+	deltaTp = NormalizeDouble(MathAbs(NormalizeDouble(tp - price, Digits)) * 4.0, Digits);
 
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
 			if (OrderSymbol() == symb && OrderType() == cmd) {
-				double ordProf = OrderTakeProfit();
-				
+				double ordProf =OrderTakeProfit();
+
 				if (ordProf > 0) {
 					//установлен профит
-					if (NormalizeDouble(MathAbs(NormalizeDouble(ordProf - price, Digits)), Digits) >= deltaTp) {
-						//"текущий профит" должен быть "выше" 75% профита некоторого уже открытого ордера, для текущих цен
-						//диапазон от цены открытия(цо) до цены профита, т.е. если профит находится ниже цо ордера, то его можно делать
+					if (NormalizeDouble(MathAbs(NormalizeDouble(ordProf - price, Digits)), Digits) <= deltaTp) {
+						//"текущий профит" должен быть "выше" 150% профита некоторого уже открытого ордера, для текущих цен
+						//диапазон от цены открытия(цо) до цены профита, т.е. если профит находится ниже цо ордера, то его можно делать				
 						switch (cmd) {
 						case OP_BUY:
 							if (OrderOpenPrice() < tp) {
@@ -527,7 +536,6 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 
     						break;
 						case OP_SELL:
-//							Print("2 ", OrderTicket(), " ", OrderOpenPrice(), " ", tp);
 							if (OrderOpenPrice() > tp) {
 								return (true);
 							}
@@ -537,6 +545,8 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 //						if (cmd == OP_SELL)
 //							Print("1 ", OrderTicket(), " ", ordProf, " ", price, " ", deltaTp);
 //						return (true);
+					} else {
+//Print("price=", NormalizeDouble(MathAbs(NormalizeDouble(ordProf - price, Digits)), Digits), " delta=", deltaTp);
 					}
 
 				}
@@ -552,8 +562,9 @@ int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProf
 	double retProfValue, avgProfBears, avgProfBulls;
 	int cntBarBears, cntBarBulls, i = 0;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 
 	while (((Time[0] - Time[i]) / 60) < controlPerod) {
 		if (Close[i] > Open[i]) {
@@ -600,11 +611,12 @@ int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProf
 //проверка сигналов аллигатора
 int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeriod, int teethShift, int lipsPeriod,
 					   int lipsShift, double dltAligBuy, double dltAligSell) {
-	int signal = 0;
+	int signal = sgnlNothing;
 	double valMAGrNow, valMARdNow, valMARdHist, valMAGrHist, valMABlNow, valMABlHist; 
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 
 	//MODE_SMMA, PRICE_CLOSE
 	//MODE_LWMA, PRICE_WEIGHTED
@@ -616,56 +628,56 @@ int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeri
 	valMABlHist = iAlligator(symb, 0, jawsPeriod, jawsShift, teethPeriod, teethShift, lipsPeriod, lipsShift, MODE_LWMA, PRICE_WEIGHTED, MODE_GATORJAW, 0 + 1); // синия линия
 
 	//индикация тренда "было"
-	ObjectDelete("aligHistUp_object");
-	ObjectCreate("aligHistUp_object", OBJ_LABEL, 0, 0, 0);
-	ObjectSet("aligHistUp_object", OBJPROP_CORNER, 1);
-	ObjectSet("aligHistUp_object", OBJPROP_XDISTANCE, 37);
-	ObjectSet("aligHistUp_object", OBJPROP_YDISTANCE, 12);
+	ObjectDelete("alligHistUp_object");
+	ObjectCreate("alligHistUp_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("alligHistUp_object", OBJPROP_CORNER, 1);
+	ObjectSet("alligHistUp_object", OBJPROP_XDISTANCE, 37);
+	ObjectSet("alligHistUp_object", OBJPROP_YDISTANCE, 12);
 
-	ObjectDelete("aligHistDown_object");
-	ObjectCreate("aligHistDown_object", OBJ_LABEL, 0, 0, 0);
-	ObjectSet("aligHistDown_object", OBJPROP_CORNER, 1);
-	ObjectSet("aligHistDown_object", OBJPROP_XDISTANCE, 37);
-	ObjectSet("aligHistDown_object", OBJPROP_YDISTANCE, 17);
+	ObjectDelete("alligHistDown_object");
+	ObjectCreate("alligHistDown_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("alligHistDown_object", OBJPROP_CORNER, 1);
+	ObjectSet("alligHistDown_object", OBJPROP_XDISTANCE, 37);
+	ObjectSet("alligHistDown_object", OBJPROP_YDISTANCE, 17);
 
 	if (valMARdHist > valMAGrHist) {
-		ObjectSetText("aligHistUp_object", CharToStr(218), 10, "Wingdings");//
-		ObjectSet("aligHistUp_object", OBJPROP_COLOR, Red);
+		ObjectSetText("alligHistUp_object", CharToStr(218), 10, "Wingdings");//
+		ObjectSet("alligHistUp_object", OBJPROP_COLOR, Red);
 
-		ObjectSetText("aligHistDown_object", CharToStr(218), 10, "Wingdings");//
-		ObjectSet("aligHistDown_object", OBJPROP_COLOR, Lime);
+		ObjectSetText("alligHistDown_object", CharToStr(218), 10, "Wingdings");//
+		ObjectSet("alligHistDown_object", OBJPROP_COLOR, Lime);
 	} else {
-		ObjectSetText("aligHistUp_object", CharToStr(217), 10, "Wingdings");//
-		ObjectSet("aligHistUp_object", OBJPROP_COLOR, Lime);
+		ObjectSetText("alligHistUp_object", CharToStr(217), 10, "Wingdings");//
+		ObjectSet("alligHistUp_object", OBJPROP_COLOR, Lime);
 
-		ObjectSetText("aligHistDown_object", CharToStr(217), 10, "Wingdings");//
-		ObjectSet("aligHistDown_object", OBJPROP_COLOR, Red);
+		ObjectSetText("alligHistDown_object", CharToStr(217), 10, "Wingdings");//
+		ObjectSet("alligHistDown_object", OBJPROP_COLOR, Red);
 	}
 	//индикация тренда "сейчас"
-	ObjectDelete("aligNowUp_object");
-	ObjectCreate("aligNowUp_object", OBJ_LABEL, 0, 0, 0);
-	ObjectSet("aligNowUp_object", OBJPROP_CORNER, 1);
-	ObjectSet("aligNowUp_object", OBJPROP_XDISTANCE, 30);
-	ObjectSet("aligNowUp_object", OBJPROP_YDISTANCE, 12);
+	ObjectDelete("alligNowUp_object");
+	ObjectCreate("alligNowUp_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("alligNowUp_object", OBJPROP_CORNER, 1);
+	ObjectSet("alligNowUp_object", OBJPROP_XDISTANCE, 30);
+	ObjectSet("alligNowUp_object", OBJPROP_YDISTANCE, 12);
 
-	ObjectDelete("aligNowDown_object");
-	ObjectCreate("aligNowDown_object", OBJ_LABEL, 0, 0, 0);
-	ObjectSet("aligNowDown_object", OBJPROP_CORNER, 1);
-	ObjectSet("aligNowDown_object", OBJPROP_XDISTANCE, 30);
-	ObjectSet("aligNowDown_object", OBJPROP_YDISTANCE, 17);
+	ObjectDelete("alligNowDown_object");
+	ObjectCreate("alligNowDown_object", OBJ_LABEL, 0, 0, 0);
+	ObjectSet("alligNowDown_object", OBJPROP_CORNER, 1);
+	ObjectSet("alligNowDown_object", OBJPROP_XDISTANCE, 30);
+	ObjectSet("alligNowDown_object", OBJPROP_YDISTANCE, 17);
 
 	if (valMARdNow > valMAGrNow) {
-		ObjectSetText("aligNowUp_object", CharToStr(218), 10, "Wingdings");//
-		ObjectSet("aligNowUp_object", OBJPROP_COLOR, Red);
+		ObjectSetText("alligNowUp_object", CharToStr(218), 10, "Wingdings");//
+		ObjectSet("alligNowUp_object", OBJPROP_COLOR, Red);
 
-		ObjectSetText("aligNowDown_object", CharToStr(218), 10, "Wingdings");//
-		ObjectSet("aligNowDown_object", OBJPROP_COLOR, Lime);
+		ObjectSetText("alligNowDown_object", CharToStr(218), 10, "Wingdings");//
+		ObjectSet("alligNowDown_object", OBJPROP_COLOR, Lime);
 	} else {
-		ObjectSetText("aligNowUp_object", CharToStr(217), 10, "Wingdings");//
-		ObjectSet("aligNowUp_object", OBJPROP_COLOR, Lime);
+		ObjectSetText("alligNowUp_object", CharToStr(217), 10, "Wingdings");//
+		ObjectSet("alligNowUp_object", OBJPROP_COLOR, Lime);
 
-		ObjectSetText("aligNowDown_object", CharToStr(217), 10, "Wingdings");//
-		ObjectSet("aligNowDown_object", OBJPROP_COLOR, Red);
+		ObjectSetText("alligNowDown_object", CharToStr(217), 10, "Wingdings");//
+		ObjectSet("alligNowDown_object", OBJPROP_COLOR, Red);
 	}
 	//Print("Gr=", valMAGr, " Red=", valMARd, " Gr1=", valMAGr1, " Red1=", valMARd1, " Bl=", valMABl, " Bl1=", valMABl1);
 	//up CCI > 70 или алиг красн пересекает зеленую снизу вверх, то покупать
@@ -742,12 +754,13 @@ int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeri
 
 //проверка сигналов Longa
 int chkLongSignal(string symb) {
-	int signal = 0;
+	int signal = sgnlNothing;
  	int t1 = 6, t2 = 2, delta_L = 6, delta_S = 21, tradeTime = 7;
 	static bool cantrade = true;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 
 /*	if(TimeHour(TimeCurrent()) > tradeTime)
 		cantrade=true;
@@ -774,27 +787,30 @@ int chkLongSignal(string symb) {
 
 //проверка сигналов Tarzan
 int chkTarzanSignal(string symb) {
-	int signal = 0;
+	int signal = sgnlNothing;
 	bool destUpHist, destUpNow;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 	//настоящее
     double valTarzanRsi = iCustom(symb, 0, "TARZAN", 0, 5, 6, 50, 3, 5, 0, 0);
     double valTarzanMa = iCustom(symb, 0, "TARZAN", 0, 5, 6, 50, 3, 5, 1, 0);
 
-	if (valTarzanRsi > valTarzanMa)
+	if (valTarzanRsi > valTarzanMa) {
 		destUpNow = true;
-	else
+	} else {
 		destUpNow = false;
+	}
 	//прошлое
     double valTarzanRsi1 = iCustom(symb, 0, "TARZAN", 0, 5, 6, 50, 3, 5, 0, 1);
     double valTarzanMa1 = iCustom(symb, 0, "TARZAN", 0, 5, 6, 50, 3, 5, 1, 1);
 
-	if (valTarzanRsi1 > valTarzanMa1)
+	if (valTarzanRsi1 > valTarzanMa1) {
 		destUpHist = true;
-	else
+	} else {
 		destUpHist = false;
+	}
 	//индикация состояния
 	//индикация тренда "было"
 	ObjectDelete("trandHist_object");
@@ -855,10 +871,11 @@ int chkTarzanSignal(string symb) {
 int chkPatternSignal(string symb) {
 //3 последовательных падающих бара: (O=H)>(L=C) причем O1>O2>O3 и C1>C2>C3 - будет расти
 //3 последовательно растущих бара: (O=L)<(H=C) причем O1<O2<O3 и C1<C2<C3 - будет падать
-	int signal = 0;
+	int signal = sgnlNothing;
 
-	if (symb == "")
+	if (symb == "") {
 		symb = Symbol();
+	}
 
 	return (signal);
 }
