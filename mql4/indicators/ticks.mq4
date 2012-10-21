@@ -14,6 +14,7 @@ double bid[];
 int myBars;
 int tickCounter;
 
+//инициализация
 int init() {
 //   IndicatorBuffers(2); 
 
@@ -34,6 +35,13 @@ int init() {
    return (0);
 }
   
+//деструктор
+int deinit() {
+	closeDelimeter();
+
+	return(0);
+}
+
 int start(){
     double a = Ask;
     double b = Bid; //MarketInfo(Symbol(), MODE_BID);
@@ -78,14 +86,11 @@ void setDelimeter() {
 }
 
 void leftDelimeter() {
-   	int v_lines;
    	string delimeterName;
    	datetime firstTime;
    	int barFirstTime;
    
-	v_lines = ObjectsTotal();
-
-	for (int i = 0; i < v_lines; i++) {
+	for (int i = 0; i < ObjectsTotal(); i++) {
 		delimeterName = ObjectName(i); 
 
 		if (ObjectFind(delimeterName) != -1) {
@@ -98,6 +103,14 @@ void leftDelimeter() {
             }
         }       
 	}
+
+	return (0);
+}
+
+void closeDelimeter() {
+   	int handle = WindowFind("ticks");
+
+	ObjectsDeleteAll(handle, OBJ_VLINE);
 
 	return (0);
 }

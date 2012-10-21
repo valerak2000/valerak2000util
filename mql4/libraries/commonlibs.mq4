@@ -16,6 +16,8 @@
     string ErrorDescription(int iError);
 #import
 
+#define sgnlObjectPosY 14
+
 //обработка ошибок
 bool chkError(int error) {
 	bool retStatus = false;
@@ -79,14 +81,30 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 	if (symb == "") {
 		symb = Symbol();
 	}
-//AccountEquity()
+
+	double freeMargin = AccountFreeMarginCheck(symb, cmd, lot);
+	
+	if (ObjectFind("moneyChk_object") == -1) {
+		ObjectCreate("moneyChk_object", OBJ_LABEL, 0, 0, 0);
+		ObjectSet("moneyChk_object", OBJPROP_CORNER, 1);
+		ObjectSet("moneyChk_object", OBJPROP_XDISTANCE, 5);
+		ObjectSet("moneyChk_object", OBJPROP_YDISTANCE, sgnlObjectPosY);
+		ObjectSetText("moneyChk_object", "$", 10);
+	} else {
+//		ObjectDelete("moneyChk_object");
+	}
+//	Print(DoubleToStr(cmd, 0) + "-" + DoubleToStr(freeMargin, 0));
+
 // свободные средства/ средства на счету * 100 = уровень
-	if (((AccountFreeMargin() / AccountBalance()) * 100) <= marginPercent) {
-		Print("На счету свободных денег <" + DoubleToStr(marginPercent, 0) +"%");
+	if (((freeMargin / AccountBalance()) * 100) <= marginPercent || GetLastError() == ERR_NOT_ENOUGH_MONEY) {
+		ObjectSet("moneyChk_object", OBJPROP_COLOR, Red);
+//		Print("На счету свободных денег <" + DoubleToStr(marginPercent, 0) +"%");
 
 		return (false);
 	} else {
-		return (!(AccountFreeMarginCheck(symb, cmd, lot) <= 0 || GetLastError() == ERR_NOT_ENOUGH_MONEY));
+		ObjectSet("moneyChk_object", OBJPROP_COLOR, Lime);
+
+		return (true);
 	}
 }
 
@@ -560,26 +578,45 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 //расчет величины среднего профита на периоде, отдельно считается для sell и buy
 int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProfit = 0.0) {
 	double retProfValue, avgProfBears, avgProfBulls;
+	double bulls[], bears[];
+	double sumBears = 0,
+		   sumBulls = 0;
 	int cntBarBears, cntBarBulls, i = 0;
 
 	if (symb == "") {
 		symb = Symbol();
 	}
-
+	//среднее  значение за период
 	while (((Time[0] - Time[i]) / 60) < controlPerod) {
 		if (Close[i] > Open[i]) {
 			//бычья свеча
-			avgProfBulls += High[i] - Low[i];
+			ArrayResize(bulls, cntBarBulls + 1);
+			bulls[cntBarBulls] = (High[i] - Low[i]) / Point;
+			avgProfBulls += bulls[cntBarBulls];
 			cntBarBulls++;
 		} else {
 			if (Close[i] < Open[i]) {
 				//медвежья свеча
-				avgProfBears += High[i] - Low[i];
+				ArrayResize(bears, cntBarBears + 1);
+				bears[cntBarBears] = (High[i] - Low[i]) / Point;
+				avgProfBears += bears[cntBarBears];
 				cntBarBears++;
 			}
 		}
 
 		i++;
+	}
+//MathSqrt(1 / (sum(MathPow((High[i] - Low[i]) - avgProfBears / cntBarBears, 2))))
+	//ср.арифмитическое
+	avgProfBulls = avgProfBulls / cntBarBulls;
+	avgProfBears = avgProfBears / cntBarBears;
+	//сумма квадратов разностей для бычих
+	for (i = 0; i < cntBarBulls; i++) {
+		sumBulls += MathPow(bulls[i] - avgProfBulls, 2);
+	}
+	//сумма квадратов разностей для медвежих
+	for (i = 0; i < cntBarBears; i++) {
+		sumBears += MathPow(bears[i] - avgProfBears, 2);
 	}
 
 	switch (cmd) {
@@ -587,7 +624,8 @@ int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProf
 		if (cntBarBulls == 0) {
 			retProfValue = takeProfit;
 		} else {
-			retProfValue = MathCeil(avgProfBulls / Point / cntBarBulls);
+			//Среднеквадратическое отклонение
+			retProfValue = MathCeil(MathSqrt(1.0 / cntBarBulls * sumBulls));// / Point);
 		}
 
         break;
@@ -595,15 +633,16 @@ int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProf
 		if (cntBarBears == 0) {
 			retProfValue = takeProfit;
 		} else {
-			retProfValue = MathCeil(avgProfBears / Point / cntBarBears);
+			//Среднеквадратическое отклонение
+			retProfValue = MathCeil(MathSqrt(1.0 / cntBarBears * sumBears));// / Point);
 		}
 
         break;
     default:
     	retProfValue = 0;
     }
-
-//	Print(avgProfBulls, " ", cntBarBulls, " ", avgProfBears, " ", cntBarBears);
+//	Print(DoubleToStr(avgProfBulls, 14), " ", DoubleToStr(MathCeil(MathSqrt(1.0 / cntBarBulls * sumBulls)), 14), " ", cntBarBulls, 
+//		  " ", DoubleToStr(avgProfBears, 14), " ", DoubleToStr(MathCeil(MathSqrt(1.0 / cntBarBears * sumBears)), 14), " ", cntBarBears);
 
    	return (retProfValue);
 }
