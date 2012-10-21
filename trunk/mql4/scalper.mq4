@@ -148,10 +148,10 @@ int start() {
 		state = state + " SC";
 	}
 	//моргнуть индикатором состояния
-	changeIndicatorState("spr=" + DoubleToStr(spread, 0)
+	changeIndicatorState("SP=" + DoubleToStr(spread, 0)
 						 + " S=" + DoubleToStr(takeProfitSellVar, 0)
 			  	   		 + " B=" + DoubleToStr(takeProfitBuyVar, 0)
-			  	   		 + " tps=" + DoubleToStr(exTrailingProfStart, 0)
+			  	   		 + " TP=" + DoubleToStr(exTrailingProfStart, 0)
 			  	   		 + " [" + state + " ]");
 
 //	int signalLong = chkLongSignal(workSymb);
@@ -209,7 +209,7 @@ void doSolveWithOpened(int mrktState) {
 		   	lots = OrderLots();
 		   	opPrice = OrderOpenPrice();
 
-		   	if (StringLen(comment) == 0) {
+		   	if (StringLen(comment) == NULL) {
 		   		comment = "";
 		   	}
 			//проверка разрешений лока
