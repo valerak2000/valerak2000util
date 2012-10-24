@@ -1,0 +1,2778 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Started on 2006-09-29 17:40:49 ���������� ����� (����)
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+--
+-- TOC entry 6 (class 2615 OID 17797)
+-- Name: work_schema; Type: SCHEMA; Schema: -; Owner: admin_user
+--
+
+CREATE SCHEMA work_schema;
+
+
+ALTER SCHEMA work_schema OWNER TO admin_user;
+
+SET search_path = work_schema, pg_catalog;
+
+--
+-- TOC entry 979 (class 1255 OID 17948)
+-- Dependencies: 6 1334
+-- Name: acl_check(character varying, character, integer); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION acl_check(character varying, character, integer) RETURNS boolean
+    AS $_$
+DECLARE
+	_objectid INTEGER;
+	_userid INTEGER;
+	_Rights CHAR(4);
+	_Inherits_Rights CHAR(4);
+	_Access BOOL;
+BEGIN
+	_Access:=pg_has_role(session_user, 'manager_data', 'usage');
+	--
+	IF NOT _Access THEN
+		_userid:=work_schema.get_userid();
+		--
+		SELECT ID INTO _objectid
+		FROM work_schema.Dict_Objects
+		WHERE NAME=$1
+		LIMIT 1;
+		--
+		IF FOUND THEN
+			SELECT Rights, Inherits_Rights INTO _Rights, _Inherits_Rights
+			FROM work_schema.User_Rights
+			WHERE ID_Object=_objectid AND ID_User=_userid;
+			--
+			IF FOUND AND (_Rights~$2 OR (_Inherits_Rights~$2 AND _Rights!~'X')) THEN
+				_Access:=TRUE;
+			END IF;
+		END IF;
+	END IF;
+	--
+	RETURN _Access;
+END;
+$_$
+    LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.acl_check(character varying, character, integer) OWNER TO admin_user;
+
+--
+-- TOC entry 3001 (class 0 OID 0)
+-- Dependencies: 979
+-- Name: FUNCTION acl_check(character varying, character, integer); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION acl_check(character varying, character, integer) IS 'Проверка уровня доступа на объект';
+
+
+--
+-- TOC entry 966 (class 1255 OID 17799)
+-- Dependencies: 6 1334
+-- Name: delete_link(); Type: FUNCTION; Schema: work_schema; Owner: postgres
+--
+
+CREATE FUNCTION delete_link() RETURNS "trigger"
+    AS $$
+DECLARE
+	_Exists BOOL;
+BEGIN
+	--уменьшить счетчик количества детей у отца
+	IF OLD.PID IS NOT NULL THEN
+		EXECUTE 'UPDATE '||TG_ARGV[0]||'.'||TG_RELNAME||' SET CHLCNT=CHLCNT-1 WHERE ID='||OLD.PID;
+	END IF;
+	--проверить есть ли еще ссылки, если нет то удалить запись из _DictName
+	EXECUTE 'SELECT EXISTS (SELECT ID_Dict FROM '||TG_ARGV[0]||'.'||TG_RELNAME||' WHERE ID_Dict='||OLD.ID_Dict||')' INTO _Exists;
+	--
+	IF NOT _Exists THEN
+		EXECUTE 'DELETE FROM '||TG_ARGV[0]||'.'||TG_ARGV[1]||' WHERE ID='||OLD.ID_Dict;
+	END IF;
+	--
+	RETURN NULL;
+END;
+$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION work_schema.delete_link() OWNER TO postgres;
+
+--
+-- TOC entry 3003 (class 0 OID 0)
+-- Dependencies: 966
+-- Name: FUNCTION delete_link(); Type: COMMENT; Schema: work_schema; Owner: postgres
+--
+
+COMMENT ON FUNCTION delete_link() IS 'Удалить объект если на него нет ссылок. Удаляет объект из справочника если на него нет ни одной ссылки.';
+
+
+--
+-- TOC entry 978 (class 1255 OID 17947)
+-- Dependencies: 1334 6
+-- Name: get_acl(integer, integer); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION get_acl(_id_user integer, _id_object integer) RETURNS text
+    AS $$
+DECLARE
+	_recusr RECORD;
+	_recobj RECORD;
+	_stracl TEXT:='';
+	_Rights work_schema.User_Rights.Rights%TYPE;
+	_IRights work_schema.User_Rights.Inherits_Rights%TYPE;
+	_Path_User Public.LTREE;
+	_Path_Object Public.LTREE;
+	_CntRep INTEGER;
+	_I INTEGER;
+BEGIN
+	_stracl:='';
+	--
+	FOR _recusr IN SELECT PATH
+				   FROM work_schema.Link_Users
+				   WHERE ID_Dict=_ID_User
+	LOOP
+		_Path_User:=_recusr.PATH;
+		--
+		_I:=1;
+		_CntRep:=Public.nlevel(_Path_User)-1;
+		--
+		WHILE _I<=_CntRep LOOP
+		--просмотреть права на объект всех предков пользователя
+			SELECT Rights, Inherits_Rights INTO _Rights, _IRights
+			FROM work_schema.User_Rights
+			WHERE ID_User=Public.subpath(_Path_User,-_I,1) AND ID_Object=_ID_Object;
+			--
+			IF FOUND THEN
+				IF _Rights IS NOT NULL THEN
+				 	_stracl:=_stracl||_Rights;
+			 	END IF;
+		 		--
+			 	IF _IRights IS NOT NULL THEN
+	 				_stracl:=_stracl||_IRights;
+ 				END IF;
+ 				--
+ 				_stracl:=_stracl||',';
+ 				--
+ 				EXIT;
+			END IF;
+			--
+			_I:=_I+1;
+		END LOOP;
+	END LOOP;
+	--
+	FOR _recobj IN SELECT PATH
+				   FROM work_schema.Link_Objects
+				   WHERE ID_Dict=_ID_Object
+	LOOP
+		_Path_Object:=_recobj.PATH;
+		--
+		_I:=1;
+		_CntRep:=Public.nlevel(_Path_Object)-1;
+		--
+		WHILE _I<=_CntRep LOOP
+		--просмотреть права на объект всех предков объекта
+			SELECT Rights, Inherits_Rights INTO _Rights, _IRights
+			FROM work_schema.User_Rights
+			WHERE ID_User=_ID_User AND ID_Object=Public.subpath(_Path_Object,-_I,1);
+			--
+			IF FOUND THEN
+				IF _Rights IS NOT NULL THEN
+				 	_stracl:=_stracl||_Rights;
+			 	END IF;
+			 	--
+			 	IF _IRights IS NOT NULL THEN
+	 				_stracl:=_stracl||_IRights;
+	 			END IF;
+	 			--
+	 			_stracl:=_stracl||',';
+ 				--
+ 				EXIT;
+			END IF;
+			--
+			_I:=_I+1;
+		END LOOP;
+	END LOOP;
+	--
+	RETURN _stracl;
+END;
+$$
+    LANGUAGE plpgsql STABLE STRICT SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.get_acl(_id_user integer, _id_object integer) OWNER TO admin_user;
+
+--
+-- TOC entry 3004 (class 0 OID 0)
+-- Dependencies: 978
+-- Name: FUNCTION get_acl(_id_user integer, _id_object integer); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION get_acl(_id_user integer, _id_object integer) IS 'Список доступных прав пользователя на объект';
+
+
+--
+-- TOC entry 968 (class 1255 OID 17841)
+-- Dependencies: 6
+-- Name: get_list_users(); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) RETURNS SETOF record
+    AS $$
+	SELECT Dict_Users.NAME, Dict_Users.System_Name
+	FROM work_schema.Dict_Users
+	WHERE System_OID IS NOT NULL AND CanLogin
+	ORDER BY 1
+$$
+    LANGUAGE sql STABLE SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.get_list_users(OUT full_name character varying, OUT system_name name) OWNER TO admin_user;
+
+--
+-- TOC entry 3006 (class 0 OID 0)
+-- Dependencies: 968
+-- Name: FUNCTION get_list_users(OUT full_name character varying, OUT system_name name); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) IS 'Список активных пользователей';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 2566 (class 1259 OID 17863)
+-- Dependencies: 2937 6
+-- Name: messages; Type: TABLE; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE TABLE messages (
+    id integer NOT NULL,
+    id_session_to integer NOT NULL,
+    id_session_from integer NOT NULL,
+    typemsg character(1) NOT NULL,
+    time_send timestamp without time zone DEFAULT now() NOT NULL,
+    time_read timestamp without time zone,
+    message text,
+    status character(1) NOT NULL
+);
+
+
+ALTER TABLE work_schema.messages OWNER TO admin_user;
+
+--
+-- TOC entry 3008 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: TABLE messages; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON TABLE messages IS 'Служебные сообщения';
+
+
+--
+-- TOC entry 3009 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: COLUMN messages.id; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN messages.id IS 'ID сообщения';
+
+
+--
+-- TOC entry 3010 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: COLUMN messages.id_session_to; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN messages.id_session_to IS 'ID сессии получателя сообщения';
+
+
+--
+-- TOC entry 3011 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: COLUMN messages.id_session_from; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN messages.id_session_from IS 'ID сессии отправителя сообщение';
+
+
+--
+-- TOC entry 3012 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: COLUMN messages.typemsg; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN messages.typemsg IS 'Тип сообщения - M-text message, A-abort programm, C-Check activity';
+
+
+--
+-- TOC entry 3013 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: COLUMN messages.time_send; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN messages.time_send IS 'Время отправки сообщения';
+
+
+--
+-- TOC entry 3014 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: COLUMN messages.time_read; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN messages.time_read IS 'Время обработки сообщения';
+
+
+--
+-- TOC entry 3015 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: COLUMN messages.message; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN messages.message IS 'Текст сообщения';
+
+
+--
+-- TOC entry 3016 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: COLUMN messages.status; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN messages.status IS 'Статус сообщения - L-listening answers, R-reply ok, N-not read';
+
+
+--
+-- TOC entry 973 (class 1255 OID 17887)
+-- Dependencies: 6 1322
+-- Name: get_messages_from(integer, character); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION get_messages_from(integer, character) RETURNS SETOF messages
+    AS $_$
+	SELECT *
+	FROM work_schema.Messages
+	WHERE ID_Session_From=$1 AND Status=$2
+$_$
+    LANGUAGE sql STABLE STRICT SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.get_messages_from(integer, character) OWNER TO admin_user;
+
+--
+-- TOC entry 3018 (class 0 OID 0)
+-- Dependencies: 973
+-- Name: FUNCTION get_messages_from(integer, character); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION get_messages_from(integer, character) IS 'Список сообщений от сесии';
+
+
+--
+-- TOC entry 972 (class 1255 OID 17886)
+-- Dependencies: 6 1322 1334
+-- Name: get_messages_to(integer, character); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION get_messages_to(integer, character) RETURNS SETOF messages
+    AS $_$
+DECLARE
+	_msg_row work_schema.Messages%ROWTYPE;
+	_userid INTEGER;
+BEGIN
+	_userid:=work_schema.get_userid();
+	--
+	FOR _msg_row IN SELECT *
+					FROM work_schema.Messages
+					WHERE ID_Session_To=$1 AND Status=$2
+	LOOP
+		IF _userid=(SELECT ID_User FROM work_schema.Sessions WHERE ID=$1) THEN
+		--отдать только сообщения направленные текущему пользователю
+			IF _msg_row.Status='L' THEN
+				UPDATE work_schema.Messages SET Status='R', Time_Read=now()
+				WHERE ID=_msg_row.ID;
+			END IF;
+			--
+			RETURN NEXT _msg_row;
+		END IF;
+	END LOOP;
+END;
+$_$
+    LANGUAGE plpgsql STRICT SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.get_messages_to(integer, character) OWNER TO admin_user;
+
+--
+-- TOC entry 3020 (class 0 OID 0)
+-- Dependencies: 972
+-- Name: FUNCTION get_messages_to(integer, character); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION get_messages_to(integer, character) IS 'Список сообщений для сесии';
+
+
+--
+-- TOC entry 969 (class 1255 OID 17842)
+-- Dependencies: 6 1334
+-- Name: get_userid(); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION get_userid() RETURNS integer
+    AS $$
+DECLARE
+	_userid INT4;
+BEGIN
+	SELECT Dict_Users.ID INTO _userid
+	FROM work_schema.Dict_Users 
+	WHERE System_Name=session_user AND CanLogin
+	LIMIT 1;
+	--
+	RETURN _userid;
+END;
+$$
+    LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.get_userid() OWNER TO admin_user;
+
+--
+-- TOC entry 3022 (class 0 OID 0)
+-- Dependencies: 969
+-- Name: FUNCTION get_userid(); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION get_userid() IS 'ID пользователя текущей сессии';
+
+
+--
+-- TOC entry 2575 (class 1259 OID 17957)
+-- Dependencies: 2946 2947 6
+-- Name: lock_objects; Type: TABLE; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE TABLE lock_objects (
+    id integer NOT NULL,
+    id_object integer NOT NULL,
+    id_session integer NOT NULL,
+    id_user integer NOT NULL,
+    id_row integer NOT NULL,
+    status character(1) DEFAULT ''::bpchar NOT NULL,
+    lock_on timestamp without time zone DEFAULT now() NOT NULL,
+    lock_off timestamp without time zone
+);
+
+
+ALTER TABLE work_schema.lock_objects OWNER TO admin_user;
+
+--
+-- TOC entry 3024 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: TABLE lock_objects; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON TABLE lock_objects IS 'Заблокированные объекты';
+
+
+--
+-- TOC entry 3025 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: COLUMN lock_objects.id_object; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN lock_objects.id_object IS 'Объект в котором блокируется запись';
+
+
+--
+-- TOC entry 3026 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: COLUMN lock_objects.id_session; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN lock_objects.id_session IS 'Сессия которая блокирует запись';
+
+
+--
+-- TOC entry 3027 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: COLUMN lock_objects.id_user; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN lock_objects.id_user IS 'Пользователь юлокирующий запись';
+
+
+--
+-- TOC entry 3028 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: COLUMN lock_objects.id_row; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN lock_objects.id_row IS 'Блокируемая запись';
+
+
+--
+-- TOC entry 3029 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: COLUMN lock_objects.status; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN lock_objects.status IS 'Статус блокировки - L-Lock, U-Unlock';
+
+
+--
+-- TOC entry 3030 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: COLUMN lock_objects.lock_on; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN lock_objects.lock_on IS 'Время начала блокировки';
+
+
+--
+-- TOC entry 3031 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: COLUMN lock_objects.lock_off; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN lock_objects.lock_off IS 'Время окончания блокировки';
+
+
+--
+-- TOC entry 982 (class 1255 OID 17982)
+-- Dependencies: 1333 6
+-- Name: list_lock_objects(); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION list_lock_objects() RETURNS SETOF lock_objects
+    AS $$
+	SELECT *
+	FROM work_schema.Lock_Objects
+	WHERE Status='L'
+$$
+    LANGUAGE sql STABLE SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.list_lock_objects() OWNER TO admin_user;
+
+--
+-- TOC entry 3033 (class 0 OID 0)
+-- Dependencies: 982
+-- Name: FUNCTION list_lock_objects(); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION list_lock_objects() IS 'Список заблокированных объектов';
+
+
+--
+-- TOC entry 980 (class 1255 OID 17980)
+-- Dependencies: 1334 6
+-- Name: lock_object(integer, character varying, integer); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) RETURNS integer
+    AS $$
+DECLARE
+	_id_obj INTEGER;
+	_userid INTEGER;
+	_id_lock INTEGER;
+BEGIN
+	_userid:=work_schema.get_userid();
+	--
+	IF _userid IS NOT NULL THEN
+		SELECT ID INTO _id_obj
+		FROM work_schema.Dict_Objects
+		WHERE NAME=_Name_Object
+		LIMIT 1;
+		--
+		IF FOUND THEN
+			IF NOT EXISTS(SELECT ID
+						  FROM work_schema.Lock_Objects
+						  WHERE ID_Object=_id_obj AND ID_Row=_ID_Row AND Status='L') THEN
+				_id_lock:=nextval('work_schema.Lock_Objects_id_seq'::regclass);
+				--
+				INSERT INTO work_schema.Lock_Objects (ID, ID_Object, ID_Session, ID_User, ID_Row, Status)
+											  VALUES (_id_lock, _id_obj, _ID_Session, _userid, _ID_Row, 'L');
+				--
+				RETURN _id_lock;
+			END IF;
+		END IF;
+	END IF;
+	--
+	RETURN -1;
+END;
+$$
+    LANGUAGE plpgsql STRICT SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.lock_object(_id_session integer, _name_object character varying, _id_row integer) OWNER TO admin_user;
+
+--
+-- TOC entry 3035 (class 0 OID 0)
+-- Dependencies: 980
+-- Name: FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) IS 'Заблокировать объект';
+
+
+--
+-- TOC entry 970 (class 1255 OID 17884)
+-- Dependencies: 6 1334
+-- Name: login_user(); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION login_user() RETURNS integer
+    AS $$
+DECLARE
+	_id_row INTEGER;
+	_session_row work_schema.Sessions%ROWTYPE;
+	_userid INTEGER;
+	_msg_row work_schema.Messages%ROWTYPE;
+	_msg_send BOOL;
+	_msg_last TIMESTAMP;
+BEGIN
+	_userid:=work_schema.get_userid();
+	--
+	IF _userid IS NULL THEN
+		_id_row:=NULL;
+	ELSE
+		--зафиксировать текущую сессию
+		_id_row:=nextval('work_schema.Sessions_id_seq'::regclass);
+		--
+		INSERT INTO work_schema.Sessions (ID, ID_Process, ID_User, Session_ON, Client_IP, Client_Port, Status)
+					  			  VALUES (_id_row, pg_backend_pid(), _userid, now(), inet_client_addr()::cidr, inet_client_port(), 'A');
+		--проверить все активные сессии на присутствие в pg_stat_activity
+		--если отсутствуют, то послать сесии сообщение с требованием доложить об активности
+		FOR _session_row IN SELECT *
+							FROM work_schema.Sessions AS s
+							WHERE s.Status IN ('A', 'W') AND NOT EXISTS (SELECT *
+															   			 FROM pg_catalog.pg_stat_activity
+							 								   			 WHERE datname=current_database() AND
+							 								   		 		   procpid=s.ID_Process AND
+							 								   		 	 	   CAST(client_addr AS CIDR)=s.Client_IP AND
+							 								   		 	 	   client_port=s.Client_Port AND
+							 								   		 	 	   usesysid=(SELECT System_OID
+							 								   		 		   			 FROM work_schema.Dict_Users
+							 								   		 		   			 WHERE ID=s.ID_User))
+		LOOP
+			CONTINUE WHEN _session_row.ID=_id_row;
+			--вытащить все сообщения на активацию зависшему процессу
+			_msg_send:=FALSE;
+			_msg_last:=TIMESTAMP '1900-01-01';
+			--
+			FOR _msg_row IN SELECT *
+							FROM work_schema.Messages
+							WHERE ID_Session_To=_session_row.ID AND TypeMsg IN ('A', 'C')
+			LOOP
+				--установить статус необработан сообщению
+				IF _msg_last<_msg_row.Time_Send THEN
+					_msg_last:=_msg_row.Time_Send;
+				END IF;
+				--
+				IF _msg_row.Status='L' THEN
+				--просроченное
+					_msg_send:=TRUE;
+					--
+					IF (now()-_msg_row.Time_Send)>=INTERVAL '1 hour' THEN
+						UPDATE work_schema.Messages SET Time_Read=now(), Status='N'
+						WHERE ID=_msg_row.ID;
+					END IF;
+				ELSEIF _msg_row.Status='R' THEN
+					IF (now()-_msg_row.Time_Read)<=INTERVAL '1 hour' THEN
+					--свежий ответ
+						_msg_send:=TRUE;
+					END IF;
+				ELSEIF _msg_row.Status='N' THEN
+					_msg_send:=TRUE;
+				END IF;
+			END LOOP;
+			--
+			IF _msg_send=TRUE AND (now()-_msg_last)>=INTERVAL '1 hour' THEN
+				--закрыть данную сессию поскольку просроченна
+				UPDATE work_schema.Sessions SET Session_OFF=now(), Status='D'
+				WHERE ID=_session_row.ID;
+			ELSEIF _msg_send=FALSE THEN
+				--послать сообщение данной сессии
+				PERFORM work_schema.send_session_messages(_session_row.ID, _id_row, 'C', NULL);
+				--
+				UPDATE work_schema.Sessions SET Status='W'
+				WHERE ID=_session_row.ID;
+			END IF;
+		END LOOP;
+	END IF;
+	--
+	RETURN _id_row;
+END;
+$$
+    LANGUAGE plpgsql SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.login_user() OWNER TO admin_user;
+
+--
+-- TOC entry 3037 (class 0 OID 0)
+-- Dependencies: 970
+-- Name: FUNCTION login_user(); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION login_user() IS 'Запись информации о сессии пользователя';
+
+
+--
+-- TOC entry 971 (class 1255 OID 17885)
+-- Dependencies: 6 1334
+-- Name: logout_user(integer); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION logout_user(integer) RETURNS boolean
+    AS $_$
+BEGIN
+	--пометить сессию как удачно завершившуюся
+	UPDATE work_schema.Sessions SET Session_OFF=now(), Status='C'
+	WHERE ID=$1;
+	--
+	IF FOUND THEN
+		RETURN TRUE;
+	ELSE
+		RETURN FALSE;
+	END IF;
+END;
+$_$
+    LANGUAGE plpgsql STRICT SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.logout_user(integer) OWNER TO admin_user;
+
+--
+-- TOC entry 3039 (class 0 OID 0)
+-- Dependencies: 971
+-- Name: FUNCTION logout_user(integer); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION logout_user(integer) IS 'Запись информации о закрытии сессии пользователя';
+
+
+--
+-- TOC entry 975 (class 1255 OID 17889)
+-- Dependencies: 6 1334
+-- Name: send_session_messages(integer, integer, character, text); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION send_session_messages(integer, integer, character, text) RETURNS boolean
+    AS $_$
+BEGIN
+	INSERT INTO work_schema.Messages (ID_Session_To, ID_Session_From, TypeMsg, Time_Send, Message, Status)
+							  VALUES ($1, $2, $3, now(), $4, 'L');
+	--
+	IF FOUND THEN
+		RETURN TRUE;
+	ELSE
+		RETURN FALSE;
+	END IF;
+END;
+$_$
+    LANGUAGE plpgsql SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.send_session_messages(integer, integer, character, text) OWNER TO admin_user;
+
+--
+-- TOC entry 3041 (class 0 OID 0)
+-- Dependencies: 975
+-- Name: FUNCTION send_session_messages(integer, integer, character, text); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION send_session_messages(integer, integer, character, text) IS 'Послать сообщение сесии';
+
+
+--
+-- TOC entry 974 (class 1255 OID 17888)
+-- Dependencies: 6 1334
+-- Name: send_user_messages(integer, integer, character, text); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION send_user_messages(integer, integer, character, text) RETURNS boolean
+    AS $_$
+DECLARE
+	_session_row work_schema.Sessions%ROWTYPE;
+BEGIN
+	FOR _session_row IN SELECT *
+						FROM work_schema.Sessions
+						WHERE ID_User=$1 AND Status='A'
+	LOOP
+		IF _session_row.ID<>$2 THEN
+			INSERT INTO work_schema.Messages (ID_Session_To, ID_Session_From, TypeMsg, Time_Send, Message, Status)
+									  VALUES (_session_row.ID, $2, $3, now(), $4, 'L');
+		END IF;
+	END LOOP;
+	--
+	IF FOUND THEN
+		RETURN TRUE;
+	ELSE
+		RETURN FALSE;
+	END IF;
+END;
+$_$
+    LANGUAGE plpgsql SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.send_user_messages(integer, integer, character, text) OWNER TO admin_user;
+
+--
+-- TOC entry 3043 (class 0 OID 0)
+-- Dependencies: 974
+-- Name: FUNCTION send_user_messages(integer, integer, character, text); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION send_user_messages(integer, integer, character, text) IS 'Послать сообщение пользователю';
+
+
+--
+-- TOC entry 981 (class 1255 OID 17981)
+-- Dependencies: 1334 6
+-- Name: unlock_object(integer); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION unlock_object(_id_lock integer) RETURNS boolean
+    AS $$
+DECLARE
+BEGIN
+	UPDATE work_schema.Lock_Objects SET Status='U', Lock_Off=now()
+	WHERE ID=_ID_Lock;
+	--
+	IF FOUND THEN
+		RETURN TRUE;
+	END IF;
+	--
+	RETURN FALSE;
+END;
+$$
+    LANGUAGE plpgsql STRICT SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.unlock_object(_id_lock integer) OWNER TO admin_user;
+
+--
+-- TOC entry 3045 (class 0 OID 0)
+-- Dependencies: 981
+-- Name: FUNCTION unlock_object(_id_lock integer); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION unlock_object(_id_lock integer) IS 'Разблокировать объект';
+
+
+--
+-- TOC entry 976 (class 1255 OID 17898)
+-- Dependencies: 6 1334
+-- Name: upd_dict_objects(); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION upd_dict_objects() RETURNS "trigger"
+    AS $$
+BEGIN
+	IF NEW.System_Name IS NOT NULL THEN
+  		NEW.System_OID:=(SELECT relid
+						 FROM pg_stat_all_tables
+						 WHERE schemaname=LOWER(substring(NEW.System_Name, 1, position('.' IN NEW.System_Name)-1)) AND
+			  				   relname=LOWER(substring(NEW.System_Name, position('.' IN NEW.System_Name)+1)));
+	ELSE
+		RAISE NOTICE 'System_Name IS NULL';
+		NEW.System_OID:=NULL;
+	END IF;
+	--
+	IF NEW.System_LinkName IS NOT NULL THEN
+  		NEW.System_LinkOID:=(SELECT relid
+						 FROM pg_stat_all_tables
+						 WHERE schemaname=LOWER(substring(NEW.System_LinkName, 1, position('.' IN NEW.System_LinkName)-1)) AND
+			  				   relname=LOWER(substring(NEW.System_LinkName, position('.' IN NEW.System_LinkName)+1)));
+	ELSE
+		RAISE NOTICE 'System_LinkName IS NULL';
+		NEW.System_LinkOID:=NULL;
+	END IF;
+	--
+	RETURN NEW;
+END;
+$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION work_schema.upd_dict_objects() OWNER TO admin_user;
+
+--
+-- TOC entry 3047 (class 0 OID 0)
+-- Dependencies: 976
+-- Name: FUNCTION upd_dict_objects(); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION upd_dict_objects() IS 'Действия перед вставкой в справочник объектов';
+
+
+--
+-- TOC entry 967 (class 1255 OID 17810)
+-- Dependencies: 1334 6
+-- Name: upd_dict_users(); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION upd_dict_users() RETURNS "trigger"
+    AS $$
+BEGIN
+	IF NEW.System_Name IS NOT NULL THEN
+		--проверить чтобы не использовали еще раз System_Name
+		IF EXISTS(SELECT ID
+				  FROM work_schema.Dict_Users
+				  WHERE ID!=NEW.ID AND System_Name=NEW.System_Name) THEN
+			RAISE EXCEPTION 'Системная роль ''%'' уже используется!', NEW.System_Name;
+			--
+			RETURN OLD;
+		END IF;
+		--найти OID системной роли
+		SELECT USESYSID INTO NEW.System_OID
+		FROM PG_USER
+		WHERE USENAME=NEW.System_Name;
+		--
+		IF NOT FOUND THEN
+			NEW.System_OID:=NULL;
+			NEW.CanLogin:=FALSE;
+		END IF;
+	ELSE
+		NEW.System_OID:=NULL;
+		NEW.CanLogin:=FALSE;
+	END IF;
+	--
+	RETURN NEW;
+END;
+$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION work_schema.upd_dict_users() OWNER TO admin_user;
+
+--
+-- TOC entry 3049 (class 0 OID 0)
+-- Dependencies: 967
+-- Name: FUNCTION upd_dict_users(); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION upd_dict_users() IS 'Действия перед вставкой в справочник пользователей';
+
+
+--
+-- TOC entry 983 (class 1255 OID 17984)
+-- Dependencies: 6 1334
+-- Name: upd_sessions(); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION upd_sessions() RETURNS "trigger"
+    AS $$
+BEGIN
+	IF NEW.Status IN ('C', 'D') THEN
+		--сбросить все блокировки сессии
+		UPDATE work_schema.Lock_Objects SET Status='U', Lock_Off=now()
+		WHERE ID_Session=NEW.ID AND Status='L';
+		--отменить все сообщения к данной сессии
+		UPDATE work_schema.Messages SET Status='N', Time_Read=now()
+		WHERE ID_Session_To=NEW.ID AND Status='L';
+	END IF;
+	--
+	RETURN NULL;
+END;
+$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION work_schema.upd_sessions() OWNER TO admin_user;
+
+--
+-- TOC entry 3051 (class 0 OID 0)
+-- Dependencies: 983
+-- Name: FUNCTION upd_sessions(); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION upd_sessions() IS 'Действия после изменения сессии';
+
+
+--
+-- TOC entry 977 (class 1255 OID 17945)
+-- Dependencies: 6 1334
+-- Name: update_acl(); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION update_acl() RETURNS "trigger"
+    AS $$
+DECLARE
+	_stracl TEXT;
+	_Rights CHAR(4);
+	_IRights CHAR(4);
+BEGIN
+	IF TG_OP='INSERT' OR TG_OP='UPDATE' THEN
+		_stracl:=work_schema.get_acl(NEW.ID_User, NEW.ID_Object);
+		--
+		IF _stracl~'(V|I|U|D)' THEN
+			NEW.Inherits_Rights:='';
+			--
+			IF _stracl~'V' THEN
+				NEW.Inherits_Rights:='V';
+			END IF;
+			--
+			IF _stracl~'I' THEN
+				NEW.Inherits_Rights:=NEW.Inherits_Rights||'I';
+			END IF;
+			--
+			IF _stracl~'U' THEN
+				NEW.Inherits_Rights:=NEW.Inherits_Rights||'U';
+			END IF;
+			--
+			IF _stracl~'D' THEN
+				NEW.Inherits_Rights:=NEW.Inherits_Rights||'D';
+			END IF;
+		ELSE
+			NEW.Inherits_Rights:=NULL;
+		END IF;
+		--изменить наследуемые права с NEW.ID_User для всех детей NEW.ID_Object
+		UPDATE work_schema.User_Rights SET Inherits_Rights=Inherits_Rights
+		FROM (SELECT ID
+			  FROM work_schema.Link_Objects
+			  WHERE PID=NEW.ID_Object) AS lobj
+		WHERE ID_User=NEW.ID_User AND ID_Object=lobj.ID;
+		--изменить наследуемые права с NEW.ID_Object для всех детей NEW.ID_User
+		UPDATE work_schema.User_Rights SET Inherits_Rights=Inherits_Rights
+		FROM (SELECT ID
+			  FROM work_schema.Link_Users
+			  WHERE PID=NEW.ID_User) AS lusr
+		WHERE ID_User=lusr.ID AND ID_Object=NEW.ID_Object;
+		--
+		RETURN NEW;
+	ELSEIF TG_OP='DELETE' THEN
+		--изменить наследуемые права с OLD.ID_User для всех детей OLD.ID_Object
+		UPDATE work_schema.User_Rights SET Inherits_Rights=Inherits_Rights
+		FROM (SELECT ID
+			  FROM work_schema.Link_Objects
+			  WHERE PID=OLD.ID_Object) AS lobj
+		WHERE ID_User=OLD.ID_User AND ID_Object=lobj.ID;
+		--изменить наследуемые права с OLD.ID_Object для всех детей OLD.ID_User
+		UPDATE work_schema.User_Rights SET Inherits_Rights=Inherits_Rights
+		FROM (SELECT ID
+			  FROM work_schema.Link_Users
+			  WHERE PID=OLD.ID_User) AS lusr
+		WHERE ID_User=lusr.ID AND ID_Object=OLD.ID_Object;
+		--
+		RETURN OLD;
+	END IF;
+END;
+$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION work_schema.update_acl() OWNER TO admin_user;
+
+--
+-- TOC entry 3053 (class 0 OID 0)
+-- Dependencies: 977
+-- Name: FUNCTION update_acl(); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION update_acl() IS 'Обновить наследуемые права';
+
+
+--
+-- TOC entry 965 (class 1255 OID 17798)
+-- Dependencies: 1334 6
+-- Name: update_link(); Type: FUNCTION; Schema: work_schema; Owner: postgres
+--
+
+CREATE FUNCTION update_link() RETURNS "trigger"
+    AS $$
+DECLARE
+	_Level SMALLINT;
+	_Path Public.LTREE;
+	_strtree TEXT;
+	_RowCnt INTEGER;
+BEGIN
+	IF TG_OP='INSERT' AND NEW.PID IS NOT NULL THEN
+		EXECUTE 'UPDATE '||TG_ARGV[0]||'.'||TG_RELNAME||' SET CHLCNT=CHLCNT+1 WHERE ID='||NEW.PID;
+	ELSEIF TG_OP='UPDATE' THEN
+		IF OLD.PID IS NOT NULL THEN
+			IF NEW.PID IS NOT NULL THEN
+				IF OLD.PID<>NEW.PID THEN
+					EXECUTE 'UPDATE '||TG_ARGV[0]||'.'||TG_RELNAME||' SET CHLCNT=CHLCNT-1 WHERE ID='||OLD.PID;
+					EXECUTE 'UPDATE '||TG_ARGV[0]||'.'||TG_RELNAME||' SET CHLCNT=CHLCNT+1 WHERE ID='||NEW.PID;
+				END IF;
+			ELSE
+				EXECUTE 'UPDATE '||TG_ARGV[0]||'.'||TG_RELNAME||' SET CHLCNT=CHLCNT-1 WHERE ID='||OLD.PID;
+			END IF;
+		ELSE
+			IF NEW.PID IS NOT NULL THEN
+				EXECUTE 'UPDATE '||TG_ARGV[0]||'.'||TG_RELNAME||' SET CHLCNT=CHLCNT+1 WHERE ID='||NEW.PID;
+			END IF;
+		END IF;
+	END IF;
+	--
+	IF NEW.PID IS NULL THEN
+		GET DIAGNOSTICS _RowCnt=ROW_COUNT;
+		--
+		EXECUTE 'SELECT ID FROM '||TG_ARGV[0]||'.'||TG_RELNAME||' WHERE PID IS NULL AND ID_DICT='||NEW.ID_DICT;
+		--
+		IF _RowCnt>1 THEN
+		--есть цикл
+			RAISE EXCEPTION 'Cycle in table % for rowid=%', TG_RELNAME, NEW.ID;
+			RETURN NULL;
+		END IF;
+		--PATH
+		SET search_path = public, pg_catalog;
+		NEW.PATH:=CAST('' AS LTREE)||NEW.ID;
+		SET search_path = work_schema, pg_catalog;
+		--LEVEL
+		NEW.LEVEL:=0;
+		--SORTID
+	ELSE
+		GET DIAGNOSTICS _RowCnt=ROW_COUNT;
+		--
+		EXECUTE 'SELECT ID FROM '||TG_ARGV[0]||'.'||TG_RELNAME||' WHERE PID='||NEW.PID||' AND ID_DICT='||NEW.ID_DICT;
+		--
+		IF _RowCnt>1 THEN
+		--есть цикл
+			RAISE EXCEPTION 'Cycle in table % for rowid=%', TG_RELNAME, NEW.ID;
+			RETURN NULL;
+		END IF;
+		--
+		_strtree:='''*.'||NEW.ID||'.*''';
+		EXECUTE 'SELECT PATH FROM '||TG_ARGV[0]||'.'||TG_RELNAME||' WHERE ID='||NEW.PID||' AND PATH~'||_strtree INTO _Path;
+		--
+		IF _Path IS NOT NULL THEN
+		--есть цикл
+			RAISE EXCEPTION 'Cycle path=% in table %', _Path||NEW.ID, TG_RELNAME;
+			RETURN NULL;
+		END IF;
+		--
+		EXECUTE 'SELECT PATH, LEVEL FROM '||TG_ARGV[0]||'.'||TG_RELNAME||' WHERE ID='||NEW.PID INTO _Path, _Level;
+		--PATH
+		IF _Path IS NOT NULL THEN
+			NEW.PATH:=_Path||NEW.ID;
+		ELSE
+			NEW.PATH:=CAST('' AS LTREE)||NEW.ID;
+		END IF;
+		--LEVEL
+		IF _Level IS NOT NULL THEN
+			NEW.LEVEL:=_Level+1;
+		ELSE
+			NEW.LEVEL:=0;
+		END IF;
+		--SORTID
+	END IF;
+	--
+	RETURN NEW;
+END;
+$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION work_schema.update_link() OWNER TO postgres;
+
+--
+-- TOC entry 3054 (class 0 OID 0)
+-- Dependencies: 965
+-- Name: FUNCTION update_link(); Type: COMMENT; Schema: work_schema; Owner: postgres
+--
+
+COMMENT ON FUNCTION update_link() IS 'Обновить служебные поля объекта. Изменяет счетчик детей у родителя, проверяет на цикл.';
+
+
+--
+-- TOC entry 984 (class 1255 OID 17983)
+-- Dependencies: 1334 6
+-- Name: who_lock_object(text, integer); Type: FUNCTION; Schema: work_schema; Owner: admin_user
+--
+
+CREATE FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) RETURNS SETOF record
+    AS $$
+DECLARE
+	_id_obj INTEGER;
+	_row_lock work_schema.Lock_Objects%ROWTYPE;
+BEGIN
+	SELECT ID INTO _id_obj
+	FROM work_schema.Dict_Objects
+	WHERE NAME=_Name_Object;
+	--
+	IF FOUND THEN
+		FOR _row_lock IN SELECT *
+						 FROM work_schema.Lock_Objects
+						 WHERE ID_Object=_id_obj AND ID_Row=_ID_Row AND Status='L'
+		LOOP
+			ID_Session:=_row_lock.ID_Session;
+			ID_User:=_row_lock.ID_User;
+			NAME_User:=(SELECT NAME FROM work_schema.Dict_Users WHERE ID=_row_lock.ID_User LIMIT 1);
+			--
+			RETURN NEXT;
+		END LOOP;
+	END IF;
+END;
+$$
+    LANGUAGE plpgsql STABLE STRICT SECURITY DEFINER;
+
+
+ALTER FUNCTION work_schema.who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) OWNER TO admin_user;
+
+--
+-- TOC entry 3055 (class 0 OID 0)
+-- Dependencies: 984
+-- Name: FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying); Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) IS 'Кто заблокировал объект?';
+
+
+--
+-- TOC entry 2568 (class 1259 OID 17892)
+-- Dependencies: 6
+-- Name: dict_objects; Type: TABLE; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE TABLE dict_objects (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    system_name name NOT NULL,
+    system_oid oid,
+    system_linkname name,
+    system_linkoid oid,
+    id_row integer
+);
+
+
+ALTER TABLE work_schema.dict_objects OWNER TO admin_user;
+
+--
+-- TOC entry 3057 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: TABLE dict_objects; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON TABLE dict_objects IS 'Дерево описания объектов программы';
+
+
+--
+-- TOC entry 3058 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: COLUMN dict_objects.id; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_objects.id IS 'ID объекта';
+
+
+--
+-- TOC entry 3059 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: COLUMN dict_objects.name; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_objects.name IS 'Наименования объекта';
+
+
+--
+-- TOC entry 3060 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: COLUMN dict_objects.system_name; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_objects.system_name IS 'Системное имя таблицы где расположен объект';
+
+
+--
+-- TOC entry 3061 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: COLUMN dict_objects.system_oid; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_objects.system_oid IS 'OID таблицы где расположен объект';
+
+
+--
+-- TOC entry 3062 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: COLUMN dict_objects.system_linkname; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_objects.system_linkname IS 'Системное имя таблицы связей объекта';
+
+
+--
+-- TOC entry 3063 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: COLUMN dict_objects.system_linkoid; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_objects.system_linkoid IS 'OID таблицы связей объекта';
+
+
+--
+-- TOC entry 3064 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: COLUMN dict_objects.id_row; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_objects.id_row IS 'Ссылка на ветку объекта';
+
+
+--
+-- TOC entry 2567 (class 1259 OID 17890)
+-- Dependencies: 6 2568
+-- Name: dict_objects_id_seq; Type: SEQUENCE; Schema: work_schema; Owner: admin_user
+--
+
+CREATE SEQUENCE dict_objects_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE work_schema.dict_objects_id_seq OWNER TO admin_user;
+
+--
+-- TOC entry 3066 (class 0 OID 0)
+-- Dependencies: 2567
+-- Name: dict_objects_id_seq; Type: SEQUENCE OWNED BY; Schema: work_schema; Owner: admin_user
+--
+
+ALTER SEQUENCE dict_objects_id_seq OWNED BY dict_objects.id;
+
+
+--
+-- TOC entry 2560 (class 1259 OID 17802)
+-- Dependencies: 2927 2928 6
+-- Name: dict_users; Type: TABLE; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE TABLE dict_users (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    system_name name,
+    system_oid oid,
+    canlogin boolean DEFAULT false NOT NULL,
+    mustaudit boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE work_schema.dict_users OWNER TO admin_user;
+
+--
+-- TOC entry 3067 (class 0 OID 0)
+-- Dependencies: 2560
+-- Name: TABLE dict_users; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON TABLE dict_users IS 'Справочник пользователей';
+
+
+--
+-- TOC entry 3068 (class 0 OID 0)
+-- Dependencies: 2560
+-- Name: COLUMN dict_users.name; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_users.name IS 'Имя пользователя';
+
+
+--
+-- TOC entry 3069 (class 0 OID 0)
+-- Dependencies: 2560
+-- Name: COLUMN dict_users.system_name; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_users.system_name IS 'Имя системной роли';
+
+
+--
+-- TOC entry 3070 (class 0 OID 0)
+-- Dependencies: 2560
+-- Name: COLUMN dict_users.system_oid; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_users.system_oid IS 'OID системной роли';
+
+
+--
+-- TOC entry 3071 (class 0 OID 0)
+-- Dependencies: 2560
+-- Name: COLUMN dict_users.canlogin; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_users.canlogin IS 'Может логиниться';
+
+
+--
+-- TOC entry 3072 (class 0 OID 0)
+-- Dependencies: 2560
+-- Name: COLUMN dict_users.mustaudit; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN dict_users.mustaudit IS 'Сохранять логи действий пользователя';
+
+
+--
+-- TOC entry 2559 (class 1259 OID 17800)
+-- Dependencies: 2560 6
+-- Name: dict_users_id_seq; Type: SEQUENCE; Schema: work_schema; Owner: admin_user
+--
+
+CREATE SEQUENCE dict_users_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE work_schema.dict_users_id_seq OWNER TO admin_user;
+
+--
+-- TOC entry 3074 (class 0 OID 0)
+-- Dependencies: 2559
+-- Name: dict_users_id_seq; Type: SEQUENCE OWNED BY; Schema: work_schema; Owner: admin_user
+--
+
+ALTER SEQUENCE dict_users_id_seq OWNED BY dict_users.id;
+
+
+--
+-- TOC entry 2570 (class 1259 OID 17902)
+-- Dependencies: 2940 2941 2942 1253 6
+-- Name: link_objects; Type: TABLE; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE TABLE link_objects (
+    id integer NOT NULL,
+    pid integer,
+    path public.ltree NOT NULL,
+    id_dict integer NOT NULL,
+    sortid integer DEFAULT 0 NOT NULL,
+    "level" smallint DEFAULT 0 NOT NULL,
+    chlcnt integer DEFAULT 0 NOT NULL,
+    id_table oid
+);
+
+
+ALTER TABLE work_schema.link_objects OWNER TO admin_user;
+
+--
+-- TOC entry 3075 (class 0 OID 0)
+-- Dependencies: 2570
+-- Name: TABLE link_objects; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON TABLE link_objects IS 'Дерево объектов программы';
+
+
+--
+-- TOC entry 3076 (class 0 OID 0)
+-- Dependencies: 2570
+-- Name: COLUMN link_objects.path; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_objects.path IS 'Путь от корня к ветке';
+
+
+--
+-- TOC entry 3077 (class 0 OID 0)
+-- Dependencies: 2570
+-- Name: COLUMN link_objects.id_dict; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_objects.id_dict IS 'Ссылка на элемент справочника';
+
+
+--
+-- TOC entry 3078 (class 0 OID 0)
+-- Dependencies: 2570
+-- Name: COLUMN link_objects.sortid; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_objects.sortid IS 'Порядок сортировки в группе';
+
+
+--
+-- TOC entry 3079 (class 0 OID 0)
+-- Dependencies: 2570
+-- Name: COLUMN link_objects."level"; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_objects."level" IS 'Уровень ветки';
+
+
+--
+-- TOC entry 3080 (class 0 OID 0)
+-- Dependencies: 2570
+-- Name: COLUMN link_objects.chlcnt; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_objects.chlcnt IS 'Количество дочерних веток ';
+
+
+--
+-- TOC entry 2569 (class 1259 OID 17900)
+-- Dependencies: 6 2570
+-- Name: link_objects_id_seq; Type: SEQUENCE; Schema: work_schema; Owner: admin_user
+--
+
+CREATE SEQUENCE link_objects_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE work_schema.link_objects_id_seq OWNER TO admin_user;
+
+--
+-- TOC entry 3082 (class 0 OID 0)
+-- Dependencies: 2569
+-- Name: link_objects_id_seq; Type: SEQUENCE OWNED BY; Schema: work_schema; Owner: admin_user
+--
+
+ALTER SEQUENCE link_objects_id_seq OWNED BY link_objects.id;
+
+
+--
+-- TOC entry 2562 (class 1259 OID 17814)
+-- Dependencies: 2930 2931 2932 1253 6
+-- Name: link_users; Type: TABLE; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE TABLE link_users (
+    id integer NOT NULL,
+    pid integer,
+    path public.ltree NOT NULL,
+    id_dict integer NOT NULL,
+    sortid integer DEFAULT 0 NOT NULL,
+    "level" smallint DEFAULT 0 NOT NULL,
+    chlcnt integer DEFAULT 0 NOT NULL,
+    id_table oid
+);
+
+
+ALTER TABLE work_schema.link_users OWNER TO admin_user;
+
+--
+-- TOC entry 3083 (class 0 OID 0)
+-- Dependencies: 2562
+-- Name: TABLE link_users; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON TABLE link_users IS 'Дерево пользователей';
+
+
+--
+-- TOC entry 3084 (class 0 OID 0)
+-- Dependencies: 2562
+-- Name: COLUMN link_users.path; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_users.path IS 'Путь от корня к ветке';
+
+
+--
+-- TOC entry 3085 (class 0 OID 0)
+-- Dependencies: 2562
+-- Name: COLUMN link_users.id_dict; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_users.id_dict IS 'Ссылка на элемент справочника';
+
+
+--
+-- TOC entry 3086 (class 0 OID 0)
+-- Dependencies: 2562
+-- Name: COLUMN link_users.sortid; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_users.sortid IS 'Порядок сортировки в группе';
+
+
+--
+-- TOC entry 3087 (class 0 OID 0)
+-- Dependencies: 2562
+-- Name: COLUMN link_users."level"; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_users."level" IS 'Уровень ветки';
+
+
+--
+-- TOC entry 3088 (class 0 OID 0)
+-- Dependencies: 2562
+-- Name: COLUMN link_users.chlcnt; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN link_users.chlcnt IS 'Количество дочерних веток';
+
+
+--
+-- TOC entry 2561 (class 1259 OID 17812)
+-- Dependencies: 6 2562
+-- Name: link_users_id_seq; Type: SEQUENCE; Schema: work_schema; Owner: admin_user
+--
+
+CREATE SEQUENCE link_users_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE work_schema.link_users_id_seq OWNER TO admin_user;
+
+--
+-- TOC entry 3090 (class 0 OID 0)
+-- Dependencies: 2561
+-- Name: link_users_id_seq; Type: SEQUENCE OWNED BY; Schema: work_schema; Owner: admin_user
+--
+
+ALTER SEQUENCE link_users_id_seq OWNED BY link_users.id;
+
+
+--
+-- TOC entry 2574 (class 1259 OID 17955)
+-- Dependencies: 6 2575
+-- Name: lock_objects_id_seq; Type: SEQUENCE; Schema: work_schema; Owner: admin_user
+--
+
+CREATE SEQUENCE lock_objects_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE work_schema.lock_objects_id_seq OWNER TO admin_user;
+
+--
+-- TOC entry 3091 (class 0 OID 0)
+-- Dependencies: 2574
+-- Name: lock_objects_id_seq; Type: SEQUENCE OWNED BY; Schema: work_schema; Owner: admin_user
+--
+
+ALTER SEQUENCE lock_objects_id_seq OWNED BY lock_objects.id;
+
+
+--
+-- TOC entry 2565 (class 1259 OID 17861)
+-- Dependencies: 6 2566
+-- Name: messages_id_seq; Type: SEQUENCE; Schema: work_schema; Owner: admin_user
+--
+
+CREATE SEQUENCE messages_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE work_schema.messages_id_seq OWNER TO admin_user;
+
+--
+-- TOC entry 3092 (class 0 OID 0)
+-- Dependencies: 2565
+-- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: work_schema; Owner: admin_user
+--
+
+ALTER SEQUENCE messages_id_seq OWNED BY messages.id;
+
+
+--
+-- TOC entry 2564 (class 1259 OID 17845)
+-- Dependencies: 2934 2935 6
+-- Name: sessions; Type: TABLE; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE TABLE sessions (
+    id integer NOT NULL,
+    id_user integer,
+    id_process integer NOT NULL,
+    client_ip cidr NOT NULL,
+    client_port integer NOT NULL,
+    session_on timestamp without time zone DEFAULT now() NOT NULL,
+    session_off timestamp without time zone,
+    status character(1) DEFAULT 'A'::bpchar NOT NULL
+);
+
+
+ALTER TABLE work_schema.sessions OWNER TO admin_user;
+
+--
+-- TOC entry 3093 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: TABLE sessions; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON TABLE sessions IS 'Таблица логов сессий';
+
+
+--
+-- TOC entry 3094 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: COLUMN sessions.id; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN sessions.id IS 'ID сессии';
+
+
+--
+-- TOC entry 3095 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: COLUMN sessions.id_user; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN sessions.id_user IS 'Пользователь открывший сессию';
+
+
+--
+-- TOC entry 3096 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: COLUMN sessions.id_process; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN sessions.id_process IS 'PID fork-a сессий';
+
+
+--
+-- TOC entry 3097 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: COLUMN sessions.client_ip; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN sessions.client_ip IS 'IP клиента открывшего сессию';
+
+
+--
+-- TOC entry 3098 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: COLUMN sessions.client_port; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN sessions.client_port IS 'Port клиента открывшего сессию';
+
+
+--
+-- TOC entry 3099 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: COLUMN sessions.session_on; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN sessions.session_on IS 'Время начала сессии';
+
+
+--
+-- TOC entry 3100 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: COLUMN sessions.session_off; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN sessions.session_off IS 'Время окончания сессии';
+
+
+--
+-- TOC entry 3101 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: COLUMN sessions.status; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN sessions.status IS 'Статус сессии - A-activity, C-closed, W-waiting response, D-disconnected abnormaly';
+
+
+--
+-- TOC entry 2563 (class 1259 OID 17843)
+-- Dependencies: 6 2564
+-- Name: sessions_id_seq; Type: SEQUENCE; Schema: work_schema; Owner: admin_user
+--
+
+CREATE SEQUENCE sessions_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE work_schema.sessions_id_seq OWNER TO admin_user;
+
+--
+-- TOC entry 3103 (class 0 OID 0)
+-- Dependencies: 2563
+-- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: work_schema; Owner: admin_user
+--
+
+ALTER SEQUENCE sessions_id_seq OWNED BY sessions.id;
+
+
+--
+-- TOC entry 2571 (class 1259 OID 17929)
+-- Dependencies: 2943 2944 6
+-- Name: user_rights; Type: TABLE; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE TABLE user_rights (
+    id_object integer NOT NULL,
+    id_user integer NOT NULL,
+    rights character(4) DEFAULT 'X'::bpchar,
+    inherits_rights character(4) DEFAULT 'X'::bpchar
+);
+
+
+ALTER TABLE work_schema.user_rights OWNER TO admin_user;
+
+--
+-- TOC entry 3104 (class 0 OID 0)
+-- Dependencies: 2571
+-- Name: TABLE user_rights; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON TABLE user_rights IS 'Права пользователей на объекты';
+
+
+--
+-- TOC entry 3105 (class 0 OID 0)
+-- Dependencies: 2571
+-- Name: COLUMN user_rights.id_object; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN user_rights.id_object IS 'Объект';
+
+
+--
+-- TOC entry 3106 (class 0 OID 0)
+-- Dependencies: 2571
+-- Name: COLUMN user_rights.id_user; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN user_rights.id_user IS 'Пользователь';
+
+
+--
+-- TOC entry 3107 (class 0 OID 0)
+-- Dependencies: 2571
+-- Name: COLUMN user_rights.rights; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN user_rights.rights IS 'ACL доступа: V-View, I-Insert, U-Update, D-Delete, X-Нет никаких прав';
+
+
+--
+-- TOC entry 3108 (class 0 OID 0)
+-- Dependencies: 2571
+-- Name: COLUMN user_rights.inherits_rights; Type: COMMENT; Schema: work_schema; Owner: admin_user
+--
+
+COMMENT ON COLUMN user_rights.inherits_rights IS 'ACL доступа предков';
+
+
+--
+-- TOC entry 2573 (class 1259 OID 17952)
+-- Dependencies: 2654 6
+-- Name: view_objects; Type: VIEW; Schema: work_schema; Owner: admin_user
+--
+
+CREATE VIEW view_objects AS
+    SELECT lobj.id AS lid, lobj.pid, lobj.sortid, lobj."level", lobj.chlcnt, lobj.id_table, dobj.id, dobj.name, dobj.system_name, dobj.system_oid, dobj.system_linkname, dobj.system_linkoid, dobj.id_row FROM (link_objects lobj JOIN dict_objects dobj ON ((dobj.id = lobj.id_dict))) WHERE acl_check('Справочник объектов'::character varying, 'V'::bpchar, lobj.pid);
+
+
+ALTER TABLE work_schema.view_objects OWNER TO admin_user;
+
+--
+-- TOC entry 2572 (class 1259 OID 17949)
+-- Dependencies: 2653 6
+-- Name: view_users; Type: VIEW; Schema: work_schema; Owner: admin_user
+--
+
+CREATE VIEW view_users AS
+    SELECT lu.id AS lid, lu.pid, lu.sortid, lu."level", lu.chlcnt, lu.id_table, du.id, du.name, du.system_name, du.system_oid, du.canlogin, du.mustaudit FROM (link_users lu JOIN dict_users du ON ((du.id = lu.id_dict))) WHERE acl_check('Справочник пользователей'::character varying, 'V'::bpchar, lu.pid);
+
+
+ALTER TABLE work_schema.view_users OWNER TO admin_user;
+
+--
+-- TOC entry 2938 (class 2604 OID 17894)
+-- Dependencies: 2568 2567 2568
+-- Name: id; Type: DEFAULT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE dict_objects ALTER COLUMN id SET DEFAULT nextval('dict_objects_id_seq'::regclass);
+
+
+--
+-- TOC entry 2926 (class 2604 OID 17804)
+-- Dependencies: 2559 2560 2560
+-- Name: id; Type: DEFAULT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE dict_users ALTER COLUMN id SET DEFAULT nextval('dict_users_id_seq'::regclass);
+
+
+--
+-- TOC entry 2939 (class 2604 OID 17904)
+-- Dependencies: 2569 2570 2570
+-- Name: id; Type: DEFAULT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE link_objects ALTER COLUMN id SET DEFAULT nextval('link_objects_id_seq'::regclass);
+
+
+--
+-- TOC entry 2929 (class 2604 OID 17816)
+-- Dependencies: 2561 2562 2562
+-- Name: id; Type: DEFAULT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE link_users ALTER COLUMN id SET DEFAULT nextval('link_users_id_seq'::regclass);
+
+
+--
+-- TOC entry 2945 (class 2604 OID 17959)
+-- Dependencies: 2575 2574 2575
+-- Name: id; Type: DEFAULT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE lock_objects ALTER COLUMN id SET DEFAULT nextval('lock_objects_id_seq'::regclass);
+
+
+--
+-- TOC entry 2936 (class 2604 OID 17865)
+-- Dependencies: 2565 2566 2566
+-- Name: id; Type: DEFAULT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE messages ALTER COLUMN id SET DEFAULT nextval('messages_id_seq'::regclass);
+
+
+--
+-- TOC entry 2933 (class 2604 OID 17847)
+-- Dependencies: 2563 2564 2564
+-- Name: id; Type: DEFAULT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE sessions ALTER COLUMN id SET DEFAULT nextval('sessions_id_seq'::regclass);
+
+
+--
+-- TOC entry 2966 (class 2606 OID 17896)
+-- Dependencies: 2568 2568
+-- Name: pk_dict_objects; Type: CONSTRAINT; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+ALTER TABLE ONLY dict_objects
+    ADD CONSTRAINT pk_dict_objects PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2950 (class 2606 OID 17808)
+-- Dependencies: 2560 2560
+-- Name: pk_dict_users; Type: CONSTRAINT; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+ALTER TABLE ONLY dict_users
+    ADD CONSTRAINT pk_dict_users PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2972 (class 2606 OID 17912)
+-- Dependencies: 2570 2570
+-- Name: pk_link_objects; Type: CONSTRAINT; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+ALTER TABLE ONLY link_objects
+    ADD CONSTRAINT pk_link_objects PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2956 (class 2606 OID 17824)
+-- Dependencies: 2562 2562
+-- Name: pk_link_users; Type: CONSTRAINT; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+ALTER TABLE ONLY link_users
+    ADD CONSTRAINT pk_link_users PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2963 (class 2606 OID 17871)
+-- Dependencies: 2566 2566
+-- Name: pk_messages; Type: CONSTRAINT; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+ALTER TABLE ONLY messages
+    ADD CONSTRAINT pk_messages PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2959 (class 2606 OID 17854)
+-- Dependencies: 2564 2564
+-- Name: pk_sessions; Type: CONSTRAINT; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+ALTER TABLE ONLY sessions
+    ADD CONSTRAINT pk_sessions PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2967 (class 1259 OID 17924)
+-- Dependencies: 2570
+-- Name: fki_id_link_objects; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_id_link_objects ON link_objects USING btree (id_dict);
+
+
+--
+-- TOC entry 2951 (class 1259 OID 17836)
+-- Dependencies: 2562
+-- Name: fki_id_link_users; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_id_link_users ON link_users USING btree (id_dict);
+
+
+--
+-- TOC entry 2968 (class 1259 OID 17923)
+-- Dependencies: 2570
+-- Name: fki_link_objects; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_link_objects ON link_objects USING btree (pid);
+
+
+--
+-- TOC entry 2952 (class 1259 OID 17835)
+-- Dependencies: 2562
+-- Name: fki_link_users; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_link_users ON link_users USING btree (pid);
+
+
+--
+-- TOC entry 2975 (class 1259 OID 17977)
+-- Dependencies: 2575 2575
+-- Name: fki_objects_locks; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_objects_locks ON lock_objects USING btree (id_object, id_row);
+
+
+--
+-- TOC entry 2973 (class 1259 OID 17943)
+-- Dependencies: 2571
+-- Name: fki_objects_user_rights; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_objects_user_rights ON user_rights USING btree (id_object);
+
+
+--
+-- TOC entry 2976 (class 1259 OID 17978)
+-- Dependencies: 2575
+-- Name: fki_sessions_locks; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_sessions_locks ON lock_objects USING btree (id_session);
+
+
+--
+-- TOC entry 2960 (class 1259 OID 17883)
+-- Dependencies: 2566
+-- Name: fki_sessions_messages_from; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_sessions_messages_from ON messages USING btree (id_session_from);
+
+
+--
+-- TOC entry 2961 (class 1259 OID 17882)
+-- Dependencies: 2566
+-- Name: fki_sessions_messages_to; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_sessions_messages_to ON messages USING btree (id_session_to);
+
+
+--
+-- TOC entry 2977 (class 1259 OID 17979)
+-- Dependencies: 2575
+-- Name: fki_users_locks; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_users_locks ON lock_objects USING btree (id_user);
+
+
+--
+-- TOC entry 2957 (class 1259 OID 17860)
+-- Dependencies: 2564
+-- Name: fki_users_sessions; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_users_sessions ON sessions USING btree (id_user);
+
+
+--
+-- TOC entry 2974 (class 1259 OID 17944)
+-- Dependencies: 2571
+-- Name: fki_users_user_rights; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX fki_users_user_rights ON user_rights USING btree (id_user);
+
+
+--
+-- TOC entry 2948 (class 1259 OID 17809)
+-- Dependencies: 2560
+-- Name: name_users; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE UNIQUE INDEX name_users ON dict_users USING btree (name);
+
+
+--
+-- TOC entry 2964 (class 1259 OID 17897)
+-- Dependencies: 2568
+-- Name: objects_name; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE UNIQUE INDEX objects_name ON dict_objects USING btree (name);
+
+
+--
+-- TOC entry 2969 (class 1259 OID 17925)
+-- Dependencies: 2287 2570
+-- Name: path_gist_objects; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX path_gist_objects ON link_objects USING gist (path public.gist_ltree_ops);
+
+
+--
+-- TOC entry 2953 (class 1259 OID 17837)
+-- Dependencies: 2562 2287
+-- Name: path_gist_users; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX path_gist_users ON link_users USING gist (path public.gist_ltree_ops);
+
+
+--
+-- TOC entry 2970 (class 1259 OID 17926)
+-- Dependencies: 2570 2570
+-- Name: pid_sortid_objects; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX pid_sortid_objects ON link_objects USING btree (pid, sortid);
+
+
+--
+-- TOC entry 2954 (class 1259 OID 17838)
+-- Dependencies: 2562 2562
+-- Name: pid_sortid_users; Type: INDEX; Schema: work_schema; Owner: admin_user; Tablespace: 
+--
+
+CREATE INDEX pid_sortid_users ON link_users USING btree (pid, sortid);
+
+
+--
+-- TOC entry 2996 (class 2620 OID 17928)
+-- Dependencies: 966 2570
+-- Name: tr_del_link_objects; Type: TRIGGER; Schema: work_schema; Owner: admin_user
+--
+
+CREATE TRIGGER tr_del_link_objects
+    AFTER DELETE ON link_objects
+    FOR EACH ROW
+    EXECUTE PROCEDURE delete_link('work_schema', 'Dict_Objects');
+
+
+--
+-- TOC entry 2992 (class 2620 OID 17840)
+-- Dependencies: 966 2562
+-- Name: tr_del_link_users; Type: TRIGGER; Schema: work_schema; Owner: admin_user
+--
+
+CREATE TRIGGER tr_del_link_users
+    AFTER DELETE ON link_users
+    FOR EACH ROW
+    EXECUTE PROCEDURE delete_link('work_schema', 'Dict_Users');
+
+
+--
+-- TOC entry 2997 (class 2620 OID 17946)
+-- Dependencies: 2571 977
+-- Name: tr_upd_acl; Type: TRIGGER; Schema: work_schema; Owner: admin_user
+--
+
+CREATE TRIGGER tr_upd_acl
+    BEFORE INSERT OR DELETE OR UPDATE ON user_rights
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_acl();
+
+
+--
+-- TOC entry 2990 (class 2620 OID 17811)
+-- Dependencies: 2560 967
+-- Name: tr_upd_dict_users; Type: TRIGGER; Schema: work_schema; Owner: admin_user
+--
+
+CREATE TRIGGER tr_upd_dict_users
+    BEFORE INSERT OR UPDATE ON dict_users
+    FOR EACH ROW
+    EXECUTE PROCEDURE upd_dict_users();
+
+
+--
+-- TOC entry 2995 (class 2620 OID 17927)
+-- Dependencies: 2570 965
+-- Name: tr_upd_link_objects; Type: TRIGGER; Schema: work_schema; Owner: admin_user
+--
+
+CREATE TRIGGER tr_upd_link_objects
+    BEFORE INSERT OR UPDATE ON link_objects
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_link('work_schema', 'Dict_Objects');
+
+
+--
+-- TOC entry 2991 (class 2620 OID 17839)
+-- Dependencies: 965 2562
+-- Name: tr_upd_link_users; Type: TRIGGER; Schema: work_schema; Owner: admin_user
+--
+
+CREATE TRIGGER tr_upd_link_users
+    BEFORE INSERT OR UPDATE ON link_users
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_link('work_schema', 'Dict_Users');
+
+
+--
+-- TOC entry 2993 (class 2620 OID 17985)
+-- Dependencies: 2564 983
+-- Name: tr_upd_sessions; Type: TRIGGER; Schema: work_schema; Owner: admin_user
+--
+
+CREATE TRIGGER tr_upd_sessions
+    AFTER UPDATE ON sessions
+    FOR EACH ROW
+    EXECUTE PROCEDURE upd_sessions();
+
+
+--
+-- TOC entry 2994 (class 2620 OID 17899)
+-- Dependencies: 2568 976
+-- Name: tr_upd_upd_dict_objects; Type: TRIGGER; Schema: work_schema; Owner: admin_user
+--
+
+CREATE TRIGGER tr_upd_upd_dict_objects
+    BEFORE INSERT OR UPDATE ON dict_objects
+    FOR EACH ROW
+    EXECUTE PROCEDURE upd_dict_objects();
+
+
+--
+-- TOC entry 2984 (class 2606 OID 17918)
+-- Dependencies: 2570 2568 2965
+-- Name: fk_id_link_objects; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY link_objects
+    ADD CONSTRAINT fk_id_link_objects FOREIGN KEY (id_dict) REFERENCES dict_objects(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2979 (class 2606 OID 17830)
+-- Dependencies: 2949 2560 2562
+-- Name: fk_id_link_users; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY link_users
+    ADD CONSTRAINT fk_id_link_users FOREIGN KEY (id_dict) REFERENCES dict_users(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2983 (class 2606 OID 17913)
+-- Dependencies: 2971 2570 2570
+-- Name: fk_link_objects; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY link_objects
+    ADD CONSTRAINT fk_link_objects FOREIGN KEY (pid) REFERENCES link_objects(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2978 (class 2606 OID 17825)
+-- Dependencies: 2562 2955 2562
+-- Name: fk_link_users; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY link_users
+    ADD CONSTRAINT fk_link_users FOREIGN KEY (pid) REFERENCES link_users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2987 (class 2606 OID 17962)
+-- Dependencies: 2575 2965 2568
+-- Name: fk_objects_locks; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY lock_objects
+    ADD CONSTRAINT fk_objects_locks FOREIGN KEY (id_object) REFERENCES dict_objects(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2985 (class 2606 OID 17933)
+-- Dependencies: 2965 2568 2571
+-- Name: fk_objects_user_rights; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY user_rights
+    ADD CONSTRAINT fk_objects_user_rights FOREIGN KEY (id_object) REFERENCES dict_objects(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2988 (class 2606 OID 17967)
+-- Dependencies: 2958 2564 2575
+-- Name: fk_sessions_locks; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY lock_objects
+    ADD CONSTRAINT fk_sessions_locks FOREIGN KEY (id_session) REFERENCES sessions(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2982 (class 2606 OID 17877)
+-- Dependencies: 2566 2958 2564
+-- Name: fk_sessions_messages_from; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY messages
+    ADD CONSTRAINT fk_sessions_messages_from FOREIGN KEY (id_session_from) REFERENCES sessions(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2981 (class 2606 OID 17872)
+-- Dependencies: 2566 2564 2958
+-- Name: fk_sessions_messages_to; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY messages
+    ADD CONSTRAINT fk_sessions_messages_to FOREIGN KEY (id_session_to) REFERENCES sessions(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2989 (class 2606 OID 17972)
+-- Dependencies: 2575 2560 2949
+-- Name: fk_users_locks; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY lock_objects
+    ADD CONSTRAINT fk_users_locks FOREIGN KEY (id_user) REFERENCES dict_users(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2980 (class 2606 OID 17855)
+-- Dependencies: 2560 2564 2949
+-- Name: fk_users_sessions; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY sessions
+    ADD CONSTRAINT fk_users_sessions FOREIGN KEY (id_user) REFERENCES dict_users(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 2986 (class 2606 OID 17938)
+-- Dependencies: 2949 2571 2560
+-- Name: fk_users_user_rights; Type: FK CONSTRAINT; Schema: work_schema; Owner: admin_user
+--
+
+ALTER TABLE ONLY user_rights
+    ADD CONSTRAINT fk_users_user_rights FOREIGN KEY (id_user) REFERENCES dict_users(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3000 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: work_schema; Type: ACL; Schema: -; Owner: admin_user
+--
+
+REVOKE ALL ON SCHEMA work_schema FROM PUBLIC;
+REVOKE ALL ON SCHEMA work_schema FROM admin_user;
+GRANT ALL ON SCHEMA work_schema TO admin_user;
+GRANT USAGE ON SCHEMA work_schema TO list_users WITH GRANT OPTION;
+GRANT ALL ON SCHEMA work_schema TO manager_data WITH GRANT OPTION;
+GRANT USAGE ON SCHEMA work_schema TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3002 (class 0 OID 0)
+-- Dependencies: 979
+-- Name: acl_check(character varying, character, integer); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION acl_check(character varying, character, integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION acl_check(character varying, character, integer) FROM admin_user;
+GRANT ALL ON FUNCTION acl_check(character varying, character, integer) TO admin_user;
+GRANT ALL ON FUNCTION acl_check(character varying, character, integer) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION acl_check(character varying, character, integer) TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3005 (class 0 OID 0)
+-- Dependencies: 978
+-- Name: get_acl(integer, integer); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION get_acl(_id_user integer, _id_object integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION get_acl(_id_user integer, _id_object integer) FROM admin_user;
+GRANT ALL ON FUNCTION get_acl(_id_user integer, _id_object integer) TO admin_user;
+GRANT ALL ON FUNCTION get_acl(_id_user integer, _id_object integer) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION get_acl(_id_user integer, _id_object integer) TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3007 (class 0 OID 0)
+-- Dependencies: 968
+-- Name: get_list_users(); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) FROM PUBLIC;
+REVOKE ALL ON FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) FROM admin_user;
+GRANT ALL ON FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) TO admin_user;
+GRANT ALL ON FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) TO PUBLIC;
+GRANT ALL ON FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) TO worker_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION get_list_users(OUT full_name character varying, OUT system_name name) TO list_users WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3017 (class 0 OID 0)
+-- Dependencies: 2566
+-- Name: messages; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE messages FROM PUBLIC;
+REVOKE ALL ON TABLE messages FROM admin_user;
+GRANT ALL ON TABLE messages TO admin_user;
+GRANT ALL ON TABLE messages TO manager_data WITH GRANT OPTION;
+GRANT SELECT ON TABLE messages TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3019 (class 0 OID 0)
+-- Dependencies: 973
+-- Name: get_messages_from(integer, character); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION get_messages_from(integer, character) FROM PUBLIC;
+REVOKE ALL ON FUNCTION get_messages_from(integer, character) FROM admin_user;
+GRANT ALL ON FUNCTION get_messages_from(integer, character) TO admin_user;
+GRANT ALL ON FUNCTION get_messages_from(integer, character) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION get_messages_from(integer, character) TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3021 (class 0 OID 0)
+-- Dependencies: 972
+-- Name: get_messages_to(integer, character); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION get_messages_to(integer, character) FROM PUBLIC;
+REVOKE ALL ON FUNCTION get_messages_to(integer, character) FROM admin_user;
+GRANT ALL ON FUNCTION get_messages_to(integer, character) TO admin_user;
+GRANT ALL ON FUNCTION get_messages_to(integer, character) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION get_messages_to(integer, character) TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3023 (class 0 OID 0)
+-- Dependencies: 969
+-- Name: get_userid(); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION get_userid() FROM PUBLIC;
+REVOKE ALL ON FUNCTION get_userid() FROM admin_user;
+GRANT ALL ON FUNCTION get_userid() TO admin_user;
+GRANT ALL ON FUNCTION get_userid() TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION get_userid() TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3032 (class 0 OID 0)
+-- Dependencies: 2575
+-- Name: lock_objects; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE lock_objects FROM PUBLIC;
+REVOKE ALL ON TABLE lock_objects FROM admin_user;
+GRANT ALL ON TABLE lock_objects TO admin_user;
+GRANT ALL ON TABLE lock_objects TO manager_data WITH GRANT OPTION;
+GRANT SELECT ON TABLE lock_objects TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3034 (class 0 OID 0)
+-- Dependencies: 982
+-- Name: list_lock_objects(); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION list_lock_objects() FROM PUBLIC;
+REVOKE ALL ON FUNCTION list_lock_objects() FROM admin_user;
+GRANT ALL ON FUNCTION list_lock_objects() TO admin_user;
+GRANT ALL ON FUNCTION list_lock_objects() TO PUBLIC;
+GRANT ALL ON FUNCTION list_lock_objects() TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION list_lock_objects() TO worker_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION list_lock_objects() TO list_users WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3036 (class 0 OID 0)
+-- Dependencies: 980
+-- Name: lock_object(integer, character varying, integer); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) FROM admin_user;
+GRANT ALL ON FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) TO admin_user;
+GRANT ALL ON FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) TO PUBLIC;
+GRANT ALL ON FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) TO worker_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION lock_object(_id_session integer, _name_object character varying, _id_row integer) TO list_users WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3038 (class 0 OID 0)
+-- Dependencies: 970
+-- Name: login_user(); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION login_user() FROM PUBLIC;
+REVOKE ALL ON FUNCTION login_user() FROM admin_user;
+GRANT ALL ON FUNCTION login_user() TO admin_user;
+GRANT ALL ON FUNCTION login_user() TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION login_user() TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3040 (class 0 OID 0)
+-- Dependencies: 971
+-- Name: logout_user(integer); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION logout_user(integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION logout_user(integer) FROM admin_user;
+GRANT ALL ON FUNCTION logout_user(integer) TO admin_user;
+GRANT ALL ON FUNCTION logout_user(integer) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION logout_user(integer) TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3042 (class 0 OID 0)
+-- Dependencies: 975
+-- Name: send_session_messages(integer, integer, character, text); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION send_session_messages(integer, integer, character, text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION send_session_messages(integer, integer, character, text) FROM admin_user;
+GRANT ALL ON FUNCTION send_session_messages(integer, integer, character, text) TO admin_user;
+GRANT ALL ON FUNCTION send_session_messages(integer, integer, character, text) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION send_session_messages(integer, integer, character, text) TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3044 (class 0 OID 0)
+-- Dependencies: 974
+-- Name: send_user_messages(integer, integer, character, text); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION send_user_messages(integer, integer, character, text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION send_user_messages(integer, integer, character, text) FROM admin_user;
+GRANT ALL ON FUNCTION send_user_messages(integer, integer, character, text) TO admin_user;
+GRANT ALL ON FUNCTION send_user_messages(integer, integer, character, text) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION send_user_messages(integer, integer, character, text) TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3046 (class 0 OID 0)
+-- Dependencies: 981
+-- Name: unlock_object(integer); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION unlock_object(_id_lock integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION unlock_object(_id_lock integer) FROM admin_user;
+GRANT ALL ON FUNCTION unlock_object(_id_lock integer) TO admin_user;
+GRANT ALL ON FUNCTION unlock_object(_id_lock integer) TO PUBLIC;
+GRANT ALL ON FUNCTION unlock_object(_id_lock integer) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION unlock_object(_id_lock integer) TO worker_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION unlock_object(_id_lock integer) TO list_users WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3048 (class 0 OID 0)
+-- Dependencies: 976
+-- Name: upd_dict_objects(); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION upd_dict_objects() FROM PUBLIC;
+REVOKE ALL ON FUNCTION upd_dict_objects() FROM admin_user;
+GRANT ALL ON FUNCTION upd_dict_objects() TO admin_user;
+GRANT ALL ON FUNCTION upd_dict_objects() TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION upd_dict_objects() TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3050 (class 0 OID 0)
+-- Dependencies: 967
+-- Name: upd_dict_users(); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION upd_dict_users() FROM PUBLIC;
+REVOKE ALL ON FUNCTION upd_dict_users() FROM admin_user;
+GRANT ALL ON FUNCTION upd_dict_users() TO admin_user;
+GRANT ALL ON FUNCTION upd_dict_users() TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION upd_dict_users() TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3052 (class 0 OID 0)
+-- Dependencies: 983
+-- Name: upd_sessions(); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION upd_sessions() FROM PUBLIC;
+REVOKE ALL ON FUNCTION upd_sessions() FROM admin_user;
+GRANT ALL ON FUNCTION upd_sessions() TO admin_user;
+GRANT ALL ON FUNCTION upd_sessions() TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION upd_sessions() TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3056 (class 0 OID 0)
+-- Dependencies: 984
+-- Name: who_lock_object(text, integer); Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) FROM PUBLIC;
+REVOKE ALL ON FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) FROM admin_user;
+GRANT ALL ON FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) TO admin_user;
+GRANT ALL ON FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) TO PUBLIC;
+GRANT ALL ON FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) TO manager_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) TO worker_data WITH GRANT OPTION;
+GRANT ALL ON FUNCTION who_lock_object(_name_object text, _id_row integer, OUT id_session integer, OUT id_user integer, OUT name_user character varying) TO list_users WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3065 (class 0 OID 0)
+-- Dependencies: 2568
+-- Name: dict_objects; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE dict_objects FROM PUBLIC;
+REVOKE ALL ON TABLE dict_objects FROM admin_user;
+GRANT ALL ON TABLE dict_objects TO admin_user;
+GRANT ALL ON TABLE dict_objects TO manager_data WITH GRANT OPTION;
+GRANT INSERT,DELETE,UPDATE ON TABLE dict_objects TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3073 (class 0 OID 0)
+-- Dependencies: 2560
+-- Name: dict_users; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE dict_users FROM PUBLIC;
+REVOKE ALL ON TABLE dict_users FROM admin_user;
+GRANT ALL ON TABLE dict_users TO admin_user;
+GRANT ALL ON TABLE dict_users TO manager_data WITH GRANT OPTION;
+GRANT INSERT,DELETE,UPDATE ON TABLE dict_users TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3081 (class 0 OID 0)
+-- Dependencies: 2570
+-- Name: link_objects; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE link_objects FROM PUBLIC;
+REVOKE ALL ON TABLE link_objects FROM admin_user;
+GRANT ALL ON TABLE link_objects TO admin_user;
+GRANT ALL ON TABLE link_objects TO manager_data WITH GRANT OPTION;
+GRANT INSERT,DELETE,UPDATE ON TABLE link_objects TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3089 (class 0 OID 0)
+-- Dependencies: 2562
+-- Name: link_users; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE link_users FROM PUBLIC;
+REVOKE ALL ON TABLE link_users FROM admin_user;
+GRANT ALL ON TABLE link_users TO admin_user;
+GRANT ALL ON TABLE link_users TO manager_data WITH GRANT OPTION;
+GRANT INSERT,DELETE,UPDATE ON TABLE link_users TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3102 (class 0 OID 0)
+-- Dependencies: 2564
+-- Name: sessions; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE sessions FROM PUBLIC;
+REVOKE ALL ON TABLE sessions FROM admin_user;
+GRANT ALL ON TABLE sessions TO admin_user;
+GRANT ALL ON TABLE sessions TO manager_data WITH GRANT OPTION;
+GRANT SELECT ON TABLE sessions TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3109 (class 0 OID 0)
+-- Dependencies: 2571
+-- Name: user_rights; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE user_rights FROM PUBLIC;
+REVOKE ALL ON TABLE user_rights FROM admin_user;
+GRANT ALL ON TABLE user_rights TO admin_user;
+GRANT ALL ON TABLE user_rights TO manager_data WITH GRANT OPTION;
+GRANT SELECT ON TABLE user_rights TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3110 (class 0 OID 0)
+-- Dependencies: 2573
+-- Name: view_objects; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE view_objects FROM PUBLIC;
+REVOKE ALL ON TABLE view_objects FROM admin_user;
+GRANT ALL ON TABLE view_objects TO admin_user;
+GRANT ALL ON TABLE view_objects TO manager_data WITH GRANT OPTION;
+GRANT ALL ON TABLE view_objects TO worker_data WITH GRANT OPTION;
+
+
+--
+-- TOC entry 3111 (class 0 OID 0)
+-- Dependencies: 2572
+-- Name: view_users; Type: ACL; Schema: work_schema; Owner: admin_user
+--
+
+REVOKE ALL ON TABLE view_users FROM PUBLIC;
+REVOKE ALL ON TABLE view_users FROM admin_user;
+GRANT ALL ON TABLE view_users TO admin_user;
+GRANT ALL ON TABLE view_users TO manager_data WITH GRANT OPTION;
+GRANT ALL ON TABLE view_users TO worker_data WITH GRANT OPTION;
+
+
+-- Completed on 2006-09-29 17:40:50 ���������� ����� (����)
+
+--
+-- PostgreSQL database dump complete
+--
+
