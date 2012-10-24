@@ -1,0 +1,494 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1M8025X6I
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] chartgdi
+[START PROPERTIES]
+Name = "chartgdi"
+charwidth = .F.
+columnlist = .F.
+idtypegraph = .F.
+kolelem = .F.
+namealias = .F.
+pageunit = .F.
+ppsx = .F.
+ppsy = .F.
+rowlist = .F.
+upsx = .F.
+upsy = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+PARAMETERS tcNameAlias, tcRowList, tcColumnList, tnIdTypeGraph
+	STORE tcNameAlias TO THIS.NameAlias
+	STORE tcRowList TO THIS.RowList
+	STORE tcColumnList TO THIS.ColumnList
+	STORE tnIdTypeGraph TO THIS.IdTypeGraph
+
+	WITH THIS
+		DIMENSION .aColumnColors[8, 2]
+		.aColumnColors[1, 1]=.CreateColor(RGB(0, 0, 255))	&& Blue
+		.aColumnColors[1, 2]=RGB(0, 0, 255)	&& Blue
+		.aColumnColors[2, 1]=.CreateColor(RGB(255, 0, 0))	&& Red
+		.aColumnColors[2, 2]=RGB(255, 0, 0)	&& Red
+		.aColumnColors[3, 1]=.CreateColor(RGB(255, 255, 0))	&& Yellow
+		.aColumnColors[3, 2]=RGB(255, 255, 0)	&& Yellow
+		.aColumnColors[4, 1]=.CreateColor(RGB(255, 0, 255))	&& Magenta
+		.aColumnColors[4, 2]=RGB(255, 0, 255)	&& Magenta
+		.aColumnColors[5, 1]=.CreateColor(RGB(0, 255, 0))	&& Green
+		.aColumnColors[5, 2]=RGB(0, 255, 0)	&& Green
+		.aColumnColors[6, 1]=.CreateColor(RGB(0, 255, 255))	&& Cyan
+		.aColumnColors[6, 2]=RGB(0, 255, 255)	&& Cyan
+		.aColumnColors[7, 1]=.CreateColor(RGB(255, 128, 0))	&& Orange
+		.aColumnColors[7, 2]=RGB(255, 128, 0)	&& Orange
+		.aColumnColors[8, 1]=.CreateColor(RGB(128, 0, 255))	&& Purple
+		.aColumnColors[8, 2]=RGB(128, 0, 255)	&& Purple
+	ENDWITH
+ENDPROC
+PROCEDURE columnlist_assign
+LPARAMETERS vNewVal
+	THIS.columnlist=IIF(VARTYPE(m.vNewVal)<>'C', '', m.vNewVal)
+ENDPROC
+PROCEDURE createcolor
+PARAMETERS tnRGB, tnAlpha
+LOCAL lnAlpha as Integer
+	lnAlpha=IIF(PCOUNT()=1, 255, tnAlpha)
+RETURN BITLSHIFT(lnAlpha, 24)+BITAND(tnRGB, 0x00FF00)+BITLSHIFT(tnRGB, 16)+BITRSHIFT(tnRGB, 16)
+ENDPROC
+PROCEDURE drawdatachart
+#DEFINE XSIZE_BOX_AROUND_POINT 3*.PageUnit
+#DEFINE YSIZE_BOX_AROUND_POINT 3*.PageUnit
+#DEFINE TITLE_FONT_NAME "Times Cyr"
+#DEFINE TITLE_FONT_SIZE 14
+#DEFINE LEGEND_FONT_NAME "Tahoma"
+#DEFINE LEGEND_FONT_SIZE 6.1
+LPARAMETERS toGraphics AS OBJECT, toColumnBrush AS OBJECT, toHatchBrush as Object,;
+			toPen AS OBJECT, toPen_dot as Object, toFont AS OBJECT, toStringFormat AS OBJECT, toTextBrush AS OBJECT,;
+			toPoint AS OBJECT, tnLeft as Integer, tnTop as Integer, tnWidth as Integer,	tnHeight as Integer,;
+			tctitle as String, tctitleRow as String, tctitleColumn as String
+LOCAL lnMax as Number, lnColumns, lnI AS Integer, lnColumnWidth as Integer,;
+	  lnColor, lnLeft, lnHeight, lnTop, lnRowMax as Number, lnRowMin as Number, lnColMax as Number, lnColMin as Number,;
+	  lndeltX as Number, lnkoefX as Number, lnkoefY as Number, lnElemGridX as Number,;
+	  lnElemGridY as Number, lcnamevar as String, lncntrow as Integer, lnHeightTitle as Integer
+LOCAL ARRAY lamaxvalu[1, 2], lapoints[1, 4]
+	WITH THIS
+		.PageUnit=IIF(toGraphics.PageUnit=5, 10, 1)
+
+	    toPen.CREATE(.CreateColor(0), 2)	&&Black
+	    *max по оси Y
+	    SELECT (.NameAlias)
+	    GO TOP
+	    lnRowMax=-1
+	    lnRowMin=-1
+
+	    FOR lnI=1 TO GETWORDCOUNT(.RowList, ',')
+	    	lcnamevar=GETWORDNUM(GETWORDNUM(.RowList,m.lnI, ','), 1, '^')
+	    	lamaxvalu[1, 1]=EVALUATE(m.lcnamevar)
+	    	lamaxvalu[1, 2]=lamaxvalu[1, 1]
+
+	    	IF !EMPTY(m.lnRowMin) AND VARTYPE(m.lnRowMin)='N'
+	    		lnRowMin=IIF(m.lnRowMin=-1, lamaxvalu[1, 1], m.lnRowMin)
+	    	ENDIF
+
+	    	IF !EMPTY(m.lnRowMax) AND VARTYPE(m.lnRowMax)='N'
+	    		lnRowMax=IIF(m.lnRowMax=-1, lamaxvalu[1, 1], m.lnRowMax)
+	    	ENDIF
+
+		    SELECT MAX(EVALUATE(m.lcnamevar)), MIN(EVALUATE(m.lcnamevar));
+		    FROM (.NameAlias) INTO ARRAY lamaxvalu
+
+		    IF VARTYPE(lamaxvalu[1, 1])='N'
+		    	lnRowMax=MAX(m.lnRowMax,lamaxvalu[1, 1])
+		    ENDIF
+
+		    IF VARTYPE(lamaxvalu[1, 2])='N'
+		    	lnRowMin=MIN(m.lnRowMin, lamaxvalu[1, 2])
+		    ENDIF
+	    ENDFOR
+	    *max по оси Х
+	    lnColMax=-1
+	    lnColMin=-1
+
+	    FOR lnI=1 TO GETWORDCOUNT(.ColumnList, ',')
+	    	lcnamevar=GETWORDNUM(GETWORDNUM(.ColumnList, m.lnI, ','), 1, '^')
+	    	lamaxvalu[1, 1]=EVALUATE(m.lcnamevar)
+	    	lamaxvalu[1, 2]=lamaxvalu[1, 1]
+
+	    	IF !EMPTY(m.lnColMin) AND VARTYPE(m.lnColMin)='N'
+	    		lnColMin=IIF(m.lnColMin=-1, lamaxvalu[1, 1], m.lnColMin)
+	    	ENDIF
+
+	    	IF !EMPTY(m.lnColMax) AND VARTYPE(m.lnColMax)='N'
+	    		lnColMax=IIF(m.lnColMax=-1, lamaxvalu[1, 1], m.lnColMax)
+	    	ENDIF
+
+		    SELECT MAX(EVALUATE(m.lcnamevar)), MIN(EVALUATE(m.lcnamevar));
+		    FROM (.NameAlias) INTO ARRAY lamaxvalu
+
+		    IF !EMPTY(lamaxvalu[1, 1])
+		    	lnColMax=MAX(m.lnColMax, lamaxvalu[1, 1])
+		    ENDIF
+
+		    IF !EMPTY(lamaxvalu[1, 2])
+		    	lnColMin=MIN(m.lnColMin, lamaxvalu[1, 2])
+		    ENDIF
+	    ENDFOR
+	    *приподнять/опустить мин уровень на 10% для лучшего визуального эффекта
+		lnRowMin=IIF(m.lnRowMax>m.lnRowMin AND m.lnRowMin>0,;
+					 m.lnRowMin-(m.lnRowMax-m.lnRowMin)*0.1, m.lnRowMin)
+	    .kolelem=RECCOUNT()
+		.charWidth=10*.PageUnit+FONTMETRIC(1, LEGEND_FONT_NAME, LEGEND_FONT_SIZE)*.PageUnit
+		lnHeightTitle=FONTMETRIC(1, TITLE_FONT_NAME, TITLE_FONT_SIZE)*.PageUnit
+
+		toGraphics.SmoothingMode=GDIPLUS_SmoothingMode_HighQuality
+	    toPen.Create(.CreateColor(0), 1) &&RGB(0,100,0)),1) &&темно-зелененький
+		toTextBrush.Create(.CreateColor(0)) &&RGB(55,100,61)))
+		*Рисуем систему координат c линейкой
+		toHatchBrush.Create(GDIPLUS_HatchStyle_Cross)
+		toPen_dot.CreateFromBrush(m.toHatchBrush, 1)
+	    toFont.CREATE(LEGEND_FONT_NAME, LEGEND_FONT_SIZE, GDIPLUS_FontStyle_Regular, GDIPLUS_Unit_Point)
+		*по X
+		.Measure_Step(m.toGraphics, m.topen, m.toPen_dot, m.toPoint, m.toFont, m.toTextBrush, m.toStringFormat, m.tnLeft, m.tnWidth-XSIZE_BOX_AROUND_POINT, m.lnColMax-m.lnColMin, m.lnColMin, .T., m.tnTop+m.tnHeight, m.tctitleColumn)
+		*по Y
+		.Measure_Step(m.toGraphics, m.topen, m.toPen_dot, m.toPoint, m.toFont, m.toTextBrush, m.toStringFormat, m.tnTop+YSIZE_BOX_AROUND_POINT+m.lnHeightTitle, m.tnHeight-YSIZE_BOX_AROUND_POINT-m.lnHeightTitle, m.lnRowMax-m.lnRowMin, m.lnRowMin, .F., m.tnLeft, m.tnWidth-XSIZE_BOX_AROUND_POINT, m.tctitleRow)
+	    *Рисуем колонки
+    	lnkoefx=.ppsx/.upsx
+    	lnkoefy=.ppsy/.upsy
+
+	    IF .IdTypeGraph=1
+	    *гистограмма
+			toGraphics.SmoothingMode=GDIPLUS_SmoothingMode_Default
+		    lncntrow=0
+
+		    FOR lnI=1 TO GETWORDCOUNT(.RowList, ',')
+		    	IF GETWORDNUM(GETWORDNUM(.RowList,m.lnI, ','), 2, '=')='1'
+		    		lncntrow=m.lncntrow+1
+		    	ENDIF
+		    ENDFOR
+
+		    SCAN
+			    lnLeft=(EVALUATE(GETWORDNUM(GETWORDNUM(.ColumnList, 1, ','), 1, '^'))-m.lnColMin)*m.lnkoefx
+			    lnColumnWidth=m.lnLeft-((EVALUATE(GETWORDNUM(GETWORDNUM(.ColumnList, 1, ','),1,'^'))-m.lnColMin)-1)*m.lnkoefx
+			    lnColumnWidth=m.goApp.oFunction.Div(IIF(m.lnLeft+m.lnColumnWidth+11+.charWidth>m.tnWidth, m.tnWidth-m.lnLeft-11-.charWidth, m.lnColumnWidth), m.lncntrow)
+
+			    FOR lnI=1 TO GETWORDCOUNT(.RowList, ',')
+			    	IF GETWORDNUM(GETWORDNUM(.RowList,m.lnI, ','), 2, '=')='0'
+			    		LOOP
+			    	ENDIF
+
+				   	lnHeight=(EVALUATE(GETWORDNUM(GETWORDNUM(.RowList,m.lnI, ','), 1, '^'))-m.lnRowMin)*m.lnkoefy
+				    lnTop=m.tnTop+m.tnHeight-.charWidth-1-m.lnHeight
+
+				    toPen.Create(.aColumnColors[m.lnI, 1], 1)	&&Black
+			    	toGraphics.DrawRectangle(m.toPen, m.tnLeft+.charWidth+1+m.lnLeft, m.lnTop, IIF(m.lnColumnWidth<1, 1, m.lnColumnWidth), m.lnHeight)
+					toColumnBrush.Create(.aColumnColors[m.lnI, 1])
+					toGraphics.FillRectangle(m.toColumnBrush, m.tnLeft+.charWidth+1+m.lnLeft, m.lnTop, IIF(m.lnColumnWidth<1, 1, m.lnColumnWidth), m.lnHeight)
+					lnLeft=m.lnLeft+m.lnColumnWidth
+			    ENDFOR
+		    ENDSCAN
+		ELSE
+		    FOR lnI=1 TO GETWORDCOUNT(.RowList, ',')
+		    	IF GETWORDNUM(GETWORDNUM(.RowList, m.lnI, ','), 2, '=')='0'
+		    		LOOP
+		    	ENDIF
+
+				LOCAL ARRAY lapoints[.kolelem, 2]
+			    lncntelem=1
+		    	lcnamevar=GETWORDNUM(GETWORDNUM(.RowList, m.lnI, ','), 1, '^')
+
+			    toPen.Create(.aColumnColors[m.lnI, 1], 1)
+
+			    SCAN
+			    	lapoints[m.lncntelem, 1]=INT(m.tnLeft+.charWidth+(EVALUATE(GETWORDNUM(GETWORDNUM(.ColumnList, 1, ','), 1, '^'))-m.lnColMin)*m.lnkoefx+0.5)
+			    	lapoints[m.lncntelem, 2]=INT(m.tnTop+m.tnHeight-.charWidth-(EVALUATE(m.lcnamevar)-m.lnRowMin)*m.lnkoefy+0.5)
+			    	*нарисовать квадратик
+			    	toGraphics.DrawRectangle(m.toPen, lapoints[m.lncntelem, 1]-XSIZE_BOX_AROUND_POINT, lapoints[m.lncntelem,2]-YSIZE_BOX_AROUND_POINT, XSIZE_BOX_AROUND_POINT*2, YSIZE_BOX_AROUND_POINT*2)
+
+				    lncntelem=m.lncntelem+1
+			    ENDSCAN
+
+				DO CASE
+			    CASE .IdTypeGraph=2
+			    *безье - количество точек должно быть кратно 3!!!!!
+				    toGraphics.DrawBeziers(m.toPen, @lapoints, 1)
+			    CASE .IdTypeGraph=3
+			    *сплайны
+				    toGraphics.DrawCurve(m.toPen, @lapoints, 1)
+			    CASE .IdTypeGraph=4
+			    *полигон
+				    toGraphics.DrawLines(m.toPen, @lapoints, 1)
+			    ENDCASE
+		    ENDFOR
+	    ENDIF
+	    *нарисовать линии граничных уровней (верхний и нижний) пунктиром
+		*нарисовать главный заголовок
+	    toFont.CREATE(TITLE_FONT_NAME, TITLE_FONT_SIZE, GDIPLUS_FontStyle_Regular, GDIPLUS_Unit_Point)
+		toPoint.X=m.tnLeft+m.tnWidth/2
+		toPoint.Y=m.tnTop &&+FONTMETRIC(1,TITLE_FONT_NAME,TITLE_FONT_SIZE)*.PageUnit
+
+		toStringFormat.Create(0)
+		toStringFormat.Alignment=GDIPLUS_STRINGALIGNMENT_Center
+		toStringFormat.LineAlignment=GDIPLUS_STRINGALIGNMENT_Near
+*!*			toStringFormat.Trimming=GDIPLUS_STRINGTRIMMING_EllipsisWord
+		toGraphics.DrawStringA(ALLTRIM(m.tctitle), m.toFont, m.toPoint, m.toStringFormat, m.toTextBrush)
+	ENDWITH
+ENDPROC
+PROCEDURE idtypegraph_assign
+LPARAMETERS vNewVal
+	THIS.idtypegraph=IIF(VARTYPE(m.vNewVal)<>'N', 1, m.vNewVal)
+ENDPROC
+PROCEDURE measure_step
+*вычисление шага линейки и рисование линейки
+PARAMETERS toGraphics as Object, topen as Object, topen_dot as Object, toPoint as Object,;
+		   toFont as Object, toTextBrush as Object, toStringFormat as Object,;
+		   tnkoord as Integer, tnpixlen as Integer, tnloglen as Number, tnlogmin as Number,;
+		   tlhorizont as Logical, tnkoord2 as Integer, tnpixlen2 as Integer, tctitle as String
+LOCAL lnpps as Number, lnups as Number, lnppu as Number, lnI as Number, lnKoord as Integer, lnshtrihsize as Integer, lnstepsmall as Integer,lnstepmidle as Integer,;
+      lnsteplarge as Integer, lnstepsmallcnt as Integer, lnstepmidlecnt as Integer, lnsteplargecnt as Integer,;
+      lnIold as Number, lnpunit as Number, lnlargecnt as Integer
+*!*	Для произвольного, наперёд заданного масштаба изображения, имеем опорную величину: ppu (pixels per unit) (пикселей/лог.единица).
+*!*	Находим наименьший шаг линейки в логических единицах: ups (units per step), и соответствующий ему pps = ppu * ups,
+*!*	такой, что:
+*!*	— ups это "красивое число", т.е. ups = 10^(±n) * {1,2,5}
+*!*	— pps >= 3.
+*!*	Это несложно: сперва найдём некрасивый ups'=pps'/ppu для pps'==3,
+*!*	затем ближайшую снизу степень 10, ups" = 10^[lg(ups')]
+*!*	и рассмотрим три кандидата: ups = ups"*{1,2,5}, выбрав наименьший, для которого pps >= pps'.
+*!*	Вычисления лучше проводить в рациональных дробях, чтобы не получить всякую ботву с округлением, ведь десятичные дроби — бесконечные в двоичной системе счисления.
+*!*	Далее — рисуем линейку. Пусть мы хотим отобразить её на отрезке [p1,p2) пикселов.
+*!*	Если считать, что некоему p0 соответствует u0, то
+*!*	s(p) = ((p-p0)*ppu + u0)*ups = (p-p0)*pps + u0*ups
+*!*	p(s) = (s — u0*ups)/pps + p0
+*!*	Находим значения s1 и s2 шагов линейки, соответствующие p1 и p2 пикселам
+*!*	итерируем целочисленные s = [ ]s0[ .. ]s1[ ),
+*!*	вычисляя p(s) и округляя до целого (или делая антиалиасинг).
+*!*	Можно просто считать p1' = p(]s1[), dp = pps.
+*!*	int s1ceil, s2ceil;
+*!*	double p1ceil, dp;
+*!*	for(s = s1ceil, p=p1ceil; s < s2ceil && p < p2; ++s, p+=dp)
+*!*	{
+*!*	  int pix = int(p+0.5);
+*!*	  .....
+*!*	}
+*!*	Линейка имеет три шага, для которых рисуются штрихи: малый, средний и большой.
+*!*	Обычно, это 1:5:10 или 1:2:10.
+*!*	Если базовый шаг
+*!*	— 1*10^n, то выбираем пропорцию 1:5:10
+*!*	— 2*10^n, 1:5:10==2:10:20
+*!*	— 5*10^n, 1:5:10==5:25:50, 1:2:10==5:10:50 — выбирай на вкус.
+
+*!*		lnpscale=toGraphics.pagescale
+*!*		lndpix=toGraphics.dpix
+*!*		lndpiy=toGraphics.dpiy
+	lnppu=m.goApp.oFunction.div(m.tnpixlen-THIS.charWidth, m.tnloglen)
+	lnI=3*THIS.PageUnit
+
+	DO WHILE .T.
+		lnups=10^LOG10(m.lnI/m.lnppu)
+
+		DO CASE
+		CASE m.lnppu*m.lnups>=m.lnI &&1:5:10
+			lnsteplarge=10
+			lnstepmidle=5
+			lnstepsmall=1
+			EXIT
+		CASE m.lnppu*m.lnups*2>=m.lnI &&1:5:10
+			lnsteplarge=10
+			lnstepmidle=5
+			lnstepsmall=1
+			lnups=m.lnups*2
+			EXIT
+		CASE m.lnppu*m.lnups*5>=m.lnI &&5:25:50
+			lnsteplarge=50
+			lnstepmidle=25
+			lnstepsmall=5
+			lnups=m.lnups*5
+			EXIT
+		ENDCASE
+
+		lnI=m.lnI+1
+	ENDDO
+
+	lnpps=m.lnppu*m.lnups
+
+	IF m.tlhorizont
+		THIS.ppsX=m.lnpps
+		THIS.upsX=m.lnups
+
+	    toGraphics.DrawLine(m.toPen, m.tnkoord+THIS.charWidth, m.tnkoord2-THIS.charWidth, m.tnkoord+m.tnpixlen, m.tnkoord2-THIS.charWidth)
+	ELSE
+		THIS.ppsY=m.lnpps
+		THIS.upsY=m.lnups
+
+	    toGraphics.DrawLine(m.toPen, m.tnkoord2+THIS.charWidth, m.tnkoord, m.tnkoord2+THIS.charWidth, m.tnkoord-THIS.charWidth+m.tnpixlen)
+	ENDIF
+
+	STORE 0 TO lnI, lnIold, lnkoord, lnstepsmallcnt, lnstepmidlecnt, lnlargecnt
+	lnsteplargecnt=m.lnsteplarge-1
+
+	DO WHILE m.lnI<=m.tnloglen AND m.lnkoord<=m.tnpixlen-THIS.charWidth
+		lnkoord=INT(m.goApp.oFunction.div(m.lnI, m.lnups)*m.lnpps+.5)
+		lnstepsmallcnt=m.lnstepsmallcnt+1
+		lnstepmidlecnt=m.lnstepmidlecnt+1
+		lnsteplargecnt=m.lnsteplargecnt+1
+
+		DO CASE
+		CASE m.lnsteplargecnt=m.lnsteplarge
+			lnshtrihsize=10*THIS.PageUnit
+			STORE 0 TO lnsteplargecnt, lnstepmidlecnt, lnstepsmallcnt
+
+			IF m.tlhorizont
+				toPoint.Create(m.tnkoord+THIS.charWidth+m.lnKoord, m.tnkoord2-5)
+				toStringFormat.Create(0)
+				toStringFormat.Alignment=GDIPLUS_STRINGALIGNMENT_Center
+				toStringFormat.LineAlignment=GDIPLUS_STRINGALIGNMENT_Center
+
+				toGraphics.DrawStringA(ALLTRIM(IIF(m.lnI=0 OR YEAR(m.tnlogmin+INT(m.lnI))<>YEAR(m.tnlogmin+m.lnIold),;
+													DTOC(m.tnlogmin+INT(m.lnI)),;
+													SUBSTR(DTOC(m.tnlogmin+INT(m.lnI)), 1, 5))),;
+													m.toFont, m.toPoint, m.toStringFormat, m.toTextBrush)
+			ELSE
+				IF m.lnlargecnt=4
+					toGraphics.DrawLine(m.toPen_dot, m.tnkoord2+THIS.charWidth, m.tnkoord+m.tnpixlen-THIS.charWidth-m.lnKoord, m.tnkoord2+m.tnpixlen2, m.tnkoord+m.tnpixlen-THIS.charWidth-m.lnKoord)
+					lnlargecnt=1
+				ELSE
+					lnlargecnt=m.lnlargecnt+1
+				ENDIF
+
+				toPoint.Create(m.tnkoord2+5, m.tnkoord-THIS.charWidth+m.tnpixlen-m.lnKoord)
+				toStringFormat.Create(GDIPLUS_STRINGFORMATFLAGS_DirectionVertical)
+				toStringFormat.Alignment=GDIPLUS_STRINGALIGNMENT_Center
+				toStringFormat.LineAlignment=GDIPLUS_STRINGALIGNMENT_Center
+
+				toGraphics.DrawStringA(ALLTRIM(TRANSFORM(m.tnlogmin+m.lnI)), m.toFont, m.toPoint, m.toStringFormat, m.toTextBrush)
+			ENDIF
+
+			lnIold=INT(m.lnI)
+		CASE m.lnstepmidlecnt=m.lnstepmidle
+			lnshtrihsize=7*THIS.PageUnit
+			STORE 0 TO lnstepmidlecnt, lnstepsmallcnt
+		CASE m.lnstepsmallcnt=m.lnstepsmall
+			lnshtrihsize=4*THIS.PageUnit
+			lnstepsmallcnt=0
+		OTHERWISE
+			lnshtrihsize=0
+		ENDCASE
+
+		IF m.lnshtrihsize<>0
+			IF m.tlhorizont
+				toGraphics.DrawLine(m.toPen, m.tnkoord+THIS.charWidth+m.lnKoord, m.tnkoord2-THIS.charWidth+m.lnshtrihsize, m.tnkoord+THIS.charWidth+m.lnKoord, m.tnkoord2-THIS.charWidth)
+			ELSE
+				toGraphics.DrawLine(m.toPen, m.tnkoord2+THIS.charWidth-(m.lnshtrihsize-1), m.tnkoord+m.tnpixlen-THIS.charWidth-m.lnKoord, m.tnkoord2+THIS.charWidth, m.tnkoord+m.tnpixlen-THIS.charWidth-m.lnKoord)
+			ENDIF
+		ENDIF
+
+		lnI=m.lnI+m.lnups
+	ENDDO
+RETURN
+
+*!*																		toGraphics.DrawLine(m.toPen, m.tnkoord+m.lnKoord, m.tnkoord2+m.lnshtrihsize, m.tnkoord+m.lnKoord, m.tnkoord2)
+*!*																					toPoint.Create(m.tnkoord+m.lnKoord, m.tnkoord2+THIS.charWidth-5) &&+5
+*!*			.measure_step(m.loGraphics, m.lopen, m.loPoint, m.loFont, m.loTextBrush, m.loStringFormat, m.tnLeft+.charWidth, m.tnWidth-.charWidth-1, .kolelem, m.lnColMin, .T., m.tnHeight-.charWidth)
+*!*			*по Y
+*!*					toGraphics.DrawLine(m.toPen, m.tnkoord2, m.tnkoord+m.tnpixlen-m.lnKoord, m.tnkoord2-(m.lnshtrihsize-1), m.tnkoord+m.tnpixlen-m.lnKoord)
+*!*																								toPoint.Create(m.tnkoord2-THIS.charWidth+5, m.tnkoord+m.tnpixlen-m.lnKoord)
+*!*			.measure_step(m.loGraphics, m.lopen, m.loPoint, m.loFont, m.loTextBrush, m.loStringFormat, m.tnTop, m.tnHeight-.charWidth, m.lnRowMax-m.lnRowMin, m.lnRowMin, .F., m.tnLeft+.charWidth)
+*!*	У меня масштаб — это float-число, я его корректирую так, чтобы 
+*!*	физическая сетка пикселей ложилась на логическую сетку в "красивых" 
+*!*	позициях. Вот код:
+*!*	||
+
+*!*	if (newScale<=0.01)
+*!*	newScale=0.01;
+*!*	if (newScale>=35.0)
+*!*	newScale=35.0;
+
+*!*	CDC dc=GetWindowDC();
+*!*	initDC(&CDCHandle(dc),newScale);
+
+*!*	//Find the best number of angels ...err... logic units in one pixel.
+*!*	double bestErr=100000000000;
+*!*	double bestLogStep=0.0; 
+*!*	for (int f=3;f<11;f++)
+*!*	{
+*!*	//Get the length of the pixel. To avoid rounding errors — multiply it by 1000.
+*!*	double pixelLogicLen=getNumLPoints(f*1000,CDCHandle(dc))/1000.0/double(LPOINTS_IN_MM);
+
+*!*	//Skew to the nearest 'good' number.
+*!*	double magnitude=log(pixelLogicLen)/log(10.0); //Get magnitude of the current scale
+*!*	double dist=pow(double(10.0),double(floor(magnitude))); //Distance to the nearest 'good' number
+
+*!*	//Make distance to be a 'good' number.
+*!*	int remainder=int(pixelLogicLen/dist+0.5);
+*!*	int best[] = {1, 1, 2, 2, 5, 5, 5, 5, 10, 10, 10};
+*!*	int best_remainder = best[remainder-1]; assert(remainder>0 && remainder<=10);
+
+*!*	double correctedPixelLength= dist*best_remainder; //Calculate corrected length of pixel.
+*!*	double error = correctedPixelLength/pixelLogicLen; //Calculate error.
+
+*!*	if (abs(error-1.0)scale=newScale/bestErr;
+*!*	this->logStep=int(bestLogStep);
+
+*!*	setOriginX(floor(originX/logStep)*logStep*scale/LPOINTS_IN_MM);
+*!*	setOriginY(floor(originY/logStep)*logStep*scale/LPOINTS_IN_MM);
+ENDPROC
+ENDPROC
+PROCEDURE namealias_assign
+LPARAMETERS vNewVal
+	THIS.namealias=IIF(VARTYPE(m.vNewVal)<>'C', '', m.vNewVal)
+ENDPROC
+PROCEDURE rowlist_assign
+LPARAMETERS vNewVal
+	THIS.rowlist=IIF(VARTYPE(m.vNewVal)<>'C', '', m.vNewVal)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*columnlist_assign 
+*createcolor 
+*drawdatachart 
+*idtypegraph_assign 
+*measure_step 
+*namealias_assign 
+*rowlist_assign 
+^acolumncolors[1,2] 
+charwidth
+columnlist
+idtypegraph
+kolelem
+namealias Таблица из которой берутся данные
+pageunit
+ppsx Пиксель на логическую единицу по оси Х
+ppsy Пиксель на логическую единицу по оси Y
+rowlist
+upsx Шаг линейки в логических единицах по оси X
+upsy Шаг линейки в логических единицах по оси Y
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\new\line-chart.ico[END RESERVED4]
+[START RESERVED5]
+..\bmp\new\line-chart.ico[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+gdiplus.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] chartgdi
+[EOF]

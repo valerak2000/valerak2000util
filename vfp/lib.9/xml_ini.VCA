@@ -1,0 +1,705 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZU0ZQASG
+[CLASS] base_custom
+[CLASSLOC] base_gui.vcx
+[BASECLASS] custom
+[OBJNAME] xml_fields
+[START PROPERTIES]
+
+Name = "xml_fields"
+_memberdata =      281<VFPData><memberdata name="cfieldname" type="property" display="cFieldName"/><memberdata name="vfieldvalue" type="property" display="vFieldValue"/><memberdata name="nrowid" type="property" display="nRowId"/><memberdata name="afields" type="property" display="aFields"/></VFPData>
+cfieldname = 
+nrowid = 0
+vfieldvalue = .NULL.
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+[END PROTECTED]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+^afields[2,0] 
+cfieldname
+nrowid
+vfieldvalue
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] xml_fields
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NP0NU4TP
+[CLASS] base_custom
+[CLASSLOC] base_gui.vcx
+[BASECLASS] custom
+[OBJNAME] xml_ini
+[START PROPERTIES]
+
+Name = "xml_ini"
+Picture = ..\bmp\16x16\data_disk.bmp
+_memberdata =      515<VFPData><memberdata name="getxmlinientry" type="method" display="getXmlIniEntry"/><memberdata name="writexmlinientry" type="method" display="writeXmlIniEntry"/><memberdata name="showxmlerror" type="method" display="ShowXmlError"/><memberdata name="showerrmsg" type="method" display="showErrMsg"/><memberdata name="getwordcount" type="method" display="GetWordCount"/><memberdata name="getwordnum" type="method" display="GetWordNum"/><memberdata name="createxmlini" type="method" display="createXmlIni"/></VFPData>
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+test_xml^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+THIS.AddProperty("oApp")
+
+DO CASE
+CASE TYPE("m.goApp") = 'O'
+	THIS.oApp = m.goApp
+CASE TYPE("THIS.Parent") = 'O' AND THIS.Parent.BaseClass = "Container"
+	THIS.oApp = THIS.Parent
+OTHERWISE
+	THIS.oApp = CREATEOBJECT("custom")
+	THIS.oApp.AddObject("oWinApi", "cstwinapi")
+	THIS.oApp.AddObject("oFunction", "cstfunction")
+	THIS.oApp.AddObject("oVars", "cstvars")
+	THIS.oApp.AddProperty("cTaskCaption", '')
+ENDCASE
+ENDPROC
+PROCEDURE createxmlini
+LPARAMETERS tcfilename as String
+LOCAL llresul
+	llresul = .F.
+
+	IF !EMPTY(m.tcfilename)
+		LOCAL lcxmltext as String, loExc as Exception
+TEXT NOSHOW TO lcxmltext
+<?xml version="1.0" encoding="Windows-1251" standalone="yes"?>
+<XML_INI version="0.1">
+</XML_INI>
+ENDTEXT
+
+#IF !_DEVELOP_MODE
+		TRY
+#ENDIF
+			STRTOFILE(m.lcxmltext, m.tcfilename, 0)
+			llresul = .T.
+#IF !_DEVELOP_MODE
+		CATCH TO loExc
+			THIS.oApp.oFunction.showErrMsg(m.loExc)
+			THROW
+		ENDTRY
+#ENDIF
+	ENDIF
+RETURN m.llresul
+ENDPROC
+PROCEDURE getxmlinientry
+*считать данные из файла в массив
+* tcFileXml - имя файла
+* tcTableName - Путь до таблицы из которой считываются значения
+* tcKeyField - Список ключевых полей
+* tcKeyValue - Значания ключевых полей
+* tcFieldsName - Список возвращаемых полей
+* tadataout - массив в котором хранятся возвращаемые значения
+LPARAMETERS tcFileXml as String, tcTableName as String,;
+			tcKeyField as String, tcKeyValue as String,;
+			tcFieldsName as String, todataout as Collection
+LOCAL lnI as Integer, lnJ as Integer, lnDimRow as Integer, loXMLDOMDocument as msxml2.ixmldomdocument,;
+	 loNode as MSXML2.IXMLDOMNode, loNodeList as MSXML2.IXMLDOMNodeList, loField as MSXML2.IXMLDOMNodeList,;
+	 llgo as Logical, lcFieldValue as String, lnCntKeyField as Integer, lnCntField as Integer, lnCntKeyValue as Integer,;
+	 loFields as MSXML2.IXMLDOMNodeList, loFieldsXml as xml_fields of ..\lib.9\xml_ini
+LOCAL ARRAY laKeyField[1], laField[1], laKeyValue[1], lafields[1, 2]
+	IF FILE(m.tcFileXml)
+		IF VARTYPE(m.tcFileXml) <> 'C'
+			tcFileXml = ''
+		ENDIF
+
+		IF VARTYPE(m.tcTableName) <> 'C'
+			tcTableName = ''
+		ENDIF
+
+		IF VARTYPE(m.tcKeyField) <> 'C'
+			tcKeyField = ''
+		ENDIF
+
+		IF VARTYPE(m.tcKeyValue) <> 'C'
+			tcKeyValue = ''
+		ENDIF
+
+		IF VARTYPE(m.tcFieldsName) <> 'C'
+			tcFieldsName = ''
+		ENDIF
+
+		IF !FILE(m.tcFileXml) 
+			THIS.createXmlIni(m.tcFileXml)
+		ENDIF
+
+		todataout = NEWOBJECT("Collection")
+#IF !_DEVELOP_MODE
+		TRY
+#ENDIF
+			LOCAL loXMLDOMElement as Msxml2.IXMLDOMElement
+			loXMLDOMDocument = NEWOBJECT("msxml2.domdocument.6.0")
+			loXMLDOMDocument.async = .F.
+			loXMLDOMDocument.validateOnParse = .T.
+			loXMLDOMDocument.preserveWhiteSpace = .T.
+			loXMLDOMDocument.resolveExternals = .F.
+
+			loXMLDOMDocument.LoadXml(FILETOSTR(m.tcFileXml))
+
+			IF m.loXMLDOMDocument.parseError.errorCode <> 0
+				THIS.showErrMsg(loXMLDOMDocument.parseError, "LoadXML() in getxmlinientry()")
+			ELSE
+				loXMLDOMElement = m.loXMLDOMDocument.documentElement
+				loNodeList = m.loXMLDOMElement.SelectNodes("//XML_INI/" + m.tcTableName)
+
+				IF VARTYPE(m.loNodeList) = 'O'
+					lnCntKeyField = ALINES(laKeyField, m.tcKeyField, 2, ',')
+					lnCntKeyValue = ALINES(laKeyValue, m.tcKeyValue, 2, ',')
+					lnCntField = ALINES(laField, m.tcFieldsName, 2, ',')
+
+					lnDimRow = 0 &&loNodeList.Length
+					lnJ = 1
+
+					FOR EACH loNode IN m.loNodeList
+						llgo = .T.
+
+						FOR lnI = 1 TO m.lnCntKeyField
+							DO CASE
+							CASE EMPTY(laKeyField[m.lnI])
+							CASE laKeyField[m.lnI] == "Name"
+								lcFieldValue = m.loNode.getAttribute("Name")
+
+								IF !ISNULL(m.lcFieldValue);
+								   AND m.lcFieldValue == laKeyValue[m.lnI]
+									llgo = IIF(ISNULL(m.llgo), .T., IIF(!m.llgo, .F., .T.))
+								ELSE
+									llgo = .F.
+								ENDIF
+							OTHERWISE
+								loField = m.loNode.getElementsByTagName(laKeyField[m.lnI])
+
+								IF VARTYPE(m.loField) = 'O' AND m.loField.length > 0;
+								   AND m.loField.item[0].nodeTypedValue == laKeyValue[m.lnI]
+									llgo = IIF(ISNULL(m.llgo), .T., IIF(!m.llgo, .F., .T.))
+								ELSE
+									llgo = .F.
+								ENDIF
+							ENDCASE
+						ENDFOR
+
+						IF m.llgo
+							*Атрибут Name
+							*коллекция объектов содержащих массив со списком полей и их значений
+							loFieldsXml = NEWOBJECT("xml_fields")
+							DIMENSION loFieldsXml.aFields[1, 2]
+
+							loFieldsXml.aFields[1, 1] = "Name"
+							loFieldsXml.aFields[1, 2] = m.loNode.getAttribute("Name")
+							
+							loFields = m.loNode.childNodes
+							lnCntFld = 1
+
+							FOR lnI = 0 TO m.loFields.length - 1 &&m.lnCntField
+								IF m.loFields.item[m.lnI].nodeName <> "#text"
+									lnCntFld = m.lnCntFld + 1
+									DIMENSION loFieldsXml.aFields[m.lnCntFld, 2]
+
+									loFieldsXml.aFields[m.lnCntFld, 1] = m.loFields.item[m.lnI].nodeName
+
+									IF !ISNULL(m.loFields.item[m.lnI].nodeTypedValue)
+										loFieldsXml.aFields[m.lnCntFld, 2] = m.loFields.item[m.lnI].nodeTypedValue
+									ELSE
+										loFieldsXml.aFields[m.lnCntFld, 2] = ''
+									ENDIF
+								ENDIF
+							ENDFOR
+
+							todataout.Add(m.loFieldsXml)
+
+							lnJ = m.lnJ + 1
+						ENDIF
+					ENDFOR
+				ENDIF
+			ENDIF
+#IF !_DEVELOP_MODE
+		CATCH TO loExc
+			DIMENSION tadataout[1]
+			tadataout = .NULL.
+
+			THIS.oApp.oFunction.showErrMsg(m.loExc)
+
+			THROW
+		ENDTRY
+#ENDIF
+
+		IF m.todataout.Count = 0
+			RELEASE m.todataout
+
+			todataout = .NULL.
+		ENDIF
+	ENDIF
+ENDPROC
+PROCEDURE showerrmsg
+#DEFINE CRLF CHR(13) + CHR(10)
+LPARAMETERS toXmlErr as Msxml2.IXMLDOMParseError, tcErrMsg as String
+	IF VARTYPE(m.toXmlErr) <> 'O'
+		RETURN .F.
+	ENDIF
+
+	WITH m.toXmlErr
+		lcMsg = "Error loading '" + ALLTRIM(.url) + "'"
+		lcMsg = m.lcMsg + CRLF + "Code: " + TRANSFORM(.errorCode, '@0')
+
+		IF !EMPTY(.reason)
+			lcMsg = m.lcMsg + CRLF + "Reason: " + ALLTRIM(.reason)
+		ENDIF
+
+		IF !EMPTY(.filepos)
+			lcMsg = m.lcMsg + CRLF + "Filepos: " + TRANSFORM(.filepos)
+		ENDIF
+
+		IF !EMPTY(.linepos)
+			lcMsg = m.lcMsg + CRLF + "Linepos: " + TRANSFORM(.linepos)
+		ENDIF
+
+		IF !EMPTY(.line)
+			lcMsg = m.lcMsg + CRLF + "Line: " + TRANSFORM(.line)
+		ENDIF
+
+		IF !EMPTY(.srcText)
+			lcMsg = m.lcMsg + CRLF + "Text: " + ALLTRIM(.srcText)
+		ENDIF
+
+		IF !EMPTY(m.tcErrMsg)
+			lcMsg = m.lcMsg + CRLF + "Programm: " + ALLTRIM(m.tcErrMsg)
+		ENDIF
+
+		MESSAGEBOX(m.lcMsg, 16, THIS.oApp.oVars.cTaskCaption)
+	ENDWITH
+ENDPROC
+PROCEDURE test_xml
+LPARAMETERS toxmldomdoc as MSXML2.IXMLDOMDocument, tcTableName as String, tcFieldsName as String
+*проверка существования файла и таблицы со списком полей
+*в случае отсутствия создать их
+LOCAL lnI as Integer, lnDimCol as Integer, loNode as MSXML2.IXMLDOMNode, loField as MSXML2.IXMLDOMNode,;
+	 loNewField as MSXML2.IXMLDOMNode, loNodeList as MSXML2.IXMLDOMNodeList, loXMLDOMElement as Msxml2.IXMLDOMElement
+
+	IF VARTYPE(m.toxmldomdoc) = 'O'
+		TRY
+			loXMLDOMElement = toxmldomdoc.documentElement
+			loNodeList = loXMLDOMElement.selectNodes("//XML_INI/"+m.tcTableName)
+			lnDimCol = GETWORDCOUNT(m.tcFieldsName, ',')
+
+	  		FOR EACH loNode IN m.loNodeList
+				FOR lnI = 1 TO m.lnDimCol
+					loField = m.loNode.selectSingleNode(GETWORDNUM(m.tcFieldsName, m.lnI, ','))
+
+					IF VARTYPE(m.loField) <> 'O'
+					*добавить поле
+						loNewField = toxmldomdoc.createElement(GETWORDNUM(m.tcFieldsName, m.lnI, ','))
+						loNewField.nodeTypedValue = ''
+						loNode.appendChild(m.loNewField)
+					ENDIF
+				ENDFOR
+			ENDFOR
+		CATCH TO loExc
+			m.goApp.oFunction.showErrMsg(m.loExc)
+		ENDTRY
+	ENDIF
+ENDPROC
+PROCEDURE writexmlinientry
+*записать данные в файла из массива.
+*условие работы: в файле должен существовать хотя бы один узел в tcTableName с tcKeyField+tcFieldsName
+*позднее добавлю проверку структуры таблицы test_xml()
+LPARAMETERS tcFileXml as String, tcTableName as String,;
+			tcKeyField as String, tcKeyValue as String,;
+			tcFieldsName as String, tcDataIn as String
+LOCAL lnI as Integer, lnJ as Integer, llcng as Logical, llfound as Logical,;
+	 llnew_node as Logical, lcFieldValue as String, lnLevelXml as Integer,;
+	 lnCntKeyField as Integer, lnCntField as Integer, lnCntKeyValue as Integer, lnCntDataIn as Integer,;
+	 loXMLDOMDocument as msxml2.ixmldomdocument,;
+	 loNode as MSXML2.IXMLDOMNode, loTextNode as MSXML2.IXMLDOMNode,;
+	 loField as MSXML2.IXMLDOMNode, loNodeList as MSXML2.IXMLDOMNodeList
+LOCAL ARRAY laKeyField[1], laField[1], laKeyValue[1], laDataIn[1]
+	IF VARTYPE(m.tcFileXml) <> 'C'
+		tcFileXml = ''
+	ENDIF
+
+	IF VARTYPE(m.tcTableName) <> 'C'
+		tcTableName = ''
+	ENDIF
+
+	IF VARTYPE(m.tcKeyField) <> 'C'
+		tcKeyField = ''
+	ENDIF
+
+	IF VARTYPE(m.tcKeyValue) <> 'C'
+		tcKeyValue = ''
+	ENDIF
+
+	IF VARTYPE(m.tcFieldsName) <> 'C'
+		tcFieldsName = ''
+	ENDIF
+
+	IF VARTYPE(m.tcdatain) <> 'C'
+		tcdatain = ''
+	ENDIF
+
+	llfound = .F.
+
+	IF !FILE(m.tcFileXml)
+		THIS.createXmlIni(m.tcFileXml)
+	ENDIF
+
+#IF !_DEVELOP_MODE
+	TRY
+#ENDIF
+		LOCAL loXMLDOMElement as Msxml2.IXMLDOMElement
+		loXMLDOMDocument = NEWOBJECT("msxml2.domdocument.6.0")
+		loXMLDOMDocument.async = .F.
+		loXMLDOMDocument.validateOnParse = .T.
+		loXMLDOMDocument.preserveWhiteSpace = .T.
+		loXMLDOMDocument.resolveExternals = .F.
+
+		m.loXMLDOMDocument.LoadXml(FILETOSTR(m.tcFileXml))
+
+		IF m.loXMLDOMDocument.parseError.errorCode <> 0
+			THIS.showErrMsg(m.loXMLDOMDocument.parseError, "LoadXML() in writexmlinientry()")
+		ELSE
+*!*					llnew_node = .F.
+			lnLevelXml = THIS.oApp.oFunction.getWordCount(m.tcTableName, '/')
+
+			loXMLDOMElement = m.loXMLDOMDocument.documentElement
+			loNodeList = m.loXMLDOMElement.selectNodes("//XML_INI/" + m.tcTableName)
+
+			IF VARTYPE(m.loNodeList) = 'O'
+				lnCntKeyField = ALINES(laKeyField, m.tcKeyField, 2, ',')
+				lnCntKeyValue = ALINES(laKeyValue, m.tcKeyValue, 2, ',')
+				lnCntField = ALINES(laField, m.tcFieldsName, 2, ',')
+				lnCntDataIn = ALINES(laDataIn, m.tcDataIn, 2, ',')
+
+				lnJ = 1
+
+		  		FOR EACH loNode IN m.loNodeList
+					llcng = .t.
+
+					FOR lnI = 1 TO m.lnCntKeyField
+						DO CASE
+						CASE EMPTY(laKeyField[m.lnI])
+						CASE laKeyField[m.lnI] == "Name"
+							lcFieldValue = m.loNode.getAttribute("Name")
+
+							IF !ISNULL(m.lcFieldValue) AND m.lcFieldValue == laKeyValue[m.lnI]
+				  				llcng = IIF(ISNULL(m.llcng), .t., IIF(!m.llcng, .f., .t.))
+				  			ELSE
+				  				llcng = .f.
+							ENDIF
+						OTHERWISE
+							loField = m.loNode.selectSingleNode(laKeyField[m.lnI])
+
+			  				IF VARTYPE(m.loField) = 'O' AND m.loField.nodeTypedValue == laKeyValue[m.lnI]
+				  				llcng = IIF(ISNULL(m.llcng), .t., IIF(!m.llcng, .f., .t.))
+				  			ELSE
+				  				llcng = .f.
+			  				ENDIF
+						ENDCASE
+					ENDFOR
+
+		  			IF m.llcng
+						FOR lnI = 1 TO m.lnCntField
+						*изменить значение ячейки
+							DO CASE
+							CASE EMPTY(laField[m.lnI])
+							CASE laField[m.lnI] == "Name"
+								lcFieldValue = m.loNode.getAttribute("Name")
+
+								IF ISNULL(m.lcFieldValue)
+								*нет аттрибута - создать аттрибут
+									LOCAL lonewAtt as Object, lonamedNodeMap as Object
+									lonewAtt = m.loXMLDOMDocument.createAttribute("Name")
+									lonamedNodeMap = m.loXMLDOMElement.attributes
+									m.lonamedNodeMap.setNamedItem(m.lonewAtt)
+								ENDIF
+
+								m.loNode.setAttribute("Name", laDataIn[m.lnI])
+							OTHERWISE
+								loField = m.loNode.selectSingleNode(laField[m.lnI])
+
+								IF VARTYPE(m.loField) <> 'O'
+								*поля нет - добавить
+									*чисто для оформительства
+									*приделать коэффициент глубины ветки
+									loTextNode = m.loXMLDOMDocument.createTextNode(;
+														REPLICATE(CHR(9), m.lnLevelXml))
+									m.loNode.appendChild(m.loTextNode)
+
+									loField = m.loxmldomdocument.createElement(laField[m.lnI])
+									m.loNode.appendChild(m.loField)
+									*чисто для оформительства
+									loTextNode = m.loXMLDOMDocument.createTextNode(CHR(10))
+									m.loNode.appendChild(m.loTextNode)
+									loTextNode = m.loXMLDOMDocument.createTextNode(REPLICATE(CHR(9), m.lnLevelXml))
+									m.loNode.appendChild(m.loTextNode)
+								ENDIF
+
+								loField.nodeTypedValue = laDataIn[m.lnI]
+							ENDCASE
+						ENDFOR
+
+						lnJ = m.lnJ + 1
+						llfound = .T.
+					ENDIF
+				ENDFOR
+
+				IF !m.llfound
+				*ничего не найдено- добавить ветку
+*!*							llnew_node = .T.
+					llfound = .T.
+					DIMENSION laKeyField[ALEN(laKeyField) + ALEN(laField)]
+					ACOPY(laField, laKeyField, 1, -1, m.lnCntKeyField + 1)
+
+					DIMENSION laKeyValue[ALEN(laKeyValue) + ALEN(laDataIn)]
+					ACOPY(laDataIn, laKeyValue, 1, -1, m.lnCntKeyValue + 1)
+
+					IF m.loNodeList.length > 0
+						*чисто для оформительства
+						loTextNode = m.loXMLDOMDocument.createTextNode(CHR(9))
+						m.loNodeList.item(0).parentNode.appendChild(m.loTextNode)
+
+						loNode = m.loNodeList.item(0).cloneNode(.T.)
+						*чисто для оформительства
+*!*								loTextNode = m.loXMLDOMDocument.createTextNode(CHR(10))
+*!*								m.loNode.appendChild(m.loTextNode)
+
+						FOR lnI = 1 TO m.lnCntKeyField + m.lnCntField
+						*изменить значение ячейки
+							IF laKeyField[m.lnI] == "Name"
+								lcFieldValue = m.loNode.getAttribute("Name")
+
+								IF ISNULL(m.lcFieldValue)
+								*нет аттрибута - создать аттрибут
+									LOCAL lonewAtt as Object, lonamedNodeMap as Object
+									lonewAtt = m.loXMLDOMDocument.createAttribute("Name")
+									lonamedNodeMap = m.loXMLDOMElement.attributes
+
+									m.lonamedNodeMap.setNamedItem(m.lonewAtt)
+								ENDIF
+
+								m.loNode.setAttribute("Name", laKeyValue[m.lnI])
+							ELSE
+								loField = m.loNode.selectSingleNode(laKeyField[m.lnI])
+
+								IF VARTYPE(m.loField) <> 'O'
+									*чисто для оформительства
+									loTextNode = m.loXMLDOMDocument.createTextNode(CHR(9) + CHR(9))
+									m.loNode.appendChild(m.loTextNode)
+
+									loField = m.loxmldomdocument.createElement(laKeyField[m.lnI])
+									m.loNode.appendChild(m.loField)
+									*чисто для оформительства
+									loTextNode = m.loXMLDOMDocument.createTextNode(CHR(10))
+									m.loNode.appendChild(m.loTextNode)
+								ENDIF
+
+								loField.nodeTypedValue = laKeyValue[m.lnI]
+							ENDIF
+						ENDFOR
+*!*							ELSE
+*!*							*проверка структуры таблицы - при отстуствии записей в таблице 
+*!*							*							  вставка ветки по шаблону
+*!*	*!*								THIS.test_xml(loxmldomdocument,m.tcTableName,m.lctmp)
+*!*								loNode = loNodeList.item(0)
+
+*!*								FOR lnI = 1 TO m.lnCntIF+m.lnDimCol
+*!*									loField = loxmldomdocument.createElement(GETWORDNUM(m.lctmp,m.lnI,','))
+*!*									loField.nodeTypedValue = GETWORDNUM(m.lctmp1,m.lnI,',')
+*!*									loNode.appendChild(loField)
+*!*								ENDFOR
+
+						m.loNodeList.item(0).parentNode.appendChild(m.loNode)
+						*чисто для оформительства
+						loTextNode = m.loXMLDOMDocument.createTextNode(CHR(10))
+						m.loNodeList.item(0).parentNode.appendChild(m.loTextNode)
+						*чисто для оформительства
+						loTextNode = m.loXMLDOMDocument.createTextNode(REPLICATE(CHR(9),;
+																	   m.lnLevelXml - 1))
+						m.loNodeList.item(0).parentNode.appendChild(m.loTextNode)
+					ENDIF
+				ENDIF
+			ELSE
+			*таблицы в файле нет, надо добавить
+			ENDIF
+
+			m.loXMLDOMElement.normalize()
+
+*!*					IF m.llnew_node
+*!*						LOCAL lcxmlFile as String, lcxltFile as String,;
+*!*							  loXLT as Msxml2.IXMLDOMElement
+*!*	TEXT NOSHOW TO lcxltFileCR
+*!*	<?xml version = "1.0" encoding = "windows-1251" standalone = "yes"?>
+*!*	<xsl:stylesheet version = "1.0" xmlns:xsl = "http://www.w3.org/1999/XSL/Transform">
+*!*		<xsl:output method = "xml" indent = "yes" encoding = "windows-1251" omit-xml-declaration = "yes" />
+*!*		<xsl:preserve-space elements = "*"/>
+*!*		<xsl:template match = "/ | @* | node()">
+*!*			<xsl:copy>
+*!*				<xsl:apply-templates select = "@* | node()"/>
+*!*			</xsl:copy>
+*!*		</xsl:template>
+*!*	</xsl:stylesheet>
+*!*	ENDTEXT
+*!*	*
+*!*	TEXT NOSHOW TO lcxltFileSPACE
+*!*	<?xml version = "1.0" encoding = "windows-1251"?>
+*!*	<xsl:stylesheet version = "1.0" xmlns:xsl = "http://www.w3.org/1999/XSL/Transform">
+*!*		<xsl:output method = "xml" indent = "yes" encoding = "windows-1251" omit-xml-declaration = "yes" />
+*!*		<xsl:param name = "prmFactor" select = "1" />
+*!*		<xsl:preserve-space elements = "*" />
+*!*		
+*!*		<xsl:template match = " = "/ | @* | node()">
+*!*			<xsl:copy>
+*!*				<xsl:apply-templates select = "@* | node()"/>
+*!*			</xsl:copy>
+*!*		</xsl:template>
+*!*		
+*!*		<xsl:template match = "/">
+*!*			<xsl:text disable-output-escaping = "yes"><![CDATA[<?xml version = "1.0" encoding = "windows-1251" ?>]]></xsl:text>
+*!*			<xsl:text>&#xA;</xsl:text>
+*!*			<xsl:apply-templates select = "/./*" />
+*!*		</xsl:template>
+
+*!*		<xsl:template match = "@*|node()">
+*!*			<xsl:variable name = "varCount">
+*!*				<xsl:value-of select = "$prmFactor*(count(ancestor-or-self::*)-1)" />
+*!*			</xsl:variable>
+
+*!*			<xsl:if test = "local-name()">
+*!*				<xsl:call-template name = "spaceGen">
+*!*					<xsl:with-param name = "spaceCount" select = "$varCount" />
+*!*				</xsl:call-template>
+*!*			</xsl:if>
+
+*!*			<xsl:copy>
+*!*				<xsl:apply-templates select = "@*|node()"/>
+*!*			</xsl:copy>
+
+*!*			<xsl:if test = "position()>1 and position() = last()">
+*!*				<xsl:call-template name = "spaceGen">
+*!*					<xsl:with-param name = "spaceCount" select = "$varCount" />
+*!*				</xsl:call-template>
+*!*			</xsl:if>
+*!*		</xsl:template>
+
+*!*		<xsl:template name = "spaceGen" >
+*!*			<xsl:param name = "spaceCount"/>
+
+*!*			<xsl:if test = "$spaceCount > 0">
+*!*				<xsl:text>&#x9;</xsl:text>
+
+*!*				<xsl:call-template name = "spaceGen">
+*!*					<xsl:with-param name = "spaceCount" select = "$spaceCount - 1" />
+*!*				</xsl:call-template>
+*!*			</xsl:if>
+*!*		</xsl:template>
+*!*	</xsl:stylesheet>
+*!*	ENDTEXT
+				*
+*!*						TRY
+*!*							loXLT = NEWOBJECT("msxml2.domdocument.6.0")
+*!*							loXLT.LoadXml(m.lcxltFileCR)
+*!*							lcxmlFile = loXMLDOMDocument.transformNode(m.loXLT)
+*!*							*
+*!*							loXMLDOMDocument.LoadXml(m.lcxmlFile)
+*!*							loXLT.LoadXml(m.lcxltFileSPACE)
+*!*							lcxmlFile = loXMLDOMDocument.transformNode(m.loXLT)
+*!*							*
+*!*							STRTOFILE(m.lcxmlFile, m.tcFileXml)
+*!*							loXMLDOMDocument.LoadXml(STRTRAN(loXMLDOMDocument.Xml, "><", '>'+CHR(9)+CHR(10)+'<'))
+*!*						CATCH TO loExc
+*!*							goApp.ShowErrMsg(m.loExc)
+*!*							loXMLDOMDocument.Save(m.tcFileXml)
+*!*						ENDTRY
+*!*					ELSE
+*!*					ENDIF
+
+			m.loXMLDOMDocument.Save(m.tcFileXml)
+		ENDIF
+#IF !_DEVELOP_MODE
+	CATCH TO loExc
+		llfound = .F.
+
+		THIS.oApp.oFunction.showErrMsg(m.loExc)
+
+		THROW
+	ENDTRY
+#ENDIF
+
+RETURN m.llfound
+
+*!*	if (WScript.Arguments.Length < 1)
+*!*	{
+
+*!*	WScript.Echo("Не указано имя файла");
+*!*	WScript.Quit(1);
+
+*!*	}
+
+*!*	objArgs  =  WScript.Arguments;
+
+*!*	sourcefile = objArgs(0);
+*!*	if (objArgs.Length>1) {destfile = objArgs(1);} else {destfile = objArgs(0);}
+
+*!*	var rdr = new ActiveXObject("Msxml2.SAXXMLReader");
+*!*	var wrt = new ActiveXObject("Msxml2.MXXMLWriter.3.0");
+*!*	var xmlDoc = new ActiveXObject("Msxml2.DOMDocument");
+*!*	wrt.indent = true;
+*!*	wrt.standalone = true;
+*!*	wrt.encoding = "windows-1251";
+*!*	wrt.output = xmlDoc;
+*!*	rdr.contentHandler = wrt;
+*!*	rdr.parseURL(sourcefile);
+*!*	wrt.output = xmlDoc;
+*!*	xmlDoc.save(destfile);
+
+
+*sXml.Replace( "><", ">\r\n<" );
+ENDPROC
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*createxmlini 
+*getxmlinientry 
+*showerrmsg 
+*test_xml 
+*writexmlinientry 
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\data_disk.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_disk.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] xml_ini
+[EOF]

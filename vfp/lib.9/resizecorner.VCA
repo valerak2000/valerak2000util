@@ -1,0 +1,848 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1C31AHS39
+[CLASS] control
+[BASECLASS] control
+[OBJNAME] resizecorner
+[START PROPERTIES]
+
+BackStyle = 0
+BorderWidth = 0
+Height = 16
+MousePointer = 8
+Name = "resizecorner"
+Tag = "nm_g nm_v"
+Width = 16
+_memberdata =      135<VFPData><memberdata name="goapp" type="property" display="goApp"/><memberdata name="oapp" type="property" display="oApp"/></VFPData>
+hbitmap = -1
+hbrush = -1
+lautosize = .T.
+ldrawrubber = .F.
+lusepatternedrubber = .T.
+nbottom = -1
+ncolorshade = -1
+ncolorsun = -1
+ndotdia = 2
+ndotrows = 3
+ndotshadeoffset = 1
+ndotsoffset = 2
+ndotspacing = 1
+nhoffset = 0
+nleft = -1
+nlines = 3
+nlinesoffset = 1
+nlinespacing = 1
+nminheight = 40
+nminwidth = 120
+noldbottom = -1
+noldright = -1
+nright = -1
+nrubberhoffset = -1
+nrubbervoffset = -1
+ntop = -1
+nvoffset = 0
+nwin2vfphoffset = -1
+nwin2vfpvoffset = -1
+oapp = .NULL.
+version = 0.01
+[END PROPERTIES]
+[START PROTECTED]
+cleararea
+clearrubber
+createbrush
+destroybrush
+gethorizontaladds
+getsyscolors
+getverticaladds
+getwindowrectangle
+hbitmap
+hbrush
+ldeclaredone
+mouse2border
+nbottom
+nhoffset
+nleft
+noldbottom
+noldright
+nright
+nrubberhoffset
+nrubbervoffset
+ntop
+nvoffset
+nwin2vfphoffset
+nwin2vfpvoffset
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+WITH THIS
+	*-- Make this invisible at runtime
+	.BackStyle=0
+	*-- Bind this resize-Event to the forms'
+	BINDEVENT(THISFORM, "Resize", THIS, "Resize", 1)
+	*-- and check to see if we should draw Dots
+	*-- ie if themes is set on
+	.ZOrder(0)
+	.lPaintDots=SYS(2700)="1"
+
+	.Image.BackStyle=0
+	.Image.Left=.Width-.Image.Width
+	.Image.Top=.Height-.Image.Height
+	.Image.MousePointer=.MousePointer
+	*-- Versuch des Zeichnens mit Hilfe eines Timers
+	.Image.Visible=.lPaintDots
+
+	IF TYPE("m.goApp")<>'O'
+		.oApp=CREATEOBJECT("custom")
+		.oApp.AddObject("WinApi", "cstwinapi")
+		.oApp.AddObject("Function", "cstfunction")
+		.oApp.AddProperty("cTaskCaption", '')
+	ELSE
+		.oApp=m.goApp
+	ENDIF
+	*-- Read the colors for Sun and shade into
+	*-- the properties
+	.GetSysColors()
+
+	IF .lAutoSize
+		*-- Resize the control to the System's Scrollbar Height and Width
+		.Width=SYSMETRIC(5)
+		.Height=SYSMETRIC(8)
+
+		.Image.Left=.Width-.Image.Width
+		.Image.Top=.Height-.Image.Height
+	ELSE
+		.Resize()
+	ENDIF
+ENDWITH
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton=1
+		WITH THIS
+			*-- Keep the Mouse-Offset to the form and to
+			*-- the Rectangle-Coordinates
+			.nVOffset=m.tnYCoord-.Top
+			.nHOffSet=m.tnXCoord-.Left
+
+			IF .ldrawrubber
+				*-- Get the forms coordinates
+	*!*				THIS.DoDecl()
+				.GetWindowRectangle()
+
+				.nRubberVOffSet=m.tnYCoord-.nBottom
+				.nRubberHOffSet=m.tnXCoord-.nRight
+				*-- and draw the rubberband
+				.DrawRubber(.nTop, .nLeft, .nBottom, .nRight)
+			ELSE
+				IF THISFORM.Left+_VFP.Left+SYSMETRIC(3)<0
+					ln_Left=THISFORM.Left
+				ENDIF
+
+				.nTop=THISFORM.Top
+				.nLeft=THISFORM.Left
+				.nBottom=THISFORM.Top+THISFORM.Height
+				.nRight=THISFORM.Left+THISFORM.Width
+
+				.nWin2VFPHOffset=0
+				.nWin2VFPVOffset=0
+
+				.nRubberVOffSet=m.tnYCoord-.nBottom
+				.nRubberHOffSet=m.tnXCoord-.nRight
+			ENDIF
+		ENDWITH
+	ENDIF
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton=1
+		IF THIS.lDrawRubber
+			THIS.ClearRubber()
+			THIS.DrawRubber(THIS.nTop, THIS.nLeft, THIS.Mouse2Border(m.tnYCoord, .T.), THIS.Mouse2Border(m.tnXCoord, .F.))
+		ELSE
+			LOCAL lnNewWidth, lnNewHeight
+
+			lnNewWidth=THIS.Mouse2Border(m.tnXCoord, .F.)-THISFORM.LEFT
+			lnNewWidth=MAX(m.lnNewWidth, IIF(THISFORM.MINWIDTH<>-1, THISFORM.MINWIDTH, 0))
+			lnNewWidth=MIN(m.lnNewWidth, IIF(THISFORM.MAXWIDTH<>-1, THISFORM.MAXWIDTH, _VFP.Width))
+			THIS.nOldRight=m.lnNewWidth
+
+			lnNewHeight=THIS.Mouse2Border(m.tnYCoord, .T.)-THISFORM.Top
+			lnNewHeight=MAX(m.lnNewHeight, IIF(THISFORM.MINHEIGHT<>-1, THISFORM.MINHEIGHT, 0))
+			lnNewHeight=MIN(m.lnNewHeight, IIF(THISFORM.MAXHEIGHT<>-1, THISFORM.MAXHEIGHT, _VFP.Height))
+			THIS.nOldBottom=m.lnNewHeight
+
+			THIS.Resize_Timer.ENABLED=.T.
+		ENDIF
+	ENDIF
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+LOCAL lnNewRight, lnNewBottom
+	IF m.tnButton=1 AND THIS.lDrawRubber
+		THIS.ClearRubber()
+		*-- Destroy Brush and Bitmap
+		THIS.DestroyBrush()
+		*-- The following two lines work perfectly well
+		*-- However I like to take the new measurements
+		*-- from the resize-Border
+		lnNewRight=THIS.nOldRight-THIS.nWin2VFPHOffset-THISFORM.Left-THIS.GetHorizontalAdds()
+		lnNewBottom=THIS.nOldBottom-THIS.nWin2VFPVOffset-THISFORM.Top-THIS.GetVerticalAdds()
+		*-- But check MinHeight and -Width
+		lnNewRight=MAX(m.lnNewRight, THISFORM.MinWidth)
+		lnNewBottom=MAX(m.lnNewBottom, THISFORM.MinHeight)
+
+		THISFORM.Move(THISFORM.Left, THISFORM.Top, m.lnNewRight, m.lnNewBottom)
+	ENDIF
+ENDPROC
+PROCEDURE Resize
+IF THISFORM.WindowState=2
+	THIS.Visible=.F.
+ELSE
+	THIS.Visible=.T.
+
+	THIS.Left=THISFORM.Width-THIS.Width
+	THIS.Top=THISFORM.Height-THIS.Height
+
+	THIS.SetTimer()
+ENDIF
+ENDPROC
+PROCEDURE cleararea
+LOCAL ln_WasX, ln_WasY, ln_WasStyle, ln_WasFill, ln_WasColor, ln_FillColor
+	*-- DD changed on 26.10.04
+	*-- Respect transparentmode
+	IF THIS.BACKSTYLE=1
+		WITH THISFORM
+			ln_WasX=.CurrentX
+			ln_WasY=.CurrentY
+
+			ln_WasStyle=.DRAWSTYLE
+			ln_WasFill=.FILLSTYLE
+			ln_WasColor=.FORECOLOR
+			ln_FillColor=.FILLCOLOR
+
+			.DRAWSTYLE=0 && Durchgezogene Linie
+			.FORECOLOR=.BACKCOLOR
+			.FILLCOLOR=.BACKCOLOR
+
+			.FILLSTYLE=0 && Fill
+			.BOX(THIS.LEFT, THIS.TOP, THIS.LEFT+THIS.WIDTH, THIS.TOP+THIS.HEIGHT)
+
+			.DRAWSTYLE=m.ln_WasStyle
+			.FILLSTYLE=m.ln_WasFill
+			.FORECOLOR=m.ln_WasColor
+			.FILLCOLOR=m.ln_FillColor
+
+			.CurrentX=m.ln_WasX
+			.CurrentY=m.ln_WasY
+		ENDWITH
+	ENDIF
+ENDPROC
+PROCEDURE clearrubber
+IF THIS.nOldBottom>=0 AND THIS.nOldRight>=0
+	THIS.DrawRubber(THIS.nTop, THIS.nLeft, THIS.nOldBottom, THIS.nOldRight)
+ENDIF
+ENDPROC
+PROCEDURE createbrush
+*-- Create the patterned brush, or when existing
+*-- return the handle to it
+LOCAL lnrgbPatGray
+	IF THIS.hBrush<0
+		*-- create Bitmap and Brush
+		*-- Erstellen eines Bitmap-Brush mit dem gescheckten
+		*-- Muster für das Zeichnen des Randes
+		lnrgbPatGray=REPLICATE(BINTOC(0x55, "2SR")+BINTOC(0xAA, "2SR"), 4)
+
+		THIS.hBitmap=THIS.oApp.oWinApi.GdiCreateBitmap(8, 8, 1, 1, m.lnrgbPatGray)
+		THIS.hBrush=THIS.oApp.oWinApi.GdiCreatePatternBrush(THIS.hBitmap)
+	ENDIF
+RETURN THIS.hBrush
+ENDPROC
+PROCEDURE destroybrush
+IF THIS.hBrush>=0
+	THIS.oApp.oWinApi.DeleteObject(THIS.hBrush)
+ENDIF
+
+IF THIS.hBitmap>=0
+	THIS.oApp.oWinApi.DeleteObject(THIS.hBitmap)
+ENDIF
+
+STORE -1 TO THIS.hBitmap, THIS.hBrush
+ENDPROC
+PROCEDURE drawrubber
+LPARAMETERS	tnTop, tnLeft, tnBottom, tnRight
+	tnTop=IIF(VARTYPE(m.tnTop)="N", m.tnTop, THIS.nTop)
+	tnLeft=IIF(VARTYPE(m.tnLeft)="N", m.tnLeft, THIS.nLeft)
+	tnBottom=IIF(VARTYPE(m.tnBottom)="N", m.tnBottom, THIS.nBottom)
+	tnRight=IIF(VARTYPE(m.tnRight)="N", m.tnRight, THIS.nRight)
+
+	IF THIS.lUsePatternedRubber
+		*-- Breiter gecheckter Rahmen
+		THIS.PatternedRubber(m.tnTop, m.tnLeft, m.tnBottom, m.tnRight)
+	ELSE
+		*-- mit einer dünnen Linie
+		THIS.RubberBand(m.tnTop, m.tnLeft, m.tnBottom, m.tnRight)
+	ENDIF
+ENDPROC
+PROCEDURE gethorizontaladds
+LOCAL lnRetVal
+*==========================================*
+*  Horizontal adds necessary to calculate  *
+*  the total width of a form               *
+*==========================================*
+	lnRetVal=0
+	*-- Width for the Borders
+	DO CASE
+	CASE THISFORM.BORDERSTYLE=3	&& Sizable
+		lnRetVal=m.lnRetVal+2*SYSMETRIC(3)	&& add the width of a sizable window-Frame
+	CASE THISFORM.BORDERSTYLE=2 && Dialog
+		lnRetVal=m.lnRetVal+2*SYSMETRIC(12)  && Width or Double frame
+	CASE THISFORM.BORDERSTYLE=1
+		lnRetVal=m.lnRetVal+2*SYSMETRIC(10)	&& Width of Non-Sizable frame
+	OTHER
+		*-- leave it
+	ENDCASE
+RETURN m.lnRetVal
+ENDPROC
+PROCEDURE getsyscolors
+#DEFINE COLOR_BTNSHADOW 16
+#DEFINE COLOR_BTNHIGHLIGHT 20
+
+THIS.nColorShade=THIS.oApp.oWinApi.GetSysColor(COLOR_BTNSHADOW)
+THIS.nColorSun=THIS.oApp.oWinApi.GetSysColor(COLOR_BTNHIGHLIGHT)
+ENDPROC
+PROCEDURE getverticaladds
+*============================================================*
+*  Vertical adds necessary to calculate the total height  *
+*  of a form                                                 *
+*============================================================*
+LOCAL lnRetVal
+	lnRetVal=0
+	
+	WITH THISFORM
+		*-- Height for the Borders
+		DO CASE
+		CASE .BORDERSTYLE=3	&& Sizable
+			lnRetVal=m.lnRetVal+2*SYSMETRIC(4)	&& add the height of a sizable window-Frame
+		CASE .BORDERSTYLE=2	&& Dialog
+			lnRetVal=m.lnRetVal+2*SYSMETRIC(13) && Height or Double frame
+		CASE .BORDERSTYLE=1
+			lnRetVal=m.lnRetVal+2*SYSMETRIC(11)
+		OTHER
+			*-- leave it
+		ENDCASE
+		*-- Add Height for the Caption
+		DO CASE
+		CASE .TITLEBAR=0
+			*-- No Caption
+		CASE .TITLEBAR=1 AND .HALFHEIGHTCAPTION
+			lnRetVal=m.lnRetVal+SYSMETRIC(34) && HalfHeightCaption
+		OTHER
+			lnRetVal=m.lnRetVal+SYSMETRIC(9) && WindowTitle
+		ENDCASE
+	ENDWITH
+RETURN m.lnRetVal
+ENDPROC
+PROCEDURE getwindowrectangle
+* Abstract...:  Get the Coordinates of the current form
+* Changes....:
+LOCAL ln_Bottom, ln_Left, ln_Right, ln_Top
+	THIS.oApp.oWinApi.GetWindowRect(THISFORM.HWnd, m.ln_Left, m.ln_Top, m.ln_Right, m.ln_Bottom)
+	*-- lnLeft is something like 4294967293
+	*-- when thisform.Left + _vfp.Left + sysmetric(3) < 0, fix that
+	IF THISFORM.Left+_VFP.Left+SYSMETRIC(3)<0
+		ln_Left=THISFORM.Left
+	ENDIF
+
+	THIS.nTop=m.ln_Top
+	THIS.nLeft=m.ln_Left
+	THIS.nBottom=m.ln_Bottom
+	THIS.nRight=m.ln_Right
+
+	THIS.nWin2VFPHOffset=THIS.nLeft-THISFORM.Left
+	THIS.nWin2VFPVOffset=THIS.nTop-THISFORM.Top
+ENDPROC
+PROCEDURE mouse2border
+LPARAMETERS	tnCoord, tlIsVertical
+LOCAL lnRetVal, lnAdds, lnMinWidth, lnMinHeight
+	lnRetVal=m.tnCoord
+
+	IF m.tlIsVertical
+		lnRetVal=m.tnCoord-THIS.nRubberVOffSet
+		lnAdds=THIS.GetVerticalAdds()
+		*-- but not more than MaxHeight
+		*-- Calcuclate the max possible height
+		*-- with Borders and Headers
+		IF THISFORM.MAXHEIGHT>0
+			lnRetVal=MIN(m.lnRetVal, THIS.nTop+THISFORM.MAXHEIGHT+m.lnAdds)
+		ENDIF
+		*-- and not below MinHeight
+		*-- If not set on Form's level. take our own minimum
+		*-- height
+		lnMinHeight=MAX(THIS.nMinHeight, THISFORM.MINHEIGHT)
+		lnRetVal=MAX(m.lnRetVal, THIS.nTop+m.lnMinHeight+m.lnAdds)
+	ELSE
+		lnRetVal=m.tnCoord-THIS.nRubberHOffset
+		lnAdds=THIS.GetHorizontalAdds()
+
+		IF THISFORM.MAXWIDTH>0
+			lnRetVal=MIN(m.lnRetVal, THIS.nLeft+THISFORM.MAXWIDTH+m.lnAdds)
+		ENDIF
+		*-- Not smaller than minimum-Width
+		*-- If not set on Form's level, take our own.
+		lnMinWidth=MAX(THIS.nMinWidth, THISFORM.MINWIDTH)
+		lnRetVal=MAX(m.lnRetVal, THIS.nLeft+m.lnMinWidth+m.lnAdds)
+	ENDIF
+RETURN m.lnRetVal
+ENDPROC
+PROCEDURE paintdots
+*=====================================================*
+*  Paint the shadowed-Dots in the lower right corner  *
+*=====================================================*
+LOCAL lnDotHeight, lnDotSpacing, lnVDots, lnHDots, lnColorShade, lnColorSun, lnLeft, lnTop, lnHDot, lnVDot,;
+	nInitialSpacing, lnWasX, lnWasY, lnShadeHOffset, lnShadeVOffset, lnRefBottom, lnRefRight, lnDotWidth,;
+	nDotDia, lnFillStyle
+	*-- Paint them with an offset to the Borders?
+	lnInitialSpacing=THIS.nDotsOffset
+	*-- Offset for Dot and shade
+	lnShadeHOffset=THIS.nDotShadeOffset
+	lnShadeVOffset=THIS.nDotShadeOffset
+	*-- Diameter and spacing of the dots
+	lnDotDia=THIS.nDotDia
+	lnDotSpacing=THIS.nDotSpacing
+	*-- How many Dots to print
+	lnVDots=THIS.nDotRows
+	lnHDots=THIS.nDotRows && Three Dots wide
+	lnColorShade=THIS.nColorShade && rgb(128,128,128)
+	lnColorSun=THIS.nColorSun &&  rgb(255,255,255)
+	*-- Bigger dots: hollow or filled
+	lnFillStyle=IIF(THIS.lDotsFill, 0, 1)
+	*-- Clean up
+	THIS.ClearArea()
+	*-- DD changed on 30.09.05
+	*-- Don't  when this. is invisible
+	IF !THIS.Visible
+		RETURN .T.
+	ENDIF
+	*-- remember the drawing points
+	lnWasX=THISFORM.CurrentX
+	lnWasY=THISFORM.CurrentY
+
+	lnRefBottom=THISFORM.Height
+	lnRefRight=THISFORM.Width
+	*-- rechteste, linke Position bestimmen
+	*-- Der Dot besteht aus Dot + Schatten
+	*-- Daher Breite = 2*DOT - ShadeOffset
+	lnDotWidth=(2*m.lnDotDia)-m.lnShadeHOffset
+	lnDotHeight=(2*m.lnDotDia)-m.lnShadeVOffset
+	lnLeft=m.lnRefRight-m.lnInitialSpacing-m.lnDotWidth
+	*-- Print the light shades first
+	THISFORM.DRAWMODE=13
+	THISFORM.DRAWSTYLE=0				&& Durchgezogene Linie
+	THISFORM.FORECOLOR=lnColorSun
+	THISFORM.FILLCOLOR=lnColorSun
+	THISFORM.FILLSTYLE=lnFillStyle 			&& Fillstyle
+
+	FOR lnHDot=1 TO m.lnHDots
+		lnTop=m.lnRefBottom-m.lnInitialSpacing-m.lnDotHeight
+
+		FOR lnVDot=1 TO m.lnVDots
+			IF THIS.lDotsRound
+				THISFORM.CIRCLE(lnDotDia/2,m.lnLeft+m.lnShadeHOffSet+m.lnDotWidth/2,;
+								m.lnTop+m.lnShadeVOffSet+m.lnDotHeight/2)
+			ELSE
+				*-- The Dot is actually a Box as it's 2x2
+				THISFORM.BOX(m.lnLeft+m.lnShadeHOffSet, m.lnTop+m.lnShadeVOffset,;
+							m.lnLeft+m.lnShadeHOffSet+m.lnDotDia, m.lnTop+m.lnShadeVOffset+m.lnDotDia)
+			ENDIF
+
+			lnTop=m.lnTop-m.lnDotSpacing-m.lnDotHeight
+		ENDFOR &&* lnVDot = 1 to lnVDots
+		*-- the next Dot-Column is one less high
+		lnVDots=m.lnVDots-1
+		lnLeft=m.lnLeft-m.lnDotSpacing-m.lnDotWidth
+	ENDFOR &&* lnHDot = 1 to lnHDots
+	*-- and now the dark dots
+	THISFORM.FORECOLOR=m.lnColorShade
+	THISFORM.FILLCOLOR=m.lnColorShade
+
+	lnLeft=m.lnRefRight-m.lnInitialSpacing-m.lnDotWidth
+	lnVDots=THIS.nDotRows
+
+	FOR lnHDot=1 TO m.lnHDots
+		lnTop=m.lnRefBottom-m.lnInitialSpacing-m.lnDotHeight
+
+		FOR lnVDot=1 TO m.lnVDots
+			IF THIS.lDotsRound
+				THISFORM.Circle(lnDotDia/2, m.lnLeft+m.lnDotWidth/2, m.lnTop+m.lnDotHeight/2)
+			ELSE
+				*-- The Dot is actually a Box as it's 2x2
+				THISFORM.Box(m.lnLeft, m.lnTop, m.lnLeft+m.lnDotDia, m.lnTop+m.lnDotDia)
+			ENDIF
+
+			lnTop=m.lnTop-m.lnDotSpacing-m.lnDotHeight
+		ENDFOR &&* lnVDot = 1 to lnVDots
+		*-- the next Dot-Row is one less high
+		lnVDots=m.lnVDots-1
+		lnLeft=m.lnLeft-m.lnDotSpacing-m.lnDotWidth
+	ENDFOR &&* lnHDot = 1 to lnHDots
+	*-- and reset the Pen-Position
+	THISFORM.CurrentX=m.lnWasX
+	THISFORM.CurrentY=m.lnWasY
+ENDPROC
+PROCEDURE paintlines
+*=================================*
+*  Paint Lines (instead of dots)  *
+*=================================*
+LOCAL lnColorShade, lnColorSun, lnInitialSpacing, lnLine, lnLineSpacing, ;
+	lnLines, lnRefBottom, lnRefRight, lnWasX, lnWasY, lnX1, lnX2, lnY1, lnY2
+	*-- Paint the lines with an Offset from the borders?
+	lnInitialSpacing=THIS.nLinesOffset
+	*-- How many lines, separated by how many pixels
+	lnLines=THIS.nLines
+	lnLineSpacing=THIS.nLineSpacing+1
+	lnColorShade=THIS.nColorShade && rgb(128,128,128)
+	lnColorSun=THIS.nColorSun && rgb(255,255,255)
+	*-- Clean up
+	THIS.ClearArea()
+	*-- DD changed on 30.09.05
+	*-- Don't draw Lines when this. is invisible
+	IF !THIS.VISIBLE
+		RETURN .T.
+	ENDIF
+	*-- remember the Drawing point
+	lnWasX=THISFORM.CurrentX
+	lnWasY=THISFORM.CurrentY
+	*-- Achtung: ich kann zwar bis thisform.Width
+	*-- Aber nicht bis ThisForm.Height zeichnen.
+	*-- die unterste Reihe liegt bereits im Rahmen
+	*-- und ist nicht sichtbar. Daher height-1
+	lnRefBottom=THISFORM.Height-1
+	lnRefRight=THISFORM.Width
+
+	lnY1=m.lnRefBottom-m.lnInitialSpacing
+	lnX2=m.lnRefRight-m.lnInitialSpacing
+
+	lnX1=m.lnRefRight-m.lnInitialSpacing
+	lnY2=m.lnRefBottom-m.lnInitialSpacing
+	*-- Print the light shades first
+	THISFORM.DRAWMODE=13
+	THISFORM.DRAWSTYLE=0 && Durchgezogene Linie
+	THISFORM.FORECOLOR=m.lnColorSun
+	THISFORM.FILLCOLOR=m.lnColorSun
+	THISFORM.FILLSTYLE=1 && Fillstyle
+
+	FOR lnLine=1 TO THIS.nLines
+		lnX1=m.lnX1-m.lnLineSpacing
+		lnY2=m.lnY2-m.lnLineSpacing
+		*-- Die Linie selbst wird dunkel
+		*-- The line itself is dark and two pix wide
+		THISFORM.FORECOLOR=m.lnColorShade
+		THISFORM.LINE(m.lnX1, m.lnY1, m.lnX2, m.lnY2)
+		lnX1=m.lnX1-1
+		lnY2=m.lnY2-1
+		THISFORM.LINE(m.lnX1, m.lnY1, m.lnX2, m.lnY2)
+		lnX1=m.lnX1-1
+		lnY2=m.lnY2-1
+		*-- der helle Schatten davor
+		*-- the shadow is above the line and 1px wide
+		THISFORM.FORECOLOR=m.lnColorSun
+		THISFORM.LINE(m.lnX1, m.lnY1, m.lnX2, m.lnY2)
+	ENDFOR &&* lnHDot = 1 to lnHDots
+	*-- and reset the point
+	THISFORM.CurrentX=m.lnWasX
+	THISFORM.CurrentY=m.lnWasY
+ENDPROC
+PROCEDURE patternedrubber
+*=======================================*
+*  create or remove a patterned Rubber  *
+*=======================================*
+#DEFINE PATINVERT    	0x005A0049
+#DEFINE HWND_DESKTOP    0
+
+LPARAMETERS	tnTop, tnLeft, tnBottom, tnRight
+LOCAL lnWidth, lnHeight, lnXFrame, lnYFrame, lnhDC, lnhOldBrush
+	tnTop=IIF(VARTYPE(m.tnTop)="N", m.tnTop, THIS.nTop)
+	tnLeft=IIF(VARTYPE(m.tnLeft)="N", m.tnLeft, THIS.nLeft)
+	tnBottom=IIF(VARTYPE(m.tnBottom)="N", m.tnBottom, THIS.nBottom)
+	tnRight=IIF(VARTYPE(m.tnRight)="N", m.tnRight, THIS.nRight)
+	*-- Erstellen eines Bitmap-Brush mit dem gescheckten
+	*-- Muster für das Zeichnen des Randes
+	*-- rgbPatGray 	= replicate( this.Num2Word(0x55) + this.Num2Word(0xAA), 4 )
+	*-- hBitmap 	= CreateBitmap( 8, 8, 1, 1, rgbPatGray )
+	*-- hPatBrush 	= CreatePatternBrush( hBitmap )
+	*-- DD changed on 26.09.04
+	*-- Create the brush and keep the handle for later
+	*-- hPatBrush   = this.CreateBrush()
+	lnWidth=m.tnRight-m.tnLeft
+	lnHeight=m.tnBottom-m.tnTop
+	*-- Width and height of a sizable window-frame
+	lnXFrame=SYSMETRIC(3)
+	lnYFrame=SYSMETRIC(4)
+	*-- DD changed on 16.05.05
+	*-- Declare the dll's if not already done
+	lnhDC=THIS.oApp.oWinApi.GetDC(HWND_DESKTOP)
+	lnhOldBrush=THIS.oApp.oWinApi.SelectObject(m.lnhDC, THIS.CreateBrush())
+	*-- Drawing each of the four borders but without
+	*-- overlapping the thick lines as this would invert
+	*-- at the corners
+	THIS.oApp.oWinApi.GdiPatBlt(m.lnhDC, m.tnLeft, m.tnTop, m.lnWidth, m.lnYFrame, PATINVERT) && top side
+	THIS.oApp.oWinApi.GdiPatBlt(m.lnhDC, m.tnLeft, m.tnTop+m.lnYFrame, m.lnXFrame, m.lnHeight-(2*m.lnYFrame), PATINVERT) && left side
+	THIS.oApp.oWinApi.GdiPatBlt(m.lnhDC, m.tnLeft, m.tnBottom-m.lnYFrame, m.lnWidth, m.lnYFrame, PATINVERT) && bottom side
+	THIS.oApp.oWinApi.GdiPatBlt(m.lnhDC, m.tnRight-m.lnXFrame, m.tnTop+m.lnYFrame, m.lnXFrame ,m.lnHeight-(2*m.lnYFrame), PATINVERT)  && right side
+	*-- reset the brush
+	THIS.oApp.oWinApi.SelectObject(m.lnhDC, m.lnhOldBrush)
+
+	THIS.oApp.oWinApi.ReleaseDC(HWND_DESKTOP, m.lnhDC)
+	*-- DD changed on 26.09.04
+	*-- now in MouseUp -> DeleteBrush()
+	*-- and Delete the brush
+	*-- DeleteObject(hPatBrush)
+	*-- DeleteObject(hBitmap)
+	*-- Finally keep the lower right corner
+	*-- for later removing the frame
+	THIS.nOldBottom=m.tnBottom
+	THIS.nOldRight=m.tnRight
+ENDPROC
+PROCEDURE resize_form
+LOCAL lloldlock as Logical
+	THIS.Enabled=.F.
+
+	lloldlock=THISFORM.LockScreen
+	THISFORM.LockScreen=.T.
+
+	THISFORM.Move(THISFORM.Left, THISFORM.Top, THIS.nOldRight, THIS.nOldBottom)
+
+	THISFORM.LockScreen=m.lloldlock
+ENDPROC
+PROCEDURE rubberband
+*-- #Define BOOL       long
+*-- #Define HANDLE     long
+*-- #Define PSTR       String @
+*-- #Define PRECT      String @
+#DEFINE R2_NOTXORPEN   10
+#DEFINE HWND_DESKTOP    0
+#DEFINE NULL_BRUSH      5
+#DEFINE PS_SOLID        0
+#DEFINE PS_INSIDEFRAME  6
+
+LPARAMETERS	tnTop, tnLeft, tnBottom, tnRight
+	WITH THIS
+		tnTop=IIF(VARTYPE(m.tnTop)="N", m.tnTop, .nTop)
+		tnLeft=IIF(VARTYPE(m.tnLeft)="N", m.tnLeft, .nLeft)
+		tnBottom=IIF(VARTYPE(m.tnBottom)="N", m.tnBottom, .nBottom)
+		tnRight=IIF(VARTYPE(m.tnRight)="N", m.tnRight, .nRight)
+
+		IF .lThickRubber
+			*-- Create the pen for a thicker Rubber:
+			lh_Pen=.oApp.oWinApi.GdiCreatePen(PS_SOLID+PS_INSIDEFRAME, SYSMETRIC(3), RGB(0,0,0))
+		ENDIF
+
+		lh_DC=.oApp.oWinApi.GetDC(HWND_DESKTOP)
+
+		IF .lThickRubber
+			lh_OldBrush=.oApp.oWinApi.SelectObject(m.lh_DC, m.lh_Pen)
+		ELSE
+			lh_OldBrush=.oApp.oWinApi.SelectObject(m.lh_DC, .oApp.oWinApi.GdiGetStockObject(NULL_BRUSH))
+		ENDIF
+		*-- Actual drawing the Rectangle
+		.oApp.oWinApi.GdiSetROP2(m.lh_DC, R2_NOTXORPEN)
+		.oApp.oWinApi.GdiRectangle(m.lh_DC, m.tnLeft, m.tnTop, m.tnRight, m.tnBottom)
+		*-- and re-select the old tool
+		.oApp.oWinApi.SelectObject(m.lh_DC, m.lh_OldBrush)
+		.oApp.oWinApi.ReleaseDC(HWND_DESKTOP, m.lh_DC)
+		*-- When Thick Rubber, delete the pen
+		IF .lThickRubber
+			.oApp.oWinApi.DeleteObject(m.lh_Pen)
+		ENDIF
+
+		.nOldBottom=m.tnBottom
+		.nOldRight=m.tnRight
+	ENDWITH
+ENDPROC
+PROCEDURE settimer
+THIS.tmrRefresh.Interval=15
+THIS.tmrRefresh.Enabled=.T.
+ENDPROC
+PROCEDURE visible_assign
+*-- DD changed on 30.09.05
+*-- Respect Visible-Property
+LPARAMETERS tlVisible
+LOCAL llDoRepaint
+	llDoRepaint=m.tlVisible<>THIS.Visible
+
+	THIS.Visible=m.tlVisible
+
+	IF m.llDoRepaint
+		*-- Force a repaint or clear
+		THIS.SetTimer()
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*cleararea Clear the Corner-Area before painting Dots or Lines
+*clearrubber remove an existing rubber
+*createbrush create the bitmapped brush for the patterned rubber
+*destroybrush Do the cleanup and destroy the brush when not needed anymore
+*drawrubber Draw a Rubber band
+*gethorizontaladds Get the value needed to add in order to calculate the total width of a form
+*getsyscolors Load the system-colors for Dots and stripes
+*getverticaladds Calculate the value that needs to be added to calculate max or min height of a form (Borders, Captions) 
+*getwindowrectangle retrieve the coordinates of the current form 
+*mouse2border Convert the current MousePos to the Border pos for the vertical or horizontal Corodinate
+*paintdots Paint Dots in the lower right corner. Default on WinXP when Themes is on. 
+*paintlines Draw lines in the lower right corner instead of dots. This is for Win2K-systems, when themes is off or this.lDrawDots = .F.
+*patternedrubber Draw a patterned Rubber just like Windows does
+*resize_form 
+*rubberband Draw or erase a rubber when resizing. The state of lDrawPatternedRubber decides whether this will become a single lined rubber or a paterned one
+*settimer Set the Redraw-Timer
+*visible_assign 
+_memberdata XML Metadata for customizable properties
+hbitmap Handle to the Bitmap for the Patterned Brush - internally used
+hbrush Handle to the Patterned Brush - internally used
+lautosize Automatically resize the control to the system's ScrollbarHeight resp. -width
+ldeclaredone Are the Windows-API declarations done?
+ldotsfill Fill the dots or let them be hollow (only applicable for nDotDia > 2). 
+ldotsround Draw circles or sqares when drawing dots. with a default size of 2 for nDotDia, the setting makes no differnce. Default = .F.
+ldrawrubber
+lpaintdots Paint Dots or lines. will be automatically determined in the INIT, but can be changed anytime
+lthickrubber When drawing a rubber, should it be thick or thin? (has no effect if lPatternedRubber=.T.)
+lusepatternedrubber Use the Patterned rubber or a single line?
+nbottom internal Var
+ncolorshade the dark-color, when drawing Lines or dots. System-Color will be loaded on INIT
+ncolorsun the light-color, when drawing Lines or dots. System-Color will be loaded on INIT
+ndotdia Diameter of the dots. Default is 2
+ndotrows How many rows of dots. Default is 3
+ndotshadeoffset Shade-offset of the dots
+ndotsoffset Offset for drawing the dots in Pixel from the lower right corner
+ndotspacing Spacing of the dots
+nhoffset Horizonatal Offset - internally used
+nleft Internal Var
+nlines Number of lines to draw in "Lines-Mode". Default is 3
+nlinesoffset Offset of the lines from the lower and right borders in "lines-Mode"
+nlinespacing Spacing between the lines in Line-Mode
+nminheight Minimum FormHeight, if MinHeight is not set
+nminwidth Minimum FormWidth if MinWidth is not set
+noldbottom internal Var
+noldright internal Var
+nright internal Var
+nrubberhoffset internal Var
+nrubbervoffset internal Var
+ntop inernal Var
+nvoffset Vertical offset - internally used
+nwin2vfphoffset Windows to VFP - Coordinate-Offset 
+nwin2vfpvoffset Windows to VFP Coordinate Offset (vertical)
+oapp
+version Current Version of the Class
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\littlelowerrightcorner.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\littlelowerrightcorner.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+The little lower right corner on a form to extend the sensible area for resizing the form[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1C31CSSN0
+[CLASS] base_image
+[CLASSLOC] base_gui.vcx
+[BASECLASS] image
+[OBJNAME] Image
+[PARENT] resizecorner
+[START PROPERTIES]
+BackStyle = 0
+Height = 16
+Left = 0
+Name = "Image"
+Picture = ..\bmp\16x16\resizecorner.bmp
+Top = 0
+Width = 16
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	THIS.Parent.MouseDown(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	THIS.Parent.MouseMove(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	THIS.Parent.MouseUp(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO006VXC
+[CLASS] base_timer
+[CLASSLOC] base_gui.vcx
+[BASECLASS] timer
+[OBJNAME] resize_timer
+[PARENT] resizecorner
+[START PROPERTIES]
+Enabled = .F.
+Interval = 4
+Left = 100
+Name = "resize_timer"
+Top = 12
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+THIS.Enabled=.F.
+
+THIS.Parent.Resize_Form()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1C717135C
+[CLASS] base_timer
+[CLASSLOC] base_gui.vcx
+[BASECLASS] timer
+[OBJNAME] tmrRefresh
+[PARENT] resizecorner
+[START PROPERTIES]
+Height = 23
+Left = 100
+Name = "tmrRefresh"
+Top = 12
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+THIS.Enabled=.F.
+
+IF THIS.Parent.lPaintDots
+*!*		THIS.PARENT.Image1.VISIBLE=.T.
+*!*		THIS.PARENT.PaintDots()
+ELSE
+	THIS.Parent.Image.Visible=.F.
+	THIS.Parent.PaintLines()
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] resizecorner
+[EOF]

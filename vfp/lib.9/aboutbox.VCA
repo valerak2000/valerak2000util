@@ -1,0 +1,414 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R020GARDA
+[CLASS] dialog_form_szgr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] aboutbox
+[START PROPERTIES]
+AlwaysOnTop = .T.
+AutoCenter = .T.
+Caption = "About Custom Application"
+DBCONTAINER.Name = "DBCONTAINER"
+DoCreate = .T.
+FontSize = 8
+Height = 319
+MaxButton = .F.
+MinButton = .F.
+MinWidth = 1
+Name = "aboutbox"
+RESIZECORNER.Image.Height = 16
+RESIZECORNER.Image.Name = "Image"
+RESIZECORNER.Image.Width = 16
+RESIZECORNER.Left = 360
+RESIZECORNER.Name = "RESIZECORNER"
+RESIZECORNER.RESIZE_TIMER.Name = "RESIZE_TIMER"
+RESIZECORNER.TMRREFRESH.Name = "TMRREFRESH"
+RESIZECORNER.TabIndex = 4
+RESIZECORNER.Top = 304
+SAVESET_FORM.Left = 24
+SAVESET_FORM.Name = "SAVESET_FORM"
+SAVESET_FORM.Top = 296
+Width = 374
+WindowType = 1
+cmsinfodir = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+SET MESSAGE TO THISFORM.Caption
+ENDPROC
+PROCEDURE Init
+*-- (c) Microsoft Corporation 1995
+LPARAMETERS tcAppName, tcVersion, tcCopyright, tcTrademark, tcLogoBMP
+LOCAL lnError as Integer, lcMSINFO as String
+	*-- Set new property values if parameters do not contain .F.
+	WITH THISFORM
+		IF VARTYPE(m.tcAppName) = "C"
+		  .Caption = ABOUT_LOC+ALLTRIM(m.tcAppName)
+		  .Applications_pageframe.Base_page1.lblAppName.Caption = ALLTRIM(m.tcAppName)
+		ENDIF    
+
+		IF VARTYPE(m.tcVersion) = "C"
+		  .Applications_pageframe.Base_page1.lblVersion.Caption = VERSIONLABEL_LOC+ALLTRIM(m.tcVersion)
+		ENDIF  
+
+		IF VARTYPE(m.tcCopyright) = "C"
+		  .Applications_pageframe.Base_page1.lblCopyright.Caption = ALLTRIM(m.tcCopyright)
+		ENDIF  
+
+		IF VARTYPE(m.tcTrademark) = "C"
+		  .Applications_pageframe.Base_page1.lblTrademark.Caption = m.tcTrademark
+		  .Applications_pageframe.Base_page1.lblTrademark.WordWrap = 1
+		ENDIF  
+
+		IF VARTYPE(m.tcLogoBMP) = "C"
+		  .Applications_pageframe.Base_page1.imgLogo.Picture = m.tcLogoBMP
+		ENDIF
+
+		.Applications_pageframe.Base_page1.lblUserName.Caption = THIS.GetRegisteredOwner()
+		.Applications_pageframe.Base_page1.lblUserCorp.Caption = THIS.GetRegisteredCompany()
+
+		lcMSINFO = ""
+		lnError = THIS.Registry.GetRegKey("Path",@lcMSINFO,KEY_WIN4_MSINFO,HKEY_LOCAL_MACHINE)
+
+		IF m.lnError = 0
+			.cMSInfoDir = m.lcMSINFO
+		ENDIF
+		*-- Check if MSINFO.EXE exists, otherwise remove the System Info command button and
+		*-- shorten the form
+		IF EMPTY(.cMSInfoDir)
+		    .cMSInfoDir = " "
+		    .cmdSysInfo.Enabled = .F.
+		    .Height = 282
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE SAVESET_FORM.loadset
+NODEFAULT
+ENDPROC
+PROCEDURE SAVESET_FORM.saveset
+NODEFAULT
+ENDPROC
+PROCEDURE Unload
+SET MESSAGE TO
+ENDPROC
+PROCEDURE getregisteredcompany
+* This is a stub for your routine to obtain registered corporation name.
+RETURN THIS.Applications_pageframe.Base_page1.lblUserCorp.Caption
+ENDPROC
+PROCEDURE getregisteredowner
+* This is a stub for your routine to obtain registered user name.
+RETURN THIS.Applications_pageframe.Base_page1.lblUserName.Caption
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+14[END RESERVED2]
+[START RESERVED3]
+*getregisteredcompany Stub routine to return registered owner.
+*getregisteredowner Stub routine to return registered company.
+cmsinfodir Holds the path of the MSINFO.EXE program.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+This class displays an About Application that the user can customize.[END RESERVED7]
+[START RESERVED8]
+aboutbox.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RT0D8TXZ
+[CLASS] base_pageframe
+[CLASSLOC] base_gui.vcx
+[BASECLASS] pageframe
+[OBJNAME] Applications_pageframe
+[PARENT] aboutbox
+[START PROPERTIES]
+Base_Page1.Caption = "Общие"
+Base_Page1.Name = "Base_Page1"
+Base_Page2.Caption = "Модули"
+Base_Page2.Name = "Base_Page2"
+ErasePage = .T.
+Height = 256
+Left = 0
+Name = "Applications_pageframe"
+TabIndex = 1
+Top = 0
+Width = 376
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR7E
+[CLASS] base_image
+[CLASSLOC] base_gui.vcx
+[BASECLASS] image
+[OBJNAME] imgLogo
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+BackStyle = 0
+Height = 111
+Left = 15
+Name = "imgLogo"
+Stretch = 1
+Top = 0
+Width = 100
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR7F
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblAppName
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+Anchor = 0
+AutoSize = .F.
+BackStyle = 0
+Caption = "Your application name"
+FontSize = 8
+Height = 15
+Left = 125
+Name = "lblAppName"
+TabIndex = 1
+Top = 6
+Width = 234
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR94
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblCopyright
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+Anchor = 0
+AutoSize = .F.
+BackStyle = 0
+Caption = "Copyright Information"
+FontSize = 8
+Height = 15
+Left = 125
+Name = "lblCopyright"
+TabIndex = 3
+Top = 44
+Width = 234
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR7I
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblLicense
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+Anchor = 0
+AutoSize = .F.
+BackStyle = 0
+Caption = "This product is licensed to:"
+FontSize = 8
+Height = 15
+Left = 120
+Name = "lblLicense"
+TabIndex = 4
+Top = 141
+Width = 239
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR7H
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblTrademark
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+Anchor = 0
+AutoSize = .F.
+BackStyle = 0
+Caption = "Trademark Information"
+FontBold = .F.
+FontSize = 8
+Height = 15
+Left = 125
+Name = "lblTrademark"
+TabIndex = 3
+Top = 64
+Width = 234
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR7L
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblUserCorp
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+Anchor = 0
+AutoSize = .F.
+BackStyle = 0
+Caption = "Registered Company "
+FontBold = .F.
+FontSize = 8
+Height = 15
+Left = 127
+Name = "lblUserCorp"
+TabIndex = 6
+Top = 192
+Width = 232
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR7K
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblUserName
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+Anchor = 0
+AutoSize = .F.
+BackStyle = 0
+Caption = "Registered Owner"
+FontBold = .F.
+FontSize = 8
+Height = 15
+Left = 127
+Name = "lblUserName"
+TabIndex = 5
+Top = 168
+Width = 232
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR7G
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblVersion
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+Anchor = 0
+AutoSize = .F.
+BackStyle = 0
+Caption = "Version #"
+FontSize = 8
+Height = 15
+Left = 125
+Name = "lblVersion"
+TabIndex = 2
+Top = 24
+Width = 234
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR7J
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] shpRectangle
+[PARENT] aboutbox.Applications_pageframe.Base_Page1
+[START PROPERTIES]
+Height = 60
+Left = 115
+Name = "shpRectangle"
+SpecialEffect = 0
+Top = 158
+Width = 252
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR9A
+[CLASS] okbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] aboutbox
+[START PROPERTIES]
+Cancel = .T.
+Left = 273
+Name = "cmdOK"
+TabIndex = 2
+Top = 256
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RELEASE THISFORM
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SI1ABR98
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdSysInfo
+[PARENT] aboutbox
+[START PROPERTIES]
+Caption = "\<System Info..."
+FontSize = 8
+Height = 25
+Left = 273
+Name = "cmdSysInfo"
+TabIndex = 3
+Top = 287
+Width = 94
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcMSInfoWinDir as String
+	lcMSInfoWinDir = THISFORM.cMSInfoDir
+	RUN /N1 &lcMSInfoWinDir
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1OI191D96
+[CLASS] registry
+[CLASSLOC] registry.vcx
+[BASECLASS] custom
+[OBJNAME] Registry
+[PARENT] aboutbox
+[START PROPERTIES]
+Height = 17
+Left = 24
+Name = "Registry"
+Top = 272
+Width = 24
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] aboutbox
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+[EOF]

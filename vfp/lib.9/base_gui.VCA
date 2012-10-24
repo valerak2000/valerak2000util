@@ -1,0 +1,5236 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RL11P6M5
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] barbutton
+[START PROPERTIES]
+AutoSize = .T.
+Caption = ""
+Name = "barbutton"
+PicturePosition = 14
+SpecialEffect = 2
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] barbutton
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S006ZKSC
+[CLASS] cursoradapter
+[BASECLASS] cursoradapter
+[OBJNAME] base_ca
+[START PROPERTIES]
+Height = 22
+Name = "base_ca"
+Width = 23
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_ca
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O41CGS3N
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] base_checkbox
+[START PROPERTIES]
+Alignment = 0
+Anchor = 3
+AutoSize = .T.
+BackStyle = 0
+Caption = "Base_Check"
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 15
+Name = "base_checkbox"
+Width = 79
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseWheel
+LPARAMETERS nDirection, nShift, nXCoord, nYCoord
+	NODEFAULT
+	THIS.Parent.MouseWheel(nDirection, nShift, nXCoord, nYCoord)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_checkbox
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1OJ0S2P3Z
+[CLASS] collection
+[BASECLASS] collection
+[OBJNAME] base_collection
+[START PROPERTIES]
+Height = 23
+Name = "base_collection"
+Width = 23
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_collection
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WGPOD
+[CLASS] combobox
+[BASECLASS] combobox
+[OBJNAME] base_combobox
+[START PROPERTIES]
+Anchor = 6
+FontName = "Courier New"
+FontSize = 8
+Height = 24
+ItemTips = .T.
+Name = "base_combobox"
+Width = 100
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_combobox
+[START PROPERTIES]
+Courier New, 0, 8, 7, 14, 11, 7, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WU8HT
+[CLASS] commandgroup
+[BASECLASS] commandgroup
+[OBJNAME] base_commandgroup
+[START PROPERTIES]
+Anchor = 12
+ButtonCount = 2
+Command1.Caption = "Command1"
+Command1.Height = 27
+Command1.Left = 5
+Command1.Name = "Command1"
+Command1.Top = 5
+Command1.Width = 84
+Command2.Caption = "Command2"
+Command2.Height = 27
+Command2.Left = 5
+Command2.Name = "Command2"
+Command2.Top = 34
+Command2.Width = 84
+Height = 66
+Name = "base_commandgroup"
+Value = 1
+Width = 94
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_commandgroup
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1OH07IEHO
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] base_container
+[START PROPERTIES]
+
+Height = 200
+Name = "base_container"
+Style = 3
+Width = 200
+_memberdata =     1005<VFPData><memberdata name="enabled_assign" type="method" display="Enabled_Assign"/><memberdata name="specialeffect_assign" type="method" display="SpecialEffect_Assign"/><memberdata name="visible_assign" type="method" display="Visible_Assign"/><memberdata name="caption" type="property" display="Caption"/><memberdata name="caption_assign" type="property" display="Caption_Assign"/><memberdata name="ccaption_layout" type="property" display="cCaption_Layout"/><memberdata name="ccaption_layout_assign" type="property" display="cCaption_Layout_Assign"/><memberdata name="olblcaption" type="property" display="oLblCaption"/><memberdata name="chklblclick" type="method" display="chkLblClick"/><memberdata name="lchkcaption" type="property" display="lChkCaption"/><memberdata name="lchkcaption_assign" type="method" display="lChkCaption_Assign"/><memberdata name="cchkvarname" type="property" display="cChkVarName"/><memberdata name="cchkvarname_assign" type="method" display="cChkVarName_Assign"/></VFPData>
+caption = 
+ccaption_layout = LT
+cchkvarname =  
+olblcaption = .NULL.
+[END PROPERTIES]
+[START PROTECTED]
+olblcaption^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+WITH THIS
+	IF !EMPTY(.cChkVarName) AND SUBSTR(.cCaption_Layout, 3) = "CHK"
+	*контейнер с чекбоксом - проверить разрешен ли он
+		.Enabled = EVALUATE(.cChkVarName)
+	ENDIF
+
+	THIS.enabled_assign(THIS.Enabled)
+	THIS.visible_assign(THIS.Visible)
+	THIS.Caption = THIS.Caption
+ENDWITH
+ENDPROC
+PROCEDURE Refresh
+LOCAL loControl AS Object
+	FOR EACH loControl IN THIS.Controls
+		IF PEMSTATUS(m.loControl, "Refresh", 5)
+			m.loControl.Refresh()
+		ENDIF
+	ENDFOR
+	*обновить чекбокс
+	IF !ISNULL(THIS.oLblCaption)
+		THIS.oLblCaption.Refresh()
+	ENDIF
+ENDPROC
+PROCEDURE caption_assign
+LPARAMETERS tcNewValue as String
+	WITH THIS
+		.Caption = m.tcNewValue
+
+		IF !EMPTY(m.tcNewValue)
+			IF !ISNULL(.oLblCaption)
+				.oLblCaption.Caption = m.tcNewValue
+			ELSE
+			*создать заголовок
+				IF .Visible
+					IF SUBSTR(.cCaption_Layout, 3) = "CHK"
+					*требуется создать чекбокс
+						.Parent.AddObject("lblCaption" + .Name, "lblcheckbox", THIS)
+						*поле для значения чекбокса
+*!*						.Parent.
+*!*						.AddProperty("lCaption" + .Name, .F.)
+*!*						*перехватить событие на изменения поля
+*!*						BINDEVENT()
+					ELSE
+					*требуется создать лабел
+						.Parent.AddObject("lblCaption" + .Name, "lblcaption", THIS)
+					ENDIF
+
+					.oLblCaption = EVALUATE(".Parent.lblCaption" + .Name)
+					.oLblCaption.Visible = .T.
+				ENDIF
+			ENDIF
+		ELSE
+			IF !ISNULL(.oLblCaption)
+				.oLblCaption.Visible = .F.
+				.oLblCaption.Caption = ''
+			ENDIF
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE ccaption_layout_assign
+LPARAMETERS tcNewValue as String
+	THIS.cCaption_Layout = LTRIM(m.tcNewValue)
+	THIS.oLblCaption.cCaption_Layout = LTRIM(m.tcNewValue)
+ENDPROC
+PROCEDURE chklblclick
+LPARAMETERS llEnabled
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+LOCAL loI as Object
+*To do: Modify this routine for the Assign method
+	THIS.Enabled = m.vNewVal
+	*содержимое контейнера enabl-им как и хозяина
+	FOR EACH loI IN THIS.Objects
+		DO CASE
+		CASE PEMSTATUS(m.loI, "oLblCaption", 5) AND AT("CHK", m.loI.cCaption_Layout) <> 0;
+			 AND !ISNULL(m.loI.oLblCaption)
+		*есть метка-чекбокс - контейнер не енаблим/дисаблим
+		CASE PEMSTATUS(m.loI, "Enabled", 5)
+			loI.Enabled = m.vNewVal
+		OTHERWISE
+		ENDCASE
+	ENDFOR
+ENDPROC
+PROCEDURE specialeffect_assign
+* ОБХОД БАГА MSDN : Q170597
+* Special Effect Does Not Work for Container Control
+LPARAMETERS tnSpecialEffect AS Integer
+LOCAL llLockScreen AS Logical, llVisible AS Logical
+	llLockScreen = THISFORM.LockScreen
+	THISFORM.LockScreen = .T.
+
+	WITH THIS
+		llVisible = .Visible
+		.Visible = .F.
+		.SpecialEffect = m.tnSpecialEffect
+		.Visible = m.llVisible
+	ENDWITH
+
+	THISFORM.LockScreen = m.llLockScreen
+ENDPROC
+PROCEDURE visible_assign
+LPARAMETERS tlNewVal
+*To do: Modify this routine for the Assign method
+	THIS.Visible = m.tlNewVal
+	*содержимое контейнера Visible-им как и хозяина
+	FOR EACH loI IN THIS.Objects
+		IF PEMSTATUS(m.loI, "Visible", 5)
+			loI.Visible = m.tlNewVal
+		ENDIF
+	ENDFOR
+	*спрятать чекбокс
+	IF TYPE("THIS.oLblCaption") = 'O' AND !ISNULL(THIS.oLblCaption)
+		THIS.oLblCaption.Visible = m.tlNewVal
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*caption_assign 
+*ccaption_layout_assign 
+*chklblclick 
+*enabled_assign 
+*specialeffect_assign 
+*visible_assign 
+_memberdata XML Metadata for customizable properties
+caption Specifies the text displayed in an object's caption.
+ccaption_layout Задает местоположение заголовка. L-left R-right T-top B-bottom
+cchkvarname
+olblcaption
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_container
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RT0FRX7S
+[CLASS] control
+[BASECLASS] control
+[OBJNAME] base_control
+[START PROPERTIES]
+
+Name = "base_control"
+Style = 3
+_memberdata =      255<VFPData><memberdata name="enabled_assign" type="method" display="Enabled_Assign"/><memberdata name="specialeffect_assign" type="method" display="SpecialEffect_Assign"/><memberdata name="visible_assign" type="method" display="Visible_Assign"/></VFPData>
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.Enabled_assign(THIS.Enabled)
+
+DODEFAULT()
+ENDPROC
+PROCEDURE Refresh
+LOCAL loControl AS Object
+	FOR EACH loControl IN THIS.Controls
+		IF PEMSTATUS(m.loControl, "Refresh", 5)
+			m.loControl.Refresh()
+		ENDIF
+	ENDFOR
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+LOCAL loI as Object
+*To do: Modify this routine for the Assign method
+	THIS.Enabled=m.vNewVal
+	*содержимое контейнера enabl-им как и хозяина
+	FOR EACH loI IN THIS.Objects
+		loI.Enabled=m.vNewVal
+	ENDFOR
+ENDPROC
+PROCEDURE specialeffect_assign
+* ОБХОД БАГА MSDN : Q170597
+* Special Effect Does Not Work for Container Control
+LPARAMETERS tnSpecialEffect AS Integer
+LOCAL llLockScreen AS Logical, llVisible AS Logical
+	llLockScreen=ThisForm.LockScreen
+	THISFORM.LockScreen=.T.
+	*
+	WITH THIS
+		llVisible=.Visible
+		.Visible=.F.
+		.SpecialEffect=m.tnSpecialEffect
+		.Visible=m.llVisible
+	ENDWITH
+	*
+	THISFORM.LockScreen=m.llLockScreen
+ENDPROC
+PROCEDURE visible_assign
+LPARAMETERS tlNewVal
+*To do: Modify this routine for the Assign method
+	THIS.Visible=m.tlNewVal
+	*содержимое контейнера Visible-им как и хозяина
+	FOR EACH loI IN THIS.Objects
+		loI.Visible=m.tlNewVal
+	ENDFOR
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*enabled_assign 
+*specialeffect_assign 
+*visible_assign 
+_memberdata XML Metadata for customizable properties
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_control
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S01AQLI8
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] base_custom
+[START PROPERTIES]
+
+Name = "base_custom"
+Width = 20
+_memberdata =      265<VFPData><memberdata name="islock" type="method" display="isLock"/><memberdata name="lock" type="method" display="lock"/><memberdata name="unlock" type="method" display="unLock"/><memberdata name="lislockobject" type="property" display="lIsLockObject"/></VFPData>
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE islock
+RETURN THIS.lIsLockObject
+ENDPROC
+PROCEDURE lock
+IF THIS.lIsLockObject
+	RETURN .F.
+ELSE
+	THIS.lIsLockObject=.T.
+
+	RETURN .T.
+ENDIF
+ENDPROC
+PROCEDURE unlock
+IF THIS.lIsLockObject
+	THIS.lIsLockObject=.F.
+
+	RETURN .T.
+ELSE
+	RETURN .F.
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*islock 
+*lock 
+*unlock 
+_memberdata XML Metadata for customizable properties
+lislockobject Признак блокироваки объекта
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_custom
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _22N0XW0MA
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] base_de
+[START PROPERTIES]
+DataSource = .NULL.
+Name = "base_de"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE BeforeOpenTables
+IF TYPE("m.goApp") = 'O' AND PEMSTATUS(m.goApp, "SetEnvironment", 5)
+	m.goApp.SetEnvironment(SET("Datasession"))
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_de
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WKRTA
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] base_editbox
+[START PROPERTIES]
+Anchor = 6
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 53
+Name = "base_editbox"
+Width = 100
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	DO CASE
+	CASE m.nKeyCode = 93 AND m.nShiftAltCtrl = 1
+		DO txt_menu.prg
+*!*		OTHERWISE
+*!*			DODEFAULT(m.nKeyCode, m.nShiftAltCtrl)
+	ENDCASE
+ENDPROC
+PROCEDURE RightClick
+DO txt_menu.prg
+ENDPROC
+PROCEDURE Valid
+IF VARTYPE(THIS.Value) = 'C'
+    THIS.Value = ALLTRIM(THIS.Value)
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_editbox
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O010UL0Q
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] base_form
+[START PROPERTIES]
+
+Caption = "Base_form"
+DEClass = "base_de"
+DEClassLibrary = base_gui.vcx
+DataSession = 2
+DoCreate = .T.
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 250
+Icon = (m.goApp.oVars.cTaskIcon)
+KeyPreview = .T.
+Left = 0
+Name = "base_form"
+ShowTips = .T.
+ShowWindow = 1
+Top = 0
+Width = 375
+_memberdata =      173<VFPData><memberdata name="borderstyle_assign" type="method" display="BorderStyle_Assign"/><memberdata name="movetocenter" type="method" display="MoveToCenter"/></VFPData>
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+*!*	_VFP.AutoYield = .F.
+ENDPROC
+PROCEDURE Deactivate
+*!*	_VFP.AutoYield = .T.
+ENDPROC
+PROCEDURE Destroy
+IF !m.goApp.oVars.lTaskBar
+	*т.к. сообщения не ловим - то добавить в коллекцию руками
+	m.goApp.RemoveObject(THIS)
+	m.goApp.removeWindow(THIS.HWnd)
+ENDIF
+*!*	_VFP.AutoYield = .T.
+THIS.oSaveSet_form.saveSet()
+ENDPROC
+PROCEDURE Init
+IF !m.goApp.oVars.lTaskBar
+	*т.к. сообщения не ловим - то добавить в коллекцию руками
+	m.goApp.AddObject(THIS)
+	m.goApp.addWindow(THIS.HWnd)
+ENDIF
+
+THIS.oSaveSet_form.loadSet()
+THIS.Resize()
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	IF m.tnKeyCode = 27
+	    THIS.Release()
+	ENDIF
+ENDPROC
+PROCEDURE Load
+*!*	LOCAL loDE as DataEnvironment
+*!*		IF TYPE("m.goApp")='O'
+*!*			m.goApp.SetEnvironment(SET("Datasession"))
+*!*		ENDIF
+
+*!*		DO CASE
+*!*		CASE TYPE("THIS.DataEnvironment")='O' AND !ISNULL(THIS.DataEnvironment)
+*!*			loDE=THIS.DataEnvironment
+*!*		CASE TYPE("THIS.DEClass")='C' AND !EMPTY(THIS.DEClass)
+*!*			loDE=EVALUATE("THIS."+THIS.DEClass)
+*!*		ENDCASE
+
+*!*		IF VARTYPE(m.loDE)='O'
+*!*			LOCAL ARRAY laObjects[1]
+*!*			LOCAL lnObjects as Number
+*!*			lnObjects=AMEMBERS(laObjects, loDE, 2)
+
+*!*			IF m.lnObjects>0
+*!*				LOCAL lnItem as Number, loCurObj as Object  
+
+*!*				FOR lnItem=1 TO m.lnObjects
+*!*					loCurObj=EVALUATE("loDE."+laObjects(m.lnItem))
+
+*!*					WITH loCurObj
+*!*						IF "Cursor"$loCurObj.BaseClass
+*!*							IF !USED(loCurObj.Alias)
+*!*								RETURN .F.
+*!*							ENDIF
+*!*						ENDIF
+*!*					ENDWITH	
+*!*				ENDFOR
+*!*			ENDIF
+*!*		ENDIF
+ENDPROC
+PROCEDURE QueryUnload
+THIS.Release()
+ENDPROC
+PROCEDURE movetocenter
+THIS.Top = (_Screen.Height - THIS.Height) / 2 - THIS.Height / 2
+THIS.Left = (_Screen.Width - THIS.Width) / 2
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*movetocenter 
+_memberdata XML Metadata for customizable properties
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28Q0605G7
+[CLASS] dbcontainer
+[CLASSLOC] base_idb.vcx
+[BASECLASS] container
+[OBJNAME] Dbcontainer
+[PARENT] base_form
+[START PROPERTIES]
+Left = 0
+Name = "Dbcontainer"
+TabIndex = 1
+Top = 216
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _23B02MSWI
+[CLASS] saveset_form
+[CLASSLOC] saveset.vcx
+[BASECLASS] custom
+[OBJNAME] oSaveset_form
+[PARENT] base_form
+[START PROPERTIES]
+Left = 336
+Name = "oSaveset_form"
+Top = 16
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_form
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QL0XH5TB
+[CLASS] base_form
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] base_form_stbr
+[START PROPERTIES]
+
+Caption = "Base_form_stbr"
+DoCreate = .T.
+Name = "base_form_stbr"
+_memberdata =      169<VFPData><memberdata name="borderstyle_assign" type="method" display="BorderStyle_Assign"/><memberdata name="showstatus" type="method" display="ShowStatus"/></VFPData>
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+*установка cornera
+THIS.BorderStyle=THIS.BorderStyle
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	THISFORM.ShowStatus()
+ENDPROC
+PROCEDURE showstatus
+LPARAMETERS tcString as String
+	THISFORM.StatusBar.Panels(1).Text=IIF(VARTYPE(m.tcString)=='C', m.tcString, '')
+RETURN ('')
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+*showstatus 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QL0YBSWJ
+[CLASS] statusbar
+[CLASSLOC] base_gui.vcx
+[BASECLASS] olecontrol
+[OBJNAME] StatusBar
+[PARENT] base_form_stbr
+[START PROPERTIES]
+Height = 20
+Left = 0
+Name = "StatusBar"
+Top = 230
+Width = 375
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseMove
+*** ActiveX Control Event ***
+LPARAMETERS button, shift, x, y
+	THISFORM.ShowStatus()
+ENDPROC
+[END METHODS]
+[BINSTART OLE]
+CHECKSUM=24787
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=52802
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_form_stbr
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QL0XXTKQ
+[CLASS] base_form
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] base_form_szgr
+[START PROPERTIES]
+Caption = "Base_form_szgr"
+DoCreate = .T.
+Name = "base_form_szgr"
+dbContainer.Name = "dbContainer"
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+
+THIS.BorderStyle = THIS.BorderStyle
+ENDPROC
+PROCEDURE borderstyle_assign
+LPARAMETERS tnNewVal
+	THIS.BorderStyle = m.tnNewVal
+
+	IF PEMSTATUS(THIS, "Resizecorner", 5)
+		IF THIS.BorderStyle = 3
+			THIS.Resizecorner.Visible = .T.
+		ELSE
+			THIS.Resizecorner.Visible = .F.
+		ENDIF
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+*borderstyle_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QL0YAACE
+[CLASS] resizecorner
+[CLASSLOC] resizecorner.vcx
+[BASECLASS] control
+[OBJNAME] Resizecorner
+[PARENT] base_form_szgr
+[START PROPERTIES]
+Image.Height = 16
+Image.Name = "Image"
+Image.Width = 16
+Left = 359
+Name = "Resizecorner"
+Top = 235
+resize_timer.Name = "resize_timer"
+tmrRefresh.Name = "tmrRefresh"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_form_szgr
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WP4ZQ
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] base_grid
+[START PROPERTIES]
+Anchor = 15
+DeleteMark = .F.
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 200
+HighlightStyle = 2
+Name = "base_grid"
+RowHeight = 16
+SplitBar = .F.
+Width = 320
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_grid
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1OH099HXW
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] base_image
+[START PROPERTIES]
+Height = 38
+Name = "base_image"
+Width = 38
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_image
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O41BSUYH
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] base_label
+[START PROPERTIES]
+Anchor = 3
+AutoSize = .T.
+BackStyle = 0
+Caption = "Label"
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 15
+Name = "base_label"
+Style = 4
+Width = 28
+WordWrap = .T.
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_label
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1OH07KF7Y
+[CLASS] line
+[BASECLASS] line
+[OBJNAME] base_line
+[START PROPERTIES]
+Height = 17
+Name = "base_line"
+Width = 100
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_line
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WMO6X
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] base_listbox
+[START PROPERTIES]
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 170
+Name = "base_listbox"
+Width = 100
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_listbox
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WVS8I
+[CLASS] optionbutton
+[BASECLASS] optionbutton
+[OBJNAME] base_optionbutton
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Base_Option"
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 15
+Name = "base_optionbutton"
+Width = 79
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_optionbutton
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WXLPY
+[CLASS] optiongroup
+[BASECLASS] optiongroup
+[OBJNAME] base_optiongroup
+[START PROPERTIES]
+Anchor = 12
+BackStyle = 0
+ButtonCount = 0
+Height = 46
+MemberClass = "base_optionbutton"
+MemberClassLibrary = base_gui.vcx
+Name = "base_optiongroup"
+Value = 0
+Width = 71
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_optiongroup
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WT2MR
+[CLASS] page
+[BASECLASS] page
+[OBJNAME] base_page
+[START PROPERTIES]
+Caption = "Base_Page"
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 199
+Name = "base_page"
+Width = 199
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*chkrules 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_page
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WQVDG
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] base_pageframe
+[START PROPERTIES]
+Anchor = 15
+Base_Page1.Name = "Base_Page1"
+Base_Page2.Name = "Base_Page2"
+ErasePage = .T.
+Height = 165
+MemberClass = "base_page"
+MemberClassLibrary = base_gui.vcx
+Name = "base_pageframe"
+PageCount = 2
+Width = 241
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_pageframe
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1OJ0S4WEN
+[CLASS] separator
+[BASECLASS] separator
+[OBJNAME] base_separator
+[START PROPERTIES]
+Height = 0
+Name = "base_separator"
+Width = 0
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_separator
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1OH08YZW4
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] base_shape
+[START PROPERTIES]
+Height = 17
+Name = "base_shape"
+Style = 3
+Width = 100
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_shape
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WOGRH
+[CLASS] spinner
+[BASECLASS] spinner
+[OBJNAME] base_spinner
+[START PROPERTIES]
+Anchor = 10
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 24
+Name = "base_spinner"
+Width = 121
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_spinner
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1ENHBS
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] base_textbox
+[START PROPERTIES]
+Anchor = 11
+ColorScheme = 14
+DisabledForeColor = 123,119,100
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 21
+Name = "base_textbox"
+SelectOnEntry = .T.
+Width = 100
+_memberdata = <VFPData><memberdata name="neffectnow" type="property" display="nEffectNow"/></VFPData>
+neffectnow = 1
+[END PROPERTIES]
+[START PROTECTED]
+neffectnow
+[END PROTECTED]
+[START METHODS]
+PROCEDURE GotFocus
+THIS.Specialeffect = IIF(THIS.nEffectNow = 1, 0, THIS.Specialeffect)
+ENDPROC
+PROCEDURE Init
+THIS.Specialeffect = IIF(THIS.nEffectNow = 1, 1, THIS.Specialeffect)
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	DO CASE
+	CASE m.nKeyCode = 93 AND m.nShiftAltCtrl = 1
+		DO txt_menu.prg
+	CASE INLIST(CHR(m.nKeyCode), '.', ',') AND CHR(m.nKeyCode) <> SET('POINT')
+	  	NODEFAULT  
+	  	DODEFAULT(ASC(SET('POINT')), m.nShiftAltCtrl)  
+*!*		OTHERWISE
+*!*			DODEFAULT(m.nKeyCode, m.nShiftAltCtrl)
+	ENDCASE
+ENDPROC
+PROCEDURE LostFocus
+THIS.Specialeffect = IIF(THIS.nEffectNow = 1, 1, THIS.Specialeffect)
+ENDPROC
+PROCEDURE RightClick
+DO txt_menu.prg
+ENDPROC
+PROCEDURE Valid
+*!*	IF VARTYPE(THIS.VALUE) = 'C'
+*!*	    THIS.VALUE = ALLTRIM(THIS.VALUE)
+*!*	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+_memberdata XML Metadata for customizable properties
+neffectnow
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_textbox
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PJ0U3PZH
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] base_timer
+[START PROPERTIES]
+Height = 23
+Name = "base_timer"
+Width = 23
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_timer
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1OJ0S5IBK
+[CLASS] toolbar
+[BASECLASS] toolbar
+[OBJNAME] base_toolbar
+[START PROPERTIES]
+Caption = "Toolbar"
+Name = "base_toolbar"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] base_toolbar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AB0ZAWQU
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cancelbutton
+[START PROPERTIES]
+Anchor = 12
+Cancel = .T.
+Caption = "О\<тменить"
+Comment = "23x(80,100,120)"
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 23
+Name = "cancelbutton"
+Picture = ..\bmp\16x16\cancel.bmp
+PicturePosition = 1
+TerminateRead = .T.
+Width = 94
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+..\bmp\16x16\cancel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cancel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Кнопка отменить[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cancelbutton
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RT0DG46F
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnl
+[START PROPERTIES]
+
+BackStyle = 0
+Name = "cntpnl"
+SpecialEffect = 0
+Style = 0
+_memberdata =      373<VFPData><memberdata name="enabled_assign" type="method" display="Enabled_Assign"/><memberdata name="specialeffect_assign" type="method" display="SpecialEffect_Assign"/><memberdata name="visible_assign" type="method" display="Visible_Assign"/><memberdata name="caption" type="property" display="Caption"/><memberdata name="valid" type="method" display="Valid"/></VFPData>
+caption = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* ЗАПОМНИМ ССЫЛКУ НА АКТИВНУЮ ПАНЕЛЬ
+* СМЕНИМ ВЫПУКЛОСТЬ НА ВПУКЛОСТЬ ;)
+* ПОКАЖЕМ СООБЩЕНИЕ В СТРОКЕ СОСТОЯНИЯ
+IF THIS.SpecialEffect = 0
+	THIS.SetFocus()
+ENDIF
+ENDPROC
+PROCEDURE GotFocus
+WITH THIS
+	* СМЕНИМ ВЫПУКЛОСТЬ НА ВПУКЛОСТЬ ;)
+	* С ОБХОДОМ БАГА В SPECIALEFFECT_ASSIGN() БАЗОВОГО КЛАССА
+	.SpecialEffect = 1	&& Sunken
+ENDWITH
+ENDPROC
+PROCEDURE LostFocus
+WITH THIS
+	* СМЕНИМ ВПУКЛОСТЬ НА ВЫПУКЛОСТЬ ;)
+	* С ОБХОДОМ БАГА В SPECIALEFFECT_ASSIGN()
+	.SpecialEffect = 0	&& Raised
+ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnl
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25B05U8U9
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlchkbox
+[START PROPERTIES]
+Anchor = 11
+Height = 31
+Name = "cntpnlchkbox"
+Width = 97
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25B05WE2J
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] Pnl_checkbox
+[PARENT] cntpnlchkbox
+[START PROPERTIES]
+Alignment = 0
+Height = 15
+Left = 8
+Name = "Pnl_checkbox"
+Top = 8
+Width = 79
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlchkbox
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28E0YE01X
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlcmb
+[START PROPERTIES]
+
+Height = 29
+Name = "cntpnlcmb"
+Width = 186
+_memberdata =      325<VFPData><memberdata name="controlsource_assign" type="method" display="ControlSource_Assign"/><memberdata name="controlsource" type="property" display="Controlsource"/><memberdata name="rowsource" type="property" display="Rowsource"/><memberdata name="rowsource_assign" type="method" display="RowSource_Assign"/></VFPData>
+controlsource = 
+rowsource = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+WITH THIS
+	*шаманство с якорями для корректного изменения размеров в подобъектах
+	.DelCmd.Anchor = 0
+	.DelCmd.Left = .Width - 2 - .DelCmd.Width
+	.DelCmd.Top = 2
+	.DelCmd.Height = .Height - 4
+	.DelCmd.Anchor = 13
+
+	.Pnl_combobox.Anchor = 0
+	.Pnl_combobox.Left = 2
+	.Pnl_combobox.Top = 2
+	.Pnl_combobox.Height = .Height - 4
+	.Pnl_combobox.Width = .DelCmd.Left - 2
+	.Pnl_combobox.Anchor = 11
+
+	.ControlSource = .ControlSource
+	.RowSource = .RowSource
+ENDWITH
+
+DODEFAULT()
+ENDPROC
+PROCEDURE chklblclick
+LPARAMETERS llEnabled
+	IF m.llEnabled &&THIS.Enabled
+		*вывалить список значений
+		THIS.Pnl_combobox.SetFocus()
+	*!*		THIS.Pnl_combobox.dropDown()
+		KEYBOARD '{ALT+DNARROW}'
+	ENDIF
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.ControlSource = m.vNewVal
+	THIS.Pnl_combobox.ControlSource = m.vNewVal
+ENDPROC
+PROCEDURE rowsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.RowSource = m.vNewVal
+	THIS.Pnl_combobox.RowSource = m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*controlsource_assign 
+*rowsource_assign 
+controlsource Specifies the source of data to which an object is bound.
+rowsource Specifies the source of the values in a ComboBox or ListBox control.
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2RW0P9AHT
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] DelCmd
+[PARENT] cntpnlcmb
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Height = 22
+Left = 160
+Name = "DelCmd"
+Picture = ..\bmp\16x16\trash03.bmp
+TabIndex = 2
+ToolTipText = "Очистить список значений"
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lvEmpt
+	WITH THIS.Parent
+		DO CASE
+		CASE INLIST(VARTYPE(.ControlSource), 'D', 'T')
+			lvEmpt = CTOD('')
+		CASE VARTYPE(.ControlSource) = 'C'
+			lvEmpt = ''
+		CASE VARTYPE(.ControlSource) = 'N'
+			lvEmpt = 0
+		OTHERWISE
+			lvEmpt = .F.
+		ENDCASE
+
+		STORE m.lvEmpt TO (.ControlSource)
+
+		.Refresh()
+	ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28E0YFCSR
+[CLASS] base_combobox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] combobox
+[OBJNAME] Pnl_combobox
+[PARENT] cntpnlcmb
+[START PROPERTIES]
+Anchor = 11
+BoundTo = .T.
+ColumnLines = .F.
+Height = 24
+Left = 2
+Name = "Pnl_combobox"
+RowSourceType = 2
+Style = 2
+Top = 2
+Width = 158
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlcmb
+[START PROPERTIES]
+Courier New, 0, 8, 7, 14, 11, 7, 3, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28E0YE01X
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlcmbml
+[START PROPERTIES]
+
+Anchor = 11
+Height = 29
+Name = "cntpnlcmbml"
+Width = 186
+_memberdata =     1051<VFPData><memberdata name="controlsource_assign" type="method" display="ControlSource_Assign"/><memberdata name="controlsource" type="property" display="ControlSource"/><memberdata name="rowsource" type="property" display="Rowsource"/><memberdata name="rowsource_assign" type="method" display="RowSource_Assign"/><memberdata name="aselelem" type="property" display="aSelElem"/><memberdata name="ckeycolumn" type="property" display="cKeyColumn"/><memberdata name="ccolumnheaders" type="property" display="cColumnHeaders"/><memberdata name="ccolumnwidths" type="property" display="cColumnWidths"/><memberdata name="lmultisel" type="property" display="lMultiSel"/><memberdata name="preopen" type="method" display="preOpen"/><memberdata name="preclose" type="method" display="preClose"/><memberdata name="preclear" type="method" display="preClear"/><memberdata name="predestroy" type="method" display="preDestroy"/><memberdata name="crowsource" type="property" display="cRowSource"/><memberdata name="onclose" type="method" display="onClose"/></VFPData>
+aselelem = .NULL.
+ccolumnheaders = 
+ccolumnwidths = 
+ckeycolumn = 
+controlsource = 
+lmultisel = .T.
+rowsource = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+THIS.preDestroy()
+
+DODEFAULT()
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tcSelElem
+	WITH THIS
+		IF VARTYPE(m.tcSelElem) = 'C'
+			.aSelElem = m.tcSelElem
+		ELSE
+			.aSelElem = THIS.ControlSource
+		ENDIF
+
+		.ControlSource = .ControlSource
+		.RowSource = .RowSource
+		*шаманство с якорями для корректного изменения размеров в подобъектах
+		.DelCmd.Anchor = 0
+		.DelCmd.Left = .Width - 2 - .DelCmd.Width
+		.DelCmd.Top = 2
+		.DelCmd.Height = .Height - 4
+		.DelCmd.Anchor = 13
+
+		.Pnl_combobox.Anchor = 0
+		.Pnl_combobox.Left = 2
+		.Pnl_combobox.Top = 2
+		.Pnl_combobox.Height = .Height - 4
+		.Pnl_combobox.Width = .DelCmd.Left - 2
+		.Pnl_combobox.Anchor = 11
+		
+		.Pnl_combobox.cKeyColumn = .cKeyColumn
+		.Pnl_combobox.cColumnHeaders = .cColumnHeaders
+		.Pnl_combobox.cColumnWidths = .cColumnWidths
+		.Pnl_combobox.lMultiSel = .lMultiSel
+
+		.Pnl_combobox.Init()
+		.Pnl_combobox.buildSelections(.T.)
+	ENDWITH
+
+	DODEFAULT()
+ENDPROC
+PROCEDURE chklblclick
+LPARAMETERS llEnabled
+	WITH THIS.pnl_combobox
+		IF m.llEnabled &&THIS.Enabled
+			*вывалить список значений
+			.SetFocus()
+			.dropDown()
+		ELSE
+			THIS.onClose()
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.ControlSource = m.vNewVal
+	THIS.Pnl_combobox.cControlSource = m.vNewVal
+ENDPROC
+PROCEDURE onclose
+USE IN SELECT(THIS.pnl_combobox.cSourceAlias)
+ENDPROC
+PROCEDURE preopen
+*должна после своей работы оставлять выбранной рабочую область в которой открыта нужная таблица
+ENDPROC
+PROCEDURE rowsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.RowSource = m.vNewVal
+	THIS.Pnl_combobox.cRowSource = m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*controlsource_assign 
+*onclose 
+*preclear 
+*preclose 
+*predestroy 
+*preopen 
+*rowsource_assign 
+aselelem
+ccolumnheaders
+ccolumnwidths
+ckeycolumn Ключевое поле
+controlsource Specifies the source of data to which an object is bound.
+lmultisel
+rowsource Список полей
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\lookup.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\lookup.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+обязательно к заполнениюControlSourceRowSourcecKeyColumn[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WMO6X
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] DelCmd
+[PARENT] cntpnlcmbml
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Height = 22
+Left = 160
+Name = "DelCmd"
+Picture = ..\bmp\16x16\trash03.bmp
+TabIndex = 2
+ToolTipText = "Очистить список значений"
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH THIS.Parent
+	*передварительные действия перед очисткой
+	.preClear()
+
+	.pnl_combobox.aSelRecnos  =  0
+
+	IF TYPE(.aSelElem, 1) = 'A'
+		lcExp = "DIMENSION " + .aSelElem + '[1]'
+		&lcExp
+	ENDIF
+
+	lcExp = .aSelElem + " = ''"
+	&lcExp
+
+	.pnl_combobox.buildSelections(.T.)
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28J136ORA
+[CLASS] cboms
+[CLASSLOC] multiselcombo_app.vcx
+[BASECLASS] combobox
+[OBJNAME] pnl_combobox
+[PARENT] cntpnlcmbml
+[START PROPERTIES]
+Anchor = 11
+DisplayCount = 20
+Height = 24
+Left = 2
+Name = "pnl_combobox"
+RowSourceType = 6
+TabIndex = 1
+Top = 2
+Width = 158
+ccaptionallselected = -все-
+ccaptioncmdall = \<Выбрать все
+ccaptioncmdnone = \<Очистить выбор
+ccaptionnoneselected = -нет-
+ccaptionpartialselected = -выбрано %n-
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DropDown
+LOCAL lnOldAlias, lnRecNo
+	IF USED(THIS.cSourceAlias)
+		lnOldAlias = SELECT()
+
+		THIS.buildselections(.T.)
+
+		DODEFAULT()
+
+		SELECT (m.lnOldAlias)
+
+		THIS.Parent.preClose()
+	ELSE
+		NODEFAULT
+	ENDIF
+ENDPROC
+PROCEDURE InteractiveChange
+NODEFAULT
+
+THIS.DropDown()
+ENDPROC
+PROCEDURE buildselections
+LPARAMETERS tlCallPreOpen
+LOCAL lnOldAlias, lnI, lnLenArr, lnRecCnt, lvValue
+	WITH THIS
+		lnOldAlias = SELECT()
+
+		IF m.tlCallPreOpen
+			.Parent.preOpen()
+			*заполнить список выбранных элементов
+			IF USED(.cSourceAlias)
+				lnRecCnt = RECCOUNT(.cSourceAlias)
+
+				DIMENSION .aSelRecnos[IIF(m.lnRecCnt = 0, 1, m.lnRecCnt)]
+				.aSelRecnos = 0
+
+				SELECT (.cSourceAlias)
+
+				IF .lMultiSel
+					lnLenArr = EVALUATE("ALEN(" + .Parent.aSelElem + ", 1)")
+
+					FOR lnI = 1 TO m.lnLenArr
+						TRY
+							lvValue = EVALUATE(.Parent.aSelElem + "[m.lnI]")
+
+							IF !EMPTY(m.lvValue)
+								LOCATE FOR EVALUATE(m.goApp.oFunction.getWordNum(.cKeyColumn, 1, ',')) == m.lvValue
+
+								IF FOUND()
+									.aSelRecnos[RECNO()] = 1
+								ELSE
+									.aSelRecnos[RECNO()] = 0
+								ENDIF
+							ELSE
+								.aSelRecnos[RECNO()] = 0
+							ENDIF
+						CATCH
+						ENDTRY
+					ENDFOR
+				ELSE
+					TRY
+						lvValue = EVALUATE(.Parent.aSelElem)
+
+						IF !EMPTY(m.lvValue)
+							LOCATE FOR EVALUATE(m.goApp.oFunction.getWordNum(.cKeyColumn, 1, ',')) == m.lvValue
+								
+							IF FOUND()
+								.aSelRecnos[RECNO()] = 1
+							ELSE
+								.aSelRecnos[RECNO()] = 0
+							ENDIF
+						ELSE
+							.aSelRecnos[RECNO()] = 0
+						ENDIF
+					CATCH
+					ENDTRY
+				ENDIF
+			ELSE
+				DIMENSION .aSelRecnos[1]
+			ENDIF
+		ENDIF
+
+		IF USED(.cSourceAlias)
+			DODEFAULT()
+			
+			SELECT (m.lnOldAlias)
+
+			IF .lMultiSel
+			*для множ.выбора - считается что controlsource массив
+				*заполнить список выбранных элементов
+				lcExp = "DIMENSION " + .Parent.aSelElem + '[' + TRANSFORM(ALEN(.aSelKeys, 1)) + ',';
+						+ TRANSFORM(m.goApp.oFunction.getWordCount(.cKeyColumn, ',')) + ']'
+				&lcExp
+
+				lcExp = "ACOPY(THIS.aSelKeys, " + .Parent.aSelElem + ')'
+				&lcExp
+			ELSE
+				TRY
+					IF m.goApp.oFunction.getWordCount(.cKeyColumn, ',') > 1
+						*полей много - массив
+						*для множ.выбора - считается что controlsource массив
+						*заполнить список выбранных элементов
+						lcExp = "DIMENSION " + .Parent.aSelElem + '[1,' + TRANSFORM(m.goApp.oFunction.getWordCount(.cKeyColumn, ',')) + ']'
+						&lcExp
+
+						lcExp = "ACOPY(THIS.aSelKeys, " + .Parent.aSelElem + ')'
+						&lcExp
+					ELSE
+						*для ед.выбора - что controlsource неважно
+						STORE .aSelKeys[1] TO (.cControlSource)
+					ENDIF
+				CATCH
+				ENDTRY
+			ENDIF
+		ELSE
+			NODEFAULT
+		ENDIF
+	ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlcmbml
+[START PROPERTIES]
+Courier New, 0, 8, 7, 14, 11, 7, 3, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27D0NT0CN
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlfilechs
+[START PROPERTIES]
+
+Anchor = 11
+Height = 27
+Name = "cntpnlfilechs"
+Width = 172
+_memberdata =      247<VFPData><memberdata name="controlsource_assign" type="method" display="Controlsource_Assign"/><memberdata name="controlsource" type="property" display="ControlSource"/><memberdata name="cmaskfile" type="property" display="cMaskFile"/></VFPData>
+caption = Сохранить в файл
+cmaskfile = Text:TXT
+controlsource = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*шаманство с якорями для корректного изменения размеров в подобъектах
+WITH THIS
+	.cmdFile.Anchor = 0
+	.cmdFile.Left = THIS.Width - .cmdFile.Width - 2
+	.cmdFile.Top = 2
+	.cmdFile.Height = THIS.Height - 4
+	.cmdFile.Anchor = 9
+
+	.file_textbox.Anchor = 0
+	.file_textbox.Left = 2
+	.file_textbox.Top = 2
+	.file_textbox.Height = THIS.Height - 4
+	.file_textbox.Width = .cmdFile.Left - 3
+	.file_textbox.Anchor = 11
+	
+	.ControlSource = .ControlSource
+ENDWITH
+
+DODEFAULT()
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.controlsource = m.vNewVal
+	THIS.file_textbox.ControlSource = m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*controlsource_assign 
+cmaskfile
+controlsource Specifies the source of data to which an object is bound.
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27D0NWK4X
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdfile
+[PARENT] cntpnlfilechs
+[START PROPERTIES]
+Anchor = 9
+Caption = ""
+Height = 23
+Left = 146
+Name = "cmdfile"
+Picture = ..\bmp\16x16\openfolder.bmp
+PicturePosition = 14
+Top = 2
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcOldPath, lcFile, lcOldFile
+	WITH THIS.Parent
+		TRY
+			lcOldPath = SYS(5) + SYS(2003) &&ADDBS(SET("Path"))
+
+			TRY
+				lcOldFile = EVALUATE(.ControlSource)
+				*установить новый текущий каталог
+				SET DEFAULT TO JUSTPATH(m.lcOldFile)
+			CATCH
+				*каталога не существует
+				lcOldFile = ''
+			ENDTRY
+
+			lcFile = GETFILE(.cMaskFile, .Caption, '', 1, .Caption)
+
+			IF !EMPTY(m.lcFile)
+				STORE m.lcFile TO (.ControlSource)
+			ENDIF
+
+			IF !EMPTY(m.lcOldPath)
+				*установить старый текущий каталог
+				SET DEFAULT TO (m.lcOldPath)
+			ENDIF
+		CATCH
+		FINALLY
+			.Refresh()
+		ENDTRY
+	ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27D0NWK4W
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] file_textbox
+[PARENT] cntpnlfilechs
+[START PROPERTIES]
+Height = 21
+Left = 2
+Name = "file_textbox"
+Top = 2
+Width = 143
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlfilechs
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27D0NT0CN
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlfldchs
+[START PROPERTIES]
+
+Anchor = 11
+Height = 27
+Name = "cntpnlfldchs"
+Width = 172
+_memberdata =      181<VFPData><memberdata name="controlsource_assign" type="method" display="Controlsource_Assign"/><memberdata name="controlsource" type="property" display="ControlSource"/></VFPData>
+caption = Сохранить в папку
+controlsource = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*шаманство с якорями для корректного изменения размеров в подобъектах
+WITH THIS
+	.cmdPath.Anchor = 0
+	.cmdPath.Left = THIS.Width - .cmdPath.Width - 2
+	.cmdPath.Top = 2
+	.cmdPath.Height = THIS.Height - 4
+	.cmdPath.Anchor = 9
+
+	.path_textbox.Anchor = 0
+	.path_textbox.Left = 2
+	.path_textbox.Top = 2
+	.path_textbox.Height = THIS.Height - 4
+	.path_textbox.Width = .cmdPath.Left - 3
+	.path_textbox.Anchor = 11
+
+	.ControlSource = .ControlSource
+ENDWITH
+
+DODEFAULT()
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.controlsource = m.vNewVal
+	THIS.path_textbox.ControlSource = m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*controlsource_assign 
+controlsource Specifies the source of data to which an object is bound.
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27D0NWK4X
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdpath
+[PARENT] cntpnlfldchs
+[START PROPERTIES]
+Anchor = 9
+Caption = ""
+Height = 23
+Left = 146
+Name = "cmdpath"
+Picture = ..\bmp\16x16\openfolder.bmp
+PicturePosition = 14
+Top = 2
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcOldPath, lcPath
+	WITH THIS.Parent
+		TRY 
+			lcOldPath = EVALUATE(.ControlSource)
+			lcPath = GETDIR(m.lcOldPath, .Caption, .Caption, 64)
+
+			IF !EMPTY(m.lcPath)
+				STORE ADDBS(m.lcPath) TO (.ControlSource)
+			ENDIF
+		CATCH
+		FINALLY
+			.Refresh()
+		ENDTRY
+	ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27D0NWK4W
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] path_textbox
+[PARENT] cntpnlfldchs
+[START PROPERTIES]
+Height = 21
+Left = 2
+Name = "path_textbox"
+Top = 2
+Width = 143
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlfldchs
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RT0DVK7E
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlgrd
+[START PROPERTIES]
+
+Anchor = 15
+Name = "cntpnlgrd"
+_memberdata =      883<VFPData><memberdata name="ncurrrecno" type="property" display="nCurrRecNo"/><memberdata name="noldrow" type="property" display="nOldRow"/><memberdata name="noldcolumn" type="property" display="nOldColumn"/><memberdata name="cdynamicforecolorrow" type="property" display="cDynamicForeColorRow"/><memberdata name="cdynamicbackcolorrow" type="property" display="cDynamicBackColorRow"/><memberdata name="noldbackcolorrow" type="property" display="nOldBackColorRow"/><memberdata name="noldforecolorrow" type="property" display="nOldForeColorRow"/><memberdata name="ccaption_layout" type="property" display="cCaption_Layout"/><memberdata name="ccaption_layout_assign" type="method" display="cCaption_Layout_Assign"/><memberdata name="crecordsource" type="property" display="cRecordSource"/><memberdata name="crecordsource_assign" type="method" display="cRecordSource_Assign"/></VFPData>
+cdynamicbackcolorrow = 
+cdynamicforecolorrow = 
+crecordsource = 
+ncurrrecno = 0
+noldbackcolorrow = 0
+noldcolumn = 0
+noldforecolorrow = 0
+noldrow = 0
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL loI as Column
+	WITH THIS
+		.cRecordSource = .cRecordSource
+		*шаманство с якорями для корректного изменения размеров в подобъектах
+		.GrdPnl.Anchor = 0
+		.GrdPnl.Left = 4
+		.GrdPnl.Top = 4
+		.GrdPnl.Height = THIS.Height - 8
+		.GrdPnl.Width = THIS.Width - 8
+		.GrdPnl.Anchor = 15
+
+		.nOldBackColorRow = THIS.GrdPnl.Columns[1].BackColor
+		.nOldForeColorRow = THIS.GrdPnl.Columns[1].ForeColor
+
+		IF !EMPTY(.cDynamicBackColorRow)
+			.GrdPnl.SetAll("DynamicBackColor", EVALUATE(.cDynamicBackColorRow), "Column")
+		ENDIF
+
+		IF !EMPTY(.cDynamicForeColorRow)
+			.GrdPnl.SetAll("DynamicForeColor", EVALUATE(.cDynamicForeColorRow), "Column")
+		ENDIF
+	ENDWITH
+
+	DODEFAULT()
+ENDPROC
+PROCEDURE crecordsource_assign
+LPARAMETERS vNewVal
+LOCAL loI as Column
+	THIS.cRecordSource = m.vNewVal
+	THIS.GrdPnl.RecordSource = m.vNewVal
+	
+	IF !(EMPTY(m.vNewVal) OR ISNULL(m.vNewVal))
+		FOR EACH loI IN THIS.GrdPnl.Columns
+			IF !EMPTY(m.loI.Comment)
+				loI.ControlSource = IIF(ATC('.', m.loI.Comment) = 0,;
+										m.vNewVal + '.',;
+										'');
+									+ m.loI.Comment
+			ENDIF
+			*выравнивание по центру для хидеров - но только для стандартных
+			IF EMPTY(m.loI.HeaderClass)
+				STORE 2 TO ("loI.Header1.Alignment")
+			ENDIF
+		ENDFOR
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+*crecordsource_assign 
+cdynamicbackcolorrow
+cdynamicforecolorrow
+crecordsource
+ncurrrecno
+noldbackcolorrow
+noldcolumn
+noldforecolorrow
+noldrow
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Содержимое полей грида записывается в поле Comment[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RT0DWZX3
+[CLASS] base_grid
+[CLASSLOC] base_gui.vcx
+[BASECLASS] grid
+[OBJNAME] GrdPnl
+[PARENT] cntpnlgrd
+[START PROPERTIES]
+Anchor = 15
+GridLineColor = 64,128,128
+Height = 192
+HighlightRowLineWidth = 0
+Left = 4
+Name = "GrdPnl"
+RecordMark = .F.
+Top = 4
+Width = 192
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE BeforeRowColChange
+LPARAMETERS nColIndex
+	THIS.Parent.nOldColumn = THIS.RelativeColumn
+	THIS.Parent.nOldRow = THIS.RelativeRow
+ENDPROC
+PROCEDURE Init
+*!*	DODEFAULT()
+
+FOR EACH loI IN THIS.Columns
+*!*		lcOldCaption = loI.header1.Caption
+*!*		m.loI.RemoveObject("header1")
+*!*		 
+	IF PEMSTATUS(m.loI, "Text1", 5)
+		WITH m.loI
+			.AddObject("IncText1", "IncText")
+			.RemoveObject("Text1")
+			.CurrentControl = "IncText1"
+	*!*			.ReadOnly = .T.
+			.Format = "ZK"
+			.IncText1.Format = 'K'
+		ENDWITH
+	ENDIF
+ENDFOR
+ENDPROC
+PROCEDURE Resize
+*изменить высоту заголовка
+DODEFAULT()
+ENDPROC
+PROCEDURE When
+RETURN .T.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlgrd
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27D0NT0CN
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlintlbtn
+[START PROPERTIES]
+
+Anchor = 11
+Height = 26
+Name = "cntpnlintlbtn"
+Width = 107
+_memberdata =      181<VFPData><memberdata name="controlsource_assign" type="method" display="Controlsource_Assign"/><memberdata name="controlsource" type="property" display="ControlSource"/></VFPData>
+caption = Сохранить в папку
+controlsource = 
+ctasks =  
+ocolltasks = .NULL.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*шаманство с якорями для корректного изменения размеров в подобъектах
+WITH THIS
+	.btnCommand.Anchor = 0
+	.btnCommand.Left = THIS.Width - .btnCommand.Width - 2
+	.btnCommand.Top = 2
+	.btnCommand.Height = THIS.Height - 4
+	.btnCommand.Anchor = 9
+
+	.btnType.Anchor = 0
+	.btnType.Left = 2
+	.btnType.Top = 2
+	.btnType.Height = THIS.Height - 4
+	.btnType.Width = .btnCommand.Left - 3
+	.btnType.Anchor = 11
+
+	.ControlSource = .ControlSource
+ENDWITH
+
+DODEFAULT()
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.controlsource = m.vNewVal
+*!*		THIS.path_textbox.ControlSource = m.vNewVal
+ENDPROC
+PROCEDURE ctasks_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.ctasks = m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*controlsource_assign 
+*ctasks_assign 
+controlsource Specifies the source of data to which an object is bound.
+ctasks
+ocolltasks
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SP0TBCNO
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] btnCommand
+[PARENT] cntpnlintlbtn
+[START PROPERTIES]
+Anchor = 9
+Caption = "Кнопка"
+Height = 23
+Left = 15
+Name = "btnCommand"
+Picture = ..\bmp\16x16\masks.bmp
+PicturePosition = 1
+TabIndex = 2
+Top = 2
+Width = 91
+ZOrderSet = 2
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcOldPath, lcPath
+*!*		WITH THIS.Parent
+*!*			TRY 
+*!*				lcOldPath = EVALUATE(.ControlSource)
+*!*				lcPath = GETDIR(m.lcOldPath, .Caption, .Caption, 64)
+
+*!*				IF !EMPTY(m.lcPath)
+*!*					STORE ADDBS(m.lcPath) TO (.ControlSource)
+*!*				ENDIF
+*!*			CATCH
+*!*			FINALLY
+*!*				.Refresh()
+*!*			ENDTRY
+*!*		ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O60WMO6X
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] btnType
+[PARENT] cntpnlintlbtn
+[START PROPERTIES]
+Anchor = 9
+Caption = ""
+Height = 23
+Left = 2
+Name = "btnType"
+Picture = ..\bmp\16x16\bottom.bmp
+PicturePosition = 14
+TabIndex = 1
+Top = 2
+Width = 13
+ZOrderSet = 1
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcOldPath, lcPath, loObj
+	WITH THIS.Parent
+		TRY 
+			*!* Delete any existing menu:
+			.oContextMenu.Clear
+			*!* Create the main root pop up menu, its parent is the form HWnd
+			*!* We asign an arbitrary key name:
+			.oContextMenu.Add("MainMenu")
+			*!* Now we add the menu items. the key must be a string, if you use a number
+			*!* like we do here it gets converted to a string.
+			*!* Use negative numbers for separators.
+			*!* Add(ParentKey, Key, Type, Caption, Picture, Mark, MarkStyle, Disabled, Default,  StatusBarText)
+			FOR EACH loObj IN .ControlSource
+				.oContextMenu.Add("MainMenu", "000001", loObj.Name)
+			ENDFOR
+
+			.Add("MainMenu", "000002", 	"dolor sit amet")
+			.Add("MainMenu", Sys(2015),  	"-")
+			.Add("MainMenu", "000003", 	"consectetur")
+			.Add("MainMenu", "000004", 	"adipisicing elit")
+			.Add("MainMenu", "000005", 	"sed do eiusmod")
+			.Add("MainMenu", "000006", 	"tempor incididunt")
+			*!* Call menu, notice how we convert returned value to a number:
+			*!* The x,y position of the menu is optional,
+			*!* if nothing is passed menu pops at mouse coordinates
+			m.lnx = THIS.Left
+			m.lny = THIS.Top + THIS.Height
+			*!* Set some flags:
+			.oContextMenu.ShowFlags = TPM_VERPOSANIMATION
+
+			m.lcMenuRetVal = .oContextMenu.Show(m.lnx, m.lny)
+		CATCH
+		FINALLY
+			.Refresh()
+		ENDTRY
+	ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2UC12L7QB
+[CLASS] ctl32_contextmenu
+[CLASSLOC] ctl32\ctl32.vcx
+[BASECLASS] container
+[OBJNAME] oContextMenu
+[PARENT] cntpnlintlbtn
+[START PROPERTIES]
+Left = 52
+Name = "oContextMenu"
+Top = 11
+ZOrderSet = 0
+lblname.Name = "lblname"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlintlbtn
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28E0YE01X
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnloptiongroup
+[START PROPERTIES]
+
+Height = 57
+Name = "cntpnloptiongroup"
+Width = 79
+_memberdata =      325<VFPData><memberdata name="controlsource_assign" type="method" display="ControlSource_Assign"/><memberdata name="controlsource" type="property" display="Controlsource"/><memberdata name="rowsource" type="property" display="Rowsource"/><memberdata name="rowsource_assign" type="method" display="RowSource_Assign"/></VFPData>
+controlsource = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*шаманство с якорями для корректного изменения размеров в подобъектах
+WITH THIS
+*!*		FOR EACH loOpGr IN .Pnl_optiongroup.Buttons
+*!*			loOpGr.AutoSize = .T.
+*!*		ENDFOR
+
+	.Pnl_optiongroup.Anchor = 0
+	.Pnl_optiongroup.Left = 2
+	.Pnl_optiongroup.Top = 2
+	.Pnl_optiongroup.Height = .Height - 4
+	.Pnl_optiongroup.Width = .Width - 4
+	.Pnl_optiongroup.Anchor = 15
+
+	.ControlSource = .ControlSource
+ENDWITH
+
+DODEFAULT()
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.ControlSource = m.vNewVal
+	THIS.Pnl_optiongroup.ControlSource = m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+*controlsource_assign 
+*valid 
+controlsource Specifies the source of data to which an object is bound.
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2D10V2QN2
+[CLASS] base_optiongroup
+[CLASSLOC] base_gui.vcx
+[BASECLASS] optiongroup
+[OBJNAME] pnl_optiongroup
+[PARENT] cntpnloptiongroup
+[START PROPERTIES]
+Anchor = 15
+Left = 4
+Name = "pnl_optiongroup"
+Top = 4
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+THIS.Parent.Valid()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnloptiongroup
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28E11O0D6
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlperiod
+[START PROPERTIES]
+
+Height = 30
+Name = "cntpnlperiod"
+Width = 212
+_memberdata =      401<VFPData><memberdata name="controlsource" type="property" display="Controlsource"/><memberdata name="controlsource_assign" type="method" display="ControlSource_Assign"/><memberdata name="controlsource1" type="property" display="ControlSource1"/><memberdata name="controlsource1_assign" type="method" display="ControlSource1_Assign"/><memberdata name="valid" type="method" display="Valid"/></VFPData>
+caption = Период
+controlsource = m.goApp.oVars.oCurrentTask.oVars.dFltDateBegin
+controlsource1 = m.goApp.oVars.oCurrentTask.oVars.dFltDateEnd
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*шаманство с якорями для корректного изменения размеров в подобъектах
+WITH THIS
+*!*		.Interval_date1pl.Anchor = 0
+*!*		.Interval_date1pl.Left = 2
+*!*		.Interval_date1pl.Top = 2
+*!*		.Interval_date1pl.Height = THIS.Height-4
+*!*		.Interval_date1pl.Width = THIS.Width-4
+*!*		.Interval_date1pl.Anchor = 11
+	
+	.ControlSource = .ControlSource
+	.ControlSource1 = .ControlSource1
+ENDWITH
+
+DODEFAULT()
+ENDPROC
+PROCEDURE controlsource1_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.ControlSource1 = m.vNewVal
+	THIS.Interval_date2pl.ControlSource = m.vNewVal
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.ControlSource = m.vNewVal
+	THIS.Interval_date1pl.ControlSource = m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*controlsource1_assign 
+*controlsource_assign 
+*valid Occurs before a control loses the focus.
+controlsource Specifies the source of data to which an object is bound.
+controlsource1
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28E11ZYTM
+[CLASS] datecnt
+[CLASSLOC] polcld.vcx
+[BASECLASS] control
+[OBJNAME] Interval_date1pl
+[PARENT] cntpnlperiod
+[START PROPERTIES]
+DateCntC.Name = "DateCntC"
+Left = 2
+Name = "Interval_date1pl"
+TabIndex = 3
+Top = 2
+datecnt.Name = "datecnt"
+datemark = /
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE valid
+IF EVALUATE(THIS.ControlSource) > EVALUATE(THIS.Parent.Interval_date2pl.ControlSource)
+	STORE EVALUATE(THIS.ControlSource) TO (THIS.Parent.Interval_date2pl.ControlSource)
+ENDIF
+
+THIS.Parent.Interval_date2pl.Refresh()
+
+IF !THIS.Parent.Valid()
+	RETURN .F.
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28E11ZYTV
+[CLASS] datecnt
+[CLASSLOC] polcld.vcx
+[BASECLASS] control
+[OBJNAME] Interval_date2pl
+[PARENT] cntpnlperiod
+[START PROPERTIES]
+DateCntC.Name = "DateCntC"
+Height = 26
+Left = 113
+Name = "Interval_date2pl"
+TabIndex = 4
+Top = 2
+datecnt.Name = "datecnt"
+datemark = /
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE valid
+IF EVALUATE(THIS.ControlSource) < EVALUATE(THIS.Parent.Interval_date1pl.ControlSource)
+	STORE EVALUATE(THIS.ControlSource) TO (THIS.Parent.Interval_date1pl.ControlSource)
+ENDIF
+
+THIS.Parent.Interval_date1pl.Refresh()
+
+IF !THIS.Parent.Valid()
+	RETURN .F.
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28E11ZYTT
+[CLASS] base_line
+[CLASSLOC] base_gui.vcx
+[BASECLASS] line
+[OBJNAME] Line1
+[PARENT] cntpnlperiod
+[START PROPERTIES]
+BorderWidth = 3
+Height = 0
+Left = 102
+Name = "Line1"
+Top = 15
+Width = 7
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlperiod
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2091BH9IV
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnltextbox
+[START PROPERTIES]
+
+Height = 37
+Name = "cntpnltextbox"
+Width = 169
+_memberdata =      213<VFPData><memberdata name="valid" type="method" display="Valid"/><memberdata name="lbltext" type="property" display="LblText"/><memberdata name="lbltext_assign" type="method" display="LblText_Assign"/></VFPData>
+ccaption_layout = LM
+controlsource =  
+lbltext = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*шаманство с якорями для корректного изменения размеров в подобъектах
+*шаманство с якорями для корректного изменения размеров в подобъектах
+WITH THIS
+	.Pnl_label.Anchor = 0
+	.Pnl_label.Left = 8 &&THIS.Width - .Pnl_label.Width - 2
+	.Pnl_label.Top = 11
+*!*		.Pnl_label.Height = THIS.Height - 4
+	.Pnl_label.Anchor = 3
+
+	.Pnl_textbox.Anchor = 0
+	.Pnl_textbox.Left = THIS.Width - (.Pnl_label.Left + .Pnl_label.Width - 2) && 
+	.Pnl_textbox.Top = 8
+*!*		.Pnl_textbox.Height = THIS.Height - 4
+	.Pnl_textbox.Width = THIS.Width - .Pnl_textbox.Left - 3
+	.Pnl_textbox.Anchor = 11
+
+	.ControlSource = .ControlSource
+	.LblText = .LblText
+ENDWITH
+
+DODEFAULT()
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.ControlSource = m.vNewVal
+	THIS.Pnl_textbox.ControlSource = m.vNewVal
+ENDPROC
+PROCEDURE lbltext_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	THIS.lbltext = m.vNewVal
+	THIS.Pnl_label.Caption = m.vNewVal
+	THIS.Pnl_label.Refresh()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*controlsource_assign 
+*lbltext_assign 
+controlsource Specifies the source of data to which an object is bound.
+lbltext
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2091BITBC
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] Pnl_label
+[PARENT] cntpnltextbox
+[START PROPERTIES]
+FontSize = 9
+Left = 8
+Name = "Pnl_label"
+Top = 11
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2091BITBA
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] Pnl_textbox
+[PARENT] cntpnltextbox
+[START PROPERTIES]
+Left = 48
+Name = "Pnl_textbox"
+Top = 8
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnltextbox
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RT0G7Z5Q
+[CLASS] cntpnl
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnltree
+[START PROPERTIES]
+Name = "cntpnltree"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*шаманство с якорями для корректного изменения размеров в подобъектах
+WITH THIS
+	.TreePnl.Anchor = 0
+	.TreePnl.Left = 4
+	.TreePnl.Top = 4
+	.TreePnl.Height = .Height - 8
+	.TreePnl.Width = .Width - 8
+	.TreePnl.Anchor = 15
+ENDWITH
+
+DODEFAULT()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RT0G9DCB
+[CLASS] treeview
+[CLASSLOC] base_gui.vcx
+[BASECLASS] olecontrol
+[OBJNAME] TreePnl
+[PARENT] cntpnltree
+[START PROPERTIES]
+Anchor = 15
+Height = 192
+Left = 4
+Name = "TreePnl"
+Top = 4
+Width = 192
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=25988
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=26800
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnltree
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0J8MWQ
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cnttitleband
+[START PROPERTIES]
+Anchor = 11
+Height = 16
+Name = "cnttitleband"
+Width = 169
+lenabled = .T.
+ndisableleftcolor = 
+ndisablerightcolor = 
+ndisabletextcolor = 
+nenableleftcolor = 
+nenablerightcolor = 
+nenabletextcolor = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* ПРОЧТЕМ ТЕКУЩИЕ НАСТРОЙКИ WINDOWS
+WITH m.goApp.oWinAPI
+	* ЦВЕТА НАДПИСИ
+	THIS.nEnableTextColor = .GetSysColor(COLOR_CAPTIONTEXT)
+	THIS.nDisableTextColor = .GetSysColor(COLOR_INACTIVECAPTIONTEXT)
+	THIS.lblTitle.ForeColor = THIS.nDisableTextColor
+	* ЦВЕТА ФОНА
+	THIS.nEnableLeftColor = .GetSysColor(COLOR_ACTIVECAPTION)
+	THIS.nEnableRightColor = .GetSysColor(COLOR_GRADIENTACTIVECAPTION)
+	THIS.nDisableLeftColor = .GetSysColor(COLOR_INACTIVECAPTION)
+	THIS.nDisableRightColor = .GetSysColor(COLOR_GRADIENTINACTIVECAPTION)
+ENDWITH
+* ОТРИСУЕМ ПОДЛОЖКУ
+WITH THIS
+	IF .lEnabled
+		.lblTitle.ForeColor = .nEnableTextColor
+	ELSE
+		.lblTitle.ForeColor = .nDisableTextColor
+	ENDIF
+
+	.Width = .Parent.Width
+*!*		.Redraw()
+ENDWITH
+ENDPROC
+PROCEDURE lenabled_assign
+LPARAMETERS tlEnabled
+	WITH THIS
+		.lEnabled = m.tlEnabled
+
+		IF .lEnabled
+			.lblTitle.ForeColor = .nEnableTextColor
+		ELSE
+			.lblTitle.ForeColor = .nDisableTextColor
+		ENDIF
+
+*!*			.Redraw()
+	ENDWITH
+ENDPROC
+PROCEDURE redraw
+LOCAL lnColorStart AS Integer, lnColorStop AS Integer,;
+	lnRStep AS Integer, lnGStep AS Integer, lnBStep AS Integer,;
+	lnRStart AS Byte, lnGStart AS Byte, lnBStart AS Byte,;
+	lnRStop AS Byte, lnGStop AS Byte, lnBStop AS Byte,;
+	lnCount AS Integer, loLine AS Object
+	* BORDER COLOR	
+	WITH THIS
+		IF .lEnabled
+			lnColorStart = .nEnableLeftColor
+			lnColorStop = .nEnableRightColor
+		ELSE
+			lnColorStart = .nDisableLeftColor
+			lnColorStop = .nDisableRightColor
+		ENDIF
+	ENDWITH
+	* COLOR -> RGB
+	WITH m.goApp.oFunction
+		.ColorToRGB(m.lnColorStart, @lnRStart, @lnGStart, @lnBStart)
+		.ColorToRGB(m.lnColorStop, @lnRStop, @lnGStop, @lnBStop)
+	ENDWITH
+	* STEP IN R / G / B
+	lnRStep = (m.lnRStop - m.lnRStart) / THIS.Width
+	lnGStep = (m.lnGStop - m.lnGStart) / THIS.Width
+	lnBStep = (m.lnBStop - m.lnBStart) / THIS.Width
+	* CHENGE COLOR OF LINE
+	FOR lnCount = 1 TO THIS.Width
+		loLine = EVALUATE("THIS.linTitleBand" + TRANSFORM(m.lnCount, '@L 9999'))
+		loLine.BorderColor = RGB(m.lnRStart + m.lnRStep * m.lnCount,;
+							     m.lnGStart + m.lnGStep * m.lnCount,;
+							     m.lnBStart + m.lnBStep * m.lnCount)
+	ENDFOR
+ENDPROC
+PROCEDURE width_assign
+LPARAMETERS tnWidth AS Integer
+LOCAL lnCount AS Integer, lcName AS String, loLine AS Object
+	WITH THIS
+		.Width = m.tnWidth
+
+*!*			FOR lnCount = 1 TO .Width
+*!*				lcName = "linTitleBand"+TRANSFORM(m.lnCount, "@L 9999")
+
+*!*				IF !PEMSTATUS(THIS, m.lcName, 5)
+*!*					.AddObject(m.lcName, "linTitleBar")
+*!*					loLine = EVALUATE("THIS."+m.lcName)
+*!*					loLine.Left = m.lnCount-1
+*!*					loLine.Visible = .T.
+*!*				ENDIF
+*!*			ENDFOR
+
+*!*			.Redraw()
+	ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED3]
+*lenabled_assign 
+*redraw 
+*width_assign 
+lenabled
+ndisableleftcolor
+ndisablerightcolor
+ndisabletextcolor
+nenableleftcolor
+nenablerightcolor
+nenabletextcolor
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0JVJ5D
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkOnTop
+[PARENT] cnttitleband
+[START PROPERTIES]
+Alignment = 0
+Anchor = 8
+AutoSize = .F.
+Caption = ""
+DownPicture = ..\bmp\16x16\knobon.bmp
+Height = 15
+Left = 135
+Name = "chkOnTop"
+Picture = ..\bmp\16x16\knoboff.bmp
+Style = 1
+Top = 1
+Width = 16
+ZOrderSet = 3
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* ЗАКРЕПИТЬ
+THIS.ToolTipText = 'Закрепить'
+ENDPROC
+PROCEDURE InteractiveChange
+WITH THIS
+	IF .Value = 1
+		THISFORM.AlwaysOnTop = .T.
+		THISFORM.Movable = .F.
+		.ToolTipText = 'Открепить'
+	ELSE
+		THISFORM.AlwaysOnTop = .F.
+		THISFORM.Movable = .T.
+		.ToolTipText = 'Закрепить'
+	ENDIF
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0K7SRG
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd1
+[PARENT] cnttitleband
+[START PROPERTIES]
+Anchor = 8
+Caption = ""
+Height = 15
+Left = 81
+Name = "cmd1"
+Top = 1
+Width = 16
+ZOrderSet = 4
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+NODEFAULT
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0K9UDN
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd2
+[PARENT] cnttitleband
+[START PROPERTIES]
+Anchor = 8
+Caption = ""
+Height = 15
+Left = 99
+Name = "cmd2"
+Top = 1
+Width = 16
+WordWrap = .T.
+ZOrderSet = 5
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+NODEFAULT
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0KBMU6
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd3
+[PARENT] cnttitleband
+[START PROPERTIES]
+Anchor = 8
+Caption = ""
+Height = 15
+Left = 117
+Name = "cmd3"
+Top = 1
+Width = 16
+ZOrderSet = 6
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+NODEFAULT
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0JP9VS
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdClose
+[PARENT] cnttitleband
+[START PROPERTIES]
+Anchor = 8
+Caption = ""
+Height = 15
+Left = 153
+Name = "cmdClose"
+Picture = ..\bmp\release.bmp
+Top = 1
+Width = 16
+ZOrderSet = 2
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.QueryUnload()
+ENDPROC
+PROCEDURE Init
+* ЗАКРЫТЬ
+THIS.ToolTipText = 'Закрыть'
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RV0A4C4I
+[CLASS] base_image
+[CLASSLOC] base_gui.vcx
+[BASECLASS] image
+[OBJNAME] ImageGradient
+[PARENT] cnttitleband
+[START PROPERTIES]
+Anchor = (1+2+4+8)
+BackStyle = 0
+Height = 15
+Name = "ImageGradient"
+Stretch = 2
+Top = 1
+Width = 171
+ZOrderSet = 0
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL lb as Byte
+	lb = 0h424D2E010000000000003600000028000000020000001F0000000100180000000000F8000000130B0000130B00000000000000000000DFA67FDF;
+		 + 0hA67F0000E1A881E1A8810000E3AA83E3AA830000E3AC87E3AC870000E3AE89E3AE890000E5B08BE5B08B0000E6B28EE6B28E0000E6B490E6B49000;
+		 + 0h00E7B591E7B5910000E8B896E8B8960000E9B997E9B9970000E9BA9AE9BA9A0000EBBC9CEBBC9C0000EDC09FEDC09F0000EDC1A2EDC1A20000EDC4;
+		 + 0hA4EDC4A40000EEC5A5EEC5A50000F0C6A9F0C6A90000EFC7AAEFC7AA0000F2CAAEF2CAAE0000F3CCB0F3CCB00000F3CEB2F3CEB20000F3D0B6F3D0;
+		 + 0hB60000F5D2B8F5D2B80000F6D3B9F6D3B90000F8D4BCF8D4BC0000F3D8BEF3D8BE0000FDD8C4FDD8C40000F7DCC2F7DCC20000FCDDC6FCDDC60000;
+		 + 0hF9DEC9F9DEC90000
+
+	THIS.PictureVal = m.lb
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0JL4JV
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblTitle
+[PARENT] cnttitleband
+[START PROPERTIES]
+Anchor = (1+2+4+8)
+AutoSize = .F.
+BackStyle = 0
+Caption = " Caption"
+FontBold = .T.
+Name = "lblTitle"
+Style = 0
+Top = 1
+Width = 171
+ZOrderSet = 1
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+* ОРГАНИЗУЕМ ПЕРЕТАСКИВАНИЕ
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton = 1
+		IF THIS.Parent.chkOnTop.Value = 0
+			m.goApp.oWinApi.ReleaseCapture()
+			m.goApp.oWinApi.SendMessage(THISFORM.HWnd, WM_SYSCOMMAND, SC_MOVE + HTCAPTION, 0)
+
+			NODEFAULT
+		ENDIF
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cnttitleband
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AD1BLGM1
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] commonbutton
+[START PROPERTIES]
+Anchor = 12
+Caption = "Обычная"
+Comment = "23x(80,100,120)"
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 23
+Name = "commonbutton"
+PicturePosition = 1
+Width = 94
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] commonbutton
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O013JUBN
+[CLASS] base_form_stbr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] dialog_form_stbr
+[START PROPERTIES]
+AlwaysOnTop = .T.
+BorderStyle = 2
+Caption = "Dialog_form"
+DoCreate = .T.
+Height = 250
+MaxButton = .F.
+MinButton = .F.
+Name = "dialog_form"
+StatusBar.Height = 20
+StatusBar.Left = 0
+StatusBar.Name = "StatusBar"
+StatusBar.Top = 230
+StatusBar.Width = 375
+Width = 375
+WindowType = 1
+saveset.Name = "saveset"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dialog_form_stbr
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PN0YGPD4
+[CLASS] dialog_form_stbr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] dialog_form_stbr_2buttons
+[START PROPERTIES]
+Caption = "Dialog_form_2buttons"
+DoCreate = .T.
+Name = "dialog_form_2buttons"
+StatusBar.Height = 20
+StatusBar.Left = 0
+StatusBar.Name = "StatusBar"
+StatusBar.Top = 230
+StatusBar.Width = 375
+saveset.Name = "saveset"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PN0YK0I1
+[CLASS] cancelbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Cancelbutton
+[PARENT] dialog_form_stbr_2buttons
+[START PROPERTIES]
+Left = 272
+Name = "Cancelbutton"
+TabIndex = 3
+Top = 206
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QL0QJ1X7
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Dialog_shape
+[PARENT] dialog_form_stbr_2buttons
+[START PROPERTIES]
+Anchor = 15
+BackStyle = 0
+Height = 200
+Left = 3
+Name = "Dialog_shape"
+Top = 3
+Width = 369
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PN0YK0I2
+[CLASS] okbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Okbutton
+[PARENT] dialog_form_stbr_2buttons
+[START PROPERTIES]
+Left = 177
+Name = "Okbutton"
+TabIndex = 2
+Top = 206
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dialog_form_stbr_2buttons
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O013JUBN
+[CLASS] base_form_szgr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] dialog_form_szgr
+[START PROPERTIES]
+AlwaysOnTop = .T.
+BorderStyle = 2
+Caption = "Dialog_form"
+DoCreate = .T.
+Height = 250
+MaxButton = .F.
+MinButton = .F.
+Name = "dialog_form_szgr"
+SAVESET_FORM.Name = "SAVESET_FORM"
+Width = 375
+WindowType = 1
+dbContainer.Name = "dbContainer"
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dialog_form_szgr
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PN0YGPD4
+[CLASS] dialog_form_szgr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] dialog_form_szgr_2buttons
+[START PROPERTIES]
+Caption = "Dialog_form_2buttons"
+DoCreate = .T.
+Name = "dialog_form_szgr_2buttons"
+dbContainer.Name = "dbContainer"
+dbContainer.ZOrderSet = 1
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.ZOrderSet = 3
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+
+WITH THIS
+	*позиционируем кнопки
+	.Okbutton.Anchor = 0
+	.Okbutton.Top = .Height - 31
+	.Okbutton.Left = .Width - 197
+	.Okbutton.Anchor = 12
+
+	.Cancelbutton.Anchor = 0
+	.Cancelbutton.Top = .Height - 31
+	.Cancelbutton.Left = .Width - 102
+	.Cancelbutton.Anchor = 12
+	*шапэ
+	.Dialog_shape.Anchor = 0
+	.Dialog_shape.Top = 3
+	.Dialog_shape.Left = 3
+	.Dialog_shape.Width = .Width - 6
+	.Dialog_shape.Height = .Cancelbutton.Top - 5
+	.Dialog_shape.Anchor = 15
+ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PN0YK0I1
+[CLASS] cancelbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] CancelButton
+[PARENT] dialog_form_szgr_2buttons
+[START PROPERTIES]
+Left = 273
+Name = "CancelButton"
+TabIndex = 3
+Top = 219
+ZOrderSet = 2
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QL0QJ1X7
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Dialog_shape
+[PARENT] dialog_form_szgr_2buttons
+[START PROPERTIES]
+Anchor = 15
+BackStyle = 0
+Height = 211
+Left = 3
+Name = "Dialog_shape"
+Top = 3
+Width = 369
+ZOrderSet = 5
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PN0YK0I2
+[CLASS] okbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] OkButton
+[PARENT] dialog_form_szgr_2buttons
+[START PROPERTIES]
+Left = 178
+Name = "OkButton"
+TabIndex = 2
+Top = 219
+ZOrderSet = 4
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dialog_form_szgr_2buttons
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RK0YLDUW
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] grid_checkbox
+[START PROPERTIES]
+Alignment = 2
+AutoSize = .F.
+Caption = ""
+Name = "grid_checkbox"
+SpecialEffect = 1
+WordWrap = .T.
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] grid_checkbox
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QU02JZ4Y
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] imagelist
+[START PROPERTIES]
+Height = 43
+Name = "imagelist"
+Width = 77
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=29202
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=26800
+[BINEND OLE2]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] imagelist
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0DZ15IIIU
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] inctext
+[START PROPERTIES]
+
+BorderStyle = 0
+FontName = "MS Sans Serif"
+Margin = 0
+Name = "inctext"
+ReadOnly = .T.
+_memberdata =      593<VFPData><memberdata name="ccomparisonexpression" type="property" display="cComparisonExpression"/><memberdata name="csearchsrt" type="property" display="cSearchsrt"/><memberdata name="ctypefield" type="property" display="cTypefield"/><memberdata name="initsearch" type="method" display="InitSearch"/><memberdata name="lisactivesearch" type="property" display="lIsActiveSearch"/><memberdata name="lisseekmode" type="property" display="lIsSeekMode"/><memberdata name="osearchwindow" type="property" display="oSearchWindow"/><memberdata name="search" type="method" display="Search"/></VFPData>
+ccomparisonexpression = 
+csearchsrt = 
+ctypefield = 
+osearchwindow = .NULL.
+[END PROPERTIES]
+[START PROTECTED]
+ccomparisonexpression
+csearchsrt
+ctypefield
+initsearch
+lisactivesearch
+lisseekmode
+osearchwindow
+search
+[END PROTECTED]
+[START METHODS]
+PROCEDURE GotFocus
+THIS.lisSeekMode = .F.
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	WITH THIS
+		DO CASE
+		CASE m.tnKeyCode = 93 AND m.tnShiftAltCtrl = 1 &&WinProperties
+			IF .lisActiveSearch
+				DO txt_menu.prg WITH THISFORM.Left + IIF(THISFORM.BorderStyle = 3,;
+														 SYSMETRIC(3),;
+														 IIF(THISFORM.BorderStyle = 0,;
+														 	 SYSMETRIC(10), SYSMETRIC(12)));
+									 + .oSearchWindow.Left,;
+									 THISFORM.Top + IIF(THISFORM.BorderStyle = 3,;
+									 				SYSMETRIC(4),;
+									 				IIF(THISFORM.BorderStyle = 0,;
+									 					SYSMETRIC(11),;
+									 					SYSMETRIC(13))) + IIF(THISFORM.TitleBar = 1,;
+									 										  SYSMETRIC(9), 0) + IIF(THISFORM.HalfHeightCaption,;
+									 										  						 SYSMETRIC(34),;
+									 										  						 0);
+									 + .oSearchWindow.Top+.oSearchWindow.Height
+			ENDIF
+		CASE .ReadOnly = .T.
+			DO CASE
+			CASE m.tnKeyCode = 10 AND .lisActiveSearch && Ctrl+Enter - продолжение поиска
+			    NODEFAULT
+			    .Search(2)
+			CASE BETWEEN(m.tnKeyCode, 32, 126) OR BETWEEN(m.tnKeyCode, 192, 255) OR m.tnKeyCode = 128	&& AlphaNumeric
+			    NODEFAULT
+				*Определяем тип данных в текущей колонке
+			    .cTypeField = TYPE(.Parent.ControlSource)
+				*Если тип поля по которому может проводиться поиск не верный, возврат
+			    IF !(.cTypeField $ "NDC")
+			        RETURN
+			    ENDIF
+				*Если происходит активизация нового поиска, запускаем программу его организации
+			    IF !.lIsActiveSearch
+				*Обнуляем свойства учавствующие в поиске
+			        .cComparisonExpression = ''
+			        .cSearchSrt = UPPER(CHR(m.tnKeyCode))
+			        .InitSearch()
+					*Выставляем флаг активизации в .T.
+			        .lIsActiveSearch = .T.
+			    ELSE
+			        .cSearchSrt = .cSearchSrt+UPPER(CHR(m.tnKeyCode))
+			    ENDIF
+
+			    .oSearchWindow.loSearchText.CAPTION = .cSearchSrt
+			    .Search(1)
+			CASE m.tnKeyCode = 127 AND .lisActiveSearch && Backspace
+			    NODEFAULT
+			    .cSearchSrt = LEFT(.cSearchSrt, LEN(.cSearchSrt) - 1)
+			    .oSearchWindow.loSearchText.CAPTION = .cSearchSrt
+			    .Search(1)
+			OTHERWISE
+			    .LOSTFOCUS()
+			ENDCASE
+		ENDCASE
+		*Выставляем флаг, что поиск уже проведен
+		.lIsSeekMode = .F.
+	ENDWITH
+ENDPROC
+PROCEDURE LostFocus
+IF !THIS.lIsSeekMode
+*Деактивизация поиска
+    IF THIS.lisActiveSearch
+	*Удаляем "окно" вывода символов поиска
+        IF VARTYPE(THIS.oSearchWindow) = 'O' AND !ISNULL(THIS.oSearchWindow)
+            THISFORM.RemoveObject(THIS.oSearchWindow.Name)
+			*Перерисовываем грид
+            THISFORM.Refresh()
+            THIS.lIsActiveSearch = .F.
+        ENDIF
+    ENDIF
+ENDIF
+ENDPROC
+PROCEDURE RightClick
+DO txt_menu.prg
+ENDPROC
+PROCEDURE When
+THIS.Parent.Parent.TAG = TRANSFORM(RECNO())
+ENDPROC
+PROCEDURE initsearch
+********************************************************************************
+******************* Процедура подготовки к новому поиску ***********************
+********************************************************************************
+LOCAL lcSearchWindow as String, loI as Object, lcFieldName as String, lnFieldLen as Integer
+	*Создам на форме 'окно' для показа в нем набераемых символов
+	lcSearchWindow = SYS(2015)
+	THISFORM.ADDOBJECT(m.lcSearchWindow, "CONTAINER")
+	THIS.oSearchWindow = THISFORM.&lcSearchWindow
+
+	WITH THIS.oSearchWindow
+	    .WIDTH = THIS.PARENT.WIDTH + 2
+	    .HEIGHT = 26
+		*!!!Устанавливаем верх 'окошка' под последней целиком видимой строкой в гриде !!!
+	    WITH THIS.PARENT.PARENT
+		*Вычисляем общую высоту целиком видимых строк
+	        THIS.oSearchWindow.TOP = FLOOR(((.HEIGHT - .HEADERHEIGHT) - IIF(INLIST(.SCROLLBARS, 1, 3),;
+	        							   SYSMETRIC(8), 0)) / .ROWHEIGHT) * .ROWHEIGHT
+	    ENDWITH
+
+	    .TOP = .TOP + OBJTOCLIENT(THIS.PARENT.PARENT, 1) && Прибовляем расстояние от верха формы до грида
+	    .TOP = .TOP + THIS.PARENT.PARENT.HEADERHEIGHT && Прибавляем высоту заголовка грида
+		*!!!Устанавливаем 'окошко' по горизонтали над текущим столбцом !!!
+	    .LEFT = OBJTOCLIENT(THIS.PARENT.PARENT, 2) && Расстояние от левого края формы до грида
+	    .LEFT = .LEFT + IIF(THIS.PARENT.PARENT.DELETEMARK, 8, 0) && учитываем ширину DELETEMARK
+	    .LEFT = .LEFT + IIF(THIS.PARENT.PARENT.RECORDMARK, 10, 0) && учитываем ширину RECORDMARK
+		*Сканируем видимые колнки и учитываем их ширину
+	    FOR EACH loI IN THIS.PARENT.PARENT.COLUMNS
+	        IF BETWEEN(loI.COLUMNORDER,;
+	            	   THIS.PARENT.PARENT.LEFTCOLUMN, ;
+	            	   THIS.PARENT.COLUMNORDER - 1)
+	            .LEFT = .LEFT + loI.WIDTH + 1
+	        ENDIF
+	    ENDFOR
+
+	    .SPECIALEFFECT = 0
+	    .VISIBLE = .T.
+		*Добавляем второй контейнер для создания объемных крав
+	    .ADDOBJECT("loBorder","CONTAINER")
+
+	    WITH .loBorder
+	        .TOP = 2
+	        .LEFT = 2
+	        .WIDTH = .PARENT.WIDTH - 4
+	        .HEIGHT = .PARENT.HEIGHT - 4
+	        .BACKCOLOR = RGB(0, 128, 192)
+	        .SPECIALEFFECT = 1
+	        .VISIBLE = .T.
+	    ENDWITH
+		*Добавляем объект Label, в который будем выводить набираемый при поиске текст
+	    .ADDOBJECT("loSearchText", "LABEL")
+
+	    WITH .loSearchText
+	        .CAPTION = THIS.cSearchSrt
+	        .FORECOLOR = RGB(255, 255, 255)
+	        .AUTOSIZE = .T.
+	        .BACKSTYLE = 0
+	        .LEFT = 5
+	        .FONTNAME = "MS Sans Serif"
+	        .FONTSIZE = 8
+	        .TOP = (.PARENT.HEIGHT - FONTMETRIC(1, .FONTNAME, .FONTSIZE)) / 2
+	        .VISIBLE = .T.
+	    ENDWITH
+	ENDWITH
+
+	lcFieldName = THIS.PARENT.CONTROLSOURCE && название поля
+	*ширина поля символов
+	DO CASE
+	CASE THIS.cTypeField = 'D'
+	    lnFieldLen = IIF(SET("Century") = 'ON', 10, 8)
+	OTHERWISE
+	    IF RAT('.', m.lcFieldName) > 0
+	        IF TYPE("Fsize(Upper(Subs(m.lcFieldName, Rat('.', m.lcFieldName)+1)), Left(m.lcFieldName, At('.', m.lcFieldName)-1))") = 'N'
+	            lnFieldLen = FSIZE(UPPER(SUBSTR(m.lcFieldName, RAT('.', m.lcFieldName) + 1)), LEFT(m.lcFieldName, AT('.', m.lcFieldName) - 1))
+	        ELSE
+	            lnFieldLen = 30 && если мы не смогли вычислить длянну поля
+	        ENDIF
+	    ELSE
+	        lnFieldLen = FSIZE(m.lcFieldName)
+	    ENDIF
+
+		IF THIS.cTypeField = 'I' OR (THIS.cTypeField = 'N' AND m.lnFieldLen = 4)
+		    lnFieldLen = 11
+		ENDIF
+	ENDCASE
+
+	IF THIS.cTypeField = 'C'
+	    THIS.cComparisonExpression = "UPPER(LTRIM(" + m.lcFieldName + "))"
+	ELSE
+	    THIS.cComparisonExpression = "PADR(" + m.lcFieldName + ',' + ALLTRIM(TRANSFORM(m.lnFieldLen)) + ')'
+	ENDIF
+ENDPROC
+PROCEDURE search
+********************************************************************************
+* Непосредственно сама функция поиска
+********************************************************************************
+LPARAMETERS tnContinueSearch
+LOCAL lnOldRecno
+PRIVATE pcRequiredLine
+	THIS.lIsSeekMode = .T.
+	pcRequiredLine = THIS.cSearchSrt
+	lnOldRecno = IIF(EOF() OR BOF(), 0, RECNO())
+	lcLocateExpression = "LOCATE FOR " + THIS.cComparisonExpression + " = m.pcRequiredLine"
+
+	IF m.tnContinueSearch = 1
+	    &lcLocateExpression
+	ELSE
+	    IF FOUND()
+	        CONTINUE
+	    ELSE
+	        &lcLocateExpression
+	    ENDIF
+	ENDIF
+
+	IF !FOUND()
+	    IF m.tnContinueSearch = 1
+	        THIS.cSearchSrt = LEFT(THIS.cSearchSrt, LEN(THIS.cSearchSrt) - 1)
+	        THIS.oSearchWindow.loSearchText.Caption = THIS.cSearchSrt
+	    ENDIF
+
+	    IF m.lnOldRecno > 0
+	        GO m.lnOldRecno
+	    ENDIF
+
+	    THIS.oSearchWindow.loBorder.BackColor = RGB(255, 0, 128)
+	    THIS.Parent.Parent.Refresh()
+
+	    RETURN .F.
+	ELSE
+	    THIS.oSearchWindow.loBorder.BACKCOLOR = RGB(0, 128, 192)
+	    THIS.Parent.Parent.Refresh()
+
+	    RETURN .T.
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*initsearch Инициализация нового поиска
+*search Функция выполняющая поик
+ccomparisonexpression Выражение для сравнения с искомой строкой
+csearchsrt Искомая строка
+ctypefield Тип данных в поле
+lisactivesearch Активен ли поиск
+lisseekmode Флаг подавления  GotFocus/LostFocus  во время поиска
+osearchwindow Ссылка на окно вывода искомого текста 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] inctext
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U111YI51
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblcaption
+[START PROPERTIES]
+
+Anchor = 0
+Caption = ""
+FontBold = .T.
+Name = "lblcaption"
+WordWrap = .F.
+_memberdata =      339<VFPData><memberdata name="ccaption_layout" type="property" display="cCaption_Layout"/><memberdata name="ccaption_layout_assign" type="property" display="cCaption_Layout_Assign"/><memberdata name="caption_assign" type="method" display="Caption_Assign"/><memberdata name="oobjcaptioned" type="property" display="oObjCaptioned"/></VFPData>
+ccaption_layout = LT
+oobjcaptioned = .NULL.
+[END PROPERTIES]
+[START PROTECTED]
+oobjcaptioned^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS toObj as Object
+	IF VARTYPE(m.toObj) = 'O' AND !ISNULL(m.toObj)
+		WITH THIS
+			.oObjCaptioned = m.toObj
+
+			DODEFAULT()
+
+			.cCaption_Layout = m.toObj.cCaption_Layout
+			.Caption = m.toObj.Caption
+			.Anchor = m.toObj.Anchor
+		ENDWITH
+
+		RETURN .T.
+	ENDIF
+RETURN .F.
+ENDPROC
+PROCEDURE caption_assign
+LPARAMETERS tcNewValue as String
+	WITH THIS
+		.Caption = m.tcNewValue
+
+		IF !EMPTY(m.tcNewValue)
+			.Top = .oObjCaptioned.Top
+			.Left = .oObjCaptioned.Left
+
+			DO CASE 
+			CASE SUBSTRC(.cCaption_Layout, 1, 1) = 'L'
+				.Rotation = 0
+*!*					.Left = ..Left+10
+			CASE SUBSTRC(.cCaption_Layout, 1, 1) = 'R'
+				.Rotation = 0
+	*			.Left = .Left+10
+			CASE SUBSTRC(.cCaption_Layout, 1, 1) = 'T'
+				.Rotation = 90
+			CASE SUBSTRC(.cCaption_Layout, 1, 1) = 'B'
+				.Rotation = 270
+			ENDCASE
+
+			DO CASE 
+			CASE SUBSTRC(.cCaption_Layout, 2, 1) = 'T'
+				.Top = .Top - FONTMETRIC(1, .FontName, .FontSize, IIF(.FontBold, 'B', '');
+					   + IIF(.FontItalic, 'I', '') + IIF(.BackStyle = 0, 'T', 'Q')) &&*0.7
+			CASE SUBSTRC(.cCaption_Layout, 2, 1) = 'B'
+				.Top = .Top + .oObjCaptioned.Heigth;
+					   - FONTMETRIC(1, .FontName, .FontSize,;
+									IIF(.FontBold, 'B', '') + IIF(.FontItalic, 'I', '');
+										+ IIF(.BackStyle = 0, 'T', 'Q')) &&*0.3
+			CASE SUBSTRC(.cCaption_Layout, 2, 1) = 'M'
+			ENDCASE
+
+			.ZOrder(0)
+			.Visible = .T.
+		ELSE
+			.Visible = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE ccaption_layout_assign
+LPARAMETERS tuNewValue
+	THIS.cCaption_Layout = m.tuNewValue
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*caption_assign 
+*ccaption_layout_assign 
+_memberdata XML Metadata for customizable properties
+ccaption_layout Задает местоположение заголовка. L-left R-right T-top B-bottom
+oobjcaptioned
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] lblcaption
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2BS05VEDU
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] lblcheckbox
+[START PROPERTIES]
+
+Alignment = 0
+Anchor = 0
+Caption = ""
+FontBold = .T.
+Name = "lblcheckbox"
+_memberdata =      337<VFPData><memberdata name="oobjcaptioned" type="property" display="oObjCaptioned"/><memberdata name="ccaption_layout" type="property" display="cCaption_Layout"/><memberdata name="ccaption_layout_assign" type="method" display="cCaption_Layout_Assign"/><memberdata name="caption_assign" type="method" display="Caption_Assign"/></VFPData>
+ccaption_layout = LT
+oobjcaptioned = .NULL.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS toObj as Object
+	IF VARTYPE(m.toObj) = 'O' AND !ISNULL(m.toObj)
+		WITH THIS
+			.oObjCaptioned = m.toObj
+
+			DODEFAULT()
+
+			.cCaption_Layout = m.toObj.cCaption_Layout
+			.Caption = m.toObj.Caption
+			*поле для значения
+			.ControlSource = m.toObj.cChkVarName
+			.Anchor = m.toObj.Anchor
+		ENDWITH
+
+		RETURN .T.
+	ENDIF
+RETURN .F.
+ENDPROC
+PROCEDURE InteractiveChange
+LOCAL llChk
+	WITH THIS.oObjCaptioned
+		IF !EMPTY(.cChkVarName)
+			llChk = !EVALUATE(.cChkVarName)
+
+			.Enabled = m.llChk
+			.chkLblClick(m.llChk)
+		ELSE
+			.chkLblClick()
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE caption_assign
+LPARAMETERS tcNewValue as String
+	WITH THIS
+		.Caption = m.tcNewValue
+
+		IF !EMPTY(m.tcNewValue)
+			.Top = .oObjCaptioned.Top
+			.Left = .oObjCaptioned.Left
+
+*!*				DO CASE 
+*!*				CASE SUBSTRC(.cCaption_Layout, 1, 1) = 'L'
+*!*					.Rotation = 0
+*!*				CASE SUBSTRC(.cCaption_Layout, 1, 1) = 'R'
+*!*					.Rotation = 0
+*!*				CASE SUBSTRC(.cCaption_Layout, 1, 1) = 'T'
+*!*					.Rotation = 90
+*!*				CASE SUBSTRC(.cCaption_Layout, 1, 1) = 'B'
+*!*					.Rotation = 270
+*!*				ENDCASE
+
+			DO CASE 
+			CASE SUBSTRC(.cCaption_Layout, 2, 1) = 'T'
+				.Top = .Top - FONTMETRIC(1, .FontName, .FontSize, IIF(.FontBold, 'B', '');
+					   					 + IIF(.FontItalic, 'I', '') + IIF(.BackStyle = 0, 'T', 'Q')) - 1 &&*0.7
+			CASE SUBSTRC(.cCaption_Layout, 2, 1) = 'B'
+				.Top = .Top + .oObjCaptioned.Heigth;
+					   - FONTMETRIC(1, .FontName, .FontSize,;
+					   			    IIF(.FontBold, 'B', '') + IIF(.FontItalic, 'I', '');
+					   			    	+ IIF(.BackStyle = 0, 'T', 'Q')) &&*0.3
+			CASE SUBSTRC(.cCaption_Layout, 2, 1) = 'M'
+			ENDCASE
+
+			.ZOrder(0)
+			.Visible = .T.
+		ELSE
+			.Visible = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE ccaption_layout_assign
+LPARAMETERS tuNewValue
+	THIS.cCaption_Layout = m.tuNewValue
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+LOCAL loI as Object
+*To do: Modify this routine for the Assign method
+	WITH THIS
+		.Enabled = m.vNewVal
+
+		IF !m.vNewVal
+		*баним контейнер-предок
+			.oObjCaptioned.Enabled = .F.
+		ELSE
+		*возможно контейнер-предок надо разрешить
+			WITH .oObjCaptioned
+				IF !EMPTY(.cChkVarName)
+					.Enabled = EVALUATE(.cChkVarName)
+				ENDIF
+			ENDWITH
+		ENDIF
+	ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*caption_assign 
+*ccaption_layout_assign 
+*enabled_assign 
+_memberdata XML Metadata for customizable properties
+ccaption_layout
+oobjcaptioned
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] lblcheckbox
+[START PROPERTIES]
+MS Sans Serif, 1, 8, 6, 13, 11, 12, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZO0PV17P
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblversion
+[START PROPERTIES]
+Caption = "Версия"
+FontSize = 9
+Name = "lblversion"
+WordWrap = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL lnElem as Integer, lcFileName as String
+LOCAL ARRAY laFile[1]
+	IF TYPE("m.goApp.oVars.cAppExeName") = 'C'
+		lcFileName = m.goApp.oVars.cAppExeName
+	ELSE
+		lcFileName = SYS(16, 0)
+	ENDIF
+
+	lnElem = AGETFILEVERSION(laFile, m.lcFileName)
+
+	IF m.lnElem > 0
+		THIS.Caption = 'v ' + laFile[4]
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] lblversion
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0LFTIB
+[CLASS] base_line
+[CLASSLOC] base_gui.vcx
+[BASECLASS] line
+[OBJNAME] lintitlebar
+[START PROPERTIES]
+Name = "lintitlebar"
+Width = 0
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] lintitlebar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AB0Z4NXY
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] okbutton
+[START PROPERTIES]
+Anchor = 12
+Caption = "\<Ok"
+Comment = "23x(80,100,120)"
+Default = .T.
+FontName = "Microsoft Sans Serif"
+FontSize = 8
+Height = 23
+Name = "okbutton"
+Picture = ..\bmp\16x16\check.bmp
+PicturePosition = 1
+Width = 94
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+..\bmp\16x16\check.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\check.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] okbutton
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU0II9O9
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] olecalendar
+[START PROPERTIES]
+Height = 100
+Name = "olecalendar"
+Width = 100
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=3118
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=45231
+[BINEND OLE2]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] olecalendar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TL0M49ZN
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] spidbutton
+[START PROPERTIES]
+BackStyle = 0
+Height = 22
+Name = "spidbutton"
+Style = 3
+TabStop = .F.
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF !THIS.Enabled
+	RETURN
+ENDIF
+
+THIS.cmdBtn.Click()
+ENDPROC
+PROCEDURE Init
+THIS.BORDERWIDTH=0
+THIS.cmdBtn.Enabled=THIS.Enabled
+THIS.shpForEvent.Enabled=THIS.Enabled
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+	THIS.cmdBtn.Enabled=m.vNewVal
+	THIS.shpForEvent.Enabled=m.vNewVal
+	THIS.Enabled=m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+lismousedown состояние кнопки мыши (нажата/отпущина)
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TL0M49ZO
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdBtn
+[PARENT] spidbutton
+[START PROPERTIES]
+Caption = ""
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 22
+Name = "cmdBtn"
+SpecialEffect = 2
+TabStop = .F.
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.TOP=0
+THIS.LEFT=0
+THIS.WIDTH=THIS.PARENT.WIDTH
+THIS.HEIGHT=THIS.PARENT.HEIGHT
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	THIS.Click()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TL0M49ZP
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] shpForEvent
+[PARENT] spidbutton
+[START PROPERTIES]
+BackStyle = 0
+BorderStyle = 0
+Height = 22
+Name = "shpForEvent"
+Style = 3
+Width = 23
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Click
+IF !THIS.Enabled
+	RETURN
+ENDIF
+
+THIS.PARENT.cmdBtn.Click()
+ENDPROC
+PROCEDURE Init
+THIS.TOP=0
+THIS.LEFT=0
+THIS.WIDTH=THIS.PARENT.WIDTH
+THIS.HEIGHT=THIS.PARENT.HEIGHT
+THIS.TOOLTIPTEXT=THIS.PARENT.cmdBtn.TOOLTIPTEXT
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+
+	IF m.tnButton=1
+		THIS.PARENT.cmdBtn.VISUALEFFECT=2
+		THIS.PARENT.lIsMouseDown=.T.
+	ENDIF
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+
+	THIS.PARENT.cmdBtn.VISUALEFFECT=1
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+
+	THIS.PARENT.cmdBtn.VISUALEFFECT=0
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+
+	IF BETWEEN(m.tnXCoord, OBJTOCLIENT(THIS, 2), OBJTOCLIENT(THIS, 2)+THIS.WIDTH) AND ;
+			BETWEEN(m.tnYCoord, OBJTOCLIENT(THIS, 1), OBJTOCLIENT(THIS, 1)+THIS.HEIGHT)
+		IF THIS.PARENT.lIsMouseDown
+			THIS.PARENT.cmdBtn.VISUALEFFECT=2
+		ELSE
+			THIS.PARENT.cmdBtn.VISUALEFFECT=1
+		ENDIF
+	ELSE
+		THIS.PARENT.cmdBtn.VISUALEFFECT=0
+	ENDIF
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+
+	IF m.tnButton=1
+		THIS.PARENT.cmdBtn.VISUALEFFECT=1
+		THIS.PARENT.lIsMouseDown=.F.
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] spidbutton
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TL0M49ZN
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] spidcheckbutton
+[START PROPERTIES]
+BackStyle = 0
+Height = 22
+Name = "spidcheckbutton"
+Style = 3
+TabStop = .F.
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF !THIS.Enabled
+	RETURN
+ENDIF
+*
+THIS.cmdBtn.Click()
+ENDPROC
+PROCEDURE Init
+THIS.BORDERWIDTH=0
+THIS.cmdBtn.Enabled=THIS.Enabled
+THIS.shpForEvent.Enabled=THIS.Enabled
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+	THIS.cmdBtn.Enabled=m.vNewVal
+	THIS.shpForEvent.Enabled=m.vNewVal
+	THIS.Enabled=m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+lismousedown состояние кнопки мыши (нажата/отпущина)
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RK13E3AB
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] cmdBtn
+[PARENT] spidcheckbutton
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .F.
+Caption = ""
+Height = 22
+Name = "cmdBtn"
+SpecialEffect = 2
+Style = 1
+TabStop = .F.
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.TOP=0
+THIS.LEFT=0
+THIS.WIDTH=THIS.PARENT.WIDTH
+THIS.HEIGHT=THIS.PARENT.HEIGHT
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	THIS.Click()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TL0M49ZP
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] shpForEvent
+[PARENT] spidcheckbutton
+[START PROPERTIES]
+BackStyle = 0
+BorderStyle = 1
+Curvature = 12
+Height = 22
+Name = "shpForEvent"
+Style = 3
+Width = 23
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Click
+IF !THIS.Enabled
+	RETURN
+ENDIF
+*
+THIS.PARENT.cmdBtn.Click()
+ENDPROC
+PROCEDURE Init
+THIS.TOP=0
+THIS.LEFT=0
+THIS.WIDTH=THIS.PARENT.WIDTH
+THIS.HEIGHT=THIS.PARENT.HEIGHT
+THIS.TOOLTIPTEXT=THIS.PARENT.cmdBtn.TOOLTIPTEXT
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+	*
+	IF m.tnButton=1
+		THIS.PARENT.cmdBtn.VISUALEFFECT=2
+		THIS.PARENT.IsMouseDown=.T.
+	ENDIF
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+	*
+	THIS.PARENT.cmdBtn.VISUALEFFECT=1
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+	*
+	THIS.PARENT.cmdBtn.VISUALEFFECT=0
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+	*
+	IF BETWEEN(m.tnXCoord, OBJTOCLIENT(THIS, 2), OBJTOCLIENT(THIS, 2)+THIS.WIDTH) AND ;
+			BETWEEN(m.tnYCoord, OBJTOCLIENT(THIS, 1), OBJTOCLIENT(THIS, 1)+THIS.HEIGHT)
+		IF THIS.PARENT.IsMouseDown
+			THIS.PARENT.cmdBtn.VISUALEFFECT=2
+		ELSE
+			THIS.PARENT.cmdBtn.VISUALEFFECT=1
+		ENDIF
+	ELSE
+		THIS.PARENT.cmdBtn.VISUALEFFECT=0
+	ENDIF
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF !THIS.Enabled
+		RETURN
+	ENDIF
+	*
+	IF m.tnButton=1
+		THIS.PARENT.cmdBtn.VISUALEFFECT=1
+		THIS.PARENT.IsMouseDown=.F.
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] spidcheckbutton
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QL0X7VO8
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] statusbar
+[START PROPERTIES]
+Align = 2
+Height = 20
+Name = "statusbar"
+Width = 100
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=36861
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=26800
+[BINEND OLE2]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] statusbar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A7ANN
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] thermometer
+[START PROPERTIES]
+
+AlwaysOnTop = .T.
+AutoCenter = .T.
+BorderStyle = 0
+Caption = ""
+Closable = .F.
+ControlBox = .F.
+Desktop = .T.
+DoCreate = .T.
+Height = 88
+MaxButton = .F.
+MinButton = .F.
+Name = "thermometer"
+ShowInTaskBar = .F.
+TitleBar = 0
+Width = 356
+_memberdata =      559<VFPData><memberdata name="updatestep" type="method" display="UpdateStep"/><memberdata name="npercentage" type="property" display="nPercentage"/><memberdata name="npercentage_assign" type="method" display="nPercentage_Assign"/><memberdata name="nprogress" type="property" display="nProgress"/><memberdata name="nstep" type="property" display="nStep"/><memberdata name="ntotal" type="property" display="nTotal"/><memberdata name="update" type="method" display="Update"/><memberdata name="nlastupdatedsec" type="property" display="nLastUpdatedSec"/></VFPData>
+ccurrenttask = ('')
+nlastupdatedsec = 0
+npercentage = (0)
+nprogress = (0)
+nstep = (0)
+ntotal = 
+[END PROPERTIES]
+[START PROTECTED]
+nlastupdatedsec
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS tcTitle, tnTotal, tnStep, tcEsc, tlMarque
+	WITH THIS
+		.lblTitle.Caption = IIF(EMPTY(m.tcTitle), '', m.tcTitle)
+		.lblEscape.Caption = IIF(EMPTY(m.tcEsc), '', m.tcEsc)
+
+		.nTotal = IIF(EMPTY(m.tnTotal), 0, m.tnTotal)
+		.nStep = IIF(EMPTY(m.tnStep), 1, m.tnStep)
+
+		.oPB.ctlmarquee = m.tlMarque
+		
+		IF m.tlMarque
+			.lblPercentage.Visible = .F.
+			.opB.Width = 326
+		ENDIF
+		*инит время первой загрузки
+		.nLastUpdatedSec = SECONDS()
+
+		.Visible = .T.
+
+		DOEVENTS FORCE
+	ENDWITH
+ENDPROC
+PROCEDURE npercentage_assign
+LPARAMETERS vNewVal
+	THIS.nPercentage = m.vNewVal
+
+	THIS.lblPercentage.Caption = THIS.opB.ctlCaption
+ENDPROC
+PROCEDURE update
+LPARAMETERS tnProgress, tcTask
+LOCAL lnPercentage, lnStep
+	IF !(PARAMETERS() <> 0 AND TYPE("m.tnProgress") = 'N')
+		tnProgress = 0
+	ENDIF
+
+	WITH THIS
+		IF PARAMETERS() >= 2 AND TYPE('m.tcTask') = 'C'
+			.cCurrentTask = m.tcTask
+		ENDIF
+
+		lnStep = m.tnProgress - .nProgress
+
+		.nProgress = MAX(0, m.tnProgress)
+
+		IF !EMPTY(THIS.nTotal)
+			lnPercentage = INT(.nProgress / .nTotal * 100)
+		ELSE
+			lnPercentage = .nProgress
+		ENDIF
+
+		lnPercentage = MIN(100, MAX(0, m.lnPercentage))
+
+		IF m.lnPercentage <> .nPercentage
+			.oPB.ctlStepIt(m.lnPercentage - .nPercentage)
+			.nPercentage = m.lnPercentage
+		ENDIF
+
+		IF !.lblTask.Caption == .cCurrentTask
+			.lblTask.Caption = .cCurrentTask
+		ENDIF
+		*каждые пару сек делает doevents
+		IF SECONDS() - .nLastUpdatedSec >= _SECONDS_REFRESH
+			.nLastUpdatedSec = SECONDS()
+
+			DOEVENTS FORCE
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE updatestep
+LPARAMETERS tnStep, tcTask
+LOCAL lnPercentage, lnStep
+	WITH THIS
+		IF EMPTY(m.tnStep)
+			tnStep = .nStep
+		ENDIF
+		
+		IF TYPE("m.tcTask") = 'C'
+			.cCurrentTask = m.tcTask
+		ENDIF
+
+		.nProgress = .nProgress + m.tnStep
+
+		IF !EMPTY(.nTotal)
+			lnPercentage = INT(.nProgress / .nTotal * 100)
+		ELSE
+			lnPercentage = .nProgress
+		ENDIF
+
+		lnPercentage = MIN(100, MAX(0, m.lnPercentage))
+
+		IF m.lnPercentage <> .nPercentage
+			.oPB.ctlStepIt(m.tnStep)
+
+			.nPercentage = m.lnPercentage
+		ENDIF
+
+		IF !.lblTask.Caption == .cCurrentTask
+			.lblTask.Caption = .cCurrentTask
+		ENDIF
+		*каждые пару сек делает doevents
+		IF SECONDS() - .nLastUpdatedSec >= _SECONDS_REFRESH
+			.nLastUpdatedSec = SECONDS()
+
+			DOEVENTS FORCE
+		ENDIF
+	ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+15[END RESERVED2]
+[START RESERVED3]
+*npercentage_assign 
+*update Updates thermometer. Parameter iProgress, cTask. iProgress - percent to display, cTask - message to display.
+*updatestep 
+_memberdata XML Metadata for customizable properties
+ccurrenttask Current task.
+nlastupdatedsec
+npercentage This is percentage complete to display
+nprogress
+nstep
+ntotal
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A7AH9
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblEscape
+[PARENT] thermometer
+[START PROPERTIES]
+Alignment = 2
+BackColor = 192,192,192
+BackStyle = 0
+Caption = ""
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 9
+Height = 14
+Left = 17
+Name = "lblEscape"
+Top = 68
+Visible = .F.
+Width = 322
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1YV0Y9N4L
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblPercentage
+[PARENT] thermometer
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "0 %"
+Height = 17
+Left = 314
+Name = "lblPercentage"
+Top = 46
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A795Z
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblTask
+[PARENT] thermometer
+[START PROPERTIES]
+BackColor = 192,192,192
+BackStyle = 0
+Caption = ""
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 16
+Left = 18
+Name = "lblTask"
+Top = 27
+Width = 319
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A78ZU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblTitle
+[PARENT] thermometer
+[START PROPERTIES]
+BackColor = 192,192,192
+BackStyle = 0
+Caption = ""
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 9
+Height = 16
+Left = 18
+Name = "lblTitle"
+Top = 14
+Width = 319
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1YU1CJDNU
+[CLASS] ctl32_progressbar
+[CLASSLOC] ctl32\ctl32.vcx
+[BASECLASS] container
+[OBJNAME] oPB
+[PARENT] thermometer
+[START PROPERTIES]
+Height = 18
+Left = 16
+Name = "oPB"
+Top = 45
+Width = 296
+ctlTextBox.Name = "ctlTextBox"
+ctlformat = ValPercent
+lblname.Name = "lblname"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A78OQ
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] thermometer
+[START PROPERTIES]
+BackStyle = 0
+Height = 88
+Left = 0
+Name = "Shape1"
+Top = 0
+Width = 356
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A77HW
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape10
+[PARENT] thermometer
+[START PROPERTIES]
+BorderColor = 128,128,128
+Height = 81
+Left = 3
+Name = "Shape10"
+Top = 3
+Width = 1
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A78JG
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape2
+[PARENT] thermometer
+[START PROPERTIES]
+BorderColor = 255,255,255
+Height = 1
+Left = 1
+Name = "Shape2"
+Top = 1
+Width = 353
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A78DV
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape3
+[PARENT] thermometer
+[START PROPERTIES]
+BorderColor = 255,255,255
+Height = 85
+Left = 1
+Name = "Shape3"
+Top = 1
+Width = 1
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A788L
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape4
+[PARENT] thermometer
+[START PROPERTIES]
+BorderColor = 128,128,128
+Height = 1
+Left = 1
+Name = "Shape4"
+Top = 86
+Width = 354
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A783L
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape6
+[PARENT] thermometer
+[START PROPERTIES]
+BorderColor = 128,128,128
+Height = 86
+Left = 354
+Name = "Shape6"
+Top = 1
+Width = 1
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A77Y0
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape7
+[PARENT] thermometer
+[START PROPERTIES]
+BorderColor = 255,255,255
+Height = 1
+Left = 3
+Name = "Shape7"
+Top = 84
+Width = 350
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A77SQ
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape8
+[PARENT] thermometer
+[START PROPERTIES]
+BorderColor = 255,255,255
+Height = 82
+Left = 352
+Name = "Shape8"
+Top = 3
+Width = 1
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZJ1A77MW
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape9
+[PARENT] thermometer
+[START PROPERTIES]
+BorderColor = 128,128,128
+Height = 1
+Left = 3
+Name = "Shape9"
+Top = 3
+Width = 349
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] thermometer
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QQ1EGHZQ
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] treeview
+[START PROPERTIES]
+Anchor = 15
+Height = 188
+Name = "treeview"
+Width = 190
+imagelistcontrol = THISFORM.ImageList.Object
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL lcImageList as String
+	lcImageList = ALLTRIM(THIS.ImageListControl)
+
+	IF EMPTY(m.lcImageList) OR TYPE(m.lcImageList) <> 'O'
+		THISFORM.AddObject("_ImageList", "ImageList")
+		lcImageList = "THISFORM._ImageList.Object"
+		THIS.ImageListControl = m.lcImageList
+	ENDIF
+
+	THIS.Object.ImageList = m.&lcImageList
+ENDPROC
+PROCEDURE KeyPress
+*** ActiveX Control Event ***
+LPARAMETERS tnKeyAscii
+	IF m.tnKeyAscii = 13
+		THIS.Click()
+	ENDIF
+ENDPROC
+PROCEDURE MouseDown
+*** ActiveX Control Event ***
+LPARAMETERS tnbutton, tnshift, tnx, tny
+	DODEFAULT(m.tnbutton, m.tnshift, m.tnx, m.tny)
+*!*	THIS.SetFocus()
+
+*!*	IF button = 2
+*!*		IF THIS.Nodes.Count = 0
+*!*			THIS.showMenu()
+*!*		ELSE
+*!*			IF ISNULL(THIS.HitTest(x*THISFORM.nTwipX, y*THISFORM.nTwipY)) = .F.
+*!*				THIS.SelectedItem = THIS.HitTest(x*THISFORM.nTwipX, y*THISFORM.nTwipY)
+*!*				IF THIS.IsNeedNodeClickRightMouseDown
+*!*					THIS.NodeClick(THIS.SelectedItem)
+*!*				ENDIF
+*!*				THIS.showMenu()
+*!*			ENDIF
+*!*		ENDIF
+*!*	ENDIF
+ENDPROC
+PROCEDURE Refresh
+*** ActiveX Control Method ***
+NODEFAULT
+ENDPROC
+[END METHODS]
+[BINSTART OLE]
+CHECKSUM=25114
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=26800
+[BINEND OLE2]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+imagelistcontrol
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\text_tree.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\text_tree.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] treeview
+[EOF]

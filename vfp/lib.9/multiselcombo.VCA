@@ -1,0 +1,923 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1250
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18M0JU7WG
+[CLASS] base_combobox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] combobox
+[OBJNAME] cboms
+[START PROPERTIES]
+BoundColumn = 1
+ColumnCount = 1
+DisabledBackColor = 248,247,241
+DisabledForeColor = 0,0,0
+DisplayCount = 7
+FontSize = 8
+Format = "iT"
+Height = 22
+Name = "cboms"
+SelectOnEntry = .T.
+Width = 150
+_memberdata =      521<VFPData><memberdata name="lmultisel" type="property" display="lMultisel"/><memberdata name="buildselections" type="method" display="buildSelections"/><memberdata name="lautodropdown" type="property" display="lAutoDropDown"/><memberdata name="ldroppeddown" type="property" display="lDroppedDown"/><memberdata name="ocomboformref" type="property" display="oComboformRef"/><memberdata name="ckeycolumn" type="property" display="cKeyColumn"/><memberdata name="csourcealias" type="property" display="cSourceAlias"/><<VFPData>
+ccaptionallselected = -all-
+ccaptioncmdall = \<All selected
+ccaptioncmdnone = Clear \<selections
+ccaptionnoneselected = -none-
+ccaptionpartialselected = -selection %n-
+ccolumnheaders = 
+ccolumnslist = 
+ccolumnwidths = 
+ccontrolsource = 
+cdelimiter = ,
+ckeycolumn = 
+cquoteescapeseq = ''
+crowsource = 
+cselectedkeys = 
+csourcealias = 
+lautodropdown = .T.
+ldroppeddown = .F.
+lmultisel = .T.
+lshowheaders = .T.
+ocomboformref = .NULL.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DropDown
+LOCAL lnI
+	NODEFAULT
+
+	WITH THIS
+		.lDroppedDown=.t.
+
+		SELECT (.cSourceAlias)
+		GO TOP
+
+		IF RECCOUNT(.cSourceAlias)=0
+			RETURN 
+		ELSE
+			IF ALEN(.aSelRecnos, 1)<>RECCOUNT(.cSourceAlias)
+				DIMENSION .aSelRecnos[RECCOUNT(.cSourceAlias)]
+			ENDIF
+
+			FOR lnI=1 TO ALEN(.aSelRecnos, 1)
+				IF VARTYPE(.aSelRecnos[m.lnI])<>'N'		&&default array value
+					.aSelRecnos[m.lnI]=0
+				ENDIF
+			ENDFOR
+		ENDIF 
+		
+		IF THISFORM.ShowWindow=2
+			.oComboformRef=Newobject('ComboForm_desktop', THIS.ClassLibrary, '', THIS, THISFORM)
+		ELSE
+			.oComboformRef=Newobject('ComboForm', THIS.ClassLibrary, '', THIS, THISFORM)
+		ENDIF
+
+		.oComboformRef.Visible=.t.
+		.oComboformRef.grdList.Refresh()
+		.oComboformRef.Show()
+	ENDWITH
+ENDPROC
+PROCEDURE Init
+#define MSG_WRONG_ROWSOURCETYPE "This combobox class works only if RowSourceType is 2,3,4 or 6"
+#define MSG_CLASS_INIT_ERROR	"Error in class Init(). Missing required values for existing RowSourceType"
+#define DEF_DISPLAYCOUNT	7
+LPARAMETERS tcSourceAlias, tcColumnsList, tcColumnHeaders
+LOCAL lnI
+	WITH THIS
+		IF VARTYPE(m.tcSourceAlias)='C'
+			.cSourceAlias=m.tcSourceAlias
+		ENDIF
+
+		IF VARTYPE(m.tcColumnsList)='C'
+			.cColumnsList=m.tcColumnsList
+		ENDIF
+
+		IF VARTYPE(m.tcColumnHeaders)='C'
+			.cColumnHeaders=m.tcColumnHeaders
+		ENDIF
+		*Some checks 
+		IF !INLIST(.RowSourceType, 2, 3, 4, 6)
+			MESSAGEBOX(MSG_WRONG_ROWSOURCETYPE, 64, "Class error")
+			RETURN .f. 
+		ENDIF 
+*!*		IF (INLIST(.RowSourceType , 2,3,4) AND EMPTY( .ColumnsList)) ;
+*!*			OR INLIST(.RowSourceType , 2,3,4) AND EMPTY( .SourceAlias)
+*!*			MESSAGEBOX(MSG_CLASS_INIT_ERROR,64 ,"Class error")
+*!*			RETURN .f.
+*!*		ENDIF 
+		*fix .Displaycount
+		IF .DisplayCount=0
+			.DisplayCount=DEF_DISPLAYCOUNT
+		ENDIF
+		*get .SourceAlias or .ColumsList, if not specified
+		IF .RowSourceType=2 AND EMPTY(.cSourceAlias)
+			.cSourceAlias=.cRowSource
+		ENDIF
+
+		IF .RowSourceType=6 AND EMPTY(.cSourceAlias)
+			.cSourceAlias=LEFT(.cRowSource, ATC('.', .cRowSource, 1)-1)
+		ENDIF
+
+		IF .RowSourceType=6 AND EMPTY(.cColumnsList)
+			.cColumnsList=SUBSTR(.cRowSource, ATC('.', .cRowSource)+1)
+		ENDIF
+
+		IF EMPTY(.cColumnHeaders)
+			.cColumnHeaders=.cColumnsList
+		ENDIF
+		*fill arrays
+		ALINES(.aColumns, .cColumnsList, 1, ',')
+		ALINES(.aColumnHeaders, .cColumnHeaders, 1, ',')
+		*количество колонок
+		.ColumnCount = ALEN(.aColumns, 1)
+		*уравновесить массивы описатели
+		IF ALEN(.aColumnHeaders, 1) <> .ColumnCount
+			DIMENSION .aColumnHeaders[.ColumnCount]
+		ENDIF
+
+		ALINES(.aColumnWidths, .cColumnWidths, 1, ',')
+
+		IF EMPTY(.aColumnWidths)
+			.aColumnWidths = .F.
+		ENDIF
+
+		IF ALEN(.aColumnWidths, 1) <> .ColumnCount
+			DIMENSION .aColumnWidths[.ColumnCount]
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+*Ctrl+Down , Alt+Down, F4
+	IF m.nKeyCode=145 OR m.nKeycode=-3 OR m.nKeyCode=160
+		IF THIS.lDroppedDown
+			KEYBOARD '{ESC}'
+		ELSE
+			THIS.dropDown()
+		ENDIF
+	ENDIF
+ENDPROC
+PROCEDURE buildselections
+LOCAL liCount, liSelCount, lcKeyValue, lcKeyType, lnI, lnKeys, lcToolTipText
+	SELECT (THIS.cSourceAlias)
+
+	STORE '' TO THIS.ToolTipText, THIS.cSelectedKeys 
+	STORE 0 TO liSelCount, liCount
+	
+	lcKeyType = Type(m.goApp.oFunction.getWordNum(THIS.cKeyColumn, 1, ','))
+
+	DO CASE
+	CASE m.lcKeyType = 'C'
+		THIS.aSelKeys = ''
+	CASE INLIST(m.lcKeyType, 'N', 'Y')
+		THIS.aSelKeys = 0
+	CASE INLIST(m.lcKeyType, 'D', 'T')
+		THIS.aSelKeys = {^0001.01.01}
+	CASE m.lcKeyType = 'L'
+		THIS.aSelKeys = .F.
+	OTHERWISE
+		THIS.aSelKeys = .F.
+	ENDCASE
+
+	SCAN
+		liCount=m.liCount+1 
+
+		IF THIS.aSelRecnos[Recno()]=1
+			liSelCount = m.liSelCount + 1
+
+			IF NOT EMPTY(THIS.cKeyColumn)
+				DO CASE
+				CASE m.lcKeyType = 'C'
+					lcKeyValue = ['] + STRTRAN(EVALUATE(m.goApp.oFunction.getWordNum(THIS.cKeyColumn, 1, ',')), "'", THIS.cQuoteEscapeSeq) + [']
+				CASE INLIST(m.lcKeyType, 'N', 'Y')
+					lcKeyValue = TRANSFORM(EVALUATE(m.goApp.oFunction.getWordNum(THIS.cKeyColumn, 1, ',')))
+				CASE INLIST(m.lcKeyType, 'D', 'T')
+					lcKeyValue = ['{] + TRANSFORM(EVALUATE(m.goApp.oFunction.getWordNum(THIS.cKeyColumn, 1, ','))) + [}']
+				OTHERWISE
+					lcKeyVaue = ''
+				ENDCASE
+
+				IF m.liSelCount > 1
+					THIS.cSelectedKeys = THIS.cSelectedKeys + ','
+				ENDIF
+				
+				THIS.cSelectedKeys=THIS.cSelectedKeys+m.lcKeyValue 
+				*полей для экспорта результата в массив может быть несколько
+				lnKeys = m.goApp.oFunction.getWordCount(THIS.cKeyColumn, ',')
+
+				DIMENSION THIS.aSelKeys[m.liSelCount, m.lnKeys]
+
+				FOR lnI = 1 TO m.lnKeys
+					THIS.aSelKeys[m.liSelCount, m.lnI] = Evaluate(m.goApp.oFunction.getWordNum(THIS.cKeyColumn, m.lnI, ','))
+				ENDFOR
+			endif 
+
+			lcToolTipText = THIS.ToolTipText + Iif(m.liSelCount>1, THIS.cDelimiter, '')+Trim(Transform(Evaluate(THIS.aColumns[1])))
+
+			IF LEN(m.lcToolTipText) > 4000
+				lcToolTipText = LEFT(m.lcToolTipText, 4000)
+			ENDIF
+
+			STORE m.lcToolTipText TO THIS.ToolTipText 
+
+			DIMENSION THIS.aSelDispValues[m.liSelCount]
+			THIS.aSelDispValues[m.liSelCount]=Trim(Transform(Evaluate(THIS.aColumns[1])))
+		ENDIF 
+	ENDSCAN 
+
+	GO TOP 
+
+	DO CASE
+	CASE m.liSelCount=m.liCount
+		THIS.DisplayValue=THIS.cCaptionAllSelected 
+	CASE m.liSelcount=1
+		THIS.DisplayValue=THIS.ToolTipText 
+	CASE m.liSelcount>1 AND m.liSelCount<m.liCount
+		THIS.DisplayValue = STRTRAN(THIS.cCaptionPartialSelected, "%n", LTRIM(TRANSFORM(m.liSelcount)))
+	CASE m.liSelCount=0
+		THIS.DisplayValue=THIS.cCaptionNoneSelected 
+	ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*buildselections build aSelDispValues, aSelKeys, TooltipText and selectedKeys
+^acolumnheaders[1,0] array for headers captions. If not columnsHeaders not specified, filled from .ColumnsList
+^acolumns[1,0] array to hold grid columns sources. If not specified and RowSourceType = Alias, filled from that property
+^acolumnwidths[1,0] Array to hold column widths, filled in Init from ColumnWidths. If not defined, default for a column is 100 pixels
+^aseldispvalues[1,0] 
+^aselkeys[1,0] selected unique keys, as specified in keyColumn
+^aselrecnos[1,0] selected recno()s, used by firs checkbox column control source
+_memberdata XML Metadata for customizable properties
+ccaptionallselected
+ccaptioncmdall
+ccaptioncmdnone
+ccaptionnoneselected
+ccaptionpartialselected
+ccolumnheaders Comma delimited column headers. If absent, the class tries to get column headers from field names
+ccolumnslist comma delimited columns list. For RowSourceType 3 or 4
+ccolumnwidths
+ccontrolsource
+cdelimiter delimiter for DisplayValues List stored in ToolTipText
+ckeycolumn unique key column, if any, used to generate comma delimited list
+cquoteescapeseq escape sequence for simple quotes
+crowsource
+cselectedkeys Comma delimited list of keys. Suitable for IN() predicate in SQL Select. 
+csourcealias Source alias for searching operations. If SourceType = 2 or 6 , the value is known. otherwise must be specified 
+lautodropdown Specifies if the list will be shown automatically when search begin, after .CharLimit entered chars
+ldroppeddown is the list form active?
+lmultisel
+lshowheaders Show headers for list. Logical.
+ocomboformref Reference to form that mimics combo list. Internal use.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+special combo object[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cboms
+[START PROPERTIES]
+Courier New, 0, 8, 7, 14, 11, 7, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18M0PPFE5
+[CLASS] base_form
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] comboform
+[START PROPERTIES]
+AlwaysOnTop = .T.
+BorderStyle = 0
+Caption = "ComboForm"
+Closable = .F.
+DataSession = 1
+DoCreate = .T.
+Height = 256
+KeyPreview = .T.
+Left = 0
+Name = "comboform"
+ShowInTaskBar = .F.
+ShowTips = .T.
+ShowWindow = 1
+TitleBar = 0
+Top = 0
+Width = 301
+WindowType = 1
+_memberdata =      515<VFPData><memberdata name="buildgridcolumns" type="method" display="buildGridColumns"/><memberdata name="comboboxref" type="property" display="ComboboxRef"/><memberdata name="gettoplevelform" type="method" display="getTopLevelForm"/><memberdata name="ncycl" type="property" display="nCycl"/><memberdata name="ocomboboxref" type="property" display="oComboboxRef"/><memberdata name="lcheckup" type="property" display="lCheckUp"/><memberdata name="lcheckup_assign" type="method" display="lCheckUp_Assign"/></VFPData<VF
+dbcontainer.Name = "dbcontainer"
+lcheckup = .F.
+ncycl = 0
+ocomboboxref = .NULL.
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+*2005-01-21
+THIS.tmrCheckTitleBarClick.Enabled=.t.
+*!*	THIS.tmrCheckMousOut.Enabled=.t.
+ENDPROC
+PROCEDURE Deactivate
+THIS.Release()
+ENDPROC
+PROCEDURE Init
+LPARAMETERS toComboRef, toFormRef
+LOCAL lnI, lnTotalWidth, loTopLevelForm
+	IF ISNULL(m.toComboRef) OR VARTYPE(m.toComboRef)<>'O'
+		RETURN .f.
+	ELSE
+		THIS.oComboboxRef=m.toComboRef 
+	ENDIF 
+
+	WITH THIS
+		loTopLevelForm=.getTopLevelForm() &&get host form reference for setting position
+		lntotalWidth=.grdList.colSelection.Width+.grdList.GridLineWidth  
+		*initialize the grid list, build columns from combobox aColumns array property
+		.grdList.RecordSource=.oComboboxRef.cSourceAlias
+		.grdList.ColumnCount=.oComboboxRef.ColumnCount+1
+		.grdList.colSelection.chkSelection.ControlSource="THISFORM.oComboboxRef.aSelRecnos[Recno('"+.oComboboxRef.cSourceAlias+"')]"
+
+		.cmdAll.Caption=.oComboboxRef.cCaptionCmdAll
+		.cmdAll.ToolTipText=STRTRAN(.oComboboxRef.cCaptionCmdAll, "\<", '')
+		.cmdNone.Caption=.oComboboxRef.cCaptionCmdNone
+		.cmdNone.ToolTipText=STRTRAN(.oComboboxRef.cCaptionCmdNone, "\<", '')
+
+		.SetAll("DynamicBackColor",;
+			"Iif(THISFORM.oComboboxRef.aSelRecnos[Recno('"+.oComboboxRef.cSourceAlias+"')]=1, THISFORM.grdList.SelectedItemBackColor, THISFORM.grdList.BackColor)",;
+			"Column") 
+
+		.SetAll("DynamicForeColor",;
+			"Iif(THISFORM.oComboboxRef.aSelRecnos[Recno('"+.oComboboxRef.cSourceAlias+"')]=1, THISFORM.grdList.SelectedItemForeColor, THISFORM.grdList.ForeColor)",;
+			"Column")
+		
+		FOR lnI=2 TO .grdList.ColumnCount
+			IF VARTYPE(.oComboboxRef.aColumns[m.lnI-1])='C'
+				.grdList.Columns(m.lnI).ControlSource=.oComboboxRef.cSourceAlias+'.'+.oComboboxRef.aColumns[m.lnI-1]
+				.grdList.Columns(m.lnI).Tag=.oComboboxRef.cSourceAlias+'.'+.oComboboxRef.aColumns[m.lnI-1]
+				.grdList.Columns(m.lnI).Controls(1).Caption = IIF(VARTYPE(.oComboboxRef.aColumnHeaders[m.lnI - 1]) <> 'C',;
+																  '',;
+																  .oComboboxRef.aColumnHeaders[m.lnI - 1])
+				.grdList.Columns(m.lnI).ReadOnly=.T.
+				.grdList.Columns(m.lnI).FontName=.oComboboxRef.FontName
+				.grdList.Columns(m.lnI).FontSize=.oComboboxRef.FontSize
+				.grdList.Columns(m.lnI).Controls(1).FontName=.oComboboxRef.FontName
+				.grdList.Columns(m.lnI).Controls(1).FontSize=.oComboboxRef.FontSize
+				.grdList.Columns(m.lnI).Controls(2).FontName=.oComboboxRef.FontName
+				.grdList.Columns(m.lnI).Controls(2).FontSize=.oComboboxRef.FontSize
+				*check if width for the column is specified, otherwise default is 100
+				.grdList.Columns(m.lnI).Width = FONTMETRIC(6, .grdList.Columns(m.lnI).FontName,;
+														   .grdList.Columns(m.lnI).FontSize);
+											    * IIF(VARTYPE(.oComboboxRef.aColumnWidths[m.lnI - 1]) = 'C',;
+											    	  VAL(.oComboboxRef.aColumnWidths[m.lnI - 1]),;
+											    	  IIF(INLIST(TYPE(.oComboboxRef.aColumns[m.lnI - 1]), 'D', 'T'),;
+											    	  	  19,;
+											    	  	  FSIZE(.oComboboxRef.aColumns[m.lnI - 1]) + 1))
+
+				lnTotalWidth=m.lnTotalWidth+.grdList.Columns(m.lnI).Width+.grdList.GridLineWidth
+
+				IF VARTYPE(.oComboboxRef.aColumnHeaders[m.lnI-1])='C'
+					.grdList.Columns(m.lnI).Header1.Caption = .oComboboxRef.aColumnHeaders[m.lnI-1]
+					.grdList.Columns(m.lnI).Header1.Alignment = 2
+				ENDIF 
+			ENDIF 
+		ENDFOR
+		
+		lnTotalWidth=m.lnTotalWidth+SYSMETRIC(5)
+		*total height and width of grid
+		.grdList.Height=.grdList.HeaderHeight+(.grdList.RowHeight*.oComboboxRef.DisplayCount)
+		.grdList.Width=m.lnTotalWidth+6
+		*Calculate width, height and position
+		IF .oComboboxRef.lShowHeaders=.f.
+			.grdList.HeaderHeight=0
+		ENDIF 
+
+		.grdList.colSelection.Visible=.oComboboxRef.lMultiSel
+	*!*			.grdList.colSelection.Enabled=.F.
+
+		.Height=.grdList.Height+.cmdAll.Height+2
+		.Width=m.lnTotalWidth+6
+
+		.Top=.oComboboxRef.Height+OBJTOCLIENT(.oComboboxRef,1)+SYSMETRIC(4)+SYSMETRIC(9)+m.toFormRef.top
+		.Left=OBJTOCLIENT(.oComboboxRef, 2)+SYSMETRIC(3) + m.toFormRef.left 
+		*check to see if "drop up" or horizontal position shifting needed	
+		DO CASE 
+		CASE INLIST(m.toFormRef.ShowWindow, 0, 1)
+			IF .Left+.Width>m.loTopLevelForm.Width 	
+				.Left=m.loTopLevelForm.Width-.Width-4
+			ENDIF
+		
+			IF .Top+.Height>m.loTopLevelForm.Height
+				.Top=.Top-.oComboboxRef.Height-.Height-2
+			ENDIF 
+		CASE m.toFormRef.ShowWindow=2
+			IF .Left+.Width>SYSMETRIC(1)
+				.Left=SYSMETRIC(1)-.Width-4
+			ENDIF
+		
+			IF .Top+.Height>SYSMETRIC(2)
+				.Top=.Top-.oComboboxRef.Height-.Height-2
+			ENDIF 
+		ENDC
+
+		.grdList.Refresh()
+	ENDWITH
+ENDPROC
+PROCEDURE Release
+THIS.oComboboxRef.lDroppedDown=.f. 
+THIS.oComboboxRef.buildSelections()
+ENDPROC
+PROCEDURE gettoplevelform
+*from Foundation Classes "_ui.vcx"
+	ASSERT TYPE("_SCREEN.ActiveForm") # "O"  OR ;
+	       INLIST(_SCREEN.ActiveForm.ShowWindow, 0,1,2)
+
+	DO CASE
+	CASE _SCREEN.FormCount=0 OR ;
+	     (TYPE("_SCREEN.ActiveForm")="O" AND ;
+	     _SCREEN.ActiveForm.ShowWindow=0 )     && ShowWindow In Screen
+			     
+	     loTopForm=_SCREEN
+	CASE (TYPE("_SCREEN.ActiveForm")="O" AND ;
+	      _SCREEN.ActiveForm.ShowWindow=2 )    && ShowWindow As Top Form
+
+	     loTopForm=_SCREEN.ActiveForm
+	OTHERWISE 
+	     FOR EACH loForm IN _SCREEN.Forms  && note: these may be toolbars
+	                                       && if undocked, but that's okay --
+	                                       && they are only ShowWIndow 0 or 1.
+
+	        IF loForm.ShowWindow=2 && the first one in the collection will
+	                                && be "active top form"
+	           loTopForm=loForm
+	           EXIT
+	        ENDIF
+	     ENDFOR
+			     
+	     IF VARTYPE(loTopForm)#"O"
+	        loTopForm=_SCREEN
+	     ENDIF
+	ENDCASE
+RETURN loTopForm     
+
+ENDPROC
+PROCEDURE lcheckup_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+	WITH THIS
+		.lCheckUp = m.vNewVal
+	
+		IF m.vNewVal
+			.cmdAll.Click()
+			
+			.gRDLIST.colSelection.hdSelection.Caption = ""
+		ELSE
+			.cmdNone.Click()
+
+			.gRDLIST.colSelection.hdSelection.Caption = " "
+		ENDIF
+	ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED3]
+*buildgridcolumns 
+*gettoplevelform 
+*lcheckup_assign 
+lcheckup
+ncycl
+ocomboboxref
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+the "always on top" form that mimics combo list[END RESERVED7]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18U0KAIDG
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAll
+[PARENT] comboform
+[START PROPERTIES]
+Anchor = 134
+Caption = ""
+DisabledPicture = verifiy_16d.bmp
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+Left = 20
+Name = "cmdAll"
+Picture = ..\bmp\16x16\verifiy_16h.bmp
+PictureMargin = 0
+PicturePosition = 1
+Top = 232
+Width = 140
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF THISFORM.oComboboxRef.lMultiSel
+	THISFORM.oComboboxRef.aSelRecnos=1
+ELSE
+	THISFORM.oComboboxRef.aSelRecnos[RECNO()]=1
+ENDIF
+
+THISFORM.grdLIST.Refresh()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WU0NTEA0
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdExit
+[PARENT] comboform
+[START PROPERTIES]
+Anchor = 6
+Cancel = .T.
+Caption = ""
+Default = .T.
+DisabledPicture = exit16_d.png
+Height = 22
+Left = 0
+Name = "cmdExit"
+Picture = ..\bmp\16x16\exit16.png
+PictureMargin = 1
+PicturePosition = 1
+Top = 232
+Width = 22
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WU0NTE9Y
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdNone
+[PARENT] comboform
+[START PROPERTIES]
+Anchor = 44
+Caption = ""
+DisabledPicture = new_16d.bmp
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+Left = 160
+Name = "cmdNone"
+Picture = ..\bmp\16x16\new_16h.bmp
+PictureMargin = 0
+PicturePosition = 1
+Top = 232
+Width = 140
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.oComboboxRef.aSelRecnos=0
+THISFORM.grdLIST.Refresh()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18M0QRSGW
+[CLASS] base_grid
+[CLASSLOC] base_gui.vcx
+[BASECLASS] grid
+[OBJNAME] grdList
+[PARENT] comboform
+[START PROPERTIES]
+AllowAutoColumnFit = 2
+AllowCellSelection = .F.
+AllowRowSizing = .F.
+Anchor = 15
+Column1.Bound = .F.
+Column1.FontName = "Microsoft Sans Serif"
+Column1.FontSize = 8
+Column1.Name = "colSelection"
+Column1.ReadOnly = .T.
+Column1.Sparse = .F.
+Column1.Width = 18
+ColumnCount = 1
+DeleteMark = .F.
+FontSize = 8
+GridLineColor = 192,192,192
+GridLines = 2
+HeaderHeight = 18
+Height = 232
+HighlightStyle = 0
+Left = 0
+Name = "grdList"
+Optimize = .T.
+ReadOnly = .T.
+RecordMark = .F.
+RecordSourceType = 1
+RowHeight = 16
+ScrollBars = 2
+SelectedItemBackColor = 255,255,10
+SelectedItemForeColor = 0,0,0
+Top = 0
+Width = 300
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+IF THISFORM.oComboboxRef.lMultiSel
+	IF ASCAN(THISFORM.oComboboxRef.aSelRecnos, 1)=0
+		THISFORM.oComboboxRef.aSelRecnos[Recno()]=1
+
+		THIS.colSelection.chkSelection.Visible=.T.
+	ENDIF
+ELSE
+	THISFORM.oComboboxRef.aSelRecnos=0
+	THISFORM.oComboboxRef.aSelRecnos[Recno()]=1
+
+	THIS.colSelection.chkSelection.Visible=.T.
+ENDIF
+
+THISFORM.Release()
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	DO CASE
+	CASE m.nKeyCode=32 and m.nShiftAltCtrl=0
+	*пробел
+		THIS.RightClick() 
+	CASE m.nKeyCode=22 and m.nShiftAltCtrl=0
+	*инсерт
+		THIS.RightClick()
+	CASE m.nKeyCode=13 and m.nShiftAltCtrl=0
+	*энтер
+		THIS.DblClick()
+	OTHERWISE
+	ENDCASE
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+LOCAL lnOldValue
+	IF m.nButton=1 AND m.nXCoord<THIS.colSelection.Width-2 AND m.nYCoord>THIS.HeaderHeight
+		lnOldValue=THISFORM.oComboboxRef.aSelRecnos[Recno()]
+
+		IF !THISFORM.oComboboxRef.lMultiSel
+			THISFORM.oComboboxRef.aSelRecnos=0
+			THISFORM.grdLIST.Refresh()
+		ENDIF
+
+		THISFORM.oComboboxRef.aSelRecnos[Recno()]=BITXOR(m.lnOldValue, 1)
+
+		THIS.colSelection.chkSelection.Visible=.T.
+	ENDIF
+ENDPROC
+PROCEDURE RightClick
+LOCAL lnOldValue
+	*если разрешен множественный выбор то в массив пишется много элементов :)
+	lnOldValue=THISFORM.oComboboxRef.aSelRecnos[Recno()]
+
+	IF !THISFORM.oComboboxRef.lMultiSel
+		THISFORM.oComboboxRef.aSelRecnos=0
+		THISFORM.grdLIST.Refresh()
+	ENDIF
+
+	THISFORM.oComboboxRef.aSelRecnos[Recno()]=BITXOR(m.lnOldValue, 1)
+
+	THIS.colSelection.chkSelection.Visible=.t.
+
+	THIS.ActivateCell(THIS.RelativeRow, 1) 
+	*скипнуться на следующую запись
+	IF !EOF()
+		SKIP
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WT0Y1ACO
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] hdSelection
+[PARENT] comboform.grdList.colSelection
+[START PROPERTIES]
+Alignment = 2
+Caption = "ь"
+FontName = "Wingdings"
+FontSize = 8
+Name = "hdSelection"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+THISFORM.lCheckUp = !THISFORM.lCheckUp
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WT0Y1ACP
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkSelection
+[PARENT] comboform.grdList.colSelection
+[START PROPERTIES]
+Alignment = 0
+Caption = ""
+Centered = .T.
+FontName = "Microsoft Sans Serif"
+Height = 17
+Left = 11
+Name = "chkSelection"
+Top = 27
+Width = 60
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+THISFORM.oComboboxRef.aSelRecnos[Recno()]
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28K1545WN
+[CLASS] base_timer
+[CLASSLOC] base_gui.vcx
+[BASECLASS] timer
+[OBJNAME] tmrCheckMousOut
+[PARENT] comboform
+[START PROPERTIES]
+Enabled = .F.
+Height = 23
+Left = 252
+Name = "tmrCheckMousOut"
+Top = 0
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.Interval=50
+ENDPROC
+PROCEDURE Timer
+LOCAL loPodMouse as Object, lcNameObj
+	loPodMouse = SYS(1270)
+	lcNameObj = IIF(VARTYPE(m.loPodMouse)='L', "none", UPPER(SYS(1272, m.loPodMouse)))
+	
+	WITH THISFORM
+		IF !(UPPER(.Name) $ m.lcNameObj OR UPPER(.oComboboxRef.Name) $ m.lcNameObj)
+		    .nCYCL = .nCYCL + 1
+		ELSE
+		    .nCYCL = 0
+		ENDIF
+
+		IF .nCYCL = _WAIT_CYCLE
+		    .Release()
+		ENDIF
+	ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1GD0U4M5L
+[CLASS] base_timer
+[CLASSLOC] base_gui.vcx
+[BASECLASS] timer
+[OBJNAME] tmrCheckTitleBarClick
+[PARENT] comboform
+[START PROPERTIES]
+Enabled = .F.
+Height = 23
+Interval = 100
+Left = 276
+Name = "tmrCheckTitleBarClick"
+Top = 0
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+IF MDOWN() AND (MCOL() = -1 OR MROW() = -1)
+	THISFORM.Release()
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] comboform
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Wingdings, 0, 8, 10, 12, 10, 15, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18U0KAIDG
+[CLASS] comboform
+[CLASSLOC] multiselcombo.vcx
+[BASECLASS] form
+[OBJNAME] comboform_desktop
+[START PROPERTIES]
+Desktop = .T.
+DoCreate = .T.
+GRDLIST.Name = "GRDLIST"
+Name = "comboform_desktop"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+subclass of comboform with .Desktop = .T., for top level forms[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] comboform_desktop
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VJ0S9EGF
+[CLASS] base_timer
+[CLASSLOC] base_gui.vcx
+[BASECLASS] timer
+[OBJNAME] tmrsearch
+[START PROPERTIES]
+Enabled = .F.
+Height = 23
+Interval = 0
+Name = "tmrsearch"
+Width = 23
+ocbsearch = .NULL.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.Interval = _incseek * 1000
+
+ENDPROC
+PROCEDURE Timer
+IF TYPE('this.ocbsearch') = 'O'
+	IF NOT ISNULL(this.ocbsearch)
+		IF this.oCbsearch.Droppeddown
+			this.oCbsearch.comboformRef.KeyPress(0,0)
+		ELSE 
+			IF PEMSTATUS(this.ocbsearch, 'KeyPress' , 5)
+				this.ocbsearch.Keypress(0,0)
+			ENDIF
+		ENDIF  
+		this.ocbsearch = .null.
+	ENDIF 
+ENDIF 
+this.Reset 
+this.Enabled = .f.
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ocbsearch linked combo reference
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tmrsearch
+[EOF]

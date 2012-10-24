@@ -1,0 +1,476 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O0150W9Z
+[CLASS] xml_ini
+[CLASSLOC] xml_ini.vcx
+[BASECLASS] custom
+[OBJNAME] saveset
+[START PROPERTIES]
+
+Name = "saveset"
+Picture = ..\bmp\16x16\data_disk.bmp
+Width = 20
+_memberdata =      463<VFPData><memberdata name="loadset" type="method" display="loadSet"/><memberdata name="saveset" type="method" display="saveSet"/><memberdata name="cappname" type="property" display="cAppName"/><memberdata name="ccurpath" type="property" display="cCurPath"/><memberdata name="ctaskname" type="property" display="cTaskName"/><memberdata name="cformpath" type="property" display="cFormPath"/><memberdata name="test_xml" type="method" display="test_Xml"/></VFPData>
+cappname = SETTINGS
+ccurpath = 
+cformpath = 
+ctaskname = GLOBAL
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+getxmlinientry
+writexmlinientry
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+
+WITH THIS
+	IF PEMSTATUS(.oApp.oVars, "oCurrentTask", 5) AND !ISNULL(.oApp.oVars.oCurrentTask)
+		.cTaskName = IIF(.oApp.oVars.oCurrentTask.oVars.lStoreStateWindows,;
+						 "GLOBAL",;
+						 .oApp.oVars.oCurrentTask.oVars.cTaskName)
+		.cAppName = .oApp.oVars.cAppName
+		.cCurPath = .oApp.oVars.cAppCurPaths
+	ELSE
+		.cCurPath = SYS(5) + SYS(2003) + '\'
+	ENDIF
+
+	.cFormPath = SYS(1271, THISFORM)
+
+	IF EMPTY(.cFormPath)
+		.cFormPath = "ClassLib"
+	ELSE
+		.cFormPath = UPPER(ALLTRIM(.cFormPath))
+
+		IF ATC(.cCurPath, .cFormPath) = 1
+			.cFormPath = ".\" + STRTRAN(.cFormPath, .cCurPath, '')
+		ENDIF
+	ENDIF
+ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*loadset 
+*saveset 
+cappname
+ccurpath
+cformpath
+ctaskname
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\data_disk.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_disk.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] saveset
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O0150W9Z
+[CLASS] saveset
+[CLASSLOC] saveset.vcx
+[BASECLASS] custom
+[OBJNAME] saveset_form
+[START PROPERTIES]
+Name = "saveset_form"
+Picture = ..\bmp\16x16\data_disk.bmp
+Width = 20
+_memberdata = 
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE loadset
+LOCAL lllOldLockScreen as Boolean, loobj as Object,;
+	  lnlefts as Integer, lntops as Integer, lnheights as Integer, lnwidths as Integer,;
+	  lnBackColors as Integer, lnWindowState as Integer, loFields as xml_fields OF ..\lib.9\xml_ini,;
+	  loFormsXY as Collection, lnI as Integer, lnJ as Integer
+	WITH THISFORM
+		llOldLockScreen = .LockScreen
+
+		IF !m.llOldLockScreen
+			.LockScreen = .T.
+		ENDIF
+
+		THIS.getXmlIniEntry(THIS.cCurPath + THIS.cAppName + ".XML", "Gui/TaskSetting[@Name = ";
+							+ CHR(34) + THIS.cTaskName + CHR(34) + "]/Form", "Name",;
+							THIS.cFormPath + "||" + UPPER(ALLTRIM(.Name)),;
+							"Left,Top,Width,Heigth,BackColor,WindowState", @loFormsXY)
+
+		IF VARTYPE(m.loFormsXY) <> 'O' OR (ISNULL(m.loFormsXY) OR m.loFormsXY.Count = 0)
+			lnlefts = .Left
+			lntops = .Top
+			lnwidths = .Width
+			lnheights = .Height
+			lnBackColors = .BackColor
+			lnWindowState = .WindowState
+		ELSE
+			lnWindowState = 0
+
+			FOR lnI = 1 TO m.loFormsXY.Count
+				loFields = m.loFormsXY.Item(m.lnI)
+
+				FOR lnJ = 1 TO ALEN(m.loFields.aFields, 1)
+					DO CASE
+					CASE m.loFields.aFields[m.lnJ, 1] = "WindowState"
+						DO CASE
+						CASE m.loFields.aFields[m.lnJ, 2] = "Min"
+							lnWindowState = 1
+						CASE m.loFields.aFields[m.lnJ, 2] = "Max"
+							lnWindowState = 2
+						OTHERWISE
+							lnWindowState = 0
+						ENDCASE
+					OTHERWISE
+						IF .WindowState <> 2
+							DO CASE
+							CASE m.loFields.aFields[m.lnJ, 1] = "Left"
+								lnlefts = VAL(m.loFields.aFields[m.lnJ, 2])
+							CASE m.loFields.aFields[m.lnJ, 1] = "Top"
+								lntops = VAL(m.loFields.aFields[m.lnJ, 2])
+							CASE m.loFields.aFields[m.lnJ, 1] = "Width"
+								lnwidths = IIF(.BorderStyle = 3,;
+											   VAL(m.loFields.aFields[m.lnJ, 2]),;
+											   .Width)
+							CASE m.loFields.aFields[m.lnJ, 1] = "Heigth"
+								lnheights = IIF(.BorderStyle = 3,;
+												VAL(m.loFields.aFields[m.lnJ, 2]),;
+												.Height)
+							CASE m.loFields.aFields[m.lnJ, 1] = "BackColor"
+								lnBackColors = VAL(m.loFields.aFields[m.lnJ, 2])
+							OTHERWISE
+							ENDCASE
+						ENDIF
+					ENDCASE
+				ENDFOR
+			ENDFOR
+
+			IF .WindowState <> 2
+				lntops = IIF(m.lntops < 0, 0, m.lntops)
+				lnlefts = IIF(m.lnlefts < 0, 0, m.lnlefts)
+			ENDIF
+		ENDIF
+
+		IF .ShowWindow = 2 AND .BorderStyle = 3
+			lnheights = IIF(m.lnheights + (OBJTOCLIENT(THISFORM, 4) - .Height) > SYSMETRIC(22),;
+						SYSMETRIC(22) - (OBJTOCLIENT(THISFORM, 4) - .Height),;
+						m.lnheights)
+			lnwidths = IIF(m.lnwidths > SYSMETRIC(21), SYSMETRIC(21), m.lnwidths)
+		ELSE
+			LOCAL lnI as Integer, loTopLevelForm as Form
+
+			FOR lnI = 1 TO _SCREEN.FormCount
+				IF _SCREEN.Forms[m.lnI].ShowWindow = 2
+					loTopLevelForm = _SCREEN.Forms[m.lnI]
+					EXIT
+				ENDIF
+			ENDFOR
+
+			IF VARTYPE(m.loTopLevelForm) = "O"
+				IF .BorderStyle = 3
+					lnheights = IIF(m.lnheights + (OBJTOCLIENT(THISFORM, 4) - .Height) > m.loTopLevelForm.Height,;
+								m.loTopLevelForm.Height - (OBJTOCLIENT(THISFORM, 4) - .Height),;
+								m.lnheights)
+					lnwidths = IIF(m.lnwidths > m.loTopLevelForm.Width,;
+								   m.loTopLevelForm.Width,;
+								   m.lnwidths)
+				ENDIF
+			ELSE
+				IF .BorderStyle = 3
+				*вписать размеры в экран
+					lnheights = IIF(m.lnheights + (OBJTOCLIENT(THISFORM, 4) - .Height) > _SCREEN.Height,;
+								_SCREEN.Height - (OBJTOCLIENT(THISFORM, 4) - .Height),;
+								m.lnheights)
+					lnwidths = IIF(m.lnwidths > _SCREEN.Width, _SCREEN.Width, m.lnwidths)
+				ENDIF
+			ENDIF
+		ENDIF
+
+		.Left = m.lnlefts
+		.Top = m.lntops
+		.Width = m.lnwidths
+		.Height = m.lnheights
+		.BackColor = m.lnBackColors
+		.WindowState = m.lnWindowState
+
+		THIS.saveSet()
+
+		IF !m.llOldLockScreen
+			.LockScreen = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE saveset
+LOCAL lnI as Integer, lcWinState as String
+	WITH THISFORM
+		DO CASE
+		CASE .WindowState = 1
+			lcWinState = "Min"
+		CASE .WindowState = 2
+			lcWinState = "Max"
+		OTHERWISE
+			lcWinState = "Normal"
+		ENDCASE
+
+		IF .WindowState = 2
+			THIS.writeXmlIniEntry(THIS.cCurPath + THIS.cAppName + ".XML",;
+								  "Gui/TaskSetting[@Name = " + CHR(34) + THIS.cTaskName + CHR(34);
+								  + "]/Form", "Name",;
+								  THIS.cFormPath + '||' + UPPER(ALLTRIM(.Name)),;
+								  "BackColor,WindowState",;
+								  TRANSFORM(.BackColor) + ',' + m.lcWinState)
+		ELSE
+			THIS.writeXmlIniEntry(THIS.cCurPath + THIS.cAppName + ".XML",;
+								  "Gui/TaskSetting[@Name = " + CHR(34) + THIS.cTaskName + CHR(34);
+								  + "]/Form", "Name",;
+								  THIS.cFormPath + '||' + UPPER(ALLTRIM(.Name)),;
+								  "Left,Top,BackColor," + IIF(.BorderStyle = 3,;
+															  "Width,Heigth,",;
+															  '') + "WindowState",;
+								  TRANSFORM(.Left) + ',' + TRANSFORM(.Top) + ',';
+								  + TRANSFORM(.BackColor) + ',';
+								  + IIF(.BorderStyle = 3,;
+										TRANSFORM(.Width) + ',' + TRANSFORM(.Height) + ',',;
+										'');
+								  + m.lcWinState)
+		ENDIF
+	ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+..\bmp\16x16\data_disk.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_disk.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] saveset_form
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O0150W9Z
+[CLASS] saveset
+[CLASSLOC] saveset.vcx
+[BASECLASS] custom
+[OBJNAME] saveset_grid
+[START PROPERTIES]
+Name = "saveset_grid"
+Picture = ..\bmp\16x16\data_disk.bmp
+Width = 20
+_memberdata = 
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE loadset
+LOCAL lllOldLockScreen as Boolean, loobj as Object, lctask_name as String,;
+	  lnlefts as Integer, lntops as Integer, lnheights as Integer, lnwidths as Integer,;
+	  lnBackColors as Integer, lccurpath as String, lcappname as String, lnWindowState as Integer,;
+	  loFields as xml_fields OF ..\lib.9\xml_ini, loFormsXY as Collection, lcformpath as String,;
+	  lnI as Integer, lnJ as Integer
+	llOldLockScreen = THISFORM.LockScreen
+	
+	IF !m.llOldLockScreen
+		THISFORM.LockScreen = .T.
+	ENDIF
+
+	WITH THISFORM
+		THIS.getXmlIniEntry(m.lccurpath + m.lcappname + ".XML",;
+							"Gui/TaskSetting[@Name = " + CHR(34) + m.lctask_name + CHR(34);
+							+ "]/Form", "Name",;
+							m.lcformpath + "||" + UPPER(ALLTRIM(.Name)),;
+							"Left,Top,Width,Heigth,BackColor,WindowState", @loFormsXY)
+
+		IF VARTYPE(m.loFormsXY) <> 'O' OR (ISNULL(m.loFormsXY) OR m.loFormsXY.Count = 0)
+			lnlefts = .Left
+			lntops = .Top
+			lnwidths = .Width
+			lnheights = .Height
+			lnBackColors = .BackColor
+			lnWindowState = .WindowState
+		ELSE
+			FOR lnI = 1 TO m.loFormsXY.Count
+				loFields = m.loFormsXY.Item(m.lnI)
+
+				FOR lnJ = 1 TO ALEN(m.loFields.aFields, 1)
+					DO CASE
+					CASE m.loFields.aFields[m.lnJ, 1] = "WindowState"
+						DO CASE
+						CASE m.loFields.aFields[m.lnJ, 2] = "Min"
+							lnWindowState = 1
+						CASE m.loFields.aFields[m.lnJ, 2] = "Max"
+							lnWindowState = 2
+						OTHERWISE
+							lnWindowState = 0
+						ENDCASE
+					OTHERWISE
+						IF .WindowState <> 2				
+							DO CASE
+							CASE m.loFields.aFields[m.lnJ, 1] = "Left"
+								lnlefts = VAL(m.loFields.aFields[m.lnJ, 2])
+							CASE m.loFields.aFields[m.lnJ, 1] = "Top"
+								lntops = VAL(m.loFields.aFields[m.lnJ, 2])
+							CASE m.loFields.aFields[m.lnJ, 1] = "Width"
+								lnwidths = IIF(.BorderStyle = 3,;
+											   VAL(m.loFields.aFields[m.lnJ, 2]),;
+											   .Width)
+							CASE m.loFields.aFields[m.lnJ, 1] = "Heigth"
+								lnheights = IIF(.BorderStyle = 3,;
+												VAL(m.loFields.aFields[m.lnJ, 2]),;
+												.Height)
+							CASE m.loFields.aFields[m.lnJ, 1] = "BackColor"
+								lnBackColors = VAL(m.loFields.aFields[m.lnJ, 2])
+							OTHERWISE
+							ENDCASE
+						ENDIF
+					ENDCASE
+				ENDFOR
+			ENDFOR
+				
+			IF .WindowState <> 2
+				lntops = IIF(m.lntops < 0, 0, m.lntops)
+				lnlefts = IIF(m.lnlefts < 0, 0, m.lnlefts)
+			ENDIF
+		ENDIF
+
+		IF .ShowWindow = 2 AND .BorderStyle = 3
+			lnheights = IIF(m.lnheights + (OBJTOCLIENT(THISFORM, 4) - .Height) > SYSMETRIC(22),;
+							SYSMETRIC(22) - (OBJTOCLIENT(THISFORM, 4) - .Height),;
+							m.lnheights)
+			lnwidths = IIF(m.lnwidths > SYSMETRIC(21), SYSMETRIC(21), m.lnwidths)
+		ELSE
+			LOCAL lnI as Integer, loTopLevelForm as Form
+
+			FOR lnI = 1 TO _SCREEN.FormCount
+				IF _SCREEN.Forms[m.lnI].ShowWindow = 2
+					loTopLevelForm = _SCREEN.Forms[m.lnI]
+					EXIT
+				ENDIF
+			ENDFOR
+
+			IF VARTYPE(m.loTopLevelForm) = "O"
+				IF .BorderStyle = 3
+					lnheights = IIF(m.lnheights + (OBJTOCLIENT(THISFORM, 4) - .Height);
+									> m.loTopLevelForm.Height,;
+									m.loTopLevelForm.Height - (OBJTOCLIENT(THISFORM, 4) - .Height),;
+									m.lnheights)
+					lnwidths = IIF(m.lnwidths > m.loTopLevelForm.Width,;
+								   m.loTopLevelForm.Width,;
+								   m.lnwidths)
+				ENDIF
+			ELSE
+				IF .BorderStyle = 3
+				*вписать размеры в экран
+					lnheights = IIF(m.lnheights + (OBJTOCLIENT(THISFORM, 4) - .Height);
+									> _SCREEN.Height,;
+									_SCREEN.Height - (OBJTOCLIENT(THISFORM, 4) - .Height),;
+									m.lnheights)
+					lnwidths = IIF(m.lnwidths > _SCREEN.Width, _SCREEN.Width, m.lnwidths)
+				ENDIF
+			ENDIF
+		ENDIF
+
+		.Left = m.lnlefts
+		.Top = m.lntops
+		.Width = m.lnwidths
+		.Height = m.lnheights
+		.BackColor = m.lnBackColors
+		.WindowState = m.lnWindowState
+
+		THIS.saveSet()
+
+		IF !m.llOldLockScreen
+			.LockScreen = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE saveset
+LOCAL lnI as Integer, lcWinState as String
+	WITH THISFORM
+		FOR lnI = 1 TO .ControlCount
+			DO CASE
+			CASE .Controls[m.lnI].Class = "cntpnlgrd" OR .Controls[m.lnI].BaseClass = "Grid"
+			*grid
+				DO CASE
+				CASE .WindowState = 1
+					lcWinState = "Min"
+				CASE .WindowState = 2
+					lcWinState = "Max"
+				OTHERWISE
+					lcWinState = "Normal"
+				ENDCASE
+
+				IF .WindowState = 2
+					THIS.writeXmlIniEntry(m.lccurpath + m.lcappname + ".XML",;
+										  "Gui/TaskSetting[@Name = " + CHR(34) + m.lctask_name;
+										  + CHR(34) + "]/Form", "Name",;
+										  m.lcformpath + '||' + UPPER(ALLTRIM(.Name)),;
+										  "BackColor,WindowState",;
+										  TRANSFORM(.BackColor) + ',' + m.lcWinState)
+				ELSE
+					THIS.writeXmlIniEntry(m.lccurpath + m.lcappname + ".XML",;
+										  "Gui/TaskSetting[@Name = " + CHR(34) + m.lctask_name;
+										  + CHR(34) + "]/Form", "Name",;
+										  m.lcformpath + '||' + UPPER(ALLTRIM(.Name)),;
+										  "Left,Top,BackColor," + IIF(.BorderStyle = 3,;
+										  							  "Width,Heigth,",;
+										  							  '');
+										  + "WindowState",;
+										  TRANSFORM(.Left) + ',' + TRANSFORM(.Top) +' ,';
+										  + TRANSFORM(.BackColor) + ',';
+										  + IIF(.BorderStyle = 3,;
+										  	  TRANSFORM(.Width) + ',' + TRANSFORM(.Height) + ',',;
+										  	  '');
+										  + m.lcWinState)
+				ENDIF
+			OTHERWISE
+			ENDCASE
+		ENDFOR
+	ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+..\bmp\16x16\data_disk.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_disk.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] saveset_grid
+[EOF]

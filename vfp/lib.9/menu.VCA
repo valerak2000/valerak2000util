@@ -1,0 +1,343 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TF05SQW9
+[CLASS] base_custom
+[CLASSLOC] base_gui.vcx
+[BASECLASS] custom
+[OBJNAME] contextmenu
+[START PROPERTIES]
+
+Name = "contextmenu"
+_memberdata =      637<VFPData><memberdata name="menubarcount" type="property" display="MenuBarCount"/><memberdata name="showinscreen" type="property" display="ShowInScreen"/><memberdata name="formname" type="property" display="FormName"/><memberdata name="ascript" type="property" display="aScript"/><memberdata name="addmenu" type="method" display="AddMenu"/><memberdata name="menubarcount_access" type="method" display="MenuBarCount_Access"/><memberdata name="showinscreen_assign" type="method" display="ShowInScreen_Assign"/><memberdata name="show" type="method" display="Show"/><memberdata name="buildmenu" type="method" display="BuildMenu"/></VFPData>
+formname = 
+menubarcount = 0
+showinscreen = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+LOCAL cRelName
+	FOR EACH cRelName IN THIS.PopupNames
+		RELEASE POPUP &cRelName
+	ENDFOR
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+	IF nError == 182
+		RETURN  && ignore the error -- see Bug ID 50049
+	ELSE
+		MESSAGEBOX(MESSAGE(), MB_ICONEXCLAMATION)
+	ENDIF
+
+ENDPROC
+PROCEDURE Init
+THIS.AddObject("PopupNames", "Collection")
+THIS.AddObject("MenuItems", "Collection")
+ENDPROC
+PROCEDURE addmenu
+LPARAMETERS cCaption, cActionCode, cPicture, lChecked, lEnabled, lBold
+LOCAL oMenuItem
+	IF PCOUNT() < 5
+		lEnabled=.T.
+	ENDIF
+	* we could pass a menu object rather than a caption
+	* (this is our technique for overloading a function!)
+	IF VARTYPE(cCaption) == 'O'
+		oMenuItem=cCaption
+	ELSE
+		* don't add 2 menu separators in a row
+		IF m.cCaption == "\-" AND THIS.MenuItems.Count > 0 AND THIS.MenuItems.Item(THIS.MenuItems.Count).Caption == "\-"
+			RETURN .NULL.
+		ENDIF
+
+		oMenuItem=CREATEOBJECT("MenuItem")
+		WITH oMenuItem
+			oMenuItem.Caption=cCaption
+			IF VARTYPE(cPicture) == 'C'
+				.Picture=cPicture
+			ENDIF
+			IF VARTYPE(lChecked) == 'L'
+				.Checked=lChecked
+			ENDIF
+			IF INLIST(VARTYPE(cActionCode), 'C', 'N')
+				.ActionCode=cActionCode
+			ENDIF
+			IF VARTYPE(lEnabled) == 'L'
+				.IsEnabled=lEnabled
+			ENDIF
+			IF VARTYPE(lBold) == 'L'
+				.Bold=lBold
+			ENDIF
+		ENDWITH
+	ENDIF
+	*
+	THIS.MenuItems.Add(oMenuItem)
+RETURN oMenuItem
+ENDPROC
+PROCEDURE buildmenu
+LPARAMETERS cMenuName, nRow, nCol, m.cFormName
+LOCAL nBar
+LOCAL oMenuItem
+LOCAL cActionCode
+LOCAL cSubMenu
+LOCAL cSkipFor
+LOCAL cStyle
+LOCAL nScriptCnt
+	IF VARTYPE(cMenuName) <> 'C'
+		m.cMenuName=SYS(2015)
+	ENDIF
+
+	IF VARTYPE(m.cFormName) == 'C' AND !EMPTY(m.cFormName)
+		DEFINE POPUP (m.cMenuName) SHORTCUT RELATIVE FROM m.nRow, m.nCol 
+	      * IN WINDOW (m.cFormName)
+	ELSE
+		IF PCOUNT() < 3
+			DEFINE POPUP (m.cMenuName) SHORTCUT RELATIVE
+		ELSE
+			DEFINE POPUP (m.cMenuName) SHORTCUT RELATIVE FROM m.nRow, m.nCol
+		ENDIF
+	ENDIF
+
+	THIS.PopupNames.Add(m.cMenuName)
+
+	nScriptCnt=0			
+
+	m.nBar=0
+	FOR EACH oMenuItem IN THIS.MenuItems
+		m.cActionCode=oMenuItem.ActionCode
+
+		IF oMenuItem.IsEnabled
+			m.cSkipFor=''
+		ELSE
+			m.cSkipFor="SKIP FOR .T."
+		ENDIF
+
+		IF oMenuItem.Bold
+			m.cStyle=[STYLE "B"]
+		ELSE
+			m.cStyle=''
+		ENDIF
+		
+		IF VARTYPE(m.cActionCode) == 'N'
+			DEFINE BAR (m.cActionCode) OF (m.cMenuName) PROMPT (oMenuItem.Caption) PICTURE (oMenuItem.Picture) &cStyle &cSkipFor
+		ELSE
+			m.nBar=m.nBar + 1
+			DEFINE BAR (m.nBar) OF (m.cMenuName) PROMPT (oMenuItem.Caption) PICTURE (oMenuItem.Picture) &cStyle &cSkipFor
+		ENDIF
+					
+		IF VARTYPE(m.cActionCode) == 'C' AND !EMPTY(m.cActionCode)
+			IF oMenuItem.RunAsScript
+				nScriptCnt=nScriptCnt + 1
+				DIMENSION THIS.aScript[nScriptCnt]
+
+				THIS.aScript[nScriptCnt]=cActionCode
+
+				cActionCode="EXECSCRIPT(oMenuRef.aScript[" + TRANSFORM(nScriptCnt) + "], oParameter)"
+
+			ENDIF
+			ON SELECTION BAR (m.nBar) OF (m.cMenuName) &cActionCode
+		ENDIF
+		
+		IF oMenuItem.Checked
+			SET MARK OF BAR (m.nBar) OF (m.cMenuName) TO .T.
+		ENDIF
+		
+		IF oMenuItem.SubMenu.MenuItems.Count > 0
+			m.cSubMenu=SYS(2015)
+			
+			ON BAR (m.nBar) OF (m.cMenuName) ACTIVATE POPUP &cSubMenu
+
+			oMenuItem.SubMenu.BuildMenu(m.cSubMenu)
+		ENDIF
+	ENDFOR
+ENDPROC
+PROCEDURE menubarcount_access
+RETURN THIS.MenuItems.Count
+ENDPROC
+PROCEDURE show
+LPARAMETERS nRow, nCol, cFormName)
+PRIVATE oMenuRef
+	oMenuRef=THIS
+
+	IF (VARTYPE(m.cFormName) <> 'C' OR EMPTY(m.cFormName)) 
+		IF TYPE("oForm") == 'O' AND !ISNULL(oForm)
+			m.cFormName=oForm.Name
+		ELSE
+			IF TYPE("THISFORM") == 'O' AND !ISNULL(THISFORM)
+				m.cFormName=THISFORM.Name
+			ENDIF
+		ENDIF
+	ENDIF
+
+	ACTIVATE screen 
+
+	IF VARTYPE(oForm) == 'O'
+		oForm.AllowOutput= .T.
+	ENDIF
+	ACTIVATE WINDOW (m.cFormName)
+
+	IF VARTYPE(m.nRow) <> 'N'
+		m.nRow=MROW()
+	ENDIF
+	IF VARTYPE(m.nCol) <> 'N'
+		m.nCol=MCOL()
+	ENDIF
+
+	THIS.PopupNames.Remove(-1)
+
+	THIS.BuildMenu("shortcut", m.nRow, m.nCol, m.cFormName)
+
+	ACTIVATE POPUP shortcut
+	
+	IF VARTYPE(oForm) == 'O'
+		oForm.AllowOutput=.F.
+	ENDIF
+
+ENDPROC
+PROCEDURE showinscreen_assign
+LPARAMETERS tlShowInScreen
+	THIS.ShowInScreen=m.tlShowInScreen
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*addmenu 
+*buildmenu Render the menu
+*menubarcount_access 
+*show 
+*showinscreen_assign 
+^ascript[1,0] 
+formname
+menubarcount defined so we can hook an _Access method to this
+showinscreen
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+foxpro.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] contextmenu
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TF05UOJT
+[CLASS] base_custom
+[CLASSLOC] base_gui.vcx
+[BASECLASS] custom
+[OBJNAME] menuitem
+[START PROPERTIES]
+
+Name = "menuitem"
+Picture = d:\work\bmp\menubar.bmp
+_memberdata =      397<VFPData><memberdata name="caption" type="property" display="Caption"/><memberdata name="checked" type="property" display="Checked"/><memberdata name="actioncode" type="property" display="Actioncode"/><memberdata name="isenabled" type="property" display="IsEnabled"/><memberdata name="bold" type="property" display="Bold"/><memberdata name="submenu" type="property" display="SubMenu"/></VFPData>
+actioncode = 
+bold = .F.
+caption = 
+checked = .F.
+isenabled = .T.
+runasscript = .F.
+submenu = .NULL.
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS cCaption, cActionCode, cPicture, lChecked, lEnabled
+	THIS.SubMenu=CREATEOBJECT("ContextMenu")
+
+	IF VARTYPE(cCaption) == 'C'
+		THIS.Caption=cCaption
+	ENDIF
+	IF VARTYPE(cPicture) == 'C'
+		THIS.Picture=cPicture
+	ENDIF
+	IF VARTYPE(lChecked) == 'L'
+		THIS.Checked=lChecked
+	ENDIF
+	IF VARTYPE(cActionCode) == 'C'
+		THIS.ActionCode=cActionCode
+	ENDIF
+	IF VARTYPE(lEnabled) == 'L' AND PCOUNT() >= 5
+		THIS.IsEnabled=lEnabled
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+actioncode
+bold
+caption Specifies the text displayed in an object's caption.
+checked
+isenabled
+runasscript
+submenu
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\menubar.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\menubar.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] menuitem
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TF05VMLL
+[CLASS] base_custom
+[CLASSLOC] base_gui.vcx
+[BASECLASS] custom
+[OBJNAME] shortcut
+[START PROPERTIES]
+Name = "shortcut"
+Picture = ..\bmp\popupmenu.bmp
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+[END PROTECTED]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*activatemenu возвращает ID выбранного пункта меню
+*addmenubar 
+*addmenuseparator 
+*addsubmenu 
+*idtoindex 
+^bars[1,0] 
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\popupmenu.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\popupmenu.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] shortcut
+[EOF]

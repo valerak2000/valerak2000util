@@ -1,0 +1,982 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1DVI68
+[CLASS] sfbar
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] collection
+[OBJNAME] sfbar
+[START PROPERTIES]
+Name = "sfbar"
+cmrubarlibrary = SFMenu_app.vcx
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfbar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26F0P4ZKC
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sfdictionarypad
+[START PROPERTIES]
+Name = "sfdictionarypad"
+ccaption = С\<правочники
+ckey = ALT+G
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfdictionarypad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28X0RMDLD
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sfdocpad
+[START PROPERTIES]
+Name = "sfdocpad"
+ccaption = \<Документы
+ckey = ALT+D
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfdocpad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1DU9R7
+[CLASS] sfeditpad
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] collection
+[OBJNAME] sfeditpad
+[START PROPERTIES]
+Name = "sfeditpad"
+ccaption = \<Правка
+ckey = ALT+G
+cmrubarlibrary = SFMenu_app.vcx
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+PROCEDURE addbars
+NODEFAULT
+
+WITH THIS
+	.AddBar("SFBar", "SFMenu_app.vcx", "EditUndo")
+
+	WITH .EditUndo
+		.cCaption       = "Отменить"
+		.cKey           = "CTRL+Z"
+		.cKeyText       = "Ctrl+Z"
+		.cStatusBarText = "Отменить последнее действие"
+		.cSystemBar     = "_med_undo"
+		.cPictureFile   = "..\bmp\16x16\undo.bmp"
+	ENDWITH
+
+	.AddBar("SFBar", "SFMenu_app.vcx", "EditRedo")
+
+	WITH .EditRedo
+		.cCaption       = "Повторить"
+		.cKey           = "CTRL+R"
+		.cKeyText       = "Ctrl+R"
+		.cStatusBarText = "Повторить последнее действие"
+		.cSystemBar     = "_med_redo"
+		.cPictureFile   = "..\bmp\16x16\redo.bmp"
+	ENDWITH
+
+	.AddSeparatorBar()
+
+	.AddBar("SFBar", "SFMenu_app.vcx", "EditCut")
+
+	WITH .EditCut
+		.cCaption       = "Вырезать"
+		.cKey           = "CTRL+X"
+		.cKeyText       = "Ctrl+X"
+		.cStatusBarText = "Сохранить в буфер обмена и удалить"
+		.cSystemBar     = "_med_cut"
+		.cPictureFile   = "..\bmp\16x16\cut.bmp"
+	ENDWITH
+
+	.AddBar("SFBar", "SFMenu_app.vcx", "EditCopy")
+
+	WITH .EditCopy
+		.cCaption       = "Копировать"
+		.cKey           = "CTRL+C"
+		.cKeyText       = "Ctrl+C"
+		.cStatusBarText = "Сохранить в буфер обмена"
+		.cSystemBar     = "_med_copy"
+		.cPictureFile   = "..\bmp\16x16\copy.bmp"
+	ENDWITH
+
+	.AddBar("SFBar", "SFMenu_app.vcx", "EditPaste")
+
+	WITH .EditPaste
+		.cCaption       = "Вставить"
+		.cKey           = "CTRL+V"
+		.cKeyText       = "Ctrl+V"
+		.cStatusBarText = "Вставить из буфера обмена"
+		.cSystemBar     = "_med_paste"
+		.cPictureFile   = "..\bmp\16x16\paste.bmp"
+	ENDWITH
+
+	.AddBar("SFBar", "SFMenu_app.vcx", "EditClear")
+
+	WITH .EditClear
+		.cCaption       = "Очистить"
+		.cStatusBarText = "Очистить выделенное и не помещать его в буфер обмена"
+		.cSystemBar     = "_med_clear"
+		.cSkipFor       = "empty(wontop())"
+	ENDWITH
+
+	.AddBar("SFBar", "SFMenu_app.vcx", "EditSelectAll")
+
+	WITH .EditSelectAll
+		.cCaption       = "Выделить всё"
+		.cKey           = "CTRL+A"
+		.cKeyText       = "Ctrl+A"
+		.cStatusBarText = "Пометить весь текст"
+		.cSystemBar     = "_med_slcta"
+	ENDWITH
+
+	.AddSeparatorBar()
+
+	.AddBar("SFBar", "SFMenu_app.vcx", "Find")
+
+	WITH .Find
+		.cCaption       = "Найти..."
+		.cKey           = "CTRL+F"
+		.cKeyText       = "Ctrl+F"
+		.cStatusBarText = "Найти текст"
+		.cPictureFile   = "..\bmp\16x16\find.bmp"
+		.cOnClickCommand = "m.goApp.onMenuEvents('Find')"
+	ENDWITH
+
+	.AddBar("SFBar", "SFMenu_app.vcx", "FindAndReplace")
+
+	WITH .FindAndReplace
+		.cCaption       = "Заменить..."
+		.cKey           = "CTRL+L"
+		.cKeyText       = "Ctrl+L"
+		.cStatusBarText = "Найти и заменить текcт"
+		.cPictureFile   = "..\bmp\16x16\replace.bmp"
+		.cOnClickCommand = "m.goApp.onMenuEvents('Replace')"
+	ENDWITH
+ENDWITH
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfeditpad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24C0V84I4
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sfexitpad
+[START PROPERTIES]
+Name = "sfexitpad"
+ccaption = Вы\<ход
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+PROCEDURE addbars
+WITH THIS
+	.AddBar("SFBar", "SFMenu_app.vcx", "ExitBar")
+	WITH .ExitBar
+		.cCaption        = "Вы\<ход"
+		.cKey            = "ALT+X"
+		.cKeyText        = "ALT+X"
+		.cStatusBarText  = ''
+		.cPictureFile    = ''
+		.cOnClickCommand = "m.goApp.oMenu.Release()" + CRLF + "CLEAR EVENTS"
+	ENDWITH
+ENDWITH
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfexitpad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1FF403
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sffacepad
+[START PROPERTIES]
+Name = "sffacepad"
+ccaption = \<Вид
+ckey = ALT+D
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+PROCEDURE addbars
+THIS.AddBar('SFBar', 'SFMenu_app.vcx', 'ToolBarPad')
+
+WITH THIS.ToolBarPad
+	.cCaption       = '\<Панели инструментов'
+	.cKey           = 'ALT+G'
+	.cStatusBarText = ''
+
+	IF m.goApp.oVars.lToolBar
+		.AddBar('SFBar', 'SFMenu_app.vcx', 'EditBar')
+		WITH .EditBar
+			.cCaption        = '\<Правка'
+			.cKey            = 'CTRL+G'
+			.cKeyText        = 'Ctrl+G'
+			.cStatusBarText  = ''
+			.cPictureFile    = ''
+			.cOnClickCommand = 'm.goApp.OnMenuEvents("TBEdit")'
+		ENDWITH
+
+		.AddBar('SFBar', 'SFMenu_app.vcx', 'ToolBar')
+		WITH .ToolBar
+			.cCaption        = '\<Инструменты'
+			.cKey            = 'ALT+B'
+			.cKeyText        = 'ALT+B'
+			.cStatusBarText  = ''
+			.cPictureFile    = ''
+			.cOnClickCommand = 'm.goApp.OnMenuEvents("TBTools")'
+		ENDWITH
+
+		.AddBar('SFBar', 'SFMenu_app.vcx', 'ServiceBar')
+		WITH .ServiceBar
+			.cCaption        = '\<Сервис'
+			.cKey            = 'ALT+T'
+			.cKeyText        = 'ALT+T'
+			.cStatusBarText  = ''
+			.cPictureFile    = ''
+			.cOnClickCommand = 'm.goApp.OnMenuEvents("TBService")'
+		ENDWITH
+
+		.AddBar('SFBar', 'SFMenu_app.vcx', 'BaseTuningBar')
+		WITH .BaseTuningBar
+			.cCaption        = '\<Настройки'
+			.cKey            = 'ALT+Y'
+			.cKeyText        = 'ALT+Y'
+			.cStatusBarText  = ''
+			.cPictureFile    = ''
+			.cOnClickCommand = 'm.goApp.OnMenuEvents("TBBaseTuning")'
+		ENDWITH
+
+		.AddBar('SFBar', 'SFMenu_app.vcx', 'ActivityBar')
+		WITH .ActivityBar
+			.cCaption        = '\<Активность соединения'
+			.cKey            = 'CTRL+F'
+			.cKeyText        = 'Ctrl+F'
+			.cStatusBarText  = ''
+			.cPictureFile    = ''
+			.cOnClickCommand = 'm.goApp.OnMenuEvents("TBActivity")'
+		ENDWITH
+	ENDIF
+
+	IF m.goApp.oVars.lTaskBar
+		.AddBar('SFBar', 'SFMenu_app.vcx', 'TaskBar')
+		WITH .TaskBar
+			.cCaption        = '\<Окна'
+			.cKey            = 'ALT+J'
+			.cKeyText        = 'ALT+J'
+			.cStatusBarText  = ''
+			.cPictureFile    = ''
+			.cOnClickCommand = 'm.goApp.OnMenuEvents("TBTaskBar")'
+		ENDWITH
+	ENDIF
+ENDWITH
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sffacepad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24C0U1ULX
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sfhelppad
+[START PROPERTIES]
+Name = "sfhelppad"
+ccaption = По\<мощь
+ckey = ALT+V
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+PROCEDURE addbars
+WITH THIS
+	.AddSeparatorBar()
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'AboutBar')
+	WITH .AboutBar
+		.cCaption       = 'О программе'
+		.cKey           = ''
+		.cKeyText       = ''
+		.cStatusBarText = ""
+		.cPictureFile   = '..\bmp\information.ico'
+		.cOnClickCommand = 'DO about'
+		.lEnabled=.F.
+	ENDWITH
+ENDWITH
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfhelppad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1DWIRT
+[CLASS] sfhelptopicsbar
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] collection
+[OBJNAME] sfhelptopicsbar
+[START PROPERTIES]
+Name = "sfhelptopicsbar"
+ccaption = По\<мощь
+cmrubarlibrary = SFMenu_app.vcx
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfhelptopicsbar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24C02RXLM
+[CLASS] sfmenu
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] collection
+[OBJNAME] sfmenu_app
+[START PROPERTIES]
+Name = "sfmenu_app"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+PROCEDURE addpad
+lparameters tcClass,  tcLibrary,  tcName
+	local loPad, ;
+		lnCount, ;
+		loOtherPad
+	NODEFAULT
+
+	with This
+
+	* Add a pad of the desired class and name to the menu.
+
+*!*			if '\' + upper(tcLibrary) $ upper(set('CLASSLIB'))
+			loPad = createobject(tcClass, tcName)
+*!*			else
+*!*				loPad = newobject(tcClass, tcLibrary, '', tcName)
+*!*			endif '\' + upper(tcLibrary) $ upper(set('CLASSLIB'))
+	*!*		loPad = Container::CreateObject(m.tcName, m.tcClass)
+
+		loPad.oParent = This
+		.AddProperty(tcName, loPad)
+
+	* Add the pad to the collection.
+
+		.Add(loPad, tcName)
+		lnCount = .Count
+		do case
+
+	* If this is the second item in the menu, tell the first item to display BEFORE
+	* this item and this item to display AFTER that item.
+
+			case lnCount = 2
+				loOtherPad = .Item(1)
+				loOtherPad.cPadPosition = 'before ' + tcName
+				loPad.cPadPosition = 'after ' + loOtherPad.Name
+
+	* If there are more than 2 items in the menu, this item will be displayed AFTER
+	* the previous one.
+
+			case lnCount > 2
+				loOtherPad = .Item(lnCount - 1)
+				loPad.cPadPosition = 'after ' + loOtherPad.Name
+		endcase
+	endwith
+return loPad
+ENDPROC
+PROCEDURE definemenu
+This.AddPad('SFDocPad', 'SFMenu_app.vcx', 'DocPad')
+This.AddPad('SFEditPad', 'SFMenu_app.vcx', 'EditPad')
+This.AddPad('SFFacePad', 'SFMenu_app.vcx', 'FacePad')
+This.AddPad('SFReportsPad', 'SFMenu_app.vcx', 'ReportsPad')
+This.AddPad('SFDictionaryPad', 'SFMenu_app.vcx', 'DictionaryPad')
+This.AddPad('SFServicePad', 'SFMenu_app.vcx', 'ServicePad')
+This.AddPad('SFTuningPad', 'SFMenu_app.vcx', '_mn_settings')
+This.AddPad('SFHelpPad', 'SFMenu_app.vcx', '_mn_help')
+This.AddPad('SFWindowsPad', 'SFMenu_app.vcx', '_mn_window')
+This.AddPad('SFExitPad', 'SFMenu_app.vcx', 'ExitPad')
+
+ENDPROC
+PROCEDURE show
+* Clear the old menu, define the new one if it hasn't already been, show all
+* the pads, and display the menu.
+
+LOCAL lnI, ;
+	loPad
+WITH THIS
+	SET SYSMENU TO
+
+	IF .COUNT=0
+		.DefineMenu()
+	ENDIF .COUNT = 0
+
+	FOR lnI=1 TO .COUNT
+		loPad=.ITEM(lnI)
+		
+		IF m.loPad.lVisible
+			m.loPad.SHOW()
+		ENDIF
+	NEXT lnI
+	SET SYSMENU AUTOMATIC
+ENDWITH
+
+NODEFAULT
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfmenu_app
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1DY0Q7
+[CLASS] sfmenubase
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] collection
+[OBJNAME] sfmenubase
+[START PROPERTIES]
+Name = "sfmenubase"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfmenubase
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1DYRNJ
+[CLASS] sfmenufunction
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] custom
+[OBJNAME] sfmenufunction
+[START PROPERTIES]
+Name = "sfmenufunction"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfmenufunction
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1DZBD1
+[CLASS] sfmrubar
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] collection
+[OBJNAME] sfmrubar
+[START PROPERTIES]
+Name = "sfmrubar"
+cmrubarlibrary = SFMenu_app.vcx
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfmrubar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1DZMBF
+[CLASS] sfpad
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] collection
+[OBJNAME] sfpad
+[START PROPERTIES]
+Name = "sfpad"
+cmrubarlibrary = SFMenu_app.vcx
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfpad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24D0495MR
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sfreportspad
+[START PROPERTIES]
+Name = "sfreportspad"
+ccaption = О\<тчеты
+ckey = ALT+N
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfreportspad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24B1E0FOR
+[CLASS] sfseparatorbar
+[CLASSLOC] sfmenu.vcx
+[BASECLASS] collection
+[OBJNAME] sfseparatorbar
+[START PROPERTIES]
+Name = "sfseparatorbar"
+cmrubarlibrary = SFMenu_app.vcx
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+#INCLUDE "..\LIB.9\BASE_APP.H"
+lparameters tnError,  tcMethod,  tnLine
+*!*	#IF !_DEVELOP_MODE
+*!*		DODEFAULT(tnError,  tcMethod,  tnLine)
+*!*	#ENDIF
+	NODEFAULT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfseparatorbar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24C0RECFQ
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sfservicepad
+[START PROPERTIES]
+Name = "sfservicepad"
+ccaption = С\<ервис
+ckey = ALT+T
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE addbars
+WITH THIS
+	.AddSeparatorBar()
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'CalendarBar')
+
+	WITH .CalendarBar
+		.cCaption       = 'Календарь'
+		.cKey           = ''
+		.cKeyText       = ''
+		.cStatusBarText = ""
+		.cPictureFile   = '..\bmp\16x16\calendar.bmp'
+		.cOnClickCommand = 'm.goApp.OnMenuEvents("Calendar")'
+	ENDWITH
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'ClockBar')
+
+	WITH .ClockBar
+		.cCaption       = 'Часы'
+		.cKey           = ''
+		.cKeyText       = ''
+		.cStatusBarText = ""
+		.cPictureFile   = '..\bmp\clock.ico'
+		.cOnClickCommand = 'm.goApp.OnMenuEvents("Clock")'
+	ENDWITH
+ENDWITH
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfservicepad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24C0UUZX6
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sftuningpad
+[START PROPERTIES]
+Name = "sftuningpad"
+ccaption = \<Настройки
+ckey = ALT+Y
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sftuningpad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _24C0183PA
+[CLASS] sfpad
+[CLASSLOC] sfmenu_app.vcx
+[BASECLASS] collection
+[OBJNAME] sfwindowspad
+[START PROPERTIES]
+Name = "sfwindowspad"
+ccaption = \<Окна
+ckey = ALT+J
+cpopupname = _msm_windo
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE addbars
+WITH THIS
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'CascadeBar')
+	WITH .CascadeBar
+		.cCaption        = 'Упорядочить каскадно'
+		.cKey            = ''
+		.cKeyText        = ''
+		.cStatusBarText  = ''
+		.cPictureFile    = ''
+		.cSystemBar     = '_MWI_CASCADE'
+	ENDWITH
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'ArranBar')
+	WITH .ArranBar
+		.cCaption        = 'Упорядочить без перекрытия'
+		.cKey            = ''
+		.cKeyText        = ''
+		.cStatusBarText  = ''
+		.cPictureFile    = ''
+		.cSystemBar     = '_MWI_ARRAN'
+	ENDWITH
+
+	.AddSeparatorBar()
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'HideaBar')
+	WITH .HideaBar
+		.cCaption        = 'Спрятать все'
+		.cKey            = ''
+		.cKeyText        = ''
+		.cStatusBarText  = "Hides all windows"
+		.cPictureFile    = ''
+		.cSystemBar     = '_mwi_hidea'
+	ENDWITH
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'HideBar')
+	WITH .HideBar
+		.cCaption        = 'Спрятать'
+		.cKey            = ''
+		.cKeyText        = ''
+		.cStatusBarText  = "Hides the active window"
+		.cPictureFile    = ''
+		.cSystemBar     = '_mwi_hide'
+	ENDWITH
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'ShowaBar')
+	WITH .ShowaBar
+		.cCaption        = 'Показать все'
+		.cKey            = ''
+		.cKeyText        = ''
+		.cStatusBarText  = "Shows all hidden windows"
+		.cPictureFile    = ''
+		.cSystemBar     = '_mwi_showa'
+	ENDWITH
+
+	.AddSeparatorBar()
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'ClallBar')
+	WITH .ClallBar
+		.cCaption        = 'Закрыть все'
+		.cKey            = ''
+		.cKeyText        = ''
+		.cStatusBarText  = "Closes all windows"
+		.cPictureFile    = ''
+		.cSystemBar     = '_mfi_clall'
+	ENDWITH
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'ClallBar')
+	WITH .ClallBar
+		.cCaption        = '\<Закрыть'
+		.cKey            = ''
+		.cKeyText        = ''
+		.cStatusBarText  = "Closes the current file"
+		.cPictureFile    = ''
+		.cSystemBar     = '_mfi_close'
+	ENDWITH
+
+	.AddSeparatorBar()
+
+	.AddBar('SFBar', 'SFMenu_app.vcx', 'RotatBar')
+	WITH .RotatBar
+		.cCaption        = 'Следующее'
+		.cKey            = ''
+		.cKeyText        = ''
+		.cStatusBarText  = ""
+		.cPictureFile    = ''
+		.cSystemBar     = '_MWI_ROTAT'
+	ENDWITH
+ENDWITH
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sfwindowspad
+[EOF]
