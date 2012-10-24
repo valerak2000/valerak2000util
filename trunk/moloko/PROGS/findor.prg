@@ -1,0 +1,10 @@
+PARAMETERS s1
+PUBLIC otag
+	*
+	DO CASE
+	CASE s1='BEGIN'
+		otag=SYS(21)
+		SET ORDER TO name
+	CASE s1='END'
+		SET ORDER TO &otag
+	ENDCASE 
