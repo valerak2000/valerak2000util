@@ -1,0 +1,2795 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RWC18EA52
+[CLASS] inputvalform
+[CLASSLOC] ..\..\..\classes\dialogs.vcx
+[BASECLASS] form
+[OBJNAME] ezfind
+[START PROPERTIES]
+Caption = "Поиск"
+DoCreate = .T.
+Height = 49
+Icon = ..\bmp\note10.ico
+Myshape1.Height = 48
+Myshape1.Left = 0
+Myshape1.Name = "Myshape1"
+Myshape1.Top = 0
+Myshape1.Width = 396
+Name = "ezfind"
+Width = 396
+cmdCancel.Left = 288
+cmdCancel.Name = "cmdCancel"
+cmdCancel.Top = 122
+cmdOk.Left = 216
+cmdOk.Name = "cmdOk"
+cmdOk.Top = 122
+lblHint.Left = 12
+lblHint.Name = "lblHint"
+lblHint.Top = 8
+txtInput.Height = 19
+txtInput.InputMask = ""
+txtInput.Left = 12
+txtInput.Name = "txtInput"
+txtInput.Top = 24
+txtInput.Width = 372
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+lpar ledi,texs,wori,pifu
+
+with this.txtInput
+	maxw=font(7,.fontname,.fontsize)
+	.width=maxw*(ledi+1)
+	.value=texs
+	if !empt(pifu)
+****** Горобец
+		local pozsp,convmask
+		if left(pifu,1)='@'
+			pozsp=lat(' ',pifu)
+			convmask=upper(alltrim(substr(pifu,2,pozsp-2)))
+			if at('K',convmask)>0
+				.SelectOnEntry=.t.
+			else
+				.SelectOnEntry=.f.
+			endif
+			if at('J',convmask)>0
+				.Alignment=1
+			else
+				.Alignment=3
+			endif
+			pifu=alltrim(substr(pifu,pozsp+1))
+		endif
+		if !empty(pifu)
+			.inputmask=pifu
+		endif
+******
+	endif
+	store .width+24 to this.width,this.myShape1.width
+endw
+this.lblHint.caption=wori
+
+ENDPROC
+PROCEDURE txtInput.Valid
+texs=this.Value
+thisform.uRetVal=.T.
+thisform.Visible=.F.
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] ezfind
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRW00XOCT
+[CLASS] mytextbox
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] textbox
+[OBJNAME] info
+[START PROPERTIES]
+Height = 19
+Name = "info"
+Style = 1
+Visible = .F.
+Width = 319
+colorincrement = 0
+resizemethod = RTRT
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.BackColor=thisform.BackColor
+nBc=this.BackColor
+nHG=this.ColorIncrement
+this.BackColor = RGB(MIN(GetRValue(nBC)+nHg,255),MIN(GetGValue(nBC)+nHg,255),MIN(GetBValue(nBC)+nHg,255)) 
+this.Visible=.T.
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+colorincrement
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] info
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQU175EIO
+[CLASS] mytoolbar
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] toolbar
+[OBJNAME] main
+[START PROPERTIES]
+Height = 32
+Left = 6
+Movable = .F.
+Name = "main"
+Top = 6
+Width = 321
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.Dock(0)
+
+LOCAL i
+DIME this.aEnabled(this.ControlCount)
+FOR i=1 TO this.ControlCount
+	this.aEnabled(i)=this.Controls[i].Enabled
+ENDFOR
+ENDPROC
+PROCEDURE Refresh
+#DEFINE cEDIT 'Правка'
+LPAR tcTBar, toSender
+IF EMPTY(tcTBar)
+	tcTBar=''
+ENDIF
+LOCAL i,tbar
+WITH this
+	IF tcTBar#'CLOSE'
+		tbar=tcTBar
+		.cmdAdd.Enabled='A'$tbar
+		.cmdEdit.Enabled='E'$tbar
+		.cmdDelete.Enabled='D'$tbar
+		.cmdFind.Enabled='F'$tbar
+		.cmdDetail.Enabled='T'$tbar
+		.cmdFilter.Enabled='L'$tbar AND vizov#99	&&!(vizov=99 OR (FormIsObject() AND !CanForm('L')))
+		.cmdOrder.Enabled='O'$tbar AND vizov#99		&&!(vizov=99 OR (FormIsObject() AND !CanForm('O')))
+		.cmdPeriod.Enabled=!INLI(vizov,9,99) AND usernast AND !EMPT(tcTBar)
+		.cmdPrint.Enabled='N'$tbar
+		.cmdForma.Enabled=usernast AND !EMPT(tcTBar)
+	ELSE
+		FOR i=1 TO ALEN(this.aEnabled)
+			this.Controls[i].Enabled=this.aEnabled[i]
+		ENDFOR
+	ENDIF
+ENDW
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+19[END RESERVED2]
+[START RESERVED3]
+^aenabled[1,0] 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQU17AURV
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] main
+[START PROPERTIES]
+Enabled = .F.
+Left = 5
+Name = "cmdAdd"
+Picture = ..\bmp\add.bmp
+ToolTipText = "Новый"
+Top = 5
+ZOrderSet = 1
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Center('ADD')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JPH
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCopy
+[PARENT] main
+[START PROPERTIES]
+Left = 77
+Name = "cmdCopy"
+Picture = ..\bmp\copy.bmp
+ToolTipText = "Копировать"
+Top = 5
+ZOrderSet = 5
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+KEYBOARD '{CTRL+C}'
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JQB
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCut
+[PARENT] main
+[START PROPERTIES]
+Left = 121
+Name = "cmdCut"
+Picture = ..\bmp\cut.bmp
+ToolTipText = "Вырезать"
+Top = 5
+ZOrderSet = 7
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+KEYBOARD '{CTRL+X}'
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQU17AUS6
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDelete
+[PARENT] main
+[START PROPERTIES]
+Enabled = .F.
+Left = 49
+Name = "cmdDelete"
+Picture = ..\bmp\delete.bmp
+ToolTipText = "Удалить"
+Top = 5
+ZOrderSet = 3
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Center('DELETE')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JS0
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDetail
+[PARENT] main
+[START PROPERTIES]
+Enabled = .T.
+Height = 23
+Left = 227
+Name = "cmdDetail"
+Picture = ..\bmp\prop.bmp
+ToolTipText = "Детальность"
+Top = 5
+Width = 23
+ZOrderSet = 14
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Center('CF3')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQU17AUS0
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdEdit
+[PARENT] main
+[START PROPERTIES]
+Enabled = .F.
+Left = 27
+Name = "cmdEdit"
+Picture = ..\bmp\edit.bmp
+ToolTipText = "Изменить"
+Top = 5
+ZOrderSet = 2
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Center('edit')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JSC
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdFilter
+[PARENT] main
+[START PROPERTIES]
+Left = 249
+Name = "cmdFilter"
+Picture = ..\bmp\filtrdlg.bmp
+ToolTipText = "Фильтры"
+Top = 5
+Width = 23
+ZOrderSet = 15
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Center('CF4')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JRE
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdFind
+[PARENT] main
+[START PROPERTIES]
+Enabled = .F.
+Left = 171
+Name = "cmdFind"
+Picture = ..\bmp\find.bmp
+ToolTipText = "Найти"
+Top = 5
+ZOrderSet = 10
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+CENTER('FIND')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RZI02QB59
+[CLASS] mycommandbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdForma
+[PARENT] main
+[START PROPERTIES]
+Left = 293
+Name = "cmdForma"
+Picture = ..\bmp\formatt1.bmp
+ToolTipText = "Форматы"
+Top = 5
+Width = 23
+ZOrderSet = 17
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Center('CF6')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JST
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOrder
+[PARENT] main
+[START PROPERTIES]
+Left = 271
+Name = "cmdOrder"
+Picture = ..\bmp\sortaz.bmp
+ToolTipText = "Порядок"
+Top = 5
+ZOrderSet = 16
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Center('CF5')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JPU
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdPaste
+[PARENT] main
+[START PROPERTIES]
+Left = 99
+Name = "cmdPaste"
+Picture = ..\bmp\paste.bmp
+ToolTipText = "Вставить"
+Top = 5
+ZOrderSet = 6
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+KEYBOARD '{CTRL+V}'
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JTL
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdPeriod
+[PARENT] main
+[START PROPERTIES]
+Height = 23
+Left = 199
+Name = "cmdPeriod"
+Picture = ..\bmp\calendar.bmp
+ToolTipText = "Рабочий период"
+Top = 5
+ZOrderSet = 12
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+CENTER('CF7')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JQX
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdPrint
+[PARENT] main
+[START PROPERTIES]
+Enabled = .F.
+Left = 149
+Name = "cmdPrint"
+Picture = ..\bmp\wzprint.bmp
+ToolTipText = "Печать"
+Top = 5
+ZOrderSet = 9
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Center('PRINT')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JP7
+[CLASS] separator
+[BASECLASS] separator
+[OBJNAME] Separator1
+[PARENT] main
+[START PROPERTIES]
+Height = 0
+Left = 77
+Name = "Separator1"
+Top = 5
+Width = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JQO
+[CLASS] separator
+[BASECLASS] separator
+[OBJNAME] Separator2
+[PARENT] main
+[START PROPERTIES]
+Height = 0
+Left = 149
+Name = "Separator2"
+Top = 5
+Width = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVJ0P1JRR
+[CLASS] separator
+[BASECLASS] separator
+[OBJNAME] Separator3
+[PARENT] main
+[START PROPERTIES]
+Height = 0
+Left = 199
+Name = "Separator3"
+Top = 5
+Width = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _S4B0OHCDS
+[CLASS] separator
+[BASECLASS] separator
+[OBJNAME] Separator4
+[PARENT] main
+[START PROPERTIES]
+Height = 0
+Left = 227
+Name = "Separator4"
+Top = 5
+Width = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RVW0KPE0R
+[CLASS] toolbarbutton
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Toolbarbutton1
+[PARENT] main
+[START PROPERTIES]
+Left = 5
+Name = "Toolbarbutton1"
+Top = 5
+Width = 1
+ZOrderSet = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] main
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RWH0QHTLT
+[CLASS] modalform
+[CLASSLOC] ..\..\..\classes\forms.vcx
+[BASECLASS] form
+[OBJNAME] mover
+[START PROPERTIES]
+BorderStyle = 0
+ControlBox = .F.
+DoCreate = .T.
+Height = 27
+KeyPreview = .T.
+MinHeight = 19
+Movable = .F.
+Name = "mover"
+Width = 157
+oform = NULL
+ogrid = NULL
+who = NULL
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+USE IN _temp
+SELE (this.WhatTable)
+ENDPROC
+PROCEDURE Init
+LPAR toWho
+LOCAL oGrid,oForm
+this.Who=toWho
+this.oGrid=toWho.Parent.Parent
+this.oForm=this.oGrid.Parent
+
+WITH this
+	.HoldKey=RECN()
+	this.whattable=ALIA()
+	USE (dbf()) AGAI ALIAS _temp IN 0
+	lor=ORDER()
+	ky1=SET('KEY',1)
+	ky2=SET('KEY',2)
+	SET ORDE TO &lor IN _temp
+	SELE _temp
+	SET KEY TO RANGE (ky1),(ky2)
+	SELE (this.WhatTable)
+	GO .HoldKey IN _temp
+	SKIP IN _temp
+	
+	.FormX=OBJT(this.oForm,2)+SYSM(3)
+	.Left=OBJT(toWho,2)+.FormX
+	.FormY=OBJT(this.oForm,1)+SYSM(9)+SYSM(4)
+	.Top=OBJT(toWho,1)+.FormY+INT(.oGrid.RowHeight)/2-2
+	.Width=OBJT(toWho,3)
+	.Height=.oGrid.RowHeight
+	.txtText.Width=.Width
+	.txtText.Value=toWho.Value
+ENDW
+
+ENDPROC
+PROCEDURE KeyPress
+LPAR nK, nS
+WITH this
+	DO CASE
+		CASE nK=27
+			otme=.T.
+			RELE this
+		CASE nK=5
+			IF .oGrid.Top+.oGrid.HeaderHeight+.FormY+1>.Top
+				.oGrid.DoScroll(0)
+			ELSE
+				.Top=.Top-.oGrid.RowHeight
+			ENDI
+			IF !BOF('_temp')
+				SKIP -1 IN _temp
+			ENDI
+		CASE nK=24
+			IF .oGrid.Top+MIN(.oGrid.Height,.oGrid.Parent.Height)-SYSM(8)+.FormY-.oGrid.RowHeight*1.5-1<this.Top
+				IF !EOF('_temp')
+					.oGrid.DoScroll(1)
+				ENDI
+			ELSE
+				IF !EOF('_temp')
+					.Top=.Top+.oGrid.RowHeight
+				ENDI
+			ENDI
+			IF !EOF('_temp')
+				SKIP IN _temp
+			ENDI
+		CASE nK=13
+			SELE (this.WhatTable)
+			DO CASE
+				CASE BOF('_temp')
+					GO TOP
+					SKIP-1
+				CASE EOF('_temp')
+					GO BOTT
+					SKIP 1
+				OTHER
+					GO RECN('_temp')
+			ENDC
+			RELE this
+	ENDC
+ENDW
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+formx
+formy
+oform
+ogrid
+whattable
+who
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RWH0RFG41
+[CLASS] mytextbox
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] textbox
+[OBJNAME] txtText
+[PARENT] mover
+[START PROPERTIES]
+Left = 0
+Name = "txtText"
+Style = 1
+Top = 1
+Width = 156
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.BackColor=CLR_HighLight()
+this.ForeColor=CLR_HighLightText()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] mover
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _SBA0XQO8F
+[CLASS] newpopup
+[CLASSLOC] ..\..\..\classes\controls.vcx
+[BASECLASS] container
+[OBJNAME] nomepopup
+[START PROPERTIES]
+Height = 20
+Name = "nomepopup"
+Width = 116
+cmdButt.Left = 95
+cmdButt.Name = "cmdButt"
+cmdButt.Top = 0
+txtText.Alignment = 1
+txtText.ControlSource = "m.nome"
+txtText.Height = 19
+txtText.InputMask = "XXXXXXXXXX"
+txtText.Left = 0
+txtText.Name = "txtText"
+txtText.Top = 0
+txtText.Width = 96
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Refresh
+IF koldocm=0
+	this.cmdButt.Visible=.F.
+ELSE
+	this.cmdButt.Visible=.T.
+ENDIF
+ENDPROC
+PROCEDURE onclick
+do edocm WITH 1
+ENDPROC
+PROCEDURE txtText.ErrorMessage
+RETU 'Такой номер уже есть!'
+ENDPROC
+PROCEDURE txtText.KeyPress
+LPARAMETERS nkeycode,n,errmsg
+IF koldocm=0
+	return
+ENDIF
+DODEFAULT(nkeycode,n,errmsg)
+ENDPROC
+PROCEDURE txtText.Valid
+m.nome=this.Value
+RETU unnom()
+ENDPROC
+PROCEDURE txtText.When
+RETU (act=2.or.usernom=0.or.userspod=='!'.or.at('НОМД#',userspod)#0)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] nomepopup
+[START PROPERTIES]
+Wingdings, 0, 11, 13, 16, 13, 20, 3, 0
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQU189WTZ
+[CLASS] mytimer
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] timer
+[OBJNAME] refresher
+[START PROPERTIES]
+Height = 25
+Interval = 200
+Name = "refresher"
+Width = 27
+event = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+IF !EMPTY(this.Event)
+	Center(this.Event)
+	RELE this
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+event
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] refresher
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _S53015QKO
+[CLASS] info
+[CLASSLOC] sklad.vcx
+[BASECLASS] textbox
+[OBJNAME] rightpart
+[START PROPERTIES]
+BorderStyle = 0
+Height = 13
+Margin = 0
+Name = "rightpart"
+SpecialEffect = 1
+Width = 319
+colorincrement = 32
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] rightpart
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQS1EIH6W
+[CLASS] app
+[CLASSLOC] ..\..\..\classes\modificators.vcx
+[BASECLASS] custom
+[OBJNAME] sklad
+[START PROPERTIES]
+Name = "sklad"
+ccaption = Склад и учет торговых операций
+cmenu = 
+debugmode = .T.
+startuptools = main
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODE()
+ON SHUT DO isexit
+ON KEY LABEL Ctrl+End GoGrid('GO BOTT')
+ON KEY LABEL Ctrl+Home GoGrid('GO TOP')
+ENDPROC
+PROCEDURE cleanup
+DODE()
+ON SHUT
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sklad
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQT0YCG99
+[CLASS] entryform
+[CLASSLOC] ..\lib.old\forms.vcx
+[BASECLASS] form
+[OBJNAME] skladform
+[START PROPERTIES]
+Desktop = .F.
+DoCreate = .T.
+Height = 350
+Icon = ..\bmp\note10.ico
+Name = "skladform"
+Width = 550
+cexact = NONE
+dbcontainer.Name = "dbcontainer"
+oarea = 0
+oclosable = .T.
+oldprocedure = 
+saveset_form.Name = "saveset_form"
+tbar = 
+vizov = -1
+workarea = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+*!*	if type('goApp')='O'
+*!*		vizov=this.vizov
+*!*		goApp.ReFreshToolBars(this.tBar,this)
+*!*	endi
+broac=.t.
+
+cEx=this.cExact
+if cEx='NONE'
+	this.cExact=set('EXAC')
+else
+	set exac &cEx
+endi
+set cursor on
+
+ENDPROC
+PROCEDURE Deactivate
+broac=.F.
+
+ENDPROC
+PROCEDURE Destroy
+thisform.Hide()
+ENDPROC
+PROCEDURE Init
+****** Горобец
+this.WorkArea=alias()
+******
+this.AddObject('Resizer1','Resizer')
+this.AddObject('Savepos1','Savepos')
+
+ENDPROC
+PROCEDURE Unload
+*!*	IF TYPE('goApp')='O'
+*!*		goApp.ReFreshToolBars('CLOSE',this)
+*!*	ENDI
+SET CURSOR ON
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*myright 
+^vararr[1,1] 
+cexact
+oarea
+oclosable
+oldprocedure
+tbar
+vizov
+workarea
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] skladform
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQT0YF3EA
+[CLASS] clevergrid
+[CLASSLOC] ..\..\..\classes\controls.vcx
+[BASECLASS] grid
+[OBJNAME] skladgrid
+[START PROPERTIES]
+FontName = "tahoma"
+Name = "skladgrid"
+SplitBar = .F.
+addwidth = 0
+crecno = 0
+filtercondition = 
+firstrowrecno = 0
+fixcol = 0
+holdrecno = 0
+oldpartition = 0
+rerow = 0
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE AfterRowColChange
+LPAR nC
+WITH this
+	IF RECN()<>this.CurRec
+		this.CurRec=RECN()
+		thisform.UpdateValues
+	ENDI
+	.ReRow=.RelativeRow
+ENDW
+
+ENDPROC
+PROCEDURE BeforeRowColChange
+LPAR nCol
+LOCAL nLast
+cCurText='this.Columns(nCol).'+this.Columns(nCol).CurrentControl+'.LastPress'
+nLast=IIF(TYPE(cCurText)='U',LAST(),EVAL(cCurText))
+IF nCol=1 AND nLast=19 OR ncol>=this.ColumnCount AND nLast=4
+	nLast=LAST()
+ENDI
+*ARow=this.ActiveRow
+*!*	WITH this
+	DO CASE
+		CASE INLI(nLast,19)
+			IF nCol=1
+				NODEFAULT
+				RETURN
+			ENDI
+*!*				IF .FixCol#0
+*!*					IF .Panel=1 AND .Columns(nCol).ColumnOrder=this.FixCol+1
+*!*						.Panel=0
+*!*						.ActivateCell(ARow,.FixCol)
+*!*					ENDI
+*!*				ENDI
+		CASE INLI(nLast,4)
+			IF nCol>=this.ColumnCount
+				NODEFAULT
+				RETURN
+			ENDI
+*!*				IF .FixCol#0 AND .Panel=0 AND .Columns(nCol).ColumnOrder=this.FixCol
+*!*					.Panel=1
+*!*					*.ActivateCell(ARow,1)
+*!*					.Columns(.FixCol+1).SetFocus
+*!*				ELSE
+*!*					IF TYPE(cCurText)#'U'
+*!*						.Columns(nCol+1).SetFocus
+*!*					ENDI
+*!*				ENDI
+	ENDC
+*!*	ENDW
+
+ENDPROC
+PROCEDURE Init
+local oCol,lCan,lName
+for each oCol in this.columns
+	lName=eval('oCol.'+oCol.currentcontrol)
+	if upper(lName.class)='TEXTBOX'
+		oCol.addobject('Text10','xtabtxt')
+		oCol.Text10.visible=.t.
+		oCol.currentcontrol='Text10'
+	endif
+endfor
+****** Горобец
+if this.metcolor
+	this.setall('DynamicBackColor','IIF(!eof("bo"),RGB(255,255,0),CLR_Window())','FixColumn')
+	this.setall('DynamicForeColor','IIF(!eof("bo"),RGB(0,0,255),CLR_WindowText())','FixColumn')
+endif
+******
+on key label Ctrl+end GoGrid('GO BOTT')
+on key label Ctrl+home GoGrid('GO TOP')
+dode()
+
+ENDPROC
+PROCEDURE MouseUp
+LPAR nButton, nShift, nXCoord, nYCoord
+*!*	IF this.FixCol>0 AND this.Partition#this.OldPartition
+*!*		this.Columns(this.FixCol).Width=this.Columns(this.FixCol).Width+this.Partition-this.OldPartition
+*!*		this.OldPartition=this.Partition
+*!*	ENDI
+ENDPROC
+PROCEDURE Scrolled
+LPAR nDirection
+*!*	local lnI
+*!*	with This
+*!*		do case
+*!*			case .Panel = 1 and .LeftColumn <= .fixcol+1
+*!*				DO WHIL .LeftColumn#.FIxCol+1	&&for lnI = .LeftColumn to .FixCol
+*!*					.DoScroll(5)
+*!*				ENDD
+
+*!*			case .Panel = 0 and .LeftColumn > 1
+*!*				for lnI = .LeftColumn to .FixCol step - 1
+*!*					.DoScroll(4)
+*!*				ENDF
+*!*		endcase
+*!*	endwith
+
+ENDPROC
+PROCEDURE Valid
+this.reRow=this.RelativeRow
+this.SetAll('BackColor',CLR_BtnFace(),'header')
+this.SetAll('ForeColor',CLR_WindowText(),'header')
+
+ENDPROC
+PROCEDURE When
+****** Горобец
+if type('ThisForm.WorkArea')='C'
+	ThisForm.WorkArea=this.RecordSource
+endif
+******
+this.SetAll('BackColor',CLR_HighLight(),'header')
+this.SetAll('ForeColor',CLR_HighLightText(),'header')
+SET CURSOR ON
+
+
+ENDPROC
+PROCEDURE formactivated
+if !empt(this.FixingTable)
+	with this
+****** Горобец
+		if betw(.FirstRowRecno,1,recc(.tag))
+			go .FirstRowRecno in (.tag)
+		endif
+		.recordsource=''
+		.recordsource=.tag
+		sele (.tag)
+******
+		for i=1 to .columncount
+			.columns(i).controlsource=.SavCols(i,1)
+			.columns(i).alignment=.SavCols(i,4)
+		endfor
+		if betw(.HoldRecno,1,recc(.tag))
+			go (.HoldRecno)
+		else
+			.HoldRecno=0
+		endif
+		.cRecno=.HoldRecno
+	endwith
+	use in (this.FixingTable)
+	this.FixingTable=''
+endif
+
+ENDPROC
+PROCEDURE formdeactivated
+****** Горобец
+local vo,cs,tp,cmd,c,nColCount,ln,laVar,lnRecs,i,cFilterCondition,cRecno
+if empty(this.recordsource)
+	return
+endif
+cFilterCondition=iif(Empty(this.FilterCondition),'.T.',this.FilterCondition)
+******
+this.FixingTable=sys(2015)
+
+with this
+	.RememberColumns
+	nColCount=.columncount
+	.tag=.recordsource
+	cmd=''
+	c=1
+	sele (.recordsource)
+	for each cln in .columns
+		cs=cln.controlsource
+		vo=eval(cs)
+		tp=type('vo')
+		do case
+		case tp='C'
+			sz=fsiz(cs)
+			if sz=0
+				sz=100
+			endi
+			ln='('+allt(str(sz))+')'
+		case tp='D'
+			ln=''
+		case tp='N'
+			ln='(20,4)'
+			this.SavCols(cln.columnorder,4)=1
+		other
+			wait wind tp
+			ln=''
+		endcase
+		cmd=cmd+'_'+padl(c,2,'0')+' '+tp+' '+ln+','
+		c=c+1
+	endfor
+	cmd=left(cmd,len(cmd)-1)
+	cmd='CREA CURS '+this.FixingTable+' ('+cmd+')'
+	&cmd
+	select (.recordsource)
+	.HoldRecno=recn()
+****** Горобец
+	for i=1 to .ReRow-1
+		if bof()
+			exit
+		endif
+		cRecno=iif(eof(),0,recno())
+		skip -1
+		if !Eval(cFilterCondition)
+			if cRecno#0
+				go cRecno
+			endif
+			exit
+		endif
+	endfor
+	.FirstRowRecno=recn()
+	lnRecs=int(.height/.rowheight)+1
+	dimension laVar(.columncount)
+	scan next lnRecs
+		if !Eval(cFilterCondition)
+			exit
+		endif
+		stor '' to laVar
+		c=1
+		for each cln in .columns
+			laVar(c)=eval(cln.controlsource)
+			c=c+1
+		endfor
+		inse into (.FixingTable) from arra laVar
+	endscan
+******
+	go top in (.FixingTable)
+	.recordsource=this.FixingTable
+	c=1
+	for each cln in .columns
+		with this.columns(c)
+			cs=this.FixingTable+'._'+padl(c,2,'0')
+			if type(cs)='C'
+				cs='TRIM('+cs+')'
+			endi
+			.controlsource=cs
+		endwith
+		c=c+1
+	endfor
+endwith
+
+ENDPROC
+PROCEDURE gridactivate
+****** Горобец (2-я часть наложения грида сверху)
+* Недоделано и нигде не используется!
+local FullDoubleGridName,TempTable
+FullDoubleGridName='ThisForm.'+this.Name+'_Double'
+TempTable=''
+if Type(FullDoubleGridName)='O'
+	with &FullDoubleGridName
+		TempTable=.RecordSource
+		.RecordSource=''
+		.Visible=.F.
+	endwith
+endif
+if !empty(TempTable)
+	use in (TempTable)
+endif
+this.Visible=.T.
+******
+
+ENDPROC
+PROCEDURE griddeactivate
+****** Горобец (1-я часть наложения грида сверху)
+* Недоделано и нигде не используется!
+local vo,cs,tp,cmd,c,nColCount,ln,laVar,lnRecs,i
+local selo,cRecno,maxsel,envar,nc,cc,cFilterCondition
+local TempTable,DoubleGridName,FullDoubleGridName
+local cControlSource,cHeaderCaption,cColumnClass
+*
+if empty(this.RecordSource)
+	return
+endif
+cFilterCondition=iif(Empty(this.FilterCondition),'.T.',this.FilterCondition)
+*
+selo=select()
+maxsel=devir(100)
+nc=0
+for i=1 to maxsel
+	cc=1
+	do while !empt(targ(cc,i))
+		cc=cc+1
+	enddo
+	nc=max(nc,cc)
+endfor
+nc=nc*2+14
+dimension envar(maxsel,nc)
+store '' to envar
+do envir with envar
+*
+TempTable=sys(2015)
+with this
+	nColCount=.columncount
+	cmd=''
+	c=1
+	sele (.recordsource)
+	for each cln in .columns
+		cs=cln.controlsource
+		vo=eval(cs)
+		tp=type('vo')
+		do case
+		case tp='C'
+			sz=fsiz(cs)
+			if sz=0
+				sz=100
+			endif
+			ln='('+allt(str(sz))+')'
+		case tp='D'
+			ln=''
+		case tp='N'
+			ln='(20,4)'
+		other
+			wait wind tp
+			ln=''
+		endcase
+		cmd=cmd+'_'+padl(c,2,'0')+' '+tp+' '+ln+','
+		c=c+1
+	endfor
+	cmd=left(cmd,len(cmd)-1)
+	cmd='CREA CURS '+TempTable+' ('+cmd+')'
+	&cmd
+	select (.RecordSource)
+	for i=1 to .ReRow-1
+		if bof()
+			exit
+		endif
+		cRecno=iif(eof(),0,recno())
+		skip -1
+		if !Eval(cFilterCondition)
+			if cRecno#0
+				go cRecno
+			endif
+			exit
+		endif
+	endfor
+	lnRecs=int(.height/.rowheight)+1
+	dimension laVar(.columncount)
+	scan next lnRecs
+		if !Eval(cFilterCondition)
+			exit
+		endif
+		stor '' to laVar
+		c=1
+		for each cln in .columns
+			laVar(c)=eval(cln.controlsource)
+			c=c+1
+		endfor
+		inse into (TempTable) from arra laVar
+	endscan
+	go top in (TempTable)
+endwith
+*
+DoubleGridName=this.Name+'_Double'
+FullDoubleGridName='ThisForm.'+DoubleGridName
+if Type(FullDoubleGridName)<>'O'
+	thisForm.AddObject(DoubleGridName,'Grid')
+endif
+with &FullDoubleGridName
+	.ForeColor=this.ForeColor
+	.BackColor=this.BackColor
+	.FontBold=this.FontBold
+	.FontCondense=this.FontCondense
+	.FontExtend=this.FontExtend
+	.FontItalic=this.FontItalic
+	.FontName=this.FontName
+	.FontOutline=this.FontOutline
+	.FontShadow=this.FontShadow
+	.FontSize=this.FontSize
+	.FontStrikethru=this.FontStrikethru
+	.FontUnderLine=this.FontUnderLine
+	.GridLineColor=this.GridLineColor
+	.GridLineWidth=this.GridLineWidth
+	.GridLines=this.GridLines
+	.HeaderHeight=this.HeaderHeight
+	.ReadOnly=.t.
+	.RecordMark=this.RecordMark
+	.RowHeight=this.RowHeight
+	.ScrollBars=this.ScrollBars
+	*
+	.Left=this.Left
+	.Top=this.Top
+	.Width=this.Width
+	.Height=this.Height
+	.RecordSource=TempTable
+	.ColumnCount=0
+	*
+	c=1
+	for each cln in this.columns
+		cControlSource=TempTable+'._'+padl(c,2,'0')
+		if type(cControlSource)='C'
+			cControlSource='TRIM('+cControlSource+')'
+		endif
+		cHeaderCaption=iif(type('cln.Header1.Caption')='C',cln.Header1.Caption,'')
+		cColumnClass=cln.Class
+		*
+		.AddObject('Column'+ALLT(STR(.ColumnCount+1)),cColumnClass)
+		*
+		nc=.ColumnCount
+*		debugo nc
+		if type('.Columns[nc].Header1.Caption')='C'
+			.Columns[nc].Header1.Caption=cHeaderCaption
+		endif
+		.Columns[nc].ForeColor=cln.ForeColor
+		.Columns[nc].BackColor=cln.BackColor
+		.Columns[nc].FontBold=cln.FontBold
+		.Columns[nc].FontCondense=cln.FontCondense
+		.Columns[nc].FontExtend=cln.FontExtend
+		.Columns[nc].FontItalic=cln.FontItalic
+		.Columns[nc].FontName=cln.FontName
+		.Columns[nc].FontOutline=cln.FontOutline
+		.Columns[nc].FontShadow=cln.FontShadow
+		.Columns[nc].FontSize=cln.FontSize
+		.Columns[nc].FontStrikethru=cln.FontStrikethru
+		.Columns[nc].FontUnderLine=cln.FontUnderLine
+		.Columns[nc].DynamicForeColor=cln.DynamicForeColor
+		.Columns[nc].DynamicBackColor=cln.DynamicBackColor
+		.Columns[nc].DynamicFontBold=cln.DynamicFontBold
+		.Columns[nc].DynamicFontItalic=cln.DynamicFontItalic
+		.Columns[nc].DynamicFontName=cln.DynamicFontName
+		.Columns[nc].DynamicFontOutline=cln.DynamicFontOutline
+		.Columns[nc].DynamicFontShadow=cln.DynamicFontShadow
+		.Columns[nc].DynamicFontSize=cln.DynamicFontSize
+		.Columns[nc].DynamicFontStrikethru=cln.DynamicFontStrikethru
+		.Columns[nc].DynamicFontUnderLine=cln.DynamicFontUnderLine
+		.Columns[nc].Format=cln.Format
+		.Columns[nc].InputMask=cln.InputMask
+		.Columns[nc].Movable=cln.Movable
+		.Columns[nc].Resizable=cln.Resizable
+		.Columns[nc].SelectOnEntry=cln.SelectOnEntry
+		.Columns[nc].Width=cln.Width
+		.Columns[nc].ReadOnly=.t.
+		c=c+1
+	endfor
+	.Visible=.T.
+endwith
+*
+this.Visible=.F.
+*
+do revir with envar
+select (selo)
+******
+ENDPROC
+PROCEDURE initiatestyle
+DODE()
+WITH this
+	.SetAll('ForeColor',CLR_HighLightText(),'textbox')
+	.SetAll('BackColor',CLR_HighLight(),'textbox')
+ENDW
+ENDPROC
+PROCEDURE newcolumn
+****** Горобец
+lparameters ccontrolsource,cheadercaption,ncolorder,ccolumnclass,ctextclass,utextinitparam,csecondary
+******
+local oCol
+if empty(cColumnClass)
+	cColumnClass='COLUMN'
+	cTextClass='XTABTXT'
+endif
+oCOL=dode(ccontrolsource,cheadercaption,ncolorder,ccolumnclass,ctextclass,utextinitparam)
+do case
+case 'NAZV'$uppe(oCol.controlsource)
+	oCol.width=150
+other
+	oCol.width=60
+endc
+****** Горобец
+if type('oCol.Secondary')<>'U'
+	oCol.Secondary=csecondary
+endif
+******
+retu oCol
+
+ENDPROC
+PROCEDURE preparefix
+*!*	LOCAL i
+*!*	WITH this
+*!*		IF .FixCol>0
+*!*			LOCAL ARRA aOldW(.FixCol)
+*!*			.PanelLink =.F.
+*!*			.Panel=0
+*!*			.ScrollBars=1
+*!*			.AddProperty('AddWidth',IIF(.RecordMark,11,0))
+*!*			.Panel=1
+*!*			.RecordMark=.F.
+*!*			.PanelLink=.T.
+*!*			.Partition=0
+*!*			this.ProgrammaticSize=.T.
+*!*			FOR i=1 TO .FixCol
+*!*				.Partition=.Partition+MIN(.Columns(i).Width+1,.Width-.Partition-10)
+*!*				aOldW(i)=.Columns(i).Width
+*!*				.Columns(i).Width=.Width
+*!*			ENDF
+*!*			.Partition=.Partition+.AddWidth+1
+*!*			.OldPartition=.Partition
+*!*			.Columns(.FixCol+1).SetFocus
+*!*			FOR i=1 TO .FixCol
+*!*				.Columns(i).Width=aOldW(i)
+*!*			ENDF
+*!*			.Columns(.FixCol).ReSizable=.F.
+*!*			this.ProgrammaticSize=.F.
+*!*		ELSE
+*!*			.Partition=0
+*!*			.Panel=1
+*!*		ENDI
+*!*	ENDW
+*!*			
+
+ENDPROC
+PROCEDURE recreatecolumns
+LPAR lcRS, lOnlySource
+LOCAL lnCC, nArea
+nArea=SELE()
+
+WITH this
+	lnCC=ALEN(this.SavCols)/11
+	IF !EMPTY(lcRS)
+		.RecordSource=lcRS
+		.ColumnCount=lnCC
+		SELE (lcRS)
+	ENDIF
+	FOR i=1 TO lnCC
+		WITH .Columns(i)
+			.ControlSource=this.SavCols(i,1)
+			IF !lOnlySource
+				.Header1.Caption=this.SavCols(i,2)
+				.InputMask=this.SavCols(i,3)
+				.Alignment=this.SavCols(i,4)
+				.ReadOnly=this.SavCols(i,8)
+				.Enabled=this.SavCols(i,7)
+				.DynamicForeColor=this.SavCols(i,9)
+				.DynamicBackColor=this.SavCols(i,10)
+				.DynamicFontBold=this.SavCols(i,11)
+			ENDIF
+		ENDW
+	ENDF
+	.Init
+ENDW
+SELE (nArea)
+ENDPROC
+PROCEDURE remembercolumns
+WITH this
+	.SaveColumns
+	lnCC=.ColumnCount
+	IF lnCC<=0
+		RETU
+	ENDI
+	DIME this.SavCols(lnCC,11)
+	FOR i=1 TO lnCC
+		WITH this.Columns(i)
+			this.SavCols(i,1)=.ControlSource
+			this.SavCols(i,2)=.Header1.Caption
+			this.SavCols(i,3)=.InputMask
+			this.SavCols(i,4)=.Alignment
+			this.SavCols(i,5)=UPPE(EVAL('.'+.CurrentControl+'.Class'))
+			this.SavCols(i,6)=EVAL('.'+.CurrentControl+'.Tag')
+			this.SavCols(i,7)=.Enabled
+			this.SavCols(i,8)=.ReadOnly
+			this.SavCols(i,9)=.DynamicForeColor
+			this.SavCols(i,10)=.DynamicBackColor
+			this.SavCols(i,11)=.DynamicFontBold
+		ENDW
+	ENDF
+ENDW
+ENDPROC
+PROCEDURE restorecolumns
+LPAR tcEntry
+LOCAL  lcOldError,llError,lcEntry,lcParenter
+IF TYPE('goApp')='U' OR this.ColumnCount<=0
+	RETU
+ENDI
+WITH this
+	LOCAL ARRA laColumns(.ColumnCount)
+	IF PCOU()=0
+		lcEntry=.Name
+		lcParenter=".Parent"
+		DO WHIL TYPE(lcParenter+".Name")#"U"
+			lcEntry=EVAL(lcParenter+".Name")+"."+lcEntry
+			lcParenter=lcParenter+".Parent"
+		ENDD
+	ELSE
+		lcEntry=tcEntry
+	ENDIF
+
+	lcOldError=ON('ERROR')
+
+	ON ERROR llError=.T.
+	lnRH=VAL(goApp.ReadIni(lcEntry,'Rh',3,'16'))
+	FOR i = 1 TO .ColumnCount
+		laColumns(i)=VAL(goApp.ReadIni(lcEntry,this.RareValue(.Columns(i).ControlSource),3,'-1'))
+		IF i=1 AND laColumns(1)=-1
+			STOR -1 TO laColumns
+			llError=.T.
+			EXIT
+		ENDI
+	ENDF
+	ON ERROR &lcOldError
+	IF !llError
+		.RowHeight=lnRH
+		FOR i = 1 TO .ColumnCount
+			IF laColumns(i)>=0
+				.Columns(i).Width=laColumns(i)
+			ELSE
+				DO CASE
+					CASE 'NAZV'$UPPE(.Columns(i).ControlSource)
+						.Columns(i).Width=150
+					OTHER
+						.Columns(i).Width=60
+				ENDC
+			ENDI
+		ENDF
+	ENDI
+ENDW
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*formactivated 
+*formdeactivated 
+*gridactivate 
+*griddeactivate 
+*preparefix 
+*recreatecolumns 
+*remembercolumns 
+^savcols[1,0] 
+addwidth
+crecno
+filtercondition
+firstrowrecno
+fixcol
+fixingtable
+holdrecno
+metcolor Признак, выделять ли все помеченные строки желтым цветом
+oldpartition
+programmaticsize
+rerow
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] skladgrid
+[START PROPERTIES]
+tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQU1A1B8B
+[CLASS] entryform
+[CLASSLOC] ..\lib.old\forms.vcx
+[BASECLASS] form
+[OBJNAME] sklmodform
+[START PROPERTIES]
+Closable = .F.
+ControlBox = .T.
+Desktop = .F.
+DoCreate = .T.
+KeyPreview = .T.
+Name = "sklmodform"
+actipage = 0
+cmdCancel.Caption = "\<Отмена"
+cmdCancel.Left = 380
+cmdCancel.Name = "cmdCancel"
+cmdCancel.TabIndex = 2
+cmdCancel.TerminateRead = .F.
+cmdCancel.Top = 210
+cmdCancel.Width = 60
+cmdCancel.ZOrderSet = 2
+cmdOk.Caption = "\<Записать"
+cmdOk.Left = 320
+cmdOk.Name = "cmdOk"
+cmdOk.TabIndex = 1
+cmdOk.TerminateRead = .F.
+cmdOk.Top = 210
+cmdOk.Width = 60
+cmdOk.ZOrderSet = 1
+workarea = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+dode()
+****** Горобец
+******
+pop key
+
+ENDPROC
+PROCEDURE Init
+****** Горобец
+this.WorkArea=alias()
+******
+set cursor on
+dode()
+push key clear
+
+ENDPROC
+PROCEDURE KeyPress
+****** Горобец
+lpar nKeyCode, n, CContr, CContrCanLostFocus
+do case
+case nKeyCode = 27
+	this.cmdCancel.click
+case nKeyCode=32 and n=2
+	CContr=this.ActiveControl
+	CContrCanLostFocus=CContr.Valid()
+	if type('CContrCanLostFocus')='N'
+		CContrCanLostFocus=iif(CContrCanLostFocus=0,.f.,.t.)
+	endif
+	if CContrCanLostFocus
+		this.cmdOk.setfocus
+		this.cmdOk.click
+	else
+		wait CContr.ErrorMessage() window
+	endif
+	nodefault
+endcase
+******
+
+ENDPROC
+PROCEDURE Load
+this.CurAlias=ALIAS()
+
+ENDPROC
+PROCEDURE Refresh
+*!*	IF TYPE('goApp')='O' AND !ISNULL(goApp)
+*!*		goApp.RefreshToolbars('')
+*!*	ENDIF
+ENDPROC
+PROCEDURE Unload
+dode()
+*!*	if type('goApp')='O' and !isnu(goapp)
+*!*		goApp.RefreshToolbars('CLOSE')
+*!*	endif
+set cursor on
+if !empty(this.CurAlias)
+	select (this.CurAlias)
+endif
+****** Горобец
+if _screen.formcount<=2
+	broac=.f.
+endif
+******
+
+ENDPROC
+PROCEDURE cmdCancel.Click
+undo=0
+thisform.uRetVal = .F.
+thisform.hide
+RELE thisform
+ENDPROC
+PROCEDURE cmdOk.Click
+undo=1
+thisform.uRetVal = .T.
+thisform.hide
+RELE thisform
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*myright 
+actipage
+activated
+curalias
+workarea
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQU1A38VF
+[CLASS] savepos
+[CLASSLOC] ..\lib.old\modificators.vcx
+[BASECLASS] label
+[OBJNAME] Savepos1
+[PARENT] sklmodform
+[START PROPERTIES]
+Left = 0
+Name = "Savepos1"
+TabIndex = 3
+Top = 0
+ZOrderSet = 3
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RS1015VBU
+[CLASS] myshape
+[CLASSLOC] ..\lib.old\baseclas.vcx
+[BASECLASS] shape
+[OBJNAME] sh
+[PARENT] sklmodform
+[START PROPERTIES]
+Height = 50
+Left = 10
+Name = "sh"
+Top = 10
+Width = 80
+ZOrderSet = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sklmodform
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RWA02JNLF
+[CLASS] mytextbox
+[CLASSLOC] baseclas.vcx
+[BASECLASS] textbox
+[OBJNAME] skltext
+[START PROPERTIES]
+Name = "skltext"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+*!*	goApp.ReFreshToolBars
+ENDPROC
+PROCEDURE LostFocus
+*!*	goApp.ReFreshToolBars
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] skltext
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRH0V2Q5U
+[CLASS] skladform
+[CLASSLOC] sklad.vcx
+[BASECLASS] form
+[OBJNAME] sprform
+[START PROPERTIES]
+Caption = ""
+DoCreate = .T.
+Height = 350
+KeyPreview = .T.
+Name = "sprform"
+Width = 550
+active = .T.
+controlprog = 
+formid = .F.
+tbar = ADE
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+local i, lnOps, cEx, lcProg, lcStr, lnPar
+local arra aOps(1)
+
+this.lockscreen=.t.
+this.closable=this.oClosable
+if type('goApp')='O'
+	vizov=this.vizov
+	goApp.ReFreshToolBars(this.TBar)
+endi
+broac=.t.
+
+cEx=this.cExact
+if cEx='NONE'
+	this.cExact=set('EXAC')
+else
+	set exac &cEx
+endi
+
+this.OldProcedure=set('PROC')
+lcProg=this.ControlProg
+set proc to &lcProg addi
+
+if !this.active and !empt(this.envarr(1,1)) and !this.ownevent
+	this.active=.t.
+	acop(this.envarr,envar)
+	do revir with envar
+
+	if type('this.grdGrid.Name')='C'
+		this.grdGrid.FormActivated
+	endif
+
+	sele (this.oArea)
+	if glAllSprav
+		this.SaveVar(.t.)
+		lnOps=alines(aOps,this.tag)
+		for i=1 to lnOps
+			AppEvent=aOps(i)
+			if !empt(AppEvent)
+				this.doevent
+			endi
+		endf
+		this.tag=''
+	endi
+	sele (this.oArea)
+endif
+
+this.OwnEvent=.f.
+vizov=this.vizov
+if !glAllSprav
+	lcStr=''
+	for i=1 to alen(gaLocSave)
+		lcS=allt(gaLocSave(i))
+		if at(' ',lcS)>0
+			lcS=subs(lcS,1,at(' ',lcS))
+		endi
+		if len(lcStr+lcS+',')>240
+			lcStr=left(lcStr,len(lcStr)-1)
+			priv &lcStr
+			stor 0 to &lcStr
+			lcStr=''
+		endi
+		lcStr=lcStr+lcS+','
+	endf
+	lcStr=left(lcStr,len(lcStr)-1)
+	if !empt(lcStr)
+		priv &lcStr
+		stor 0 to &lcStr
+		local arra aSave(1)
+		acop(this.Vararr,aSave)
+		dime this.vararr(alen(gaLocSave))
+		acop(gaLocSave,this.Vararr)
+		this.RestVar
+		dime this.Vararr(alen(aSave))
+		acop(aSave,this.Vararr)
+	endi
+endi
+****** Горобец
+if type('this.tbar')='C' and 'C'$this.tbar and used('bo')	&& Для форм, где есть пометка с использованием bo. Удалить в версии 4.0
+	if type('this.norepl')='L'
+		private norepl
+		norepl=this.norepl
+	endif
+	if norepl
+		if type('this.FormId')='C' and !(gBoHandle==this.FormId)	&& Сменился держатель bo, снимаем пометку
+			private ali,poel
+			ali=this.ali
+			poel=this.poel
+			do uflag with -3
+			this.poel=0
+		endif
+		if recc('bo')=0 and this.poel>0	&& Если в другой форме сработал flope
+			this.poel=0
+			poel=0
+		endif
+		gBoHandle=this.FormId
+	endif
+endif
+******
+do sayPer
+this.Context.show
+if this.ReCreateDueBroadcast
+	this.doevent
+	this.ReCreateDueBroadcast=.f.
+endi
+this.lockscreen=.f.
+
+ENDPROC
+PROCEDURE Deactivate
+local i,ckoop,nRec,lcStr,lcS,nc,cc,ld
+
+if this.active and !this.OwnEvent and this.windowtype=0
+	this.oClosable=this.closable
+	this.closable=.f.
+	this.active=.f.
+
+	sele (this.oArea)
+	if !empt(this.VarArr(1))
+		lcStr=''
+		for i=1 to alen(this.VarArr)
+			lcS=allt(this.VarArr(i))
+			if glAllSprav and lcS=gaLocSave(1)
+				exit
+			endi
+			if at(' ',lcS)>0
+				lcS=subs(lcS,1,at(' ',lcS))
+			endi
+			if len(lcStr+lcS+',')>240
+				lcStr=left(lcStr,len(lcStr)-1)
+				priv &lcStr
+				stor 0 to &lcStr
+				lcStr=''
+			endi
+			lcStr=lcStr+lcS+','
+		endf
+		lcStr=left(lcStr,len(lcStr)-1)
+		if !empt(lcStr)
+			priv &lcStr
+			stor 0 to &lcStr
+			this.RestVar
+		endi
+	endi
+
+	maxsel=devir(50)
+
+	nc=0
+	for i=1 to maxsel
+		cc=1
+		do whil !empt(targ(cc,i))
+			cc=cc+1
+		enddo
+		nc=max(nc,cc)
+	endf
+	nc=nc*2
+	cc=nc+14
+	dime this.envarr(maxsel,cc),envar(maxsel,cc)
+	stor '' to this.envarr,envar
+
+	do envir with envar
+	acop(envar,this.envarr)
+
+	if type('this.grdGrid.Name')='C'
+		this.grdGrid.FormDeactivated
+	endif
+
+	do zaver
+
+	ld=this.OldProcedure
+	set proc to &ld
+	this.Context.hide
+endif
+
+ENDPROC
+PROCEDURE Destroy
+LOCAL lcStr,i
+this.Visible=.F.
+IF !EMPT(this.VarArr(1))
+	lcStr=''
+	FOR i=1 TO ALEN(this.VarArr)
+		lcS=ALLT(this.VarArr(i))
+		IF glAllSprav AND lcS=gaLocSave(1)
+			EXIT
+		ENDI
+		IF AT(' ',lcS)>0
+			lcS=SUBS(lcS,1,AT(' ',lcS))
+		ENDI
+		IF LEN(lcStr+lcS+',')>240
+			lcStr=LEFT(lcStr,LEN(lcStr)-1)
+			PRIV &lcStr
+			STOR 0 TO &lcStr
+			lcStr=''
+		ENDI
+		lcStr=lcStr+lcS+','
+	ENDF
+	lcStr=LEFT(lcStr,LEN(lcStr)-1)
+	IF !EMPT(lcStr)
+		PRIV &lcStr
+		STOR 0 TO &lcStr
+		this.RestVar
+	ENDI
+ENDI
+
+IF USED(this.FormId)
+	USE IN (this.FormId)
+ENDI
+this.Visible=.F.
+IF !EMPT(this.controlProg)
+	DO zav_prog IN (this.ControlProg)
+ENDIF
+this.DeleteBar
+ENDPROC
+PROCEDURE Init
+dode()
+local i
+lnVar=0
+this.oArea=alia()
+if type('VARARR')#'U'
+	acop(vararr,this.Vararr)
+	lnVar=alen(vararr)
+else
+	dime this.VarArr(1)
+	stor '' to this.VarArr
+	if type('vizov')#'U'
+		this.vizov=vizov
+	endi
+endi
+dime this.Vararr(lnVar+alen(gaLocSave))
+for i=1 to alen(gaLocSave)
+	this.Vararr(lnVar+i)=gaLocSave(i)
+endf
+this.savevar(.f.,.t.)
+this.FormId=sys(2015)
+this.ownEvent=.t.
+this.AddBar
+****** Горобец
+if type('this.grdGrid.metcolor')='L'.and.this.grdGrid.metcolor
+	set rela to recno() into bo in (ali) addi
+endif
+******
+
+ENDPROC
+PROCEDURE KeyPress
+lparameters nKC, nSAC
+if type('this.ActiveControl')#'U' and uppe(this.activecontrol.baseclass)='GRID'
+	sele (this.activecontrol.recordsource)
+	do case
+	case nKC=24
+		nodefault
+		if !eof()
+			skip
+		else
+			go bott
+		endi
+	case nKC=5
+		nodefault
+		if !bof()
+			skip -1
+		else
+			go top
+		endi
+****** Горобец
+	case nKC=22
+		nodefault
+		do center with 'INS'
+******
+*!*			CASE nKc=3
+*!*				NODEFAULT
+*!*				WITH this.ActiveControl
+*!*					nRecs=INT((.Height-.HeaderHeight-IIF(INLI(.ScrollBars,3,1),SYSM(8),0))/.RowHeight)
+*!*					SCAN NEXT nRecs
+*!*					ENDS
+*!*					*.ReFresh
+*!*				ENDW
+*!*			CASE nKc=18
+*!*				NODEFAULT
+*!*				WITH this.ActiveControl
+*!*					nRecs=INT((.Height-.HeaderHeight-IIF(INLI(.ScrollBars,3,1),SYSM(8),0))/.RowHeight)
+*!*					DO WHIL !BOF() AND nRecs>0
+*!*						SKIP -1
+*!*						nRecs=nRecs-1
+*!*					ENDD
+*!*					*.ReFresh
+*!*				ENDW
+	endc
+endi
+
+ENDPROC
+PROCEDURE Unload
+broac=.F.
+vizov=-1
+DODE()
+ENDPROC
+PROCEDURE addbar
+LOCAL i, cc
+IF IsObject('goWinMenu')
+	cc=0
+	FOR i=1 TO goWinMenu.ControlCount
+		IF goWinMenu.Controls(i).Caption=this.Caption
+			cc=cc+1
+		ENDI
+	ENDF
+	cc=IIF(cc=0,'',STR(cc,3))
+	this.Caption=this.Caption+cc
+	goWinMenu.AddBar(this.FormId,this.Caption)
+	cName='goWinMenu.'+this.FormId
+	WITH &cName
+		.Command='ActiWin("'+this.FormId+'")'
+	ENDW
+	goWinMenu.ReFresh
+ENDI
+		
+ENDPROC
+PROCEDURE deletebar
+cname='goWinMenu.'+this.FormId
+IF IsObject(cName)
+	goWinMenu.RemoveObject(this.FormId)
+ENDI
+		
+	
+ENDPROC
+PROCEDURE doevent
+LPAR tuPars
+LOCAL lcStr,i,lnPar
+lnPar=PARA()
+
+IF !EMPT(this.VarArr(1))
+	lcStr=''
+	FOR i=1 TO ALEN(this.VarArr)
+		lcS=ALLT(this.VarArr(i))
+		IF glAllSprav AND lcS=gaLocSave(1)
+			EXIT
+		ENDI
+		IF AT(' ',lcS)>0
+			lcS=SUBS(lcS,1,AT(' ',lcS))
+		ENDI
+		IF LEN(lcStr+lcS+',')>240
+			lcStr=LEFT(lcStr,LEN(lcStr)-1)
+			PRIV &lcStr
+			STOR 0 TO &lcStr
+			lcStr=''
+		ENDI
+		lcStr=lcStr+lcS+','
+	ENDF
+	lcStr=LEFT(lcStr,LEN(lcStr)-1)
+	IF !EMPT(lcStr)
+		PRIV &lcStr
+		STOR 0 TO &lcStr
+		this.RestVar
+	ENDI
+ENDI
+IF this.reCreateDueBroadcast
+	this.CreateColumns
+	RETU
+ENDIF
+
+this.ownevent=.T.
+lcProg=this.ControlProg
+IF !(TYPE('tuPars')='C' AND tuPars='BROADCAST')
+	goEvForm=this
+ENDI
+IF TYPE('this.grdGrid.Name')='C'
+	IF this.grdGrid.ActiveColumn>0
+		tg=EVAL('this.grdGrid.Columns(this.grdGrid.ActiveColumn).'+this.grdGrid.Columns(this.grdGrid.ActiveColumn).CurrentControl+'.Tag')
+		IF !EMPT(tg)
+			tapo=VAL(tg)
+		ELSE
+			tapo=1
+		ENDI
+	ENDI
+ENDI
+	
+IF lnPar>0 AND !(TYPE('tuPars')='C' AND tuPars='BROADCAST')
+	DO eventHandler WITH tuPars IN &lcProg
+ELSE
+	DO EventHandler IN &lcProg
+ENDI
+
+IF !EMPT(this.VarArr(1))
+	this.SaveVar
+ENDI
+this.ownevent=.F.
+ENDPROC
+PROCEDURE myright
+LPARAMETERS oSender
+WITH thisform.ShortCut
+	.Col=MCOL(_SCREEN.NAME)
+	.Row=MROW(_SCREEN.NAME)
+	.Show
+ENDWITH
+ENDPROC
+PROCEDURE restvar
+FOR i=1 TO ALEN(this.Vararr)
+	lc=ALLT(this.Vararr(i))
+	IF !EMPT(lc)
+		po=AT(' ',lc)
+		eqpo=AT('=',lc)
+		IF po>0
+			nm=LEFT(lc,po-1)
+			di=SUBS(lc,po+1)
+			thn='this.'+nm
+			IF ALEN(&thn,2)=0
+				DIME (nm+'('+STR(ALEN(&thn,1))+')')
+			ELSE
+				DIME (nm+'('+STR(ALEN(&thn,1))+','+STR(ALEN(&thn,2))+')')
+			ENDI
+			ACOP(&thn,&nm)
+		ELSE
+			IF eqpo>0
+				lc=LEFT(lc,eqpo-1)
+			ENDI
+			thn='this.'+IIF(UPPE(LEFT(lc,2))='M.',SUBS(lc,3),lc)
+			&lc=EVAL(thn)
+		ENDI
+	ENDI
+ENDF
+*!*	FOR i=1 TO ALEN(gaLocSave)
+*!*		lc=gaLocSave(i)
+*!*		&lc=EVAL('this.'+lc)
+*!*	ENDF
+ENDPROC
+PROCEDURE savefalse
+LOCAL i,lcKey,oal,lcval
+oal=this.oArea
+lcKey=KEY(1)
+IF EMPT(lcKey) OR !this.grdGrid.Visible
+	RETU
+ENDI
+lnRelat=this.grdGrid.ReRow+1
+lcTyp=TYPE(lcKey)
+IF lcTyp='C'
+	lcLen=STR(LEN(EVAL(lcKey)))
+ELSE
+	lcLen='15,2'
+ENDI
+lcTyp=lcTyp+'('+lcLen+')'
+CREA CURS (this.formid) (ky &lcTyp)
+SELE (oal)
+this.holdKey=RECN()
+FOR i=1 TO lnRelat-2
+	IF !BOF()
+		SKIP -1
+	ELSE
+		GO TOP
+	ENDI
+ENDF
+this.Editable=RECN()
+lnRecs=INT(this.grdGrid.Height/this.grdGrid.RowHeight)+1
+SCAN NEXT lnRecs
+	lcVal=EVAL(lcKey)
+	INSE INTO (thisform.formid) VALU (lcVal)
+ENDS
+
+ENDPROC
+PROCEDURE savevar
+LPAR tlOnlyFilt,CrProp
+IF tlOnlyFilt
+	lnStart=ALEN(this.Vararr)-ALEN(gaLocSave)+1
+ELSE
+	lnStart=1
+ENDI
+FOR i=lnStart TO ALEN(this.Vararr)
+	lc=ALLT(this.Vararr(i))
+	IF !EMPT(lc)
+		po=AT(' ',lc)
+		eqpo=AT('=',lc)
+		IF po>0
+			nm=LEFT(lc,po-1)
+			di=SUBS(lc,po+1)
+			thn='this.'+nm
+			IF TYPE(thn+'(1)')='U'
+				this.AddProperty(nm+'(1)')
+			ENDI
+			IF ALEN(&nm,2)=0
+				DIME (thn+'('+STR(ALEN(&nm,1))+')')
+			ELSE
+				DIME (thn+'('+STR(ALEN(&nm,1))+','+STR(ALEN(&nm,2))+')')
+			ENDI
+			ACOP(&nm,&thn)
+		ELSE
+			IF eqpo>0
+				lc=LEFT(lc,eqpo-1)
+				di=SUBS(this.Vararr(i),eqpo+1)
+			ENDI
+			IF UPPE(LEFT(lc,2))='M.'
+				cc=SUBS(lc,3)
+			ELSE
+				cc=lc
+			ENDI
+			IF crProp
+				this.AddProperty(cc,IIF(eqpo>0,EVAL(di),EVAL(lc)))
+			ELSE
+				thn='this.'+cc
+				&thn=EVAL(lc)
+			ENDI
+		ENDI
+	ENDI
+ENDF
+
+ENDPROC
+PROCEDURE updatevalues
+this.ReFreshForm
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+6[END RESERVED2]
+[START RESERVED3]
+*addbar 
+*deletebar 
+*restvar 
+*savefalse 
+*savevar 
+^envarr[1,1] 
+active
+controlprog
+formid
+ownevent
+recreateduebroadcast
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRH0V2QX7
+[CLASS] cancelbutton
+[CLASSLOC] ..\..\..\classes\modificators.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Cancelbutton1
+[PARENT] sprform
+[START PROPERTIES]
+Left = 0
+Name = "Cancelbutton1"
+TabIndex = 2
+Top = 0
+ZOrderSet = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RZ10W5CEW
+[CLASS] _mnumenubar
+[CLASSLOC] ..\..\..\classes\menus5.vcx
+[BASECLASS] custom
+[OBJNAME] context
+[PARENT] sprform
+[START PROPERTIES]
+Height = 17
+Left = 0
+Name = "context"
+Top = 0
+Width = 24
+style = 3
+toolbarlibrary = context
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRH0V2Q9Y
+[CLASS] skladgrid
+[CLASSLOC] sklad.vcx
+[BASECLASS] grid
+[OBJNAME] grdGrid
+[PARENT] sprform
+[START PROPERTIES]
+Height = 350
+Left = 0
+Name = "grdGrid"
+ReadOnly = .T.
+ScrollBars = 2
+TabIndex = 1
+Top = 0
+Width = 300
+ZOrderSet = 4
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE initiatestyle
+DODE()
+this.SetAll('ReadOnly',.T.,'Column')
+this.SetAll('Movable',.F.,'column')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRH0V2Q9I
+[CLASS] myshape
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] shape
+[OBJNAME] sh
+[PARENT] sprform
+[START PROPERTIES]
+Height = 108
+Left = 0
+Name = "sh"
+Top = 0
+Visible = .F.
+Width = 250
+ZOrderSet = 1
+resizemethod = RTRB
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _S590XCI9B
+[CLASS] _mnushortcut
+[CLASSLOC] ..\..\..\classes\menus5.vcx
+[BASECLASS] custom
+[OBJNAME] shortcut
+[PARENT] sprform
+[START PROPERTIES]
+Height = 17
+Left = 0
+Name = "shortcut"
+Top = 12
+Width = 20
+caption = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS tccaption,tncontrolnumber
+DODEFAULT(tccaption,tncontrolnumber)
+WITH this
+	IF 'A'$thisform.tbar
+		.AddBar('add',"Добавить...")
+		.Add.Command='Center("ADD")'
+		.AddBar('_add','\-')
+	ENDIF
+	IF 'E'$thisform.tbar
+		.Addbar('Edit','Изменить...')
+		.Edit.Command='Center("EDIT")'
+	ENDIF
+	IF 'D'$thisform.tBar
+		.AddBar('Delete','Удалить')
+		.Delete.Command='Center("DELETE")'
+	ENDIF
+	IF 'P'$thisform.tBar
+		.AddBar('_add2','\-')
+		.AddBar('Print','Печать')
+		.Print.Command='Center("PRINT")'
+	ENDIF
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sprform
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _ROI1E71JI
+[CLASS] messager
+[CLASSLOC] ..\..\..\classes\alerts.vcx
+[BASECLASS] form
+[OBJNAME] thermo1
+[START PROPERTIES]
+AlwaysOnTop = .F.
+BorderStyle = 3
+Desktop = .F.
+DoCreate = .T.
+Height = 88
+Myshape1.Left = 0
+Myshape1.Name = "Myshape1"
+Myshape1.Top = 48
+Name = "thermo1"
+ShowWindow = 1
+Width = 320
+edtText.Height = 40
+edtText.Left = 10
+edtText.Name = "edtText"
+edtText.Top = 10
+edtText.Width = 301
+txtTitle.Left = 276
+txtTitle.Name = "txtTitle"
+txtTitle.Top = 36
+txtTitle.Visible = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE update
+LPARAMETERS tnValue
+
+this.GraphBar1.Update(tnValue)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+*update 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RPY100NEC
+[CLASS] graphbar
+[CLASSLOC] ..\..\..\classes\alerts.vcx
+[BASECLASS] container
+[OBJNAME] Graphbar1
+[PARENT] thermo1
+[START PROPERTIES]
+Height = 21
+Left = 10
+Name = "Graphbar1"
+Top = 60
+Width = 301
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] thermo1
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RSF1DRYPQ
+[CLASS] sprform
+[CLASSLOC] sklad.vcx
+[BASECLASS] form
+[OBJNAME] xtabfrm
+[START PROPERTIES]
+Cancelbutton1.Left = 5
+Cancelbutton1.Name = "Cancelbutton1"
+Cancelbutton1.Top = 6
+DoCreate = .T.
+Height = 240
+KeyPreview = .T.
+Name = "xtabfrm"
+Width = 360
+WindowType = 1
+context.Left = 1
+context.Name = "context"
+context.Top = 147
+grdGrid.Height = 220
+grdGrid.Name = "grdGrid"
+grdGrid.RecordSource = "to"
+grdGrid.ScrollBars = 3
+grdGrid.SplitBar = .T.
+grdGrid.Width = 360
+sh.Height = 158
+sh.Left = 63
+sh.Name = "sh"
+sh.Top = 58
+sh.Width = 250
+shortcut.Name = "shortcut"
+shortcut.caption = 
+tofile = ____
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF TYPE('tit')='C' AND !EMPT(tit)
+	this.Caption=tit
+ENDI
+this.sh.Release
+DODE()
+thisform.CreateColumns
+
+ENDPROC
+PROCEDURE createcolumns
+exte arra nabir,hedir
+local i, nCC, oCol
+****** Горобец
+******
+with this.grdGrid
+	ncc = .columncount
+	for i = ncc to 1 step -1
+		if !empt(eval('.Columns(i).'+.columns(i).currentcontrol+'.Tag'))
+			.deletecolumn(i)
+		endi
+	endf
+	nCC=.columncount
+	cc=1
+	do whil cc<=alen(nabir) and !empt(nabir(cc))
+****** Горобец
+		oCol=.NewColumn(nabir(cc),hedir(cc),0,'FixColumn','getxt',.f.,.t.)
+		with oCol
+			.Text2.tag=allt(str(cc))
+			.alignment=iif('STR'$uppe(nabir(cc)) or 'PADL'$uppe(nabir(cc)),1,3)
+		endwith
+		cc=cc+1
+	enddo
+	.setall('DynamicForeColor','IIF(to.hidd,CLR_BtnShadow(),CLR_WindowText())','column')
+	.init
+endwith
+****** Горобец
+if type('tit')='C' and !empt(tit)
+	this.caption=tit
+endi
+******
+
+ENDPROC
+PROCEDURE updatevalues
+*
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*createcolumns 
+tofile
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] xtabfrm
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RSE151M6U
+[CLASS] mytextbox
+[CLASSLOC] ..\..\..\classes\baseclas.vcx
+[BASECLASS] textbox
+[OBJNAME] xtabtxt
+[START PROPERTIES]
+BorderStyle = 0
+Format = "K"
+Margin = 0
+Name = "xtabtxt"
+SpecialEffect = 1
+lastpress = 0
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LPAR uDoodle
+ENDPROC
+PROCEDURE KeyPress
+LPAR nk,ns
+this.LastPress=nk
+IF this.CatchEnter AND nk=13
+	center('ENT')
+ENDIF
+
+ENDPROC
+PROCEDURE RightClick
+RightClicker=.T.
+thisform.MyRight(this)
+
+ENDPROC
+PROCEDURE Valid
+SET CURS ON
+ENDPROC
+PROCEDURE When
+*!*	LOCAL lRet
+*!*	this.LastPress=0
+*!*	IF TYPE("this.Parent.Parent.Name")='C'
+*!*		WITH this.Parent
+*!*			lRet=.T.
+*!*			IF .Parent.FixCol>0 AND (.Parent.Panel=1 AND .ColumnOrder<=.Parent.FixCol OR ;
+*!*					.Parent.Panel=0 AND .ColumnOrder>.Parent.FixCol)
+*!*				lRet=.F.
+*!*			ENDI
+*!*		ENDW
+*!*	ENDI
+*!*	RETU lRet
+if !empt(this.tag)
+	tapo=val(this.tag)
+endi
+set curs off
+****** Горобец
+local clr,lnInvClr
+if type('this.Parent.DynamicForeColor')#'U' and !empt(this.parent.dynamicforecolor)
+	clr=eval(this.parent.dynamicforecolor)
+	lnInvClr=rgb(255-GetRValue(clr),255-GetGValue(clr),255-GetBValue(clr))
+	if lnInvClr<>this.selectedbackcolor
+		this.selectedforecolor=lnInvClr
+	endif
+endi
+******
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+catchenter
+lastpress
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] xtabtxt
+[START PROPERTIES]
+tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
