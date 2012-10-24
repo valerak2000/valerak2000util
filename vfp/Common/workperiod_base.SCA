@@ -1,0 +1,130 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2TF0SNNFI
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+DataSource = .NULL.
+Name = "Dataenvironment"
+TabStop = .F.
+Visible = .F.
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _22C0V0ORD
+[CLASS] dialog_form_szgr_2buttons
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] form
+[OBJNAME] PeriodDB_Dialog
+[START PROPERTIES]
+Caption = "Рабочий период"
+DataSession = 1
+Dialog_shape.Height = 61
+Dialog_shape.Left = 3
+Dialog_shape.Name = "Dialog_shape"
+Dialog_shape.Top = 3
+Dialog_shape.Width = 250
+DoCreate = .T.
+Height = 100
+Left = 0
+Name = "PeriodDB_Dialog"
+Top = 0
+Width = 256
+cancelbutton.Left = 152
+cancelbutton.Name = "cancelbutton"
+cancelbutton.TabIndex = 6
+cancelbutton.Top = 72
+dbcontainer.Name = "dbcontainer"
+dfltdatebeg = (m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin)
+dfltdateend = (m.goApp.oVars.oCurrentTask.oVars.dfltdateend)
+oSaveset_form.Name = "oSaveset_form"
+okbutton.Left = 57
+okbutton.Name = "okbutton"
+okbutton.Picture = ..\..\bmp\16x16\check.bmp
+okbutton.TabIndex = 5
+okbutton.Top = 72
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Left = 238
+resizecorner.Name = "resizecorner"
+resizecorner.TabIndex = 1
+resizecorner.Top = 88
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE okbutton.Click
+LOCAL loExc as Exception, lnFmIdx
+	DODEFAULT()
+
+	goApp.oVars.oCurrentTask.oVars.dFltDateBegin = THISFORM.dfltdatebeg
+	goApp.oVars.oCurrentTask.oVars.dFltDateEnd = THISFORM.dfltdateend
+	m.goApp.saveSettings()
+	*обновить окна
+	FOR lnFmIdx = _Screen.FormCount TO 1 STEP -1
+		IF AT("_MAIN_FORM", UPPER(_Screen.Forms(m.lnFmIdx).Name)) <> 0
+			_Screen.Forms(m.lnFmIdx).cntToolbars.cntRequery.Click()
+		ENDIF
+	ENDFOR
+
+	_SCREEN.Refresh()
+
+	THISFORM.Release()
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+dfltdatebeg
+dfltdateend
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28Y10D544
+[CLASS] cntpnlperiod
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] container
+[OBJNAME] Cntpnlperiod
+[PARENT] PeriodDB_Dialog
+[START PROPERTIES]
+Interval_date1pl.DateCntC.Name = "DateCntC"
+Interval_date1pl.Name = "Interval_date1pl"
+Interval_date1pl.datecnt.Name = "datecnt"
+Interval_date2pl.DateCntC.Name = "DateCntC"
+Interval_date2pl.Name = "Interval_date2pl"
+Interval_date2pl.datecnt.Name = "datecnt"
+Left = 22
+Line1.Name = "Line1"
+Name = "Cntpnlperiod"
+TabIndex = 4
+Top = 24
+ZOrderSet = 10
+caption = Рабочий период
+controlsource = THISFORM.dfltdatebeg
+controlsource1 = THISFORM.dfltdateend
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
