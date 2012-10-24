@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="Windows-1251" standalone="yes"?><XML_INI version="0.01">
+	<ProgrammProperties Name="SystemTimerInterval">
+		<Value>40000</Value>
+	</ProgrammProperties>
+	<TaskList Name="Проект для PostgreSql">
+		<Icon>Консервный цех</Icon>
+		<database_path>localhost</database_path>
+		<database_name>work_base</database_name>
+		<database_schema>work_schema</database_schema>
+		<database_type>PostgreSQL</database_type>
+		<store_statewin>LOCAL</store_statewin>
+		<login>admin_user</login>
+		<password>1234</password>
+		<store_password>TRUE</store_password>
+		<last_connected>TRUE</last_connected>
+		<work_interval_begin>01.01.2006</work_interval_begin>
+		<work_interval_end>  .  .    </work_interval_end>
+	</TaskList>
+	<Gui>
+		<TaskSetting Name="GLOBAL">
+			<Form Name="ClassLib||LOGIN_FORM">
+				<Left>368</Left>
+				<Top>265</Top>
+				<Width>335</Width>
+				<Heigth>150</Heigth>
+				<BackColor>14215660</BackColor>
+			</Form>
+		</TaskSetting>
+		<TaskSetting Name="Проект для PostgreSql">
+			<Reports Name="REPORT1">
+				<Title>Приход/расход продукции</Title>
+				<Proc>m.goApp.GoForm("FORMS\REP_PRIH_RASH",0,.NULL.)</Proc>
+			</Reports>
+			<Reports Name="REPORT2">
+				<Title>\-</Title>
+				<Proc></Proc>
+			</Reports>
+			<Reports Name="REPORT3">
+				<Title>Паспорт выработки масла</Title>
+				<Proc>m.goApp.GoForm("FORMS\rep_maslo",0,.NULL.)</Proc>
+			</Reports>
+			<Reports Name="REPORT4">
+				<Title>\-</Title>
+				<Proc></Proc>
+			</Reports>
+			<Reports Name="REPORT5">
+				<Title>Экономия/перерасход</Title>
+				<Proc>m.goApp.GoForm("FORMS\repor_ekonom",0,.NULL.)</Proc>
+			</Reports>
+			<Reports Name="REPORT6">
+				<Title>\-</Title>
+				<Proc></Proc>
+			</Reports>
+			<Reports Name="REPORT7">
+				<Title>Движение готовой продукция</Title>
+				<Proc>DO (m.goApp.Vars.cAppCurPaths+"PROGS\GOT_TO_SKLAD")</Proc>
+			</Reports>
+			<Reports Name="REPORT9">
+				<Title>Выработка продукции</Title>
+				<Proc>DO (m.goApp.Vars.cAppCurPaths+"PROGS\REP_GOTPROD_MASLO")</Proc>
+			</Reports>
+			<Form Name=".\FORMS\TUNING.SCX||TUNING">
+				<Left>150</Left>
+				<Top>106</Top>
+				<Width>756</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name=".\FORMS\DICT_USERS_MAIN.SCX||USERS_MAIN_FORM">
+				<Left>32</Left>
+				<Top>42</Top>
+				<Width>733</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<Grid Name="GrdDict">
+					<Column Name="Column2">
+						<Width></Width>
+					</Column>
+					<Column Name="Column3">
+						<Width></Width>
+					</Column>
+					<Column Name="Column4">
+						<Width></Width>
+					</Column>
+					<Column Name="Column5">
+						<Width></Width>
+					</Column>
+				</Grid>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name=".\FORMS\EXPIMP.SCX||TUNING">
+				<Left>150</Left>
+				<Top>106</Top>
+				<Width>756</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name="ClassLib||FIND_FORM">
+				<Left>194</Left>
+				<Top>136</Top>
+				<Width>524</Width>
+				<Heigth>166</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name=".\FORMS\SELECT_PERIOD.SCX||SELECT_PERIOD">
+				<Left>150</Left>
+				<Top>106</Top>
+				<Width>756</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name=".\FORMS\BASE_TUNING.SCX||TASK_TUNING">
+				<Left>150</Left>
+				<Top>106</Top>
+				<Width>756</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name="ClassLib||_CALENDAR">
+				<Left>150</Left>
+				<Top>106</Top>
+				<Width>756</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name="ClassLib||_CLOCK">
+				<Left>150</Left>
+				<Top>106</Top>
+				<Width>756</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name="ClassLib||_MESSAGES">
+				<Left>150</Left>
+				<Top>106</Top>
+				<Width>756</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name=".\FORMS\DICT_OBJECTS_MAIN.SCX||OBJECTS_MAIN_FORM">
+				<Left>6</Left>
+				<Top>6</Top>
+				<Width>725</Width>
+				<Heigth>409</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name=".\FORMS\DICT_OBJECTS_FILE.SCX||OBJECTS_FILE_FORM">
+				<Left>175</Left>
+				<Top>63</Top>
+				<Width>417</Width>
+				<Heigth>186</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+			<Form Name=".\FORMS\DICT_USERS_FILE.SCX||USERS_FILE_FORM">
+				<Left>271</Left>
+				<Top>179</Top>
+				<Width>417</Width>
+				<Heigth>186</Heigth>
+				<BackColor>14215660</BackColor>
+				<WindowState>Normal</WindowState>
+			</Form>
+		</TaskSetting>
+	</Gui>
+</XML_INI>
