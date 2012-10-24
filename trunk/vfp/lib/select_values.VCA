@@ -1,0 +1,1568 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BA179UOK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdhide
+[START PROPERTIES]
+Caption = "Command1"
+FontName = "MS Sans Serif"
+FontSize = 8
+Name = "cmdhide"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.Enabled = m.vNewVal
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*enabled_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cmdhide
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28J0Q80AK
+[CLASS] cntpnlcmb
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntpnlcmbclr
+[START PROPERTIES]
+
+DelCmd.Name = "DelCmd"
+Name = "cntpnlcmbclr"
+Pnl_combobox.Name = "Pnl_combobox"
+Pnl_combobox.TabIndex = 1
+Width = 186
+_memberdata =      141<VFPData><memberdata name="aselelem" type="property" display="aSelElem"/><memberdata name="whodo" type="method" display="WhoDo"/></VFPData>
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS tcSelElem
+	DODEFAULT()
+	*шаманство с якорями для корректного изменения размеров в подобъектах
+	WITH THIS
+		.DelCmd.Anchor = 0
+		.DelCmd.Left = .Width - 2 - .DelCmd.Width
+		.DelCmd.Top = 2
+		.DelCmd.Height = .Height - 4
+		.DelCmd.Anchor = 13
+
+		.Pnl_combobox.Anchor = 0
+		.Pnl_combobox.Left = 2
+		.Pnl_combobox.Top = 2
+		.Pnl_combobox.Height = .Height - 4
+		.Pnl_combobox.Width = .DelCmd.Left - 2
+		.Pnl_combobox.Anchor = 11
+
+		IF VARTYPE(m.tcSelElem) = 'C'
+			.aSelElem = m.goApp.oFunction.arrayPointer("taSelElem")
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE whodo
+PARAMETERS tcpar as String
+	DO CASE 
+	CASE m.tcpar="BEGIN"
+	CASE m.tcpar="END"
+	CASE m.tcpar="CLEAR"
+		PUBLIC (THIS.aSelElem)
+		DIMENSION (THIS.aSelElem+"[1]")
+		STORE .NULL. TO (THIS.aSelElem+"[1]")
+	ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+*whodo 
+^aselelem[1,0] 
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\lookup.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\lookup.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28J0Q9S9J
+[CLASS] commonbutton
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] DelCmd
+[PARENT] cntpnlcmbclr
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Height = 22
+Left = 160
+Name = "DelCmd"
+Picture = ..\bmp\16x16\trash03.bmp
+TabIndex = 2
+ToolTipText = "Очистить список значений"
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcstrs as String
+	lcstrs=THIS.PARENT.whoMas+"[1]"
+	DIMENSION (m.lcstrs)
+	STORE '' TO (m.lcstrs)
+	THIS.PARENT.whoText=""
+	THIS.PARENT.Refresh()
+
+	THIS.PARENT.whoDo("CLEAR")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpnlcmbclr
+[START PROPERTIES]
+Courier New, 0, 8, 7, 14, 11, 7, 3, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015PDY4
+[CLASS] dialog_form_szgr
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] form
+[OBJNAME] findform
+[START PROPERTIES]
+BorderStyle = 3
+Caption = "Выбрать"
+DataSession = 1
+DoCreate = .T.
+Height = 241
+Icon = ..\bmp\efiles.ico
+Left = 0
+MinHeight = 97
+MinWidth = 300
+Name = "findform"
+Top = 0
+Width = 375
+cycl = 0
+dbcontainer.Name = "dbcontainer"
+oSaveset_form.Name = "oSaveset_form"
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+whoali = .F.
+whocheck = .F.
+whomas = .F.
+whomulti = .F.
+whoseek = .F.
+whoseekval = .F.
+whosource = .F.
+whosrcid = .F.
+whotext = .F.
+[END PROPERTIES]
+[START PROTECTED]
+amas^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+PARAMETERS s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11
+LOCAL lcI as Integer, lctypelist as String
+	THIS.whoali=m.s4
+
+	IF EMPTY(m.s1)
+		THIS.whosource=FIELD(1, (m.s4))
+	ELSE
+		THIS.whosource=m.s1
+	ENDIF
+
+	THIS.whomas=m.s5
+	THIS.whosrcID=m.s3
+	THIS.whotext="m.s2"
+	STORE ALLTRIM(m.s1) TO THIS.gridfind.columns[1].controlsource
+
+	IF !EMPTY(m.s6)
+		THIS.caption=m.s6
+	ENDIF
+*!*		this.width=s7
+*!*		this.height=s8
+	THIS.whoMulti=m.s9
+	THIS.whoSeek=m.s10
+	THIS.whoCheck=m.s11
+
+	IF ALEN((THIS.whoMas))<>0
+		DIMENSION THIS.aMas[ALEN((THIS.whoMas), 1)]
+		ACOPY((THIS.whoMas), THIS.aMas)
+	ELSE 
+		DIMENSION THIS.aMas[1]
+	ENDIF 
+
+	IF USED((THIS.whoAli))
+		SELECT (THIS.whoAli)
+		LOCATE
+
+		IF !EMPTY(EVALUATE(THIS.whoMas))
+			LOCATE FOR EVALUATE((THIS.whoSrcId))=EVALUATE((THIS.whoMas))
+		ENDIF
+	ENDIF
+
+	DODEFAULT()
+
+	THIS.gridfind.Setfocus()
+ENDPROC
+PROCEDURE insert_item
+IF !EOF() AND !EMPTY(THIS.whoSource)
+	LOCAL lcolex as String, lni as Integer
+	*
+	lcolex=SET("Exact")
+	SET EXACT ON
+	lni=ASCAN(THIS.aMas,EVALUATE(THIS.whoSrcID))
+	SET EXACT &lcolex
+	*
+	IF m.lni<>0
+		LOCAL lnlens as Integer
+		lnlens=ALEN(THIS.aMas,1)
+		ADEL(THIS.aMas, m.lni)
+		*
+		IF m.lnlens>1
+			DIMENSION THIS.aMas[ALEN(THIS.aMas, 1)-1]
+		ENDIF 
+	ELSE 
+		IF !EMPTY(THIS.aMas[ALEN(THIS.aMas, 1)]) AND THIS.whoMulti
+			DIMENSION THIS.aMas[ALEN(THIS.aMas, 1)+1]
+		ENDIF
+		*
+		STORE EVALUATE(THIS.whoSrcID) TO THIS.aMas[ALEN(THIS.aMas, 1)]
+	ENDIF
+	*
+	SKIP
+	*	
+	THIS.gridfind.Refresh()
+ENDIF
+ENDPROC
+PROCEDURE okevent
+LOCAL lnlens as Integer, lcstrs as String
+	IF USED((THIS.whoAli))
+		lnlens=ALEN(THIS.aMas, 1)
+
+		SELECT (THIS.whoAli)
+
+		IF m.lnlens=1 OR !THIS.whoMulti
+			IF (ISNULL(THIS.aMas[1]) OR EMPTY(THIS.aMas[1])) &&AND !THIS.whoMulti
+				DIMENSION THIS.aMas[1]
+
+				STORE EVALUATE(THIS.whoSrcID) TO THIS.aMas[1]
+			ELSE 
+				LOCATE FOR EVALUATE(THIS.whoSrcId)=THIS.aMas[1]
+
+				IF !FOUND()
+					STORE .F. TO THIS.aMas[1]
+				ENDIF
+			ENDIF
+*!*				*
+*!*				STORE EVALUATE(THIS.whoSource) TO (THIS.whoText)
+*!*			ELSE 
+*!*				STORE "Выбрано "+LTRIM(STR(ALEN(THIS.aMas,1))) TO (THIS.whoText)
+		ENDIF
+*!*		ELSE
+*!*			STORE "Ошибка доступа!" TO (THIS.whoText)
+	ENDIF 
+	*
+	IF ALEN(THIS.aMas, 1)<>0
+		PUBLIC (THIS.whoMas)
+		*
+		lcstrs=THIS.whoMas+"[ALEN(THIS.aMas, 1)]"
+		DIMENSION &lcstrs
+		ACOPY(THIS.aMas,(THIS.whoMas))
+	ELSE 
+		lcstrs=THIS.whoMas+"[1]"
+		DIMENSION &lcstrs
+		STORE '' TO (THIS.whoMas)
+	ENDIF
+	*
+	THISFORM.Release()
+ENDPROC
+PROCEDURE seekval
+PARAMETERS tcwhat as String
+LOCAL lctypos as String
+	IF VARTYPE(m.tcwhat)<>'C'
+		tcwhat=''
+	ENDIF 
+	*
+	IF !EMPTY(THISFORM.whoSeekVal)
+		IF USED((THISFORM.whoAli))
+			SELECT (THISFORM.whoAli)
+			lctypos=TYPE(THISFORM.whoSeek)
+			*
+			IF m.tcwhat=="NEXT"
+				IF !EOF()
+					SKIP
+				ENDIF 
+				*
+				DO CASE 
+*				case m.lctypos='N'
+				CASE m.lctypos='C'
+					LOCATE FOR ATC(THISFORM.whoSeekVal, ALLTRIM(EVALUATE(THISFORM.whoSeek)))<>0 REST 
+				OTHERWISE 
+					LOCATE FOR ATC(THISFORM.whoSeekVal, EVALUATE(THISFORM.whoSeek))<>0 REST
+				ENDCASE 
+			ELSE 
+				DO CASE 
+*				case m.lctypos='N'
+				CASE m.lctypos='C'
+					LOCATE FOR ATC(THISFORM.whoSeekVal, ALLTRIM(EVALUATE(THISFORM.whoSeek)))<>0
+				OTHERWISE
+					LOCATE FOR ATC(THISFORM.whoSeekVal, EVALUATE(THISFORM.whoSeek))<>0
+				ENDCASE 
+			ENDIF 
+		ENDIF 
+	ENDIF
+ENDPROC
+PROCEDURE whocolor
+LOCAL lcsrc as String, lcolex as String, lcretval as String
+	lcolex=SET("Exact")
+	SET EXACT ON
+	lcsrc=EVALUATE(THISFORM.whoSrcId)
+	IF VARTYPE(m.lcsrc)='C'
+		lcsrc=RTRIM(m.lcsrc)
+	ENDIF
+	lcretval=IIF(!EMPTY(THISFORM.whoSrcId) AND ASCAN(THIS.aMas,m.lcsrc)<>0, RGB(255, 255, 10), THISFORM.gridfind.Columns[1].BackColor)
+	SET EXACT &lcolex
+RETURN m.lcretval
+ENDPROC
+PROCEDURE whotooltext
+LOCAL lcretval as String
+	IF !EMPTY(THISFORM.whoSeek)
+		lcretval=EVALUATE(THISFORM.whoSeek)
+	ELSE
+		lcretval=""
+	ENDIF
+RETURN m.lcretval
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED3]
+*insert_item 
+*okevent 
+*seekval 
+*whocolor 
+*whotooltext 
+^amas[1,0] 
+cycl
+whoali
+whocheck
+whomas
+whomulti
+whoseek
+whoseekval
+whosource
+whosrcid
+whotext
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O41BZZUB
+[CLASS] base_label
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] label
+[OBJNAME] Base_label1
+[PARENT] findform
+[START PROPERTIES]
+Anchor = 6
+Caption = "F3-следующая запись"
+FontBold = .T.
+Left = 8
+Name = "Base_label1"
+Top = 226
+WordWrap = .F.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O41C1C1U
+[CLASS] base_label
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] label
+[OBJNAME] Base_label2
+[PARENT] findform
+[START PROPERTIES]
+Anchor = 6
+Caption = "Ctrl-F-поиск записи"
+FontBold = .T.
+Height = 15
+Left = 8
+Name = "Base_label2"
+Top = 210
+Width = 117
+WordWrap = .F.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O01624KF
+[CLASS] cancelbutton
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] delcomm
+[PARENT] findform
+[START PROPERTIES]
+Left = 287
+Name = "delcomm"
+TabIndex = 6
+Top = 211
+Width = 80
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015TR0O
+[CLASS] selgrid
+[CLASSLOC] ..\lib.9\select_values.vcx
+[BASECLASS] grid
+[OBJNAME] gridfind
+[PARENT] findform
+[START PROPERTIES]
+AllowCellSelection = .F.
+Anchor = 15
+Column1.ControlSource = "space(200)"
+Column1.FontName = "Tahoma"
+Column1.Name = "namefiel"
+Column1.ReadOnly = .T.
+Column1.Width = 342
+ColumnCount = 1
+GridLines = 0
+Height = 207
+Left = 0
+Name = "gridfind"
+ReadOnly = .T.
+ScrollBars = 2
+TabIndex = 1
+Top = 0
+Width = 375
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+THISFORM.okevent()
+ENDPROC
+PROCEDURE Init
+*!*	this.SetAll('DynamicBackColor','IIF(thisform.whomulti,IIF(EMPTY(thisform.whoColor),this.parent.myColor(),EVALUATE(thisform.whoColor)),RGB(255,255,255))','Column')
+THIS.SetAll("DynamicBackColor","THIS.Parent.whoColor()","Column")
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	DO CASE 
+	CASE nKeyCode=13
+	*энтер
+		DODEFAULT()
+		THISFORM.okevent()
+	CASE nKeyCode=22
+	*инсерт
+		THISFORM.insert_item()
+		NODEFAULT
+ 	CASE nkeyCode=-2
+ 	*поиск следующей
+		DODEFAULT()
+ 		THISFORM.seekVal("NEXT")
+	CASE ISALPHA(CHR(nkeyCode)) OR ISDIGIT(CHR(nkeyCode)) OR (nKeyCode=6 AND nShiftAltCtrl=2)
+ 	*поиск
+ 		LOCAL lcseekform as String
+ 		*
+		DODEFAULT()
+		KEYBOARD CHR(nkeyCode)
+		*
+		lcseekform=NEWOBJECT("selseek", "..\lib\select_values", "", THISFORM.left,THISFORM.top,"Поиск значения",THISFORM.whoSeek,THISFORM)
+		*
+		SET CURSOR ON
+		lcseekform.show()
+		SET CURSOR OFF
+	OTHERWISE
+	ENDCASE
+ENDPROC
+PROCEDURE RightClick
+THISFORM.insert_item()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015TR0P
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] headfiel
+[PARENT] findform.gridfind.namefiel
+[START PROPERTIES]
+Alignment = 2
+Caption = "Название"
+FontBold = .T.
+FontName = "Tahoma"
+Name = "headfiel"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015TR0Q
+[CLASS] base_textbox
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] findform.gridfind.namefiel
+[START PROPERTIES]
+DateFormat = 14
+FontName = "Tahoma"
+Margin = 0
+Name = "Text1"
+ReadOnly = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O01624KG
+[CLASS] okbutton
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] okcomm
+[PARENT] findform
+[START PROPERTIES]
+Left = 207
+Name = "okcomm"
+TabIndex = 5
+Top = 211
+Width = 80
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.okevent()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015TR0R
+[CLASS] base_shape
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Shapefind
+[PARENT] findform
+[START PROPERTIES]
+Anchor = 14
+BackStyle = 0
+Height = 0
+Left = 3
+Name = "Shapefind"
+SpecialEffect = 0
+Top = 210
+Width = 369
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] findform
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+Tahoma, 1, 9, 6, 14, 12, 28, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TZ0SQY1H
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] mail
+[START PROPERTIES]
+Height = 59
+Name = "mail"
+SpecialEffect = 2
+Width = 76
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+=MESSAGEBOX(MESSAGE(),48)
+*
+IF this.parent.logsession 
+	this.parent.OLEMSess.signoff
+ENDIF
+*
+this.parent.logsession = .F.
+ENDPROC
+PROCEDURE Init
+* Check to see if OCX installed and loaded.
+IF TYPE("THIS.oleMMess") # "O" OR ISNULL(THIS.oleMMess)
+	RETURN .F.
+ENDIF
+
+* Check to see if OCX installed and loaded.
+IF TYPE("THIS.oleMSess") # "O" OR ISNULL(THIS.oleMSess)
+	RETURN .F.
+ENDIF
+ENDPROC
+PROCEDURE signon
+PARAMETERS donwlmail
+	this.logsession = .T.
+	*
+	IF !FILE(GETENV("WINDIR")+"\SYSTEM32\MAPI32.DLL");
+		AND !FILE(GETENV("WINDIR")+"\SYSTEM\MAPI32.DLL")
+		MESSAGEBOX("Не обнаружена библитека почтовой службы!!!")
+		RETURN .F.
+	ENDIF
+	*
+*!*	this.OLEMSess.LogonUI = .t.
+*!*	this.OLEMSess.NewSession = .t.
+*!*	this.OLEMSess.UserName = ''
+*!*	this.OLEMSess.Password = ''
+	this.OleMSess.DownloadMail = m.donwlmail
+	*
+	this.OLEMSess.signon
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*signon 
+logsession
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TZ137DSC
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] email
+[PARENT] mail
+[START PROPERTIES]
+Height = 58
+Left = 0
+Name = "email"
+Picture = bmp\email.ico
+Stretch = 2
+Top = 0
+Width = 75
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TZ0SRS59
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] OleMMESS
+[PARENT] mail
+[START PROPERTIES]
+Height = 100
+Left = 36
+Name = "OleMMESS"
+Top = 0
+Width = 100
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=52010
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=38732
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TZ0SRS5P
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] OleMSESS
+[PARENT] mail
+[START PROPERTIES]
+Height = 100
+Left = 0
+Name = "OleMSESS"
+Top = 0
+Width = 100
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=6830
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=38732
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] mail
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TQ08LPXH
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] selbutt
+[START PROPERTIES]
+BorderWidth = 0
+Height = 21
+Name = "selbutt"
+Width = 94
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+This.IsFocus = .T.
+This.MouseLeave
+ENDPROC
+PROCEDURE Init
+WITH This
+  	.lblText.ZOrder(0)
+  	.cmdHide.Caption = .lblText.Caption
+  	.cmdHide.Width = .Width - 6
+  	.cmdHide.Height = .Height - 6
+  	.cmdHide.ZOrder(0)
+  	*
+  	.cmdHide.Enabled=.cmdHide.Enabled
+ENDWITH 
+ENDPROC
+PROCEDURE LostFocus
+This.IsFocus = .F.
+This.MouseLeave
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+WITH This
+  	.imgBtn3.Visible = .T.
+  	.imgBtn1.Visible = .F.
+  	.imgBtn2.Visible = .F.
+ENDWITH 
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+WITH This
+	If .Enabled
+    	.imgBtn2.Visible = .T.
+    	.imgBtn1.Visible = .F.
+	ENDIF
+ENDWITH 
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+WITH This
+	IF .Enabled
+	    IF This.IsFocus
+    		.imgBtn5.Visible = .T.
+      		.imgBtn1.Visible = .F.
+      		.imgBtn2.Visible = .F.
+      		.imgBtn3.Visible = .F.
+      		.imgBtn4.Visible = .F.
+    	ELSE 
+      		.imgBtn1.Visible = .T.
+    	ENDIF 
+    	.cmdHide.Visible = .T.
+    ENDIF 
+ENDWITH 
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+WITH This
+	IF .Enabled
+    	.imgBtn2.Visible = .T.
+    	.imgBtn1.Visible = .F.
+	ENDIF 
+ENDWITH 
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+WITH This
+	.imgBtn2.Visible = .T.
+	.imgBtn1.Visible = .F.
+	.cmdHide.Visible = .T.
+ENDWITH 
+ENDPROC
+PROCEDURE Refresh
+IF This.Enabled
+	WITH this
+	    .imgBtn1.Visible = .F.
+    	.imgBtn2.Visible = .F.
+	    .imgBtn3.Visible = .F.
+    	.imgBtn4.Visible = .F.
+    	.imgBtn5.Visible = .F.
+    	*
+	    .cmdHide.Enabled = .T.
+   		.lblText.Enabled = .T.
+   	ENDWITH 
+ELSE 
+	WITH this
+	    .imgBtn1.Visible = .F.
+    	.imgBtn2.Visible = .F.
+	    .imgBtn3.Visible = .F.
+    	.imgBtn4.Visible = .T.
+    	.imgBtn5.Visible = .F.
+    	*
+	    .cmdHide.Enabled = .F.
+    	.lblText.Enabled = .F.
+    ENDWITH 
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED3]
+isfocus
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TQ094PHD
+[CLASS] cmdhide
+[CLASSLOC] select_values.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Cmdhide
+[PARENT] selbutt
+[START PROPERTIES]
+Caption = ""
+Height = 21
+Name = "Cmdhide"
+Style = 1
+TabIndex = 1
+Width = 94
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+This.Parent.Click
+ENDPROC
+PROCEDURE GotFocus
+This.Parent.GotFocus
+ENDPROC
+PROCEDURE Init
+This.Top = 3
+This.Left = 3
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+*
+DO CASE 
+CASE nKeyCode = 13 OR nKeyCode = 32
+	This.Parent.MouseDown
+  	Inkey (.1,'H')
+  	This.Parent.MouseUp
+  	Inkey (.1,'H')
+  	This.Parent.Click
+  	NODEFAULT 
+CASE nKeyCode = 27 AND This.Cancel = .T.
+  	This.Parent.MouseDown
+  	Inkey (.1,'H')
+  	This.Parent.MouseUp
+  	Inkey (.1,'H')
+  	This.Parent.Click
+  	NODEFAULT 
+ENDCASE 
+ENDPROC
+PROCEDURE LostFocus
+This.Parent.LostFocus
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.Parent.MouseDown
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.Parent.MouseEnter
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.Parent.MouseLeave
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.Parent.MouseMove
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.Parent.MouseUp
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+*
+WITH This.Parent
+	IF m.vNewVal
+    	.imgBtn1.Visible = .T.
+    	.Enabled=.T.
+	ELSE 
+    	.imgBtn1.Visible = .F.
+	    .imgBtn2.Visible = .F.
+    	.imgBtn3.Visible = .F.
+	    .imgBtn4.Visible = .T.
+    	.Enabled=.F.
+	ENDIF 
+ENDWITH 
+*
+DODEFAULT(m.vNewVal)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TQ09J4BK
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBtn1
+[PARENT] selbutt
+[START PROPERTIES]
+Height = 21
+Name = "imgBtn1"
+Picture = ..\bmp.old\xp_button_1.bmp
+Stretch = 2
+Width = 94
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+This.Height = This.Parent.Height
+This.Width = This.Parent.Width
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TQ08ZH44
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBtn2
+[PARENT] selbutt
+[START PROPERTIES]
+Height = 21
+Name = "imgBtn2"
+Picture = ..\bmp.old\xp_button_2.bmp
+Stretch = 2
+Visible = .F.
+Width = 94
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+This.Height = This.Parent.Height
+This.Width = This.Parent.Width
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TQ08ZH48
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBtn3
+[PARENT] selbutt
+[START PROPERTIES]
+Height = 21
+Name = "imgBtn3"
+Picture = ..\bmp.old\xp_button_3.bmp
+Stretch = 2
+Visible = .F.
+Width = 94
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+This.Height = This.Parent.Height
+This.Width = This.Parent.Width
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TQ094PH5
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBtn4
+[PARENT] selbutt
+[START PROPERTIES]
+Height = 21
+Name = "imgBtn4"
+Picture = ..\bmp.old\xp_button_4.bmp
+Stretch = 2
+Visible = .F.
+Width = 94
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+This.Height = This.Parent.Height
+This.Width = This.Parent.Width
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TQ094PH9
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBtn5
+[PARENT] selbutt
+[START PROPERTIES]
+Height = 21
+Name = "imgBtn5"
+Picture = ..\bmp.old\xp_button_5.bmp
+Stretch = 2
+Visible = .F.
+Width = 94
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+This.Height = This.Parent.Height
+This.Width = This.Parent.Width
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0TQ09J4BN
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblText
+[PARENT] selbutt
+[START PROPERTIES]
+Alignment = 2
+BackStyle = 0
+Caption = ""
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 9
+Height = 15
+Name = "lblText"
+Top = 4
+Width = 94
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.Width = This.Parent.Width
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] selbutt
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BB19HO8E
+[CLASS] base_container
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] container
+[OBJNAME] select_values
+[START PROPERTIES]
+Anchor = 11
+Height = 26
+Name = "select_values"
+Width = 328
+whoheigth = 239
+whowidht = 375
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+THIS.whoDo("DESTROY")
+ENDPROC
+PROCEDURE Init
+LOCAL lnoldali as String, lnoldanch1,lnoldanch2,lnoldanch3, loI as Object, lncnt as Integer,;
+	lvVal
+	*шаманство с якорями для корректного изменения размеров в подобъектах
+	lnoldanch3=THIS.DelComm.Anchor
+	THIS.DelComm.Anchor=0
+	THIS.DelComm.Left=THIS.Width-2-THIS.DelComm.Width
+
+	lnoldanch2=THIS.SelComm.Anchor
+	THIS.SelComm.Anchor=0
+	THIS.SelComm.Left=THIS.DelComm.Left-THIS.SelComm.Width+1
+
+	lnoldanch1=THIS.selText.Anchor
+	THIS.selText.Anchor=0
+	THIS.selText.Width=THIS.SelComm.Left-1
+
+	THIS.selText.Anchor=m.lnoldanch1
+	THIS.SelComm.Anchor=m.lnoldanch2
+	THIS.DelComm.Anchor=m.lnoldanch3
+
+	DODEFAULT()
+
+	THIS.whoAli=ALLTRIM(THIS.whoAli)
+
+	IF TYPE(THIS.whoMas)='U'
+		PUBLIC (THIS.whoMas)
+		DIMENSION (THIS.whoMas+"[1]")
+		STORE .NULL. TO (THIS.whoMas+"[1]")
+	ENDIF
+
+	IF EMPTY(THIS.whoText)
+		lnoldali=SELECT()
+
+		IF !USED(THIS.whoAli)
+			THIS.whoDo("BEGIN")
+		ENDIF
+
+		IF USED(THIS.whoAli)
+			SELECT (THIS.whoAli)
+
+			IF !EMPTY(THIS.whoSource) AND VARTYPE(THIS.whoSource)<>'U'
+				IF !THIS.whoMulti OR ALEN((THIS.whoMas), 1)=1
+					lvVal=EVALUATE((THIS.whoMas))
+
+					IF !(ISNULL(m.lvVal) OR EMPTY(m.lvVal))
+						LOCATE FOR EVALUATE(THIS.whoSrcId)=EVALUATE(THIS.whoMas)
+
+						IF FOUND()
+							THIS.whoText=EVALUATE(THIS.whoSource)
+
+							IF !THIS.whoMulti
+								STORE EVALUATE(THIS.whoSrcId) TO (THIS.whoMas)
+							ENDIF
+						ELSE
+							THIS.whoText=''
+						ENDIF
+					ELSE
+						THIS.whoText=''
+*!*							LOCATE
+					ENDIF
+				ELSE
+					lncnt=ALEN((THIS.whoMas), 1)
+					THIS.whoText="Выбрано "+LTRIM(TRANSFORM(m.lncnt))
+				ENDIF
+			ELSE
+				THIS.whoText=''
+			ENDIF
+		ELSE
+			THIS.whoText=''
+		ENDIF
+
+		SELECT (m.lnoldali)
+	ENDIF
+ENDPROC
+PROCEDURE begin
+LOCAL lcctext as String, lcoldali as String, lnI as Integer, lcstrs as String, loform as Form
+	lcoldali=SELECT()
+	lcctext=THIS.whoText
+	*
+	THIS.whoDo("BEGIN")
+	*
+	IF USED((THIS.whoAli))
+		SELECT (THIS.whoAli)
+	ENDIF
+	*
+	SET CURSOR OFF 
+	loform=NEWOBJECT("findform", "..\lib\select_values", "", THIS.whoSource, lcctext, THIS.whoSrcId, THIS.whoAli, THIS.whoMas, THIS.whoName, THIS.whoWidht, THIS.whoHeigth, THIS.whoMulti, THIS.whoSeek)
+*!*		loform=CREATEOBJECT("findform", THIS.whoSource, lcctext, THIS.whoSrcId, THIS.whoAli, THIS.whoMas, THIS.whoName, THIS.whoWidht, THIS.whoHeigth, THIS.whoMulti, THIS.whoSeek)
+	loform.Show()
+	RELEASE m.loform
+	SET CURSOR ON
+
+	IF ALEN((THIS.whoMas),1)>1
+		FOR lnI=1 TO ALEN((THIS.whoMas))
+			lcstrs=THIS.whoMas+'['+TRANSFORM(m.lnI)+']'
+			IF EMPTY(EVALUATE(m.lcstrs)) AND ALEN((THIS.whoMas),1)>1
+				ADEL((THIS.whoMas),m.lnI)
+				lcstrs=THIS.whoMas+"[alen("+THIS.whoMas+",1)-1]"
+				DIMENSION (m.lcstrs)
+			ENDIF 
+		ENDFOR 
+	ENDIF 
+	*
+	IF !THIS.whoMulti OR ALEN((THIS.whoMas),1)=1
+		IF USED((THIS.whoAli))
+			SELECT (THIS.whoAli)
+			lvVal=EVALUATE((THIS.whoMas))
+
+			IF !ISNULL(m.lvVal) AND !EMPTY(m.lvVal)
+				LOCATE FOR EVALUATE((THIS.whoSrcId))=m.lvVal
+
+				IF FOUND()
+					THIS.whoText=EVALUATE(THIS.whoSource)
+					STORE EVALUATE(this.whoSrcId) TO (THIS.whoMas)
+				ENDIF
+			ELSE
+				THIS.whoText=''
+			ENDIF
+		ENDIF
+	ELSE 
+		lncnt=ALEN((THIS.whoMas),1)
+		THIS.whoText="Выбрано "+LTRIM(TRANSFORM(m.lncnt))
+	ENDIF
+	*
+	IF USED(THIS.whoAli)
+		SELECT (THIS.whoAli)
+	ENDIF
+	*
+	THIS.whoDo("END")
+*	THIS.seltext.Refresh()
+	THIS.Refresh()
+	SELECT (m.lcoldali)
+ENDPROC
+PROCEDURE whodo
+PARAMETERS tcpar as String
+	DO CASE 
+	CASE m.tcpar="BEGIN"
+	CASE m.tcpar="END"
+	CASE m.tcpar="CLEAR"
+		PUBLIC (THIS.whoMas)
+		DIMENSION (THIS.whoMas+"[1]")
+		STORE .NULL. TO (THIS.whoMas+"[1]")
+	ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*begin 
+*whodo Процедура исполняемая по нажатию кнопки
+whoali Источник данных
+whocheck
+whocolor
+whofastseek .T. Использовать для поиска seek(). .F. Использовать для поиска locate for ...
+whoheigth Высота
+whomas Массив куда помещаются данные о результатах работы
+whomulti Признак множественного выбора
+whoname Лабел окна поиска
+whopict Формат ввода
+whoseek Выражение для поиска по ключу
+whosource Выражение выводимое в окне выбора данных для каждой строки
+whosrcid Ключевое поле - помещается в массив как результат выбора
+whotext Текст фильтра
+whowidht Ширина
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\lookup.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\lookup.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1H60UR2R9
+[CLASS] commonbutton
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] DelComm
+[PARENT] select_values
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Height = 22
+Left = 304
+Name = "DelComm"
+Picture = ..\bmp\16x16\trash03.bmp
+TabIndex = 3
+ToolTipText = "Очистить список значений"
+Top = 2
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcstrs as String
+	lcstrs=THIS.PARENT.whoMas+"[1]"
+	DIMENSION (m.lcstrs)
+	STORE '' TO (m.lcstrs)
+	THIS.PARENT.whoText=""
+	THIS.PARENT.Refresh()
+	*
+	THIS.PARENT.whoDo("CLEAR")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BH1F0L0S
+[CLASS] commonbutton
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] SelComm
+[PARENT] select_values
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Default = .T.
+Height = 22
+Left = 282
+Name = "SelComm"
+Picture = ..\bmp\16x16\lookup.bmp
+TabIndex = 2
+ToolTipText = "Выбрать значение"
+Top = 2
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+NODEFAULT
+THIS.Parent.begin()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O01FALW4
+[CLASS] base_textbox
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] SelText
+[PARENT] select_values
+[START PROPERTIES]
+Anchor = 15
+Comment = "Строка ввода параметра поиска"
+ControlSource = "this.parent.whotext"
+Height = 22
+Left = 2
+Name = "SelText"
+TabIndex = 1
+Top = 2
+Width = 281
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	IF m.nKeyCode=145 AND m.nShiftAltCtrl
+		THIS.Parent.begin()
+	ELSE
+		DODEFAULT(m.nKeyCode, m.nShiftAltCtrl)
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] select_values
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BH1F0L0S
+[CLASS] base_form
+[CLASSLOC] ..\..\lib.9\base_gui.vcx
+[BASECLASS] form
+[OBJNAME] selform
+[START PROPERTIES]
+Caption = "Простая форма"
+DoCreate = .T.
+FontName = "Tahoma"
+Height = 250
+Left = 0
+Name = "selform"
+Top = 0
+Width = 377
+saveset.Name = "saveset"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+if nKeyCode=27
+	this.release
+endif
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*adds Добавить
+*calc Расчет
+*dels Удалить
+*okevent 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] selform
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BE02PRRC
+[CLASS] base_grid
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] grid
+[OBJNAME] selgrid
+[START PROPERTIES]
+DeleteMark = .F.
+FontName = "Tahoma"
+Height = 200
+HighlightStyle = 2
+Name = "selgrid"
+TabStop = .F.
+Width = 320
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] selgrid
+[START PROPERTIES]
+Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0P21D3U1U
+[CLASS] selform
+[CLASSLOC] select_values.vcx
+[BASECLASS] form
+[OBJNAME] selseek
+[START PROPERTIES]
+BorderStyle = 2
+Caption = ""
+Closable = .F.
+ContinuousScroll = .F.
+ControlBox = .F.
+DoCreate = .T.
+Height = 28
+KeyPreview = .T.
+Left = 0
+MaxButton = .F.
+MinButton = .F.
+Name = "selseek"
+TitleBar = 0
+Top = 0
+Width = 265
+WindowType = 1
+dbcontainer.Name = "dbcontainer"
+oSaveset_form.Name = "oSaveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+param s1,s2,s3,s4,s5
+	*
+	this.left=s1
+	this.top=s2
+	this.caption=s3
+	this.whoSeek=s4
+	this.whoparent=s5
+	if !empty(this.whoparent.whoseekval)
+		this.SeekVal.value=this.whoparent.whoseekval
+	endif
+	*
+	this.autocenter=.t.
+	this.resize()
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nkeycode,nshiftaltctrl
+	*
+	DO CASE
+	CASE nKeyCode=27
+		thisform.release
+*		clear event
+	CASE nKeyCode=13
+		this.whoparent.whoseekval=alltr(this.SeekVal.value)
+		this.whoparent.seekVal()
+		*
+		thisform.release
+*		clear event
+	OTHERWISE
+	ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+whoparent
+whoseek
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O41C4GZQ
+[CLASS] base_textbox
+[CLASSLOC] ..\lib.9\base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] SeekVal
+[PARENT] selseek
+[START PROPERTIES]
+Height = 25
+Left = 0
+Name = "SeekVal"
+TabIndex = 1
+Top = 0
+Width = 264
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] selseek
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
