@@ -1,0 +1,1972 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q90E6SV5
+[CLASS] base_custom
+[CLASSLOC] base_gui.vcx
+[BASECLASS] custom
+[OBJNAME] dbconnect
+[START PROPERTIES]
+
+Height = 53
+Name = "dbconnect"
+Width = 70
+_memberdata =     1739<VFPData><memberdata name="connect" type="method" display="connect"/><memberdata name="ndbtype" type="property" display="nDBType"/><memberdata name="disconnect" type="method" display="disconnect"/><memberdata name="enabled_assign" type="method" display="Enabled_Assign"/><memberdata name="getdbtype" type="method" display="getDBType"/><memberdata name="getresultcode" type="method" display="getResultCode"/><memberdata name="getresultmessage" type="method" display="getResultMessage"/><memberdata name="nid_connection" type="property" display="nId_Connection"/><memberdata name="nid_connection_access" type="method" display="nId_Connection_Access"/><memberdata name="cusername" type="property" display="cUserName"/><memberdata name="cuserpassword" type="property" display="cUserPassword"/><memberdata name="isactive" type="method" display="IsActive"/><memberdata name="cbaseconf" type="property" display="cBaseConf"/><memberdata name="cservername" type="property" display="cServerName"/><memberdata name="cdbname" type="property" display="cDBName"/><memberdata name="aresult" type="property" display="aResult"/><memberdata name="lrunquery" type="property" display="lRunQuery"/><memberdata name="getdbname" type="method" display="getDBName"/><memberdata name="showerrmsg" type="method" display="showErrMsg"/><memberdata name="ccodepage" type="property" display="cCodePage"/><memberdata name="setstatus" type="method" display="setStatus"/><memberdata name="lasynchronous" type="property" display="lAsynchronous"/><memberdata name="getservername" type="method" display="getServerName"/><memberdata name="getdbtypename" type="method" display="getDBTypeName"/><memberdata name="setservername" type="method" display="setServerName"/></VFPData>
+cbaseconf = 
+ccodepage = WIN1251
+cdbname = 
+cservername = 
+cusername = 
+cuserpassword = 
+ndbtype = 0
+nid_connection = 0
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+aresult
+cbaseconf
+cservername
+cusername
+cuserpassword
+ndbtype
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+THIS.disconnect()
+
+DODEFAULT()
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tnDBType as Integer, tcBaseConf as String
+	NODEFAULT
+	
+	WITH THIS
+		.nDBType = m.tnDBType
+
+		IF EMPTY(m.tcBaseConf)
+			DO CASE
+			CASE .nDBType = DB_FoxPro
+				.cBaseConf = ""
+			CASE .nDBType = DB_PostgreSQL
+				.cBaseConf = "driver = PostgreSQL ANSI;"
+			CASE .nDBType = DB_MSSQL
+				.cBaseConf = "driver=SQL Server;WSID=mashine_name;APP=" + m.goApp.oVars.cTaskCaption + ';'
+			CASE .nDBType = DB_Oracle
+			CASE .nDBType = DB_Access
+				.cBaseConf = "driver={Microsoft Access Driver (*.mdb)};"
+			ENDCASE
+		ELSE
+			.cBaseConf = m.tcBaseConf
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE connect
+#INCLUDE "..\lib.9\base_app.h"
+LPARAMETERS tcServerName as String, tcDatabaseName as String, tcUserName as String, tcUserPassword as String
+LOCAL loExc as Exception, lnIdConnect as Integer, lnI as Integer, llCancel as Logical
+	WITH THIS
+		.cServerName = ALLTRIM(m.tcServerName)
+		.cDBName = ALLTRIM(m.tcDatabaseName)
+		.cUserName = ALLTRIM(m.tcUserName)
+		.cUserPassword = ALLTRIM(m.tcUserPassword)
+		lnIdConnect = 0
+#IF !_DEVELOP_MODE
+		TRY
+#ENDIF
+			FOR lnI = 1 TO Connect_Try
+				llCancel = .F.
+				
+				IF .Lock()
+					DO CASE
+					CASE .nDBType = DB_FoxPro
+						.cServerName = ADDBS(.cServerName)
+						lnIdConnect = IIF(DIRECTORY(.cServerName), 1, 1)
+						
+						DIMENSION .aResult[7]
+						.aResult[5] = 0
+
+						CursorSetProp("AllowSimultaneousFetch", .T., 0) 
+						CursorSetProp("FetchAsNeeded", .T., 0)
+					CASE .nDBType = DB_PostgreSQL
+						SQLSETPROP(0, "DispWarnings", .f.) && Don't display warning dialog, if any set don't correctly
+						SQLSETPROP(0, "DispLogin", 3) && Don't display LOGIN dialog, if any information missed
+
+						lnIdConnect = SQLSTRINGCONNECT(.cBaseConf + "server=" + .cServerName;
+													   + ";database=" + .cDBName + ";uid=" + .cUserName;
+													   + ";pwd=" + .cUserPassword + ';')
+
+						IF m.lnIdConnect < 1
+							AERROR(.aResult)
+
+							lnIdConnect = 0
+
+							IF .aResult[1] = 1526
+								DO CASE
+								CASE .aResult[4] = "28000" && AND ATC("password", THIS.aResult[2])<>0
+									EXIT
+								CASE .aResult[4] = "08" OR .aResult[4] = "IM002"
+									m.goApp.oFunction.showErrMsg("Cannot found PostgreSQL server! Server address is " + .cServerName + CRLF;
+																 + TRANSFORM(.aResult[1]) + ' ' + .aResult[2] + CRLF;
+																 + .aResult[4] + " ODBC Error: " + TRANSFORM(.aResult[5]))
+
+									EXIT
+								ENDCASE
+							ELSE
+								llCancel = THIS.showErrMsg("Cannot make SQL connection!", .T.)
+							ENDIF
+						ELSE
+							*настройки сессии
+		*!*					SQLSETPROP(m.lnIdConnect, "Transactions" , 2)
+							SQLEXEC(m.lnIdConnect, "set client_encoding='" + .cCodePage + "'")
+						ENDIF
+					CASE .nDBType = DB_MSSQL
+						SQLSETPROP(0, "DispWarnings", .f.) && Don't display warning dialog, if any set don't correctly
+						SQLSETPROP(0, "DispLogin", 3) && Don't display LOGIN dialog, if any information missed
+
+						lnIdConnect = SQLSTRINGCONNECT(.cBaseConf + "server=" + .cServerName + ";database=";
+													   + .cDBName + ";uid=" + .cUserName + ";pwd=";
+													   + .cUserPassword + ';')
+
+						IF m.lnIdConnect < 1
+							AERROR(.aResult)
+
+							lnIdConnect = 0
+
+							IF .aResult[1] = 1526
+								DO CASE
+								CASE .aResult[4] = "28000" && AND ATC("password", THIS.aResult[2])<>0
+									EXIT
+								CASE .aResult[4] = "08" OR .aResult[4] = "IM002"
+									m.goApp.oFunction.showErrMsg("Cannot found MSSQL server! Server address is " + .cServerName + CRLF;
+																 + TRANSFORM(.aResult[1]) + ' ' + .aResult[2] + CRLF;
+																 + .aResult[4] + " ODBC Error: " + TRANSFORM(.aResult[5]))
+
+									EXIT
+								ENDCASE
+							ELSE
+								llCancel = .showErrMsg("Cannot make SQL connection!", .T.)
+							ENDIF
+						ELSE
+							*настройки сессии
+						ENDIF
+					CASE .nDBType = DB_Oracle
+					CASE .nDBType = DB_Access
+						.cServerName = ADDBS(.cServerName)
+
+						SQLSETPROP(0, "DispWarnings", .f.) && Don't display warning dialog, if any set don't correctly
+						SQLSETPROP(0, "DispLogin", 3) && Don't display LOGIN dialog, if any information missed
+
+						lnIdConnect = SQLSTRINGCONNECT(.cBaseConf + ";Dbq=" + .cServerName + .cDBName;
+													   + ";uid=" + .cUserName + ";pwd=" + .cUserPassword + ';')
+
+						IF m.lnIdConnect < 1
+							AERROR(.aResult)
+
+							lnIdConnect = 0
+							llCancel = .showErrMsg("Cannot make SQL connection!", .T.)
+						ENDIF
+					OTHERWISE
+						lnIdConnect = 1
+					ENDCASE
+
+					IF m.lnIdConnect > 0
+						EXIT
+					ELSE
+						WAIT WINDOW NOWAIT "Try to connect..."
+					ENDIF
+
+					THIS.unLock()
+				ENDIF
+
+				IF m.llCancel
+					EXIT
+				ENDIF
+
+				DOEVENTS FORCE
+			ENDFOR
+			*выдать окно с выбором базы для access - временная затычка
+			IF m.lnIdConnect < 1 AND .nDBType = DB_Access
+				m.goApp.goForm("path_acbase", 0, .NULL., .NULL.)
+			ENDIF
+#IF !_DEVELOP_MODE
+		CATCH TO loExc
+			= AERROR(.aResult)
+
+			lnIdConnect = 0
+			m.goApp.oFunction.showErrMsg(m.loExc)
+		ENDTRY
+#ENDIF
+		WAIT CLEAR
+
+		.nId_Connection = m.lnIdConnect
+		.IDB_timer.Enabled = m.lnIdConnect > 0
+	ENDWITH
+RETURN THIS.IDB_timer.Enabled
+ENDPROC
+PROCEDURE disconnect
+#INCLUDE "..\lib.9\base_app.h"
+LOCAL loExc as Exception, lnRes as Integer
+	lnRes = 0
+
+	WITH THIS
+		IF .nId_Connection <> 0
+#IF !_DEVELOP_MODE
+			TRY
+#ENDIF
+				IF .Lock()
+					DO CASE
+					CASE .nDBType = DB_FoxPro
+						.nId_Connection = 0
+					CASE INLIST(THIS.nDBType, DB_PostgreSQL, DB_MSSQL, DB_Oracle, DB_Access)
+						lnRes = SQLDISCONNECT(.nId_Connection)
+
+						DO CASE
+						CASE m.lnRes = 1
+							.nId_Connection = 0
+						CASE m.lnRes = -1
+							AERROR(.aResult)
+
+							.showErrMsg("Cannot make SQL disconnection")
+						CASE m.lnRes = -2
+							AERROR(.aResult)
+
+							.showErrMsg("Environment level error SQL disconnection")
+						ENDCASE
+					ENDCASE
+
+					.UnLock()
+				ENDIF
+#IF !_DEVELOP_MODE
+			CATCH TO loExc
+				AERROR(.aResult)
+
+				lnRes = -3
+				m.goApp.oFunction.showErrMsg(m.loExc)
+			ENDTRY
+#ENDIF
+		ENDIF
+
+		.IDB_timer.Enabled = .F.
+	ENDWITH
+RETURN m.lnRes = 1
+ENDPROC
+PROCEDURE getdbname
+RETURN THIS.cDBName
+ENDPROC
+PROCEDURE getdbtype
+RETURN THIS.nDBType
+ENDPROC
+PROCEDURE getdbtypename
+LOCAL lcDBType as String
+	DO CASE
+	CASE THIS.nDBType = DB_FoxPro
+		lcDBType = "FoxPro"
+	CASE THIS.nDBType = DB_PostgreSQL
+		lcDBType = "PostgreSQL"
+	CASE THIS.nDBType = DB_MSSQL
+		lcDBType = "MSSQL"
+	CASE THIS.nDBType = DB_Oracle
+		lcDBType = "Oracle"
+	CASE THIS.nDBType = DB_Access
+		lcDBType = "Access"
+	OTHERWISE
+		lcDBType = "None"
+	ENDCASE
+RETURN m.lcDBType
+ENDPROC
+PROCEDURE getresultcode
+LOCAL lnCode 
+	TRY
+		lnCode = THIS.aResult[5]
+	CATCH
+		lnCode = 0
+	FINALLY
+	ENDTRY
+RETURN m.lnCode
+ENDPROC
+PROCEDURE getresultmessage
+RETURN THIS.aResult[2]
+ENDPROC
+PROCEDURE getservername
+RETURN THIS.cServerName
+ENDPROC
+PROCEDURE isactive
+RETURN THIS.nId_Connection > 0
+ENDPROC
+PROCEDURE lock
+DODEFAULT()
+
+IF THIS.isLock()
+	THIS.setStatus(1)
+ENDIF
+ENDPROC
+PROCEDURE setstatus
+LPARAMETERS lnStatus as Integer
+	IF TYPE("m.goApp.oToolBar") = 'O' AND m.goApp.oVars.lToolBar
+		DO CASE
+		CASE m.lnStatus = 0
+			goApp.oToolBar.Item["TBActivity"].Status_anim.Picture = "..\bmp\trafficlight_off.ico"
+		CASE m.lnStatus = 1
+			goApp.oToolBar.Item["TBActivity"].Status_anim.Picture = "..\bmp\trafficlight_green.ico"
+		ENDCASE
+	ENDIF
+ENDPROC
+PROCEDURE showerrmsg
+LPARAMETERS tcTextMsg as String, tlIgnoreButt
+LOCAL lnAnswer as Integer, lcErrString, llAllowBox
+	IF EMPTY(m.tcTextMsg)
+		tcTextMsg = ''
+	ENDIF
+
+	lcErrString = m.tcTextMsg + CRLF + TRANSFORM(THIS.aResult[1]) + ' ' + THIS.aResult[2] + CRLF;
+						  + THIS.aResult[4] + " ODBC Error: " + TRANSFORM(THIS.aResult[5])
+
+	llAllowBox = .T.
+
+	IF TYPE("m.goApp") = 'O' AND !ISNULL(m.goApp)
+		m.goApp.oFunction.writeLog(m.lcErrString)
+		llAllowBox = m.goApp.oVars.oCurrentTask.oVars.lDisplayErrMsg
+	ENDIF
+
+	IF m.llAllowBox
+		lnAnswer = MESSAGEBOX(lcErrString, IIF(m.tlIgnoreButt, 5, 0) + 16, m.goApp.oVars.cTaskCaption)
+	ELSE
+		lnAnswer = 0
+	ENDIF
+RETURN IIF(INLIST(m.lnAnswer, 2, 3), .T., .F.)
+ENDPROC
+PROCEDURE unlock
+DODEFAULT()
+
+IF !THIS.isLock()
+	THIS.setStatus(0)
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+*connect соединиться с БД
+*disconnect 
+*getdbname 
+*getdbtype получить код типа БД
+*getdbtypename 
+*getresultcode получить код последней ошибки
+*getresultmessage получить текст последнего сообщения
+*getservername 
+*isactive получить состояние соединения
+*setstatus Статус индикатора
+*showerrmsg 
+^aresult[1,0] 
+cbaseconf
+ccodepage
+cdbname
+cservername
+cusername
+cuserpassword
+ndbtype
+nid_connection
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\data_connection.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_connection.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_idb.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q90EBO20
+[CLASS] base_timer
+[CLASSLOC] base_gui.vcx
+[BASECLASS] timer
+[OBJNAME] IDB_timer
+[PARENT] dbconnect
+[START PROPERTIES]
+Enabled = .F.
+Interval = 600000
+Left = 8
+Name = "IDB_timer"
+Top = 8
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+#INCLUDE ..\lib.9\base_app.h
+WITH THIS.Parent
+	IF .nId_Connection <> 0 AND .lock()
+		LOCAL loExc as Exception, lnresult as Logical
+		LOCAL ARRAY laResult[1]
+
+		DO CASE
+		CASE .getDBType() = DB_FoxPro
+		CASE INLIST(.getDBType(), DB_PostgreSQL, DB_MSSQL, DB_Oracle)
+#IF !_DEVELOP_MODE
+			TRY
+#ENDIF
+				lnresult = SQLEXEC(.nId_Connection, "SELECT 1")
+
+				IF m.lnresult < 0
+					AERROR(laResult)
+				ENDIF
+#IF !_DEVELOP_MODE
+			CATCH TO loExc
+				m.goApp.oFunction.showErrMsg(m.loExc)
+			ENDTRY
+#ENDIF
+		ENDCASE
+
+		.unLock()
+	ENDIF
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dbconnect
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28Q05WYFL
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] dbcontainer
+[START PROPERTIES]
+
+BackStyle = 0
+Height = 34
+Name = "dbcontainer"
+SpecialEffect = 0
+Visible = .F.
+Width = 97
+_memberdata =      323<VFPData><memberdata name="lchkcaption" type="property" display="lChkCaption"/><memberdata name="lchkcaption_assign" type="method" display="lChkCaption_Assign"/><memberdata name="cchkvarname_assign" type="method" display="cChkVarName_Assign"/><memberdata name="odbconnect" type="property" display="oDBConnect"/></VFPData>
+odbconnect = .NULL.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE odbconnect_assign
+LPARAMETERS vNewVal
+LOCAL loControl AS Object
+	THIS.oDBConnect = m.vNewVal
+
+	FOR EACH loControl IN THIS.Controls
+		IF PEMSTATUS(m.loControl, "oDBConnect", 5)
+			m.loControl.Destroy
+			m.loControl.Init(m.vNewVal)
+		ENDIF
+	ENDFOR
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*odbconnect_assign 
+odbconnect
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\data_view.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_view.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dbcontainer
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2E90YJELP
+[CLASS] dbtable
+[CLASSLOC] base_idb.vcx
+[BASECLASS] custom
+[OBJNAME] dbsprav
+[START PROPERTIES]
+Name = "dbsprav"
+lisdictionary = .F.
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE select
+LPARAMETERS taKeysValue
+	IF !getDopSprav(THIS.cFromCmd, THIS.cLocalTable)
+		m.goApp.showMsg("В базе отсутствует справочник '" + THIS.cFromCmd + "'!")
+
+		RETURN .F.
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+..\bmp\16x16\data_view.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_view.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dbsprav
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QG06E6MX
+[CLASS] base_custom
+[CLASSLOC] base_gui.vcx
+[BASECLASS] custom
+[OBJNAME] dbsql
+[START PROPERTIES]
+
+Name = "dbsql"
+Picture = ..\bmp\16x16\data_view.bmp
+Width = 20
+_memberdata =     1447<VFPData><memberdata name="commit" type="method" display="commit"/><memberdata name="ccursorname" type="property" display="cCursorName"/><memberdata name="execute" type="method" display="execute"/><memberdata name="getcursorname" type="method" display="getCursorName"/><memberdata name="getresultcode" type="method" display="getResultCode"/><memberdata name="getresultmessage" type="method" display="getResultMessage"/><memberdata name="getsql" type="method" display="getSql"/><memberdata name="lisexecuted" type="property" display="lIsExecuted"/><memberdata name="lisparsed" type="property" display="lIsParsed"/><memberdata name="lisselected" type="property" display="lIsSelected"/><memberdata name="rollback" type="method" display="rollback"/><memberdata name="showerrmsg" type="method" display="showErrMsg"/><memberdata name="csqlcommand" type="property" display="cSQLCommand"/><memberdata name="prepare" type="method" display="prepare"/><memberdata name="ccursorname" type="property" display="cCursorName"/><memberdata name="begintransaction" type="method" display="beginTransaction"/><memberdata name="savepoint" type="method" display="savePoint"/><memberdata name="releasesavepoint" type="method" display="releaseSavepoint"/><memberdata name="aresult" type="property" display="aResult"/><memberdata name="odbconnect" type="property" display="oDBConnect"/><memberdata name="lasynchronous" type="property" display="lAsynchronous"/></VFPData>
+ccursorname = 
+csqlcommand = 
+lasynchronous = .T.
+lisexecuted = .F.
+lisparsed = .F.
+lisselected = .F.
+odbconnect = .NULL.
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+ccursorname^
+csqlcommand^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS toDBConnect
+	IF VARTYPE(m.toDBConnect) = 'O' AND !ISNULL(m.toDBConnect)
+		THIS.oDBConnect = m.toDBConnect
+	ELSE
+		THIS.oDBConnect = m.goApp.oVars.oDBConnect
+	ENDIF
+ENDPROC
+PROCEDURE begintransaction
+LOCAL lnResult as Integer
+	lnResult = -1
+	WITH THIS
+		IF VARTYPE(.oDBConnect) = 'O' AND .oDBConnect.nId_Connection <> 0 AND .oDBConnect.lock()
+			DO CASE
+			CASE .oDBConnect.getDBType() = DB_FoxPro
+			CASE .oDBConnect.getDBType() = DB_PostgreSQL
+				lnResult = SQLEXEC(.oDBConnect.nId_Connection, "BEGIN")
+
+				IF m.lnResult = -1
+					AERROR(.aResult)
+
+					.showErrMsg()
+				ENDIF
+			CASE .oDBConnect.getDBType() = DB_MSSQL
+				lnResult = SQLEXEC(.oDBConnect.nId_Connection, "BEGIN TRANSACTION")
+
+				IF m.lnResult = -1
+					AERROR(.aResult)
+
+					.showErrMsg()
+				ENDIF
+			CASE .oDBConnect.getDBType() = DB_Oracle
+			CASE .oDBConnect.getDBType() = DB_Access
+			ENDCASE
+
+			.oDBConnect.unLock()
+		ENDIF
+	ENDWITH
+RETURN m.lnResult = 1
+ENDPROC
+PROCEDURE commit
+LOCAL lnResult as Integer
+	lnResult = -1
+
+	WITH THIS
+		IF VARTYPE(.oDBConnect) = 'O' AND .oDBConnect.nId_Connection <> 0 AND .oDBConnect.lock()
+			DO CASE
+			CASE .oDBConnect.getDBType() = DB_FoxPro
+			CASE .oDBConnect.getDBType() = DB_PostgreSQL
+				lnResult = SQLEXEC(.oDBConnect.nId_Connection, "COMMIT")
+
+				IF m.lnResult = -1
+					AERROR(.aResult)
+
+					.showErrMsg()
+				ENDIF
+			CASE .oDBConnect.getDBType() = DB_MSSQL
+				lnResult = SQLEXEC(.oDBConnect.nId_Connection, "COMMIT TRANSACTION")
+
+				IF m.lnResult = -1
+					AERROR(.aResult)
+
+					.showErrMsg()
+				ENDIF
+			CASE .oDBConnect.getDBType() = DB_Oracle
+			CASE .oDBConnect.getDBType() = DB_Access
+			ENDCASE
+
+			.oDBConnect.unLock()
+		ENDIF
+	ENDWITH
+RETURN m.lnResult = 1
+ENDPROC
+PROCEDURE execute
+#INCLUDE "..\lib.9\base_app.h"
+LPARAMETERS tcSQLCommand as String, tcCursorName as String, taCountInfo
+LOCAL lnResult as Integer, lnPCnt as Integer, lnTiCnt as Integer, loTerm as Object,;
+	  lnRunSec as Integer, loExc as Exception
+	lnResult = -1
+
+	IF VARTYPE(THIS.oDBConnect) = 'O' AND THIS.oDBConnect.nId_Connection <> 0 AND THIS.oDBConnect.lock()
+		lnPCnt = PCOUNT()
+		THIS.cSQLCommand = ALLTRIM(m.tcSQLCommand)
+		THIS.cCursorName = IIF(m.lnPCnt > 1, ALLTRIM(m.tcCursorName), '')
+
+		loTerm = .NULL.
+		lnRunSec = SECONDS()
+#IF !_DEVELOP_MODE
+		TRY
+#ENDIF
+			DO CASE
+			CASE THIS.oDBConnect.getDBType() = DB_FoxPro
+					lcRun = STRTRAN(m.tcSQLCommand, CRLF, ' ')
+*!*						lcRun = STRTRAN(m.tcSQLCommand, CRLF, ' ') + IIF(ATC("SELECT", m.tcSQLCommand) <> 0,;
+*!*																		 " INTO CURSOR " + m.tcCursorName + " READWRITE",;
+*!*																		 '')
+					&lcRun
+					
+					lnResult = 1
+			CASE INLIST(THIS.oDBConnect.getDBType(), DB_PostgreSQL, DB_MSSQL, DB_Access)
+				= SQLSETPROP(THIS.oDBConnect.nId_Connection, "Asynchronous", THIS.lAsynchronous)
+
+				DO CASE
+				CASE m.lnPCnt = 3
+					lnResult = SQLEXEC(THIS.oDBConnect.nId_Connection, m.tcSQLCommand, m.tcCursorName,;
+									   taCountInfo)
+				CASE m.lnPCnt = 2
+					lnResult = SQLEXEC(THIS.oDBConnect.nId_Connection, m.tcSQLCommand, m.tcCursorName)
+				CASE m.lnPCnt = 1
+					lnResult = SQLEXEC(THIS.oDBConnect.nId_Connection, m.tcSQLCommand)
+				CASE m.lnPCnt = 0 AND THIS.lIsParsed
+					lnResult = SQLEXEC(THIS.oDBConnect.nId_Connection)
+				ENDCASE
+
+				DO CASE
+				CASE m.lnResult = -1
+					AERROR(THIS.aResult)
+
+					THIS.showErrMsg()
+				CASE m.lnResult = 0
+					lnTiCnt = 0
+					
+					DO WHILE SQLEXEC(THIS.oDBConnect.nId_Connection) = 0
+						lnTiCnt = m.lnTiCnt + 1
+						
+						IF m.lnTiCnt > 40
+							DOEVENTS FORCE
+
+							lnTiCnt = 0
+						ENDIF
+						
+						IF ISNULL(m.loTerm) AND SECONDS() - m.lnRunSec > 1.0
+							_VFP.AutoYield = .T.
+
+							loTerm = NEWOBJECT("Thermometer", "..\lib.9\base_gui", '',;
+											   "Excecuting query... to " + m.tcCursorName, 0, 0, '', .T.)
+							m.loTerm.Show()
+
+							DOEVENTS FORCE
+						ENDIF
+					ENDDO
+				ENDCASE
+
+				IF THIS.lAsynchronous
+					= SQLSETPROP(THIS.oDBConnect.nId_Connection, "Asynchronous", .F.)
+				ENDIF
+			CASE THIS.oDBConnect.getDBType() = DB_Oracle
+			ENDCASE
+#IF !_DEVELOP_MODE
+		CATCH TO loExc
+			lnResult = -1
+
+			m.goApp.oFunction.writeLog("Execute:" + m.loExc.Message + m.tcSQLCommand)
+		ENDTRY
+#ENDIF
+		IF !ISNULL(m.loTerm)
+			RELEASE m.loTerm
+
+			_VFP.AutoYield = .F.
+		ENDIF
+
+		THIS.oDBConnect.unLock()
+	ENDIF
+
+	THIS.lIsExecuted = (m.lnResult > -1)
+RETURN THIS.lIsExecuted
+ENDPROC
+PROCEDURE getcursorname
+RETURN THIS.cCursorName
+ENDPROC
+PROCEDURE getresultcode
+RETURN THIS.aResult[1]
+ENDPROC
+PROCEDURE getresultmessage
+RETURN THIS.aResult[2]
+ENDPROC
+PROCEDURE getsql
+RETURN THIS.cSQLCommand
+ENDPROC
+PROCEDURE prepare
+LPARAMETERS tcSQLCommand as String, tcCursorName as String
+LOCAL lnResult as Integer
+	lnResult = -1
+
+	IF VARTYPE(THIS.oDBConnect) = 'O' AND THIS.oDBConnection.nId_Connection <> 0 AND THIS.oDBConnect.lock()
+		DO CASE
+		CASE THIS.oDBConnect.getDBType() = DB_FoxPro
+		CASE THIS.oDBConnect.getDBType() = DB_PostgreSQL
+			IF PCOUNT() = 3
+				lnResult = SQLPREPARE(THIS.oDBConnect.nId_Connection, m.tcSQLCommand, m.tcCursorName)
+			ELSE
+				lnResult = SQLPREPARE(THIS.oDBConnect.nId_Connection, m.tcSQLCommand)
+			ENDIF
+
+			IF m.lnResult = -1
+				AERROR(THIS.aResult)
+
+				THIS.showErrMsg()
+			ELSE
+				THIS.cSQLCommand = ALLTRIM(m.tcSQLCommand)
+				THIS.cCursorName = ALLTRIM(m.tcCursorName)
+			ENDIF
+		CASE THIS.oDBConnect.getDBType() = DB_MSSQL
+		CASE THIS.oDBConnect.getDBType() = DB_Oracle
+		CASE THIS.oDBConnect.getDBType() = DB_Access
+		ENDCASE
+
+		THIS.oDBConnect.unLock()
+	ENDIF
+
+	THIS.lIsParsed = (m.lnResult = 1)
+RETURN THIS.lIsParsed
+ENDPROC
+PROCEDURE releasesavepoint
+LPARAMETERS tcSavepoint_Name as String
+LOCAL lnResult as Integer
+	lnResult = -1
+
+	IF VARTYPE(THIS.oDBConnect) = 'O' AND THIS.oDBConnect.nId_Connection <> 0 AND THIS.oDBConnect.lock()
+		DO CASE
+		CASE THIS.oDBConnect.getDBType() = DB_FoxPro
+		CASE THIS.oDBConnect.getDBType() = DB_PostgreSQL
+			lnResult = SQLEXEC(THIS.oDBConnect.nId_Connection, "RELEASE SAVEPOINT " + m.tcSavepoint_Name)
+
+			IF m.lnRelult = -1
+				AERROR(THIS.aResult)
+
+				THIS.showErrMsg()
+			ENDIF
+		CASE THIS.oDBConnect.getDBType() = DB_MSSQL
+		CASE THIS.oDBConnect.getDBType() = DB_Oracle
+		CASE THIS.oDBConnect.getDBType() = DB_Access
+		ENDCASE
+
+		THIS.oDBConnect.unLock()
+	ENDIF
+RETURN m.lnResult = 1
+ENDPROC
+PROCEDURE rollback
+LPARAMETERS tcSavepoint_Name as String
+LOCAL lnResult as Integer
+	lnResult = -1
+
+	IF VARTYPE(THIS.oDBConnect) = 'O' AND THIS.oDBConnect.nId_Connection <> 0 AND THIS.oDBConnect.lock()
+		DO CASE
+		CASE THIS.oDBConnect.getDBType() = DB_FoxPro
+		CASE THIS.oDBConnect.getDBType() = DB_PostgreSQL
+			IF PCOUNT() = 2
+				lnResult = SQLEXEC(THIS.oDBConnect.nId_Connection, "ROLLBACK TO SAVEPOINT ";
+																   + m.tcSavepoint_Name)
+			ELSE
+				lnResult = SQLEXEC(THIS.oDBConnect.nId_Connection, "ROLLBACK")
+			ENDIF
+
+			IF m.lnResult = -1
+				AERROR(THIS.aResult)
+
+				THIS.showErrMsg()
+			ENDIF
+		CASE THIS.oDBConnect.getDBType() = DB_MSSQL
+		CASE THIS.oDBConnect.getDBType() = DB_Oracle
+		CASE THIS.oDBConnect.getDBType() = DB_Access
+		ENDCASE
+
+		THIS.oDBConnect.unLock()
+	ENDIF
+RETURN m.lnResult = 1
+ENDPROC
+PROCEDURE savepoint
+LPARAMETERS tcSavepoint_Name as String
+LOCAL lnResult as Integer
+	lnResult = -1
+
+	IF VARTYPE(THIS.oDBConnect) = 'O' AND THIS.oDBConnect.nId_Connection <> 0 AND THIS.oDBConnect.lock()
+		DO CASE
+		CASE THIS.oDBConnect.getDBType() = DB_FoxPro
+		CASE THIS.oDBConnect.getDBType() = DB_PostgreSQL
+			lnRelult = SQLEXEC(THIS.oDBConnect.nId_Connection, "SAVEPOINT " + m.tcSavepoint_Name)
+
+			IF m.lnRelult = -1
+				AERROR(THIS.aResult)
+
+				THIS.showErrMsg()
+			ENDIF
+		CASE THIS.oDBConnect.getDBType() = DB_MSSQL
+		CASE THIS.oDBConnect.getDBType() = DB_Oracle
+		CASE THIS.oDBConnect.getDBType() = DB_Access
+		ENDCASE
+
+		THIS.oDBConnect.unLock()
+	ENDIF
+RETURN m.lnResult = 1
+ENDPROC
+PROCEDURE showerrmsg
+LOCAL lcErrString
+	lcErrString = IIF(TYPE("THIS.aResult[2]") <> 'C', '', THIS.aResult[2]) + CHR(10) + THIS.cSQLCommand
+
+	IF TYPE("m.goApp") = 'O' AND !ISNULL(m.goApp)
+		m.goApp.oFunction.writeLog(m.lcErrString)
+		m.goApp.oFunction.showErrMsg(m.lcErrString)
+	ELSE
+		MESSAGEBOX(m.lcErrString, 16, m.goApp.oVars.cTaskCaption)
+	ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*begintransaction 
+*commit выполнение COMMIT'a
+*execute выполнение SQL предложения
+*getcursorname Имя курсора в котором храниться результат выборки
+*getresultcode получить код последней ошибки
+*getresultmessage получить текст последнего сообщения
+*getsql получить текст ранее загруженного SQL предложения
+*prepare разбор SQL предложения
+*releasesavepoint 
+*rollback выполнение ROLLBACK'a
+*savepoint 
+*showerrmsg 
+^aresult[1,0] 
+ccursorname
+csqlcommand
+lasynchronous
+lisexecuted узнать, исполнено ли предложение
+lisparsed узнать, разобрано ли предложение
+lisselected узнать, является ли предложение запросом.
+odbconnect
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\data_view.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_view.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_idb.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dbsql
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QG0B99MR
+[CLASS] dbsql
+[CLASSLOC] base_idb.vcx
+[BASECLASS] custom
+[OBJNAME] dbtable
+[START PROPERTIES]
+
+Name = "dbtable"
+Picture = ..\bmp\16x16\data_table.bmp
+_memberdata =     2935<VFPData><memberdata name="ccursorname" type="property" display="cCursorName"/><memberdata name="parse" type="method" display="Parse"/><memberdata name="callstored" type="method" display="callStored"/><memberdata name="getfieldbasetype" type="method" display="getFieldBaseType"/><memberdata name="getfieldlength" type="method" display="getFieldLength"/><memberdata name="getfieldmaybenull" type="method" display="getFieldMaybeNull"/><memberdata name="getfieldname" type="method" display="getFieldName"/><memberdata name="getfieldprecision" type="method" display="getFieldPrecision"/><memberdata name="getfieldscale" type="method" display="getFieldScale"/><memberdata name="getfieldscount" type="method" display="getFieldsCount"/><memberdata name="getnextrecord" type="method" display="getNextRecord"/><memberdata name="selectrs" type="method" display="SelectRS"/><memberdata name="selectto" type="method" display="SelectTO"/><memberdata name="delete" type="method" display="delete"/><memberdata name="find" type="method" display="find"/><memberdata name="insert" type="method" display="insert"/><memberdata name="update" type="method" display="update"/><memberdata name="cschema" type="property" display="cSchema"/><memberdata name="ctable" type="property" display="cTable"/><memberdata name="ckeyfields" type="property" display="cKeyFields"/><memberdata name="ccastfields" type="property" display="cCastFields"/><memberdata name="clistfields" type="property" display="cListFields"/><memberdata name="lisdictionary" type="property" display="lIsDictionary"/><memberdata name="cwherecmd" type="property" display="cWhereCmd"/><memberdata name="cjoincmd" type="property" display="cJoinCmd"/><memberdata name="cfromcmd" type="property" display="cFromCmd"/><memberdata name="cordercmd" type="property" display="cOrderCmd"/><memberdata name="chavingcmd" type="property" display="cHavingCmd"/><memberdata name="clocaltable" type="property" display="cLocalTable"/><memberdata name="cschema" type="property" display="cSchema"/><memberdata name="buildsqlselect" type="method" display="buildSQLSelect"/><memberdata name="cbuildedsqlselect" type="property" display="cBuildedSQLSelect"/><memberdata name="afields" type="property" display="aFields"/><memberdata name="lockobject" type="property" display="LockObject"/><memberdata name="getfieldsdescribes" type="method" display="getFieldsDescribes"/><memberdata name="cgroupcmd" type="property" display="cGroupCmd"/><memberdata name="select" type="method" display="select"/><memberdata name="cdistinct" type="property" display="cDistinct"/><memberdata name="lexclusive" type="property" display="lExclusive"/><memberdata name="luseopentable" type="property" display="lUseOpenTable"/><memberdata name="cindexs" type="property" display="cIndexs"/><memberdata name="lusecursor" type="property" display="lUseCursor"/><memberdata name="lsimpleopendbf" type="property" display="lSimpleOpenDBF"/></VFPData>
+cbuildedsqlselect = 
+ccastfields = 
+cdistinct = 
+cfromcmd = 
+cgroupcmd = 
+chavingcmd = 
+cindexs = 
+cjoincmd = 
+ckeyfields = 
+clistfields = 
+clocaltable = 
+cordercmd = 
+cschema = 
+cwherecmd = 
+lexclusive = .F.
+lisdictionary = .T.
+lsimpleopendbf = .T.
+lusecursor = .F.
+luseopentable = .F.
+[END PROPERTIES]
+[START PROTECTED]
+Picture^
+buildsqlselect^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+*закрыть таблицу-представление
+IF USED(THIS.cLocalTable)
+	USE IN (THIS.cLocalTable)
+ENDIF
+ENDPROC
+PROCEDURE Init
+#INCLUDE "..\lib.9\base_app.h"
+LPARAMETERS toDBConnect
+LOCAL loExc as Exception
+	WITH THIS
+		DODEFAULT(m.toDBConnect)
+
+		IF .oDBConnect.nId_Connection < 1
+		*что-то не то с подлючением к базе
+			RETURN .F.
+		ELSE
+			IF EMPTY(.cSchema)
+				.cSchema = m.goApp.oVars.oCurrentTask.oVars.cDBSchema
+			ENDIF
+
+			DO CASE
+			CASE .oDBConnect.getDBType() = DB_FoxPro
+				IF !.lUseCursor
+					*путь к таблице подставляется динамически
+					.cFromCmd = FORCEPATH(.cFromCmd, .oDBConnect.getServerName())
+				ENDIF
+
+				IF .lSimpleOpenDBF AND !.lUseOpenTable
+					IF !EMPTY(.cFromCmd)
+						IF !EMPTY(.cListFields)
+							IF USED(.cFromCmd) AND !.lUseOpenTable
+								USE IN (.cFromCmd)
+							ENDIF
+
+							IF .lExclusive
+								USE (.cFromCmd) ALIAS (.cFromCmd);
+									IN 0 EXCLUSIVE
+							ELSE
+								USE (.cFromCmd) ALIAS (.cFromCmd) IN 0
+							ENDIF
+						ELSE
+							IF USED(.cLocalTable)
+								USE IN (.cLocalTable)
+							ENDIF
+
+							IF .lExclusive
+								USE (.cFromCmd) ALIAS (.cLocalTable);
+									IN 0 EXCLUSIVE
+							ELSE
+								USE (.cFromCmd) ALIAS (.cLocalTable) IN 0
+							ENDIF
+						ENDIF
+					ENDIF
+
+					IF .lIsDictionary
+						SELECT (.cLocalTable)
+						INDEX ON BINTOC(PID) + BINTOC(SORTID) TAG SORTID
+
+						CURSORSETPROP("Buffering", 5, .cLocalTable)
+					ENDIF
+
+					IF !EMPTY(.cOrderCmd) AND EMPTY(.cListFields)
+						SET ORDER TO (.cOrderCmd) IN (.cLocalTable)
+					ENDIF
+				ELSE
+					.buildSQLSelect()
+				ENDIF
+			CASE .oDBConnect.getDBType() = DB_PostgreSQL
+				.buildSQLSelect()
+			CASE .oDBConnect.getDBType() = DB_MSSQL
+				.buildSQLSelect()
+			CASE .oDBConnect.getDBType() = DB_Oracle
+			CASE .oDBConnect.getDBType() = DB_Access
+				.buildSQLSelect()
+			OTHERWISE
+			ENDCASE
+
+			.getFieldsDescribes()
+			.select()
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE buildsqlselect
+#INCLUDE "..\lib.9\base_app.h"
+LOCAL lnI as Integer, lnJ as Integer, lcStr as String, lcField as String, lcCast as String,;
+	  lcSQLFields as String, lcSQLFrom as String, lnLenArr as Integer
+	lnLenArr = 1
+
+	WITH THIS
+		IF .lIsDictionary
+		*добавить общие поля справочника
+			DIMENSION .aFields[8, 6]
+			.aFields[2, 1] = "lid"
+			.aFields[3, 1] = "pid"
+			.aFields[4, 1] = "chlcnt"
+			.aFields[5, 1] = "sortid"
+			.aFields[6, 1] = "level"
+			.aFields[7, 1] = "id"
+			.aFields[8, 1] = "name"
+
+			lnLenArr = 8
+		ELSE
+			DIMENSION .aFields[1, 6]
+		ENDIF
+
+		IF EMPTY(.cListFields) AND !.lIsDictionary
+		*выбрать все поля если не задан их список
+			lnLenArr = m.lnLenArr + 1
+			DIMENSION .aFields[m.lnLenArr, 6]
+
+			.aFields[m.lnLenArr, 1] = '*'
+		ELSE
+			FOR lnI = 1 TO m.goApp.oFunction.getWordCount(.cListFields, ',')
+				lcStr = LOWER(m.goApp.oFunction.getWordNum(.cListFields, m.lnI, ','))
+
+				IF !EMPTY(m.lcStr)
+					lnLenArr = m.lnLenArr + 1
+					DIMENSION .aFields[m.lnLenArr, 6]
+
+					.aFields[m.lnLenArr, 1] = m.goApp.oFunction.getWordNum(m.lcStr, 1, " as ")
+
+		*!*			IF !EMPTY(THIS.aFields[m.lnLenArr, 2]) AND m.goApp.oFunction.getWordCount(m.lcStr, " as ")>1
+					IF m.goApp.oFunction.getWordCount(m.lcStr, " as ") > 1
+						.aFields[m.lnLenArr, 3] = m.goApp.oFunction.getWordNum(m.lcStr, 2, " as ")
+					ENDIF
+
+					IF !EMPTY(.cCastFields)
+						FOR lnJ = 1 TO m.goApp.oFunction.getWordCount(.cCastFields, ',')
+							lcCast = LOWER(m.goApp.oFunction.getWordNum(.cCastFields, m.lnJ, ','))
+
+							IF LOWER(m.goApp.oFunction.getWordNum(m.lcCast, 1, "::"));
+							   == IIF(EMPTY(.aFields[m.lnLenArr, 3]), .aFields[m.lnLenArr, 1], .aFields[m.lnLenArr, 3])
+								.aFields[m.lnLenArr, 2] = m.goApp.oFunction.getWordNum(m.lcCast, 2, "::")
+
+								EXIT
+							ENDIF
+						ENDFOR
+					ENDIF
+				ENDIF
+			ENDFOR
+		ENDIF
+
+		lcSQLFields = ''
+
+		FOR lnI = 2 TO ALEN(.aFields, 1)
+			IF EMPTY(.aFields[m.lnI, 2])
+				lcSQLFields = m.lcSQLFields + ", " + .aFields[m.lnI, 1]
+			ELSE
+				lcSQLFields = m.lcSQLFields + ", " + "CAST(" + .aFields[m.lnI, 1];
+							  + " AS " + .aFields[m.lnI, 2] + ")"
+			ENDIF
+
+			IF !EMPTY(.aFields[m.lnI, 3])
+				lcSQLFields = m.lcSQLFields + " as " + .aFields[m.lnI, 3]
+			ENDIF
+
+			lcSQLFields = m.lcSQLFields
+		ENDFOR
+
+		lcSQLFields = SUBSTRC(m.lcSQLFields, 3)
+
+*!*			IF EMPTY(m.lcSQLFields)
+*!*				lcSQLFields = '*'
+*!*			ENDIF
+
+		lcSQLFrom = ''
+		*подставить название схемы
+		FOR lnI = 1 TO m.goApp.oFunction.getWordCount(.cFromCmd, ',')
+			lcStr = LOWER(m.goApp.oFunction.getWordNum(.cFromCmd, m.lnI, ','))
+
+			IF ATC('.', m.lcStr) = 0
+				*если THIS.cSchema пустая - то схема не используется
+				lcSQLFrom = m.lcSQLFrom + IIF(!EMPTY(.cSchema), .cSchema + '.', '')
+
+				DO CASE
+				CASE m.lnI = 1 AND THIS.lIsDictionary
+					lcSQLFrom = m.lcSQLFrom + "View_"
+
+					.aFields[1, 1] = m.lcStr
+					.aFields[1, 2] = LOWER(.cSchema)
+				CASE m.lnI = 1
+					.aFields[1, 1] = m.lcStr
+					.aFields[1, 2] = LOWER(.cSchema)
+				ENDCASE
+			ELSE
+			*схема уже есть
+				IF m.lnI = 1
+					.aFields[1, 1] = m.goApp.oFunction.getWordNum(m.lcStr, 2, '.')
+					.aFields[1, 2] = m.goApp.oFunction.getWordNum(m.lcStr, 1, '.')
+				ENDIF
+			ENDIF
+
+			lcSQLFrom = m.lcSQLFrom + m.lcStr + IIF(.oDBConnect.getDBType() = DB_MSSQL, " WITH (NOLOCK)", '') + ','
+		ENDFOR
+
+		lcSQLFrom = LEFTC(m.lcSQLFrom, LENC(m.lcSQLFrom) - 1)
+
+		.cBuildedSQLSelect = "SELECT " + IIF(EMPTY(.cDistinct), '', .cDistinct + ' ') + m.lcSQLFields + CRLF;
+							 + IIF(!EMPTY(m.lcSQLFrom), "FROM " + m.lcSQLFrom + CRLF, '')
+	ENDWITH
+ENDPROC
+PROCEDURE callstored
+LPARAMETERS tcStoreName as String, tcCursorName as String
+LOCAL lnRelult as Integer
+	lnRelult = .F.
+
+	IF VARTYPE(m.tcStoreName) = 'C'
+		lnRelult = THIS.execute("SELECT " + m.tcStoreName, m.tcCursorName)
+	ENDIF
+RETURN m.lnRelult
+ENDPROC
+PROCEDURE delete
+LPARAMETERS taKeysValue
+LOCAL lcSQL as String, llResult as Logical, lcCursorName as String, lcWhereCmd as String, lcKeyField
+	WITH THIS
+		*удалить по переданному ID
+		LOCAL lnID as Integer
+
+		IF .lIsDictionary
+			IF !EMPTY(taKeysValue)
+				lnID = taKeysValue
+			ELSE
+				lnID = EVALUATE(.cLocalTable + ".LID")
+			ENDIF
+
+			lcSQL = "DELETE FROM " + .aFields[1, 2] + ".link_" + .aFields[1, 1];
+					+ " WHERE ID=" + LTRIM(TRANSFORM(m.lnID))
+		ELSE
+			lcWhereCmd = ''
+
+			DO CASE
+			CASE .oDBConnect.getDBType() = DB_FoxPro
+				lnID = EVALUATE(.cLocalTable + ".ID")
+				*установить курсорчик на удаляемую запись :)
+				IF USED(.cLocalTable)
+					SELECT (.cLocalTable)
+
+					IF !EMPTY(taKeysValue) AND LID <> taKeysValue
+						LOCATE FOR LID = taKeysValue
+					ENDIF
+				ENDIF
+			CASE INLIST(.oDBConnect.getDBType(), DB_PostgreSQL, DB_MSSQL, DB_Access)
+				*формировать по THIS.cKeyFields
+				IF !EMPTY(.cKeyFields)
+					FOR lnJ = 1 TO m.goApp.oFunction.getWordCount(.cKeyFields, ',')
+						lcKeyField = LOWER(m.goApp.oFunction.getWordNum(.cKeyFields, m.lnJ, ','))
+
+						IF !EMPTY(taKeysValue[m.lnJ])
+							lvValue = taKeysValue[m.lnJ]
+						ELSE
+							lvValue = EVALUATE(.cLocalTable + '.' + m.lcKeyField)
+						ENDIF
+						
+						DO CASE
+						CASE VARTYPE(m.lvValue) = 'C'
+							lvValue = "'" + m.lvValue + "'"
+						OTHERWISE
+							lvValue = TRANSFORM(m.lvValue)
+						ENDCASE
+
+						lcWhereCmd = m.lcWhereCmd + m.lcKeyField + '=' + LTRIM(m.lvValue) + " AND "
+					ENDFOR
+
+					lcWhereCmd = .cWhereCmd + IIF(!EMPTY(.cWhereCmd), " AND ", '') + m.lcWhereCmd
+					*убрать лишний " AND "
+					lcWhereCmd = LEFTC(m.lcWhereCmd, LEN(m.lcWhereCmd) - 5)
+
+					lcSQL = "DELETE FROM " + .aFields[1, 1] + " WHERE " + m.lcWhereCmd
+					*позиционировать на эту удаляемую запись в локальной таблице
+					SELECT (.cLocalTable)
+
+					LOCATE FOR &lcWhereCmd
+				ENDIF
+			CASE .oDBConnect.getDBType() = DB_Oracle
+				lcSQL = ""
+			ENDCASE
+		ENDIF
+
+		llResult = THIS.execute(m.lcSQL)
+
+		IF m.llResult
+			DELETE IN (.cLocalTable)
+
+			TABLEUPDATE(0, .T., .cLocalTable)
+		ENDIF
+	ENDWITH
+RETURN m.llResult
+ENDPROC
+PROCEDURE getfieldsdescribes
+LOCAL lcCursorName as String, lcCursorName1 as String, llResult as Logical,;
+	  lnI as Integer, lnTableOID as Integer, lcSql as String
+	*информация о структуре таблицы/справочника
+	lcCursorName = SYS(2015)
+
+	DO CASE
+	CASE THIS.oDBConnect.getDBType() = DB_FoxPro
+*!*			LOCAL ARRAY laFields[1]
+
+*!*			AFIELDS(laFields, )
+
+		THIS.aFields[1, 4] = ''
+	CASE THIS.oDBConnect.getDBType() = DB_PostgreSQL
+		llResult = THIS.execute("SELECT '" + THIS.aFields[1, 2] + '.' + IIF(THIS.lIsDictionary, "dict_", '');
+								+ THIS.aFields[1, 1] + "'::REGCLASS::OID AS OID", m.lcCursorName)
+
+		IF m.llResult
+			lnTableOID = EVALUATE(m.lcCursorName + ".OID")
+
+			llResult = THIS.execute("SELECT OBJ_DESCRIPTION(" + LTRIM(TRANSFORM(m.lnTableOID));
+									+ ", 'pg_class') AS TABLECOMMENT", m.lcCursorName)
+
+			IF m.llResult
+				THIS.aFields[1, 4] = NVL(ALLTRIM(EVALUATE(m.lcCursorName + ".TABLECOMMENT")), '')
+			ENDIF
+
+TEXT TO lcSql TEXTMERGE NOSHOW
+	SELECT ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE TABLE_SCHEMA = '<<THIS.aFields[1, 2]>>'
+		  AND TABLE_NAME = '<<IIF(THIS.lIsDictionary, "dict_", '') + THIS.aFields[1, 1]>>'
+	ORDER BY 1
+ENDTEXT
+			llResult = THIS.execute(m.lcSql, m.lcCursorName)
+
+			IF m.llResult
+				lcCursorName1 = SYS(2015)
+
+				SCAN
+					FOR lnI = 2 TO ALEN(THIS.aFields, 1)
+						IF THIS.aFields[m.lnI, 1] == ALLTRIM(EVALUATE(m.lcCursorName + ".COLUMN_NAME"))
+							THIS.aFields[m.lnI, 5] = NVL(ALLTRIM(EVALUATE(m.lcCursorName + ".DATA_TYPE")), '')
+							THIS.aFields[m.lnI, 6] = NVL(ALLTRIM(EVALUATE(m.lcCursorName + ".COLUMN_DEFAULT")),;
+														 '')
+
+							llResult = THIS.execute("SELECT COL_DESCRIPTION(";
+													+ LTRIM(TRANSFORM(m.lnTableOID)) + ", ";
+													+ LTRIM(TRANSFORM(EVALUATE(m.lcCursorName;
+																			   + ".ORDINAL_POSITION")));
+													+ ") AS COLUMNCOMMENT", m.lcCursorName1)
+
+							IF m.llResult
+								THIS.aFields[m.lnI, 4] = NVL(ALLTRIM(EVALUATE(m.lcCursorName1;
+																			  + ".COLUMNCOMMENT")), '')
+							ENDIF
+
+							EXIT
+						ENDIF
+					ENDFOR
+				ENDSCAN
+
+				IF USED(m.lcCursorName1)
+					USE IN (m.lcCursorName1)
+				ENDIF
+			ENDIF
+
+			USE IN (m.lcCursorName)
+		ENDIF
+		*информация о структуре таблицы связей
+		IF THIS.lIsDictionary
+			LOCAL lcFieldName as String
+
+			llResult = THIS.execute("SELECT '" + THIS.aFields[1, 2] + ".link_" + THIS.aFields[1, 1];
+									+ "'::REGCLASS::OID AS OID", m.lcCursorName)
+
+			IF m.llResult
+				lnTableOID = EVALUATE(m.lcCursorName + ".OID")
+
+TEXT TO lcSql TEXTMERGE NOSHOW
+	SELECT ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT
+	FROM INFORMATION_SCHEMA.COLUMNS;
+	WHERE TABLE_SCHEMA = '<<THIS.aFields[1, 2]>>' AND TABLE_NAME = 'link_<<THIS.aFields[1, 1]>>'
+	ORDER BY 1
+ENDTEXT
+				llResult = THIS.execute(m.lcSql, m.lcCursorName)
+
+				IF m.llResult
+					lcCursorName1 = SYS(2015)
+
+					SCAN
+						FOR lnI = 2 TO 6
+							lcFieldName = IIF(THIS.aFields[m.lnI, 1] == "lid", "id", THIS.aFields[m.lnI, 1])
+
+							IF m.lcFieldName == ALLTRIM(EVALUATE(m.lcCursorName + ".COLUMN_NAME"))
+								THIS.aFields[m.lnI, 5] = NVL(ALLTRIM(EVALUATE(m.lcCursorName + ".DATA_TYPE")),;
+															 '')
+								THIS.aFields[m.lnI, 6] = NVL(ALLTRIM(EVALUATE(m.lcCursorName + ".COLUMN_DEFAULT")),;
+															 '')
+
+								llResult = THIS.execute("SELECT COL_DESCRIPTION(";
+														+ LTRIM(TRANSFORM(m.lnTableOID)) + ", ";
+														+ LTRIM(TRANSFORM(EVALUATE(m.lcCursorName;
+																		  + ".ORDINAL_POSITION")));
+														+ ") AS COLUMNCOMMENT", m.lcCursorName1)
+
+								IF m.llResult
+									THIS.aFields[m.lnI, 4] = NVL(ALLTRIM(EVALUATE(m.lcCursorName1;
+																				  + ".COLUMNCOMMENT")), '')
+								ENDIF
+
+								EXIT
+							ENDIF
+						ENDFOR
+					ENDSCAN
+
+					IF USED(m.lcCursorName1)
+						USE IN (m.lcCursorName1)
+					ENDIF
+				ENDIF
+
+				USE IN (m.lcCursorName)
+			ENDIF
+		ENDIF
+	CASE THIS.oDBConnect.getDBType() = DB_MSSQL
+	CASE THIS.oDBConnect.getDBType() = DB_Oracle
+	CASE THIS.oDBConnect.getDBType() = DB_Access
+	OTHERWISE
+	ENDCASE
+ENDPROC
+PROCEDURE insert
+#INCLUDE ..\lib.9\base_app.h
+*taFieldsValue значения для ключевых/автозаполняемых полей - 1:Name_field, 2:Value
+LPARAMETERS taKeysValue, taRetsValue
+LOCAL lvFieldValue as Variant, lcFields as String, lcValues as String,;
+	  lnI as Integer, lnJ as Integer, lcSQLSelect as String,;
+	  lcSQLInsert as String, llResult as Logical, lcCursorName as String, llLoop as Logical
+LOCAL ARRAY laCountInfo[1, 2]
+	*просматриваем все поля таблицы и значения брать оттуда
+	*если default value  = nextval(), то если значение есть в taFieldsValue -брать оттуда
+	*иначе поле не инсертить
+	lcSQLSelect = ''
+
+	WITH THIS
+		SELECT (.cLocalTable)
+
+		IF THIS.lIsDictionary
+			*исхожу из того что вставляется новая строка в справочник
+			*таблица справочник
+			lcValues = ''
+			lcFields = ''
+
+			FOR lnI = 8 TO ALEN(.aFields, 1)
+				llLoop = .F.
+
+				IF !EMPTY(.aFields[m.lnI, 6]) AND ATC("nextval", .aFields[m.lnI, 6]) <> 0
+				*поле с автозаполнением
+					lvFieldValue = .NULL.
+
+					FOR lnJ = 1 TO ALEN(taKeysValue, 1)
+						IF .aFields[m.lnI, 1] == taKeysValue[m.lnJ, 1]
+							lvFieldValue = taKeysValue[m.lnJ, 2]
+
+							EXIT
+						ENDIF
+					ENDFOR
+
+					IF ISNULL(m.lvFieldValue)
+						llLoop = .T.
+					ENDIF
+				ELSE
+					*взять значение из таблицы
+#IF !_DEVELOP_MODE
+					TRY
+#ENDIF
+						lvFieldValue = EVALUATE(.aFields[m.lnI, 1])
+#IF !_DEVELOP_MODE
+					CATCH
+						llLoop = .T.
+					ENDTRY
+#ENDIF
+				ENDIF
+
+				IF !m.llLoop
+					DO CASE
+					CASE ISNULL(m.lvFieldValue)
+						lvFieldValue = "NULL"
+					CASE VARTYPE(m.lvFieldValue) = 'C'
+						lvFieldValue = "'" + ALLTRIM(m.lvFieldValue) + "'"
+					OTHERWISE
+						lvFieldValue = TRANSFORM(m.lvFieldValue)
+					ENDCASE
+
+					lcFields = m.lcFields + ',' + .aFields[m.lnI, 1]
+					lcValues = m.lcValues + ",CAST(" + m.lvFieldValue + " AS "+.aFields[m.lnI, 5] + ")"
+				ENDIF
+			ENDFOR
+
+			lcFields = SUBSTR(m.lcFields, 2)
+			lcValues = SUBSTR(m.lcValues, 2)
+
+			lcSQLInsert = "INSERT INTO " + .aFields[1, 2] + ".dict_" + .aFields[1, 1] +;
+						  " (" + m.lcFields + ") VALUES (" + m.lcValues + ");"
+			*таблица связей
+			lcValues = ''
+			lcFields = ''
+			lcSQLSelect = m.lcSQLSelect + "SELECT CAST(" + STRTRAN(.aFields[2, 6], "nextval", "currval");
+						  + " AS INTEGER) AS LID;"
+
+			FOR lnI = 2 TO 6
+				IF INLIST(.aFields[m.lnI, 1], "lid", "chlcnt", "level")
+					LOOP
+				ENDIF
+
+				llLoop = .F.
+
+				IF !EMPTY(.aFields[m.lnI, 6]) AND ATC("nextval", .aFields[m.lnI, 6]) <> 0
+				*поле с автозаполнением
+					lvFieldValue = .NULL.
+
+					FOR lnJ = 1 TO ALEN(taKeysValue, 1)
+						IF .aFields[m.lnI, 1] == taKeysValue[m.lnJ, 1]
+							lvFieldValue = taKeysValue[m.lnJ, 2]
+
+							EXIT
+						ENDIF
+					ENDFOR
+
+					IF ISNULL(m.lvFieldValue)
+						llLoop = .T.
+					ENDIF
+				ELSE
+					*взять значение из таблицы
+#IF !_DEVELOP_MODE
+					TRY
+#ENDIF
+						lvFieldValue = EVALUATE(.aFields[m.lnI, 1])
+#IF !_DEVELOP_MODE
+					CATCH
+						llLoop = .T.
+					ENDTRY
+#ENDIF
+				ENDIF
+
+				IF !m.llLoop
+					DO CASE
+					CASE ISNULL(m.lvFieldValue)
+						lvFieldValue = "NULL"
+					CASE VARTYPE(m.lvFieldValue) = 'C'
+						lvFieldValue = "'" + ALLTRIM(m.lvFieldValue) + "'"
+					OTHERWISE
+						lvFieldValue = TRANSFORM(m.lvFieldValue)
+					ENDCASE
+
+					lcFields = m.lcFields + ',' + .aFields[m.lnI, 1]
+					lcValues = m.lcValues + "," + m.lvFieldValue
+				ENDIF
+			ENDFOR
+
+			lcFields = SUBSTR(m.lcFields, 2)
+			lcValues = SUBSTR(m.lcValues, 2)
+
+			lcSQLInsert = m.lcSQLInsert + "INSERT INTO " + .aFields[1, 2] + ".link_" + .aFields[1, 1];
+						  + " ("+m.lcFields + ",id_dict) VALUES (" + m.lcValues + ",(SELECT ";
+						  + STRTRAN(.aFields[7, 6], "nextval", "currval") + "));"
+		ELSE
+			STORE '' TO lcValues, lcFields
+
+			FOR lnI = 2 TO ALEN(.aFields, 1)
+				llLoop = .F.
+
+				IF !EMPTY(.aFields[m.lnI, 6]) AND ATC("nextval", .aFields[m.lnI, 6]) <> 0
+				*поле с автозаполнением
+					lcFieldValue = .NULL.
+
+					FOR lnJ = 1 TO ALEN(taKeysValue, 1)
+						IF .aFields[m.lnI, 1] == taKeysValue[m.lnJ, 1]
+							lcFieldValue = taKeysValue[m.lnJ, 2]
+
+							EXIT
+						ENDIF
+					ENDFOR
+
+					IF ISNULL(m.lcFieldValue)
+						*значение получим через currval()
+						lcSQLSelect = m.lcSQLSelect + "SELECT " + STRTRAN(.aFields[m.lnI, 6],;
+																		  "nextval",;
+																		  "currval");
+									  + " AS " + .aFields[m.lnI, 1] + ";"
+
+						llLoop = .T.
+					ENDIF
+				ELSE
+					*взять значение из таблицы
+#IF !_DEVELOP_MODE
+					TRY
+#ENDIF
+						lcFieldValue = EVALUATE(.aFields[m.lnI, 1])
+#IF !_DEVELOP_MODE
+					CATCH
+						llLoop = .T.
+					ENDTRY
+#ENDIF
+				ENDIF
+
+				IF !m.llLoop
+					DO CASE
+					CASE ISNULL(m.lvFieldValue)
+						lvFieldValue = "NULL"
+					CASE VARTYPE(m.lvFieldValue) = 'C'
+						lvFieldValue = "'" + ALLTRIM(m.lvFieldValue) + "'"
+					OTHERWISE
+						lvFieldValue = TRANSFORM(m.lvFieldValue)
+					ENDCASE
+
+					lcFields = m.lcFields + ',' + .aFields[m.lnI, 1]
+					lcValues = m.lcValues + ",CAST(" + m.lvFieldValue + " AS " + .aFields[m.lnI, 5] + ")"
+				ENDIF
+			ENDFOR
+
+			lcFields = SUBSTR(m.lcFields, 2)
+			lcValues = SUBSTR(m.lcValues, 2)
+
+			lcSQLInsert = "INSERT INTO " + .aFields[1, 2] + '.' + .aFields[1, 1];
+						  + " (" + m.lcFields + ") VALUES (" + m.lcValues + ");"
+		ENDIF
+	ENDWITH
+
+	lcCursorName = SYS(2015)
+
+	llResult = THIS.execute(m.lcSQLInsert + m.lcSQLSelect, m.lcCursorName, @laCountInfo)
+
+	IF m.llResult
+		FOR lnI = 1 TO ALEN(laCountInfo, 1)
+			IF !EMPTY(laCountInfo[m.lnI, 1]) AND laCountInfo[m.lnI, 2] > 0
+				DIMENSION taRetsValue[m.lnI, 2]
+
+				SELECT (laCountInfo[m.lnI, 1])
+
+				taRetsValue[m.lnI, 1] = LOWER(FIELD(1))
+				taRetsValue[m.lnI, 2] = EVALUATE(FIELD(1))
+
+				USE IN (laCountInfo[m.lnI, 1])
+			ENDIF
+		ENDFOR
+	ENDIF
+RETURN m.llResult
+ENDPROC
+PROCEDURE select
+#INCLUDE "..\lib.9\base_idb.h"
+LPARAMETERS taKeysValue
+LOCAL lcSQL as String, llResult as Logical, lcCursorName as String
+	WITH THIS
+		IF !EMPTY(.cBuildedSQLSelect)
+		*для FoxPro она пустая - в дальнейшем заменю на паттерны "заместитель+адаптер"
+			IF EMPTY(taKeysValue)
+			*обновить всю таблицу
+				lcSQL = .cBuildedSQLSelect;
+						+ IIF(!EMPTY(.cJoinCmd), .cJoinCmd + CRLF, '');
+						+ IIF(.oDBConnect.getDBType() = DB_FoxPro AND !EMPTY(.cLocalTable),;
+							  "INTO CURSOR " + .cLocalTable + " READWRITE" + CRLF,;
+							  '');
+						+ IIF(!EMPTY(.cWhereCmd), "WHERE " + .cWhereCmd + CRLF, '');
+						+ IIF(!EMPTY(.cGroupCmd), "GROUP BY " + .cGroupCmd + CRLF, '');
+						+ IIF(!EMPTY(.cHavingCmd), "HAVING BY " + .cHavingCmd + CRLF, '');
+						+ IIF(!EMPTY(.cOrderCmd), "ORDER BY " + .cOrderCmd, '')
+
+				llResult = .execute(m.lcSQL, .cLocalTable)
+
+				IF !m.llResult
+					IF .lIsDictionary
+						CREATE CURSOR (.cLocalTable) (LID I, PID I, SORTID I, LEVEL I, CHLCNT I, ID I,;
+													  NAME VARCHAR(100))
+					ENDIF
+				ELSE
+					IF .lIsDictionary
+						INDEX ON BINTOC(PID) + BINTOC(SORTID) TAG SORTID
+					ENDIF
+
+					IF !EMPTY(.cIndexs)
+						*пример: KODT{KODT};KODC{KODC}
+						LOCAL ARRAY laIndexs[1]
+						LOCAL lnWordCount
+
+						FOR lnJ = 1 TO m.goApp.oFunction.getWordCount(.cIndexs, ';')
+							lnWordCount = ALINES(laIndexs, m.goApp.oFunction.getWordNum(.cIndexs, m.lnJ, ';'), 2, '{', '}')
+
+							IF lnWordCount > 0 AND !EMPTY(laIndexs[1])
+								INDEX ON (laIndexs[2]) TAG (laIndexs[1])
+							ENDIF
+						ENDFOR
+					ENDIF
+				ENDIF
+
+				CURSORSETPROP("Buffering", 5)
+			ELSE
+			*обновить выбранные строки
+				LOCAL lcWhereCmd as String
+				lcWhereCmd = ''
+
+				IF .lIsDictionary
+					IF ISNULL(taKeysValue)
+						lcWhereCmd = .cWhereCmd
+					ELSE
+						lcWhereCmd = "LID=" + LTRIM(TRANSFORM(taKeysValue))
+					ENDIF
+				ELSE
+					*формировать по THIS.cKeyFields
+					IF TYPE("taKeysValue", 1) = 'A'
+					*несколько параметров
+						FOR lnJ = 1 TO m.goApp.oFunction.getWordCount(.cKeyFields, ',')
+							lcWhereCmd = m.lcWhereCmd + LOWER(m.goApp.oFunction.getWordNum(.cKeyFields, m.lnJ, ','));
+										 + ' = ' + LTRIM(TRANSFORM(taKeysValue[m.lnJ])) + " AND "
+						ENDFOR
+					ELSE
+						lcWhereCmd = LOWER(m.goApp.oFunction.getWordNum(.cKeyFields, 1, ','));
+									 + ' = ' + LTRIM(TRANSFORM(m.taKeysValue))
+					ENDIF
+
+					lcWhereCmd = .cWhereCmd + IIF(!EMPTY(.cWhereCmd), " AND ", '') + m.lcWhereCmd
+					*убрать лишний " AND "
+					lcWhereCmd = LEFTC(m.lcWhereCmd, LEN(m.lcWhereCmd) - 5)
+				ENDIF
+
+				lcCursorName = SYS(2015)
+				lcSQL = .cBuildedSQLSelect;
+						+ IIF(!EMPTY(.cJoinCmd), .cJoinCmd, '');
+						+ IIF(.oDBConnect.getDBType() = DB_FoxPro,;
+							  "INTO CURSOR " + m.lcCursorName + " READWRITE" + CRLF,;
+							  '');
+						+ IIF(!EMPTY(m.lcWhereCmd), "WHERE " + m.lcWhereCmd + CRLF, '');
+						+ IIF(!EMPTY(.cGroupCmd), "GROUP BY " + .cGroupCmd + CRLF, '');
+						+ IIF(!EMPTY(.cHavingCmd), "HAVING BY " + .cHavingCmd + CRLF, '');
+						+ IIF(!EMPTY(.cOrderCmd), "ORDER BY " + .cOrderCmd, '')
+				llResult = .execute(m.lcSQL, m.lcCursorName)
+
+				IF m.llResult
+					*обновить запись в локальной таблице
+					LOCAL ARRAY laTransfer[1]
+
+					SELECT (m.lcCursorName)
+
+					SCAN
+						SCATTER MEMO TO laTransfer
+
+						SELECT (.cLocalTable)
+
+*!*							lcSQL = "LOCATE FOR " + m.lcWhereCmd
+*!*							&lcSQL
+						LOCATE FOR &lcWhereCmd
+
+						IF FOUND()
+							GATHER MEMO FROM laTransfer
+
+							TABLEUPDATE(0, .T.)
+						ENDIF
+					ENDSCAN
+
+					USE IN (m.lcCursorName)
+				ENDIF
+			ENDIF
+		ENDIF
+
+		IF USED(.cLocalTable)
+			SELECT (.cLocalTable)
+
+			IF !EMPTY(taKeysValue) AND LID <> taKeysValue
+				LOCATE FOR LID = taKeysValue
+			ENDIF
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE update
+#INCLUDE "..\lib.9\base_app.h"
+*taFieldsValue значения для ключевых/автозаполняемых полей - 1:Name_field, 2:Value
+LPARAMETERS taKeysValue
+LOCAL lvFieldValue as Variant, lcFields as String, lnI as Integer, lnJ as Integer,;
+	  lcSQLUpdate as String, llResult as Logical, lcCursorName as String, llLoop as Logical
+LOCAL ARRAY laCountInfo[1, 2]
+	*просматриваем все поля таблицы и значения брать оттуда
+	*если default value  = nextval(), то если значение есть в taFieldsValue -брать оттуда
+	*иначе поле не исертить
+	lcSQLUpdate = ''
+
+	WITH THIS
+		SELECT (.cLocalTable)
+
+		IF .lIsDictionary
+			*исхожу из того что вставляется новая строка в справочник
+			*таблица справочник
+			lcFields = ''
+
+			FOR lnI = 8 TO ALEN(.aFields, 1)
+				IF .aFields[m.lnI, 1] == "id"
+					LOOP
+				ENDIF
+
+				llLoop = .F.
+
+				IF !EMPTY(.aFields[m.lnI, 6]) AND ATC("nextval", .aFields[m.lnI, 6]) <> 0
+				*поле с автозаполнением
+					lvFieldValue = .NULL.
+
+					FOR lnJ = 1 TO ALEN(taKeysValue, 1)
+						IF .aFields[m.lnI, 1] == taKeysValue[m.lnJ, 1]
+							lvFieldValue = taKeysValue[m.lnJ, 2]
+
+							EXIT
+						ENDIF
+					ENDFOR
+
+					IF ISNULL(m.lvFieldValue)
+						llLoop = .T.
+					ENDIF
+				ELSE
+#IF !_DEVELOP_MODE
+					TRY
+#ENDIF
+						*взять значение из таблицы
+						lvFieldValue = EVALUATE(.aFields[m.lnI, 1])
+#IF !_DEVELOP_MODE
+					CATCH
+						llLoop = .T.
+					ENDTRY
+#ENDIF
+				ENDIF
+
+				IF !m.llLoop
+					DO CASE
+					CASE ISNULL(m.lvFieldValue)
+						lvFieldValue = "NULL"
+					CASE VARTYPE(m.lvFieldValue) = 'C'
+						lvFieldValue = "'" + ALLTRIM(m.lvFieldValue) + "'"
+					OTHERWISE
+						lvFieldValue = TRANSFORM(m.lvFieldValue)
+					ENDCASE
+
+					lcFields = m.lcFields + ',' + .aFields[m.lnI, 1] + "=CAST(" + m.lvFieldValue + " AS ";
+							   + .aFields[m.lnI, 5] + ")"
+				ENDIF
+			ENDFOR
+
+			lcFields = SUBSTR(m.lcFields, 2)
+
+			lcSQLUpdate = "UPDATE " + .aFields[1, 2] + ".dict_" + .aFields[1, 1];
+						  + " SET " + m.lcFields;
+						  + " WHERE ID=" + LTRIM(TRANSFORM(ID)) + ";"
+			*таблица связей
+			lcFields = ''
+
+			FOR lnI = 2 TO 6
+				IF INLIST(.aFields[m.lnI, 1], "lid", "chlcnt", "level", "id_dict")
+					LOOP
+				ENDIF
+
+				llLoop = .F.
+
+				IF !EMPTY(.aFields[m.lnI, 6]) AND ATC("nextval", .aFields[m.lnI, 6]) <> 0
+				*поле с автозаполнением
+					lvFieldValue = .NULL.
+
+					FOR lnJ = 1 TO ALEN(taKeysValue, 1)
+						IF .aFields[m.lnI, 1] == taKeysValue[m.lnJ, 1]
+							lvFieldValue = taKeysValue[m.lnJ, 2]
+
+							EXIT
+						ENDIF
+					ENDFOR
+
+					IF ISNULL(m.lvFieldValue)
+						llLoop = .T.
+					ENDIF
+				ELSE
+					*взять значение из таблицы
+#IF !_DEVELOP_MODE
+					TRY
+#ENDIF
+						lvFieldValue = EVALUATE(.aFields[m.lnI, 1])
+#IF !_DEVELOP_MODE
+					CATCH
+						llLoop = .T.
+					ENDTRY
+#ENDIF
+				ENDIF
+
+				IF !m.llLoop
+					DO CASE
+					CASE ISNULL(m.lvFieldValue)
+						lvFieldValue = "NULL"
+					CASE VARTYPE(m.lvFieldValue) = 'C'
+						lvFieldValue = "'" + ALLTRIM(m.lvFieldValue) + "'"
+					OTHERWISE
+						lvFieldValue = TRANSFORM(m.lvFieldValue)
+					ENDCASE
+
+					lcFields = m.lcFields + ',' + .aFields[m.lnI, 1] + '=' + m.lvFieldValue
+				ENDIF
+			ENDFOR
+
+			lcFields = SUBSTR(m.lcFields, 2)
+
+			lcSQLUpdate = m.lcSQLUpdate + "UPDATE "+.aFields[1, 2] + ".link_" + .aFields[1, 1];
+										+ " SET " + m.lcFields;
+										+ " WHERE ID=" + LTRIM(TRANSFORM(LID)) + ";"
+		ELSE
+			*обновить по переданному ID
+			DO CASE
+			CASE .oDBConnect.getDBType() = DB_FoxPro
+				*установить курсорчик на записываемую запись :)
+				IF USED(.cLocalTable)
+					SELECT (.cLocalTable)
+
+					IF !EMPTY(taKeysValue) AND LID <> taKeysValue
+						LOCATE FOR LID = taKeysValue
+					ENDIF
+				ENDIF
+			CASE .oDBConnect.getDBType() = DB_PostgreSQL
+				lcFields = ''
+
+				FOR lnI = 2 TO ALEN(.aFields, 1)
+					*исключить ключевые поля
+					llLoop = .F.
+
+					IF !EMPTY(.aFields[m.lnI, 6]) AND ATC("nextval", .aFields[m.lnI, 6]) <> 0
+					*поле с автозаполнением
+						lcFieldValue = .NULL.
+
+						FOR lnJ = 1 TO ALEN(taKeysValue, 1)
+							IF .aFields[m.lnI, 1] == taKeysValue[m.lnJ, 1]
+								lcFieldValue = taKeysValue[m.lnJ, 2]
+
+								EXIT
+							ENDIF
+						ENDFOR
+
+						IF ISNULL(m.lcFieldValue)
+							llLoop = .T.
+						ENDIF
+					ELSE
+#IF !_DEVELOP_MODE
+						TRY
+#ENDIF
+							*взять значение из таблицы
+							lcFieldValue = EVALUATE(.aFields[m.lnI, 1])
+#IF !_DEVELOP_MODE
+						CATCH
+							llLoop = .T.
+						ENDTRY
+#ENDIF
+					ENDIF
+
+					IF !m.llLoop
+						DO CASE
+						CASE ISNULL(m.lvFieldValue)
+							lvFieldValue = "NULL"
+						CASE VARTYPE(m.lvFieldValue) = 'C'
+							lvFieldValue = "'" + ALLTRIM(m.lvFieldValue) + "'"
+						OTHERWISE
+							lvFieldValue = TRANSFORM(m.lvFieldValue)
+						ENDCASE
+
+						lcFields = m.lcFields + ',' + .aFields[m.lnI, 1] + "=CAST(" + m.lvFieldValue;
+								   + " AS " + .aFields[m.lnI, 5] + ")"
+					ENDIF
+				ENDFOR
+
+				lcFields = SUBSTR(m.lcFields, 2)
+
+				lcSQLUpdate = "UPDATE " + .aFields[1, 2] + '.' + .aFields[1, 1];
+							  + " SET " + m.lcFields;
+							  + " WHERE ID=" + LTRIM(TRANSFORM(taKeysValue)) + ";"
+			CASE .oDBConnect.getDBType() = DB_MSSQL
+			CASE .oDBConnect.getDBType() = DB_Oracle
+			CASE .oDBConnect.getDBType() = DB_Access
+			ENDCASE
+		ENDIF
+
+		lcCursorName = SYS(2015)
+
+		llResult = .execute(m.lcSQLUpdate)
+	ENDWITH
+RETURN m.llResult
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*buildsqlselect 
+*callstored выполнение хранимой процедуры
+*delete Удаление записи/ей
+*find Найти объект
+*getfieldbasetype узнать внешний тип поля по его номеру
+*getfieldlength узнать максимальную длину поля по его номеру
+*getfieldmaybenull узнать, может ли поле быть NULL по его номеру
+*getfieldname узнать имя поля по его номеру
+*getfieldprecision узнать число цифр в поле (если оно содержит NUMBER) по его номеру
+*getfieldscale узнать число цифр после запятой в поле (если оно содержит NUMBER) по номеру
+*getfieldscount узнать количество полей в результирующей выборке данных
+*getfieldsdescribes Загрузить с сервера комментарии к таблице и полям
+*getnextrecord 
+*insert Вставка записи
+*select Запустить выборку.
+*update Обновление записи/ей
+^afields[1,6] 1-Название поля 2-CAST поля 3-Псевдоним поля 4-Описание поля, 5-тип поля, 6-значение по умолчанию
+cbuildedsqlselect
+ccastfields
+cdistinct
+cfromcmd
+cgroupcmd
+chavingcmd
+cindexs
+cjoincmd
+ckeyfields
+clistfields
+clocaltable
+cordercmd
+cschema
+cwherecmd
+lexclusive
+lisdictionary Справочник?
+lsimpleopendbf
+lusecursor
+luseopentable
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\data_table.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\data_table.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_idb.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] dbtable
+[EOF]

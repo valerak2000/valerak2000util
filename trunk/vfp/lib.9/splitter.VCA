@@ -1,0 +1,187 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1L7123ATL
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] splitter
+[START PROPERTIES]
+
+Height = 182
+MouseIcon = ..\bmp\ve_split.cur
+MousePointer = 99
+Name = "splitter"
+Style = 0
+Width = 5
+_memberdata =      303<VFPData><memberdata name="lvertical" type="property" display="lVertical"/><memberdata name="nmaximumsize" type="property" display="nMaximumSize"/><memberdata name="nminimumsize" type="property" display="nMinimumSize"/><memberdata name="nmousedownat" type="property" display="nMouseDownAt"/></VFPData>
+lvertical = .T.
+nmaximumsize = 40
+nminimumsize = 40
+nmousedownat = 0
+[END PROPERTIES]
+[START PROTECTED]
+nmousedownat^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+IF !THIS.lVertical
+	THIS.MouseIcon = "..\bmp\ho_split.cur"
+ENDIF
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF THIS.lVertical
+		THIS.nmousedownat = m.tnXCoord
+	ELSE
+		THIS.nmousedownat = m.tnYCoord
+	ENDIF
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	THIS.nmousedownat = 0
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+LOCAL lnMovement as Integer
+	IF m.tnButton = 1 AND !(THIS.nmousedownat = 0)
+		IF THIS.lVertical
+			IF m.tnXCoord != THIS.nmousedownat
+				lnMovement = m.tnXCoord - THIS.nmousedownat
+
+				IF BETWEEN(THIS.LEFT+m.lnMovement,;
+						   THIS.nminimumsize,;
+						   THIS.PARENT.WIDTH - THIS.WIDTH - THIS.nmaximumsize)
+					THIS.Move(THIS.LEFT + m.lnMovement, THIS.TOP, THIS.WIDTH, THIS.HEIGHT)
+					THIS.nmousedownat = m.tnXCoord
+				ENDIF
+			ENDIF
+		ELSE && Horizontal
+			IF m.tnYCoord != THIS.nmousedownat
+				lnMovement = m.tnYCoord - THIS.nmousedownat
+
+				IF BETWEEN(THIS.TOP + m.lnMovement,;
+						   THIS.nminimumsize,;
+						   THIS.PARENT.HEIGHT - THIS.HEIGHT - THIS.nmaximumsize)
+					THIS.Move(THIS.LEFT, THIS.TOP + m.lnMovement, THIS.WIDTH, THIS.HEIGHT)
+					THIS.nmousedownat = m.tnYCoord
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	THIS.nmousedownat = 0
+ENDPROC
+PROCEDURE Move
+#DEFINE Dont_Move_Gorizontal "nm_g"
+#DEFINE Dont_Move_Vertical "nm_v"
+LPARAMETERS tnLeft, tnTop, tnWidth, tnHeight
+*!* If you want to move the splitter during runtime and have it move the other controls
+*!* then set mousedownat ! =  0 and call this move method of the splitter
+*!* remember to set mousedownat back to 0 when you are done moving the splitter
+LOCAL loControl, llLockScreenWas, lnMovement, llIsSplitter, lnMarginOfError, lnAnchorWas
+	IF THIS.nMouseDownAt = 0
+		DODEFAULT(m.tnLeft, m.tnTop, m.tnWidth, m.tnHeight)
+		RETURN
+	ENDIF
+
+	loControl = .NULL.
+	*!* The following tag can be placed in controls you don't want moved as well
+	llLockScreenWas = THISFORM.LOCKSCREEN && JIC the screen was already locked
+	THISFORM.LOCKSCREEN = .T.
+
+	lnMovementLeft = m.tnLeft - THIS.LEFT
+	lnMovementTop = m.tnTop - THIS.TOP
+
+	FOR EACH m.loControl IN THIS.PARENT.CONTROLS
+		IF (!THIS.lVertical AND AT(Dont_Move_Vertical, m.loControl.TAG) <> 0);
+		   OR (THIS.lVertical AND AT(Dont_Move_Gorizontal, m.loControl.TAG) <> 0);
+		   OR m.loControl = THIS
+*		IF (THIS.vertical AND (!AT(Dont_Move_Vertical,m.loControl.TAG)#0 OR AT(Dont_Move_Gorizontal,m.loControl.TAG)#0)) OR m.loControl = THIS
+			LOOP
+		ENDIF
+
+		IF PEMSTATUS(m.loControl, "Anchor", 5)
+			lnAnchorWas = m.loControl.ANCHOR
+			loControl.ANCHOR = 0
+*!*				m.llIsSplitter  =  m.loControl.CLASS  =  "Splitter"
+
+			IF THIS.lVertical && Vertical Splitter
+				lnMarginOfError = INT(THIS.WIDTH / 2) && JIC the developer got the splitter a little too close
+
+				IF m.loControl.LEFT <= THIS.LEFT && Control is to the left of splitter
+					IF (m.loControl.LEFT + m.loControl.WIDTH);
+					   <= (THIS.LEFT + m.lnMarginOfError) &&AND !m.llIsSplitter
+						loControl.WIDTH = MAX(m.loControl.WIDTH + m.lnMovementLeft, 0)
+					ENDIF
+				ELSE  && Control is to the right of splitter
+					IF !m.llIsSplitter
+						loControl.WIDTH = MAX(m.loControl.WIDTH - m.lnMovementLeft, 0)
+					ENDIF
+
+					loControl.LEFT = m.loControl.LEFT + m.lnMovementLeft
+				ENDIF
+			ELSE && Horizontal Splitter
+				lnMarginOfError = INT(THIS.TOP / 2) && JIC the developer got the splitter a little too close
+
+				IF m.loControl.TOP <= THIS.TOP && Control is above the splitter
+					IF (m.loControl.TOP + m.loControl.HEIGHT);
+					   <= (THIS.TOP + m.lnMarginOfError) &&AND !m.llIsSplitter
+						loControl.HEIGHT = MAX(m.loControl.HEIGHT + m.lnMovementTop, 0)
+					ENDIF
+				ELSE  && Control is below the splitter
+*!*						IF !m.llIsSplitter
+					loControl.HEIGHT = MAX(m.loControl.HEIGHT - m.lnMovementTop, 0)
+*!*						ENDIF
+
+					loControl.TOP = m.loControl.TOP+m.lnMovementTop
+				ENDIF
+			ENDIF
+
+			loControl.ANCHOR = m.lnAnchorWas
+		ENDIF
+	ENDFOR
+
+	lnAnchorWas = THIS.ANCHOR
+	THIS.ANCHOR = 0
+
+	DODEFAULT(m.tnLeft, m.tnTop, m.tnWidth, m.tnHeight) && Finally move the splitter
+
+	THIS.ANCHOR = m.lnAnchorWas
+	THISFORM.LOCKSCREEN = m.llLockScreenWas
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+_memberdata XML Metadata for customizable properties
+lvertical
+nmaximumsize Верхний предел
+nminimumsize Нижний предел
+nmousedownat
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\ve_split.cur[END RESERVED4]
+[START RESERVED5]
+..\bmp\ve_split.cur[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] splitter
+[EOF]

@@ -1,0 +1,118 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2G70IMLP4
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] bindwindowseventsproxy
+[START PROPERTIES]
+Name = "bindwindowseventsproxy"
+_hwnd = 0
+_lparam = 0
+_msg = 0
+_result = .NULL.
+_windowproc = 0
+_wparam = 0
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+#Define WM_THEMECHANGED        0x031A
+
+If Type("This.Parent") # "O" Then
+   Unbindevents(_vfp.HWnd, WM_THEMECHANGED)
+Endif
+ENDPROC
+PROCEDURE Init
+*!*	*!* Add BindWindowsEventsProxy property to _VFP :
+*!*	If Not Pemstatus(_vfp,"BindWindowsEventsProxy", 5)
+*!*		AddProperty(_vfp,"BindWindowsEventsProxy", .Null.)
+*!*	Endif
+
+*!*	*!* Create BindWindowsEventsProxy object:
+*!*	If Not Vartype(_vfp.BindWindowsEventsProxy) = "O"
+*!*		_vfp.BindWindowsEventsProxy = Newobject("BindWindowsEventsProxy", Addbs(Justpath(This.ClassLibrary))+"vfpx.vcx")
+*!*	Endif
+
+*!*	*!* Bind to BindWindowsEventsProxy _Msg property changes:
+*!*	Bindevent(_vfp.BindWindowsEventsProxy,"_Msg", This,"_VFPMessageHandler")
+
+*!*	*!* _VFPMessageHandler procedure
+*!*	Do Case
+*!*		Case _vfp.BindWindowsEventsProxy._Msg = WM_THEMECHANGED
+*!*		*!* Do your theme changing stuff here
+*!*	Endcase
+
+*!* Never destroy the BindWindowsEventsProxy object, some other object might be using it
+
+#Define WM_THEMECHANGED        0x031A
+#Define GWL_WNDPROC            (-4)
+
+Declare Integer GetWindowLong In win32api As apiGetWindowLong ;
+	Integer HWnd, ;
+	Integer nIndex
+
+Declare Integer CallWindowProc In win32api As apiCallWindowProc ;
+	Integer lpPrevWndFunc, ;
+	Integer HWnd, ;
+	Integer Msg,;
+	Integer wParam,;
+	Integer Lparam
+
+This._WindowProc = apiGetWindowLong(_vfp.HWnd, GWL_WNDPROC)
+
+If Type("This.Parent") # "O" Then
+	Bindevent(_vfp.HWnd, WM_THEMECHANGED, This, "_MsgHandler", 4)
+Endif
+
+ENDPROC
+PROCEDURE _msghandler
+Lparameters HWnd As Integer, Msg As Integer, wParam As Integer, Lparam As Integer
+
+Local lnResult
+
+This._hwnd 		= m.HWnd
+This._wParam 	= m.wParam
+This._lParam 	= m.lParam
+This._Msg 		= m.Msg
+
+If Isnull(This._Result) Then
+	m.lnResult = apiCallWindowProc(This._WindowProc, m.HWnd, m.Msg, m.wParam, m.lParam)
+Else
+	m.lnResult = This._Result
+	This._Result = .Null.
+Endif
+
+Return m.lnResult
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*_msghandler 
+_hwnd
+_lparam
+_msg
+_result
+_windowproc
+_wparam
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] bindwindowseventsproxy
+[EOF]

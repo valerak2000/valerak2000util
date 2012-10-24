@@ -1,0 +1,1307 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O0146Z8O
+[CLASS] dialog_form_szgr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] datevalues
+[START PROPERTIES]
+Caption = "История значений поля"
+DoCreate = .T.
+Height = 250
+Icon = ..\bmp\clip07.ico
+Name = "datevalues"
+RESIZECORNER.Image.Height = 16
+RESIZECORNER.Image.Name = "Image"
+RESIZECORNER.Image.Width = 16
+RESIZECORNER.Name = "RESIZECORNER"
+RESIZECORNER.RESIZE_TIMER.Name = "RESIZE_TIMER"
+RESIZECORNER.TMRREFRESH.Name = "TMRREFRESH"
+Width = 377
+saveset.Name = "saveset"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+PARAMETERS tnidpole as Integer, tniddata as Integer, tosoftpoleobj as Object
+LOCAL lnI as Integer
+*!*		THIS.idpole=m.tnidpole
+*!*		THIS.iddata=m.tniddata
+*!*		THIS.oSoftPoleObj=m.tosoftpoleobj 
+
+	DODEFAULT()
+
+*!*		FOR lnI=1 TO ALEN(tosoftpoleobj.aSoftPole,1)
+*!*			IF tosoftpoleobj.aSoftPole[m.lnI,1]=m.tnidpole
+*!*				SELECT DATECHANGE, tosoftpoleobj.extypepole(tosoftpoleobj.SoftPole[m.lnI,3],.F.,VALUEPOLE) as VALUEPOLE;
+*!*				FROM SOFTPOLE INTO CURSOR SEL_TIME READWRITE;
+*!*				WHERE BINTOC(ID_POLE)+BINTOC(ID_DATA)=BINTOC(m.tnidpole)+BINTOC(m.tniddata);
+*!*				ORDER BY 1,2
+
+*!*				THIS.dataChangegrid.RecordSource="SEL_TIME"
+			THIS.dataChangegrid.AutoFit()
+*!*				EXIT
+*!*			ENDIF
+*!*		ENDFOR
+*!*		THISFORM.agreg_str=''
+
+*!*		SELECT MAX(THISFORM.agregate_string(valuepole)) as valuepole, datechange;
+*!*		FROM SOFTPOLE INTO CURSOR SEL_TIME;
+*!*		WHERE BINTOC(ID_POLE)+BINTOC(ID_DATA)=BINTOC(THISFORM.lcidpole)+BINTOC(THISFORM.lciddata);
+*!*		GROUP BY datechange;
+*!*		ORDER BY 2
+	
+*!*	PARAMETERS agreg_str as String
+*!*		THIS.agreg_str=THIS.agreg_str+m.agreg_str
+*!*	RETURN THIS.agreg_str
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSG5
+[CLASS] cancelbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Cancelbutton1
+[PARENT] datevalues
+[START PROPERTIES]
+Left = 280
+Name = "Cancelbutton1"
+TabIndex = 5
+Top = 221
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*Отмена внесенных изменений
+IF CURSORGETPROP("Buffering", "SEL_TIME")=5
+	TABLEREVERT(.F., "SEL_TIME")
+ENDIF
+
+DODEFAULT()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSFZ
+[CLASS] selgrid
+[CLASSLOC] select_values.vcx
+[BASECLASS] grid
+[OBJNAME] DataChangegrid
+[PARENT] datevalues
+[START PROPERTIES]
+Anchor = 15
+Column1.ControlSource = ""
+Column1.FontName = "Tahoma"
+Column1.Name = "DateChangeCol"
+Column1.Resizable = .F.
+Column1.Sparse = .F.
+Column1.Width = 131
+Column2.ControlSource = ""
+Column2.FontName = "Tahoma"
+Column2.Name = "ValueCol"
+Column2.Width = 221
+ColumnCount = 2
+HeaderHeight = 21
+Height = 216
+Left = 0
+Name = "DataChangegrid"
+Panel = 1
+RecordSource = "SEL_TIME"
+RecordSourceType = 1
+RowHeight = 16
+TabIndex = 1
+Top = 0
+View = 0
+Width = 376
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE RightClick
+ LOCAL LCPOPUMES, LNBAR as Integer
+	 LCPOPMES=SYS(2015)
+	 LNBAR=0
+
+	 DEFINE POPUP (LCPOPMES) FROM MROW(), MCOL() SHORT
+	 DEFINE BAR 1 OF (LCPOPMES) PROMPT "Добавить значение" PICTURE "..\bmp\add.bmp"
+	 DEFINE BAR 2 OF (LCPOPMES) PROMPT "Удалить значение" PICTURE "..\bmp\delete.bmp"
+	 DEFINE BAR 3 OF (LCPOPMES) PROMPT "\-"
+	 DEFINE BAR 4 OF (LCPOPMES) PROMPT "Убрать меню"
+
+	 ON SELECTION POPUP (LCPOPMES) lnBar=BAR()
+	 ACTIVATE POPUP (LCPOPMES)
+	 RELEASE POPUPS (LCPOPMES)
+
+	 DO CASE 
+	 CASE m.LNBAR=1
+	     THISFORM.plusbutton.CLICK()
+	 CASE m.LNBAR=2
+	     THISFORM.minusbutton.CLICK()
+	 OTHERWISE 
+	 ENDCASE
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSG1
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] datevalues.DataChangegrid.DateChangeCol
+[START PROPERTIES]
+Caption = "Время модификации"
+FontName = "Tahoma"
+Name = "Header1"
+WordWrap = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSG2
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] datevalues.DataChangegrid.DateChangeCol
+[START PROPERTIES]
+FontName = "Tahoma"
+Height = 23
+Hours = 24
+IntegralHeight = .T.
+Left = 85
+Name = "Text1"
+NullDisplay = "Пустое значение"
+Top = 31
+Width = 100
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSG3
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] datevalues.DataChangegrid.ValueCol
+[START PROPERTIES]
+Caption = "Значение"
+FontName = "Tahoma"
+Name = "Header1"
+WordWrap = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSG4
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] datevalues.DataChangegrid.ValueCol
+[START PROPERTIES]
+BackColor = 255,255,255
+BorderStyle = 0
+FontName = "Tahoma"
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSG8
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] minusbutton
+[PARENT] datevalues
+[START PROPERTIES]
+Anchor = 6
+Caption = ""
+Height = 23
+Left = 42
+Name = "minusbutton"
+Picture = ..\bmp\16x16\data_delete.bmp
+TabIndex = 3
+ToolTipText = "Удалить строку"
+Top = 221
+Width = 32
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+DELETE IN SEL_TIME
+
+THISFORM.DataChangegrid.Refresh()
+THISFORM.DataChangegrid.SetFocus()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSG6
+[CLASS] okbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Okbutton1
+[PARENT] datevalues
+[START PROPERTIES]
+Left = 184
+Name = "Okbutton1"
+TabIndex = 4
+Top = 221
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*!*	LOCAL lcolddel as String
+*!*		lcolddel=SET("Deleted")
+*!*		SET DELETED OFF
+
+*!*		SELECT SEL_TIME
+*!*		SCAN
+*!*			IF DELETED()
+*!*				THISFORM.softpoleobj.delvaluesid(THISFORM.idpole,THISFORM.iddata,SEL_TIME.DATECHANGE)
+*!*			ELSE
+*!*				THISFORM.softpoleobj.setvaluesid(THISFORM.idpole,THISFORM.iddata,SEL_TIME.VALUEPOLE,SEL_TIME.DATECHANGE)
+*!*			ENDIF
+
+*!*			TABLEUPDATE(0,.T.,"SOFTPOLE")
+*!*		ENDSCAN
+
+*!*		SET DELETED &lcolddel
+
+	*Подтверждение внесенных изменений
+	IF CURSORGETPROP("Buffering", "SEL_TIME")=5
+		TABLEREVERT(.F., "SEL_TIME")
+	ENDIF
+
+	TABLEUPDATE(0, .f., "SEL_TIME")
+
+	THISFORM.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014BSG7
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] plusbutton
+[PARENT] datevalues
+[START PROPERTIES]
+Anchor = 6
+Caption = ""
+Height = 23
+Left = 8
+Name = "plusbutton"
+Picture = ..\bmp\16x16\data_add.bmp
+TabIndex = 2
+ToolTipText = "Добавить строку"
+Top = 221
+Width = 32
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+INSERT INTO SEL_TIME (DATECHANGE);
+			  VALUES (DATETIME(YEAR(DATE()), MONTH(DATE()), DAY(DATE())))
+
+THISFORM.DataChangegrid.Refresh()
+THISFORM.DataChangegrid.SetFocus()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] datevalues
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014G0ML
+[CLASS] dialog_form_szgr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] editpoles
+[START PROPERTIES]
+AutoCenter = .T.
+Caption = "Редактирование поля"
+Closable = .F.
+DoCreate = .T.
+Height = 75
+Name = "editpoles"
+RESIZECORNER.Image.Height = 16
+RESIZECORNER.Image.Name = "Image"
+RESIZECORNER.Image.Width = 16
+RESIZECORNER.Name = "RESIZECORNER"
+RESIZECORNER.RESIZE_TIMER.Name = "RESIZE_TIMER"
+RESIZECORNER.TMRREFRESH.Name = "TMRREFRESH"
+Width = 310
+ddatechange = .NULL
+niddata = 0
+nidpole = 0
+objorform = .F.
+osoftpoleobj = .NULL.
+saveset.Left = 328
+saveset.Name = "saveset"
+saveset.Top = 14
+vvaluespole = .F.
+vvaluespoleold = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+NODEFAULT
+
+IF USED("SEL_TIME")
+	USE IN SEL_TIME
+ENDIF
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tnidpole as Integer, tniddata as Integer, tddatechange as Datetime, tctypepole as String, tcpolename as String,;
+			tvvaluespole as Variant, tlobjorform as Logical, tosoftpoleobj as Object
+LOCAL lnxobj as Integer, lnyobj as Integer, lctypes as String
+	NODEFAULT
+
+	THIS.objorform=m.tlobjorform
+	THIS.oSoftPoleObj=m.tosoftpoleobj
+	THIS.Caption="Редактирование поля "+ALLTRIM(m.tcpolename)
+	THIS.LabelPole.Caption=ALLTRIM(m.tcpolename)+':'
+
+	THIS.nidpole=m.tnidpole
+	THIS.niddata=m.tniddata
+	THIS.ddatechange=m.tddatechange
+	THIS.vvaluespole=m.tvvaluespole
+	THISFORM.vvaluespoleold=m.tvvaluespole
+
+	IF "MD"$m.tctypepole
+	*нужен просмотр истории модификаций
+		THIS.timeComm.Visible=.T.
+
+		SELECT DATECHANGE, tosoftpoleobj.extypepole(m.tctypepole, .F., VALUEPOLE) as VALUEPOLE;
+		FROM SOFTPOLE INTO CURSOR SEL_TIME READWRITE;
+		WHERE BINTOC(ID_POLE)+BINTOC(ID_DATA)=BINTOC(m.tnidpole)+BINTOC(m.tniddata);
+		ORDER BY 1,2
+	ELSE
+		THIS.valuespole.Anchor=0
+		THIS.valuespole.Width=THIS.valuespole.Width+23
+		THIS.valuespole.Anchor=3
+	ENDIF
+
+	lctypes=SUBSTRC(m.tctypepole,6,2)
+
+	DO CASE
+	CASE INLIST(m.lctypes,"DT","TM",'D')
+		lnxobj=THIS.valuespole.Left
+		lnyobj=THIS.valuespole.Top
+
+		THIS.RemoveObject("valuespole")
+		THIS.AddObject("valuespoledate", "DateCnt")
+
+		THIS.valuespoledate.controlsource="THISFORM.vvaluespole"
+		THIS.valuespoledate.Value=THISFORM.vvaluespole
+		THIS.valuespoledate.Init()
+		THIS.valuespoledate.Left=m.lnxobj
+		THIS.valuespoledate.Top=m.lnyobj
+		THIS.valuespoledate.Visible=.T.
+		THIS.valuespoledate.Setfocus()
+	CASE m.lctypes='L'
+		lnxobj=THIS.LabelPole.Left
+		lnyobj=THIS.LabelPole.Top
+
+		THIS.RemoveObject("LabelPole")
+		THIS.RemoveObject("valuespole")
+		THIS.AddObject("valuespolel","Checkbox")
+
+		THIS.valuespolel.controlsource="THISFORM.vvaluespole"
+		THIS.valuespolel.Value=THISFORM.vvaluespole
+		THIS.valuespolel.Left=m.lnxobj
+		THIS.valuespolel.Top=m.lnyobj
+		THIS.valuespolel.Caption=ALLTRIM(m.tcpolename)
+		THIS.valuespolel.AutoSize=.T.
+		THIS.valuespolel.Visible=.T.
+		THIS.valuespolel.Setfocus()
+	ENDCASE
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	NODEFAULT
+
+	IF m.nKeyCode=27
+		IF THIS.objorform
+			THIS.Hide()
+		ELSE
+			THIS.RELEASE()
+		ENDIF
+	ENDIF
+ENDPROC
+PROCEDURE Unload
+RETURN THISFORM.vvaluespole
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+6[END RESERVED2]
+[START RESERVED3]
+ddatechange
+niddata
+nidpole
+objorform
+osoftpoleobj
+vvaluespole
+vvaluespoleold
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014I2TV
+[CLASS] cancelbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Cancelbutton1
+[PARENT] editpoles
+[START PROPERTIES]
+Left = 214
+Name = "Cancelbutton1"
+TabIndex = 5
+Top = 46
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.vvaluespole=THISFORM.vvaluespoleold
+
+IF THISFORM.objorform
+	THISFORM.Hide()
+ELSE
+	DODEFAULT()
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014I2TX
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] LabelPole
+[PARENT] editpoles
+[START PROPERTIES]
+Anchor = 3
+BackStyle = 0
+Caption = "Лабел поля:"
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "LabelPole"
+Style = 3
+TabIndex = 1
+Top = 10
+Width = 62
+WordWrap = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014I2TW
+[CLASS] okbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Okbutton1
+[PARENT] editpoles
+[START PROPERTIES]
+Left = 118
+Name = "Okbutton1"
+TabIndex = 4
+Top = 46
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcolddel as String, lnoldali as Integer
+	IF USED("SEL_TIME")
+		lnoldali=SELECT()
+		lcolddel=SET("Deleted")
+		SET DELETED OFF
+
+		SELECT SEL_TIME
+
+		SCAN
+			IF DELETED()
+				THISFORM.oSoftPoleObj.delvaluesid(THISFORM.nidpole, THISFORM.niddata, SEL_TIME.DATECHANGE)
+			ELSE
+				THISFORM.oSoftPoleObj.setvaluesid(THISFORM.nidpole, THISFORM.niddata, SEL_TIME.VALUEPOLE, SEL_TIME.DATECHANGE)
+			ENDIF
+
+			TABLEUPDATE(0, .T., "SOFTPOLE")
+		ENDSCAN
+
+		SET DELETED &lcolddel
+		SELECT (m.lnoldali)
+	ENDIF
+
+	IF THISFORM.objorform
+		THISFORM.Hide()
+	ELSE
+		THISFORM.RELEASE()
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014I2TY
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] TimeComm
+[PARENT] editpoles
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Height = 22
+Left = 282
+Name = "TimeComm"
+Picture = ..\bmp\16x16\efiles.bmp
+TabIndex = 3
+ToolTipText = "Выбрать значение"
+Top = 8
+Visible = .F.
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lnoldali as Integer, locform as Object
+	lnoldali=SELECT()
+
+	SET CURSOR OFF
+	locform=CREATEOBJECT("softpole.datevalues", THISFORM.nidpole, THISFORM.niddata, THISFORM.oSoftPoleObj)
+	locform.Show()
+	SET CURSOR ON
+	*считать новое значение
+	SELECT SEL_TIME
+
+	SCAN WHILE DATECHANGE<=THISFORM.ddatechange
+		THISFORM.vvaluespole=VALUEPOLE
+	ENDSCAN
+
+	SELECT (m.lnoldali)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O014I2TZ
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] valuespole
+[PARENT] editpoles
+[START PROPERTIES]
+ControlSource = "THISFORM.vvaluespole"
+Left = 121
+Name = "valuespole"
+TabIndex = 2
+Top = 8
+Width = 161
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] editpoles
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1HP02OBR9
+[CLASS] base_listbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] listbox
+[OBJNAME] listpoles
+[START PROPERTIES]
+Anchor = 15
+ColumnCount = 2
+FontName = "Courier"
+FontSize = 8
+Height = 130
+Name = "listpoles"
+RowSource = "THIS.arraypoles"
+RowSourceType = 5
+Width = 400
+cinittable = .F.
+ddatechange = .F.
+osoftpoleobj = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+LOCAL lnI as Integer, lnJ as Integer, lvretval as Variant, llfoupole as Logical, loobj as Object, lnoldalis
+	FOR lnI=1 TO THIS.ListCount
+		IF THIS.Selected(m.lnI)
+			IF VARTYPE(THIS.arraypoles[m.lnI, 2])='C' AND INLIST(THIS.arraypoles[m.lnI, 2], "Да", "Нет")
+				THIS.arraypoles[m.lnI, 2]=IIF(THIS.arraypoles[m.lnI, 2]="Да", .T., .F.)
+			ENDIF
+
+			llfoupole=.F.
+
+			FOR lnJ=1 TO ALEN(THIS.oSoftPoleObj.asoftpole, 1)
+				IF VARTYPE(THIS.oSoftPoleObj.asoftpole[m.lnJ,2])='C' AND THIS.oSoftPoleObj.asoftpole[m.lnJ, 2]==THIS.arraypoles[m.lnI, 3]
+					llfoupole=.T.
+					EXIT
+				ENDIF
+			ENDFOR
+*!*				*лочим list
+*!*				THISFORM.LockScreen=.T.
+			*форма редактирования значения поля
+			lnoldalis=SELECT()
+
+			loobj=CREATEOBJECT("softpole.editpoles",;
+								IIF(m.llfoupole, THIS.oSoftPoleObj.asoftpole[m.lnJ, 1], 0),;
+												 IIF(m.llfoupole, EVALUATE(THIS.cinittable+".ID"), 0),;
+												 				  IIF(m.llfoupole, THIS.datechange, CTOT('')),;
+												 				  				   IIF(m.llfoupole, THIS.oSoftPoleObj.asoftpole[m.lnJ, 3],;
+												 				  				   					SPACE(5)+VARTYPE(THIS.arraypoles[m.lnI, 2])),;
+								THIS.arraypoles[m.lnI, 1], THIS.arraypoles[m.lnI, 2], .T., THIS.oSoftPoleObj)
+			m.loobj.SHOW()
+
+			lvretval=m.loobj.lvvaluespole
+
+			RELEASE loobj
+*!*				*разлочим list
+*!*				THISFORM.LockScreen=.F.
+
+			SELECT (m.lnoldalis)
+			*сохранить значение
+			IF m.llfoupole
+				IF VARTYPE(m.lvretval)='L'
+					lvretval=IIF(m.lvretval, "Да", "Нет")
+				ENDIF
+
+				THIS.oSoftPoleObj.setvaluesid(THIS.oSoftPoleObj.asoftpole[m.lnJ, 1], EVALUATE(THIS.cinittable+".ID"), m.lvretval)
+			ELSE
+				REPLACE (THIS.cInittable+'.'+THIS.arraypoles[m.lnI, 3]) WITH m.lvretval
+
+				IF VARTYPE(m.lvretval)='L'
+					lvretval=IIF(m.lvretval, "Да", "Нет")
+				ENDIF
+			ENDIF
+
+			THIS.arraypoles[m.lnI, 2]=m.lvretval
+			THIS.Requery()
+
+			EXIT
+		ENDIF
+	ENDFOR
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	IF BETWEEN(m.nKeyCode, 32, 57) OR (m.nKeyCode>=97 AND m.nKeyCode<>127)
+		KEYBOARD CHR(m.nKeyCode)
+		THIS.DblClick()
+	ENDIF
+ENDPROC
+PROCEDURE RightClick
+ LOCAL LCPOPUMES, LNBAR as Integer
+	 LCPOPMES=SYS(2015)
+	 LNBAR=0
+
+	 DEFINE POPUP (LCPOPMES) FROM MROW(), MCOL() SHORT
+	 DEFINE BAR 1 OF (LCPOPMES) PROMPT "Редактировать" PICTURE "..\bmp\16x16\data_edit.bmp"
+	 DEFINE BAR 2 OF (LCPOPMES) PROMPT "\-"
+	 DEFINE BAR 3 OF (LCPOPMES) PROMPT "Убрать меню"
+
+	 ON SELECTION POPUP (LCPOPMES) lnBar=BAR()
+	 ACTIVATE POPUP (LCPOPMES)
+
+	 RELEASE POPUPS (LCPOPMES)
+
+	 DO CASE 
+	 CASE m.LNBAR=1
+	     THIS.DblClick()
+	 OTHERWISE 
+	 ENDCASE
+ENDPROC
+PROCEDURE fillpoles
+PARAMETERS tcspispole as String, tosoftpoleobj as Object, tcinittable as String, tddatechange as Datetime, tlisNew as Logical
+LOCAL lvvaluepole as Variant, lnlenstr as Integer, lnI as Integer, lnJ as Integer, lnarrai as Integer, llfound as Logical,;
+	  lcnamepole as String, lcDefValue as String, lcupdstr as String, lnupdid as Integer 
+	THIS.oSoftPoleObj=m.tosoftpoleobj
+	THIS.inittable=m.tcinittable
+	THIS.datechange=m.tddatechange
+
+	THIS.Clear()
+
+	STORE 0 TO lnlenstr,lnarrai
+
+	FOR lnI=1 TO GETWORDCOUNT(m.tcspispole, ',')
+		lcnamepole=RTRIM(GETWORDNUM(m.tcspispole, m.lnI, ','))
+		*вычленить значение по умолчанию
+		IF GETWORDCOUNT(m.lcnamepole, '[')<>0
+			lcDefValue=RTRIM(GETWORDNUM(m.lcnamepole, 2, '['))
+			lcDefValue=LEFTC(m.lcDefValue,LENC(m.lcDefValue)-1)
+			lcnamepole=RTRIM(GETWORDNUM(m.lcnamepole, 1, '['))
+		ELSE
+			lcDefValue=''
+		ENDIF
+
+		lnarrai=m.lnarrai+1
+		DIMENSION THIS.arraypoles[m.lnarrai, 4]
+		THIS.arraypoles[m.lnarrai, 1]=.F.
+		llfound=.F.
+		*найти поле в массиве
+		IF tosoftpoleobj.asoftpole[1, 1]<>0
+			FOR lnJ=1 TO ALEN(tosoftpoleobj.asoftpole, 1)
+				IF tosoftpoleobj.softpole[m.lnJ, 2]==m.lcnamepole
+					IF m.tlisNew AND !EMPTY(m.lcDefValue)
+						lvvaluepole=tosoftpoleobj.extypepole(tosoftpoleobj.asoftpole[m.lnJ, 3], .F., m.lcDefValue)
+						*сохранить в базу
+						tosoftpoleobj.setvaluesid(tosoftpoleobj.asoftpole[m.lnJ, 1], EVALUATE(m.tcinittable+".ID"), m.lvvaluepole, m.tddatechange)
+					ELSE
+						lvvaluepole=tosoftpoleobj.getvaluesid(tosoftpoleobj.asoftpole[m.lnJ, 1], EVALUATE(m.tcinittable+".ID"), m.tddatechange)
+					ENDIF
+
+					THIS.arraypoles[m.lnarrai, 4]=m.lnJ
+					THIS.arraypoles[m.lnarrai, 1]=ALLTRIM(tosoftpoleobj.asoftpole[m.lnJ, 4])
+
+					llfound=.T.
+
+					EXIT
+				ENDIF
+			ENDFOR
+		ENDIF
+
+		IF !m.llfound AND TYPE(m.tcinittable+'.'+m.lcnamepole)<>'U'
+		*найти поле в таблице
+			lvvaluepole=EVALUATE(m.tcinittable+'.'+m.lcnamepole)
+
+			IF m.tlisNew AND !EMPTY(m.lcDefValue)
+				lnupdid=EVALUATE(THIS.tcinittable+".ID")
+				lcupdstr="UPDATE "+THIS.tcinittable+" SET "+m.lcnamepole+'='+IIF(VARTYPE(m.lvvaluepole)='L', IIF(m.lcDefValue="1", ".T.", ".F."), m.lcDefValue)+" WHERE ID="+TRANSFORM(m.lnupdid)
+				lvvaluepole=tosoftpoleobj.extypepole(SPACE(5)+VARTYPE(m.lvvaluepole)+"(999,99)", .F., m.lcDefValue)
+				*сохранить в базу
+				&lcupdstr
+			ENDIF
+
+			THIS.arraypoles[m.lnarrai, 4]=m.lnI
+			THIS.arraypoles[m.lnarrai, 1]=DBGETPROP(m.tcinittable+'.'+m.lcnamepole, "FIELD", "Caption")
+
+			llfound=.T.
+		ENDIF
+
+		IF m.llfound
+			THIS.arraypoles[m.lnarrai, 1]=IIF(EMPTY(THIS.arraypoles[m.lnarrai, 1]), PADR(m.lcnamepole, 20), THIS.arraypoles[m.lnarrai, 1])
+
+			IF VARTYPE(m.lvvaluepole)='L'
+				lvvaluepole=IIF(m.lvvaluepole, "Да", "Нет")
+			ENDIF
+
+			THIS.arraypoles[m.lnarrai, 2]=m.lvvaluepole
+			THIS.arraypoles[m.lnarrai, 3]=m.lcnamepole
+
+			lnlenstr=MAX(m.lnlenstr, LENC(THIS.arraypoles[m.lnarrai, 1]))
+		ELSE
+			lnarrai=m.lnarrai-1
+		ENDIF
+	ENDFOR
+
+	DIMENSION THIS.arraypoles[IIF(m.lnarrai=0, 1, m.lnarrai), 4]
+	=ASORT(THIS.arraypoles, 4) &&размер массива 4
+
+	FOR lnI=1 TO ALEN(THIS.arraypoles, 1)
+		THIS.arraypoles[m.lnI, 1]=PADR(THIS.arraypoles[m.lnI, 1], m.lnlenstr)
+	ENDFOR
+
+	THIS.Requery()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*fillpoles Заполнить данными о полях
+^arraypoles[1,4] 
+cinittable текущая таблица
+ddatechange
+osoftpoleobj
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] listpoles
+[START PROPERTIES]
+Courier, 0, 8, 8, 13, 11, 8, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1FJ1A05NS
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] softpole
+[START PROPERTIES]
+Height = 17
+Name = "softpole"
+Width = 27
+cinittable = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE delvaluesid
+LPARAMETERS tnid_pole as Integer, tnid_data as Integer, tddateact as Datetime
+	IF EMPTY(m.tddateact)
+		tddateact = CTOT('')
+	ENDIF
+
+	DELETE FROM SOFTPOLE;
+	WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(m.tnid_pole) + BINTOC(m.tnid_data) AND DATECHANGE = m.tddateact
+ENDPROC
+PROCEDURE extypepole
+LPARAMETERS tctypepole as String, tlpack_extract as Logical, tvvaluepole as Variant
+LOCAL lctypes as String, lndecimal as Integer, lnpoints as Integer
+		lctypes=SUBSTRC(m.tctypepole, 6, 2)
+		lndecimal=INT(VAL(SUBSTR(m.tctypepole, 8, 3)))
+		lnpoints=INT(VAL(SUBSTR(m.tctypepole, 12, 1)))
+
+		DO CASE
+		CASE INLIST(m.lctypes, 'N', 'I')
+			IF m.tlpack_extract
+			*приготовить к сохранению в softpole
+				tvvaluepole=STR(m.tvvaluepole, m.lndecimal, m.lnpoints)
+			ELSE
+			*приготовить к использованию из softpole
+				LOCAL lcolddec
+				lcolddec=SET("DECIMALS")
+				SET DECIMALS TO m.lnpoints
+				tvvaluepole=IIF(m.lnpoints=0,INT(VAL(m.tvvaluepole)), VAL(m.tvvaluepole))
+				SET DECIMALS TO m.lcolddec
+			ENDIF
+		CASE m.lctypes='C'
+			IF m.tlpack_extract
+			*приготовить к сохранению в softpole
+				tvvaluepole=LEFT(RTRIM(m.tvvaluepole), m.lndecimal)
+			ELSE
+			*приготовить к использованию из softpole
+				tvvaluepole=PADR(m.tvvaluepole, m.lndecimal)
+			ENDIF
+		CASE m.lctypes='L'
+			IF m.tlpack_extract
+			*приготовить к сохранению в softpole
+				tvvaluepole=IIF(m.tvvaluepole="Да", '1', '0')
+			ELSE
+			*приготовить к использованию из softpole
+				tvvaluepole=IIF(m.tvvaluepole='1', "Да ", "Нет")
+			ENDIF
+		CASE m.lctypes="DT"
+			IF m.tlpack_extract
+			*приготовить к сохранению в softpole
+				tvvaluepole=TTOC(m.tvvaluepole, 1)
+			ELSE
+			*приготовить к использованию из softpole
+				tvvaluepole=CTOT(LEFTC(m.tvvaluepole, 4)+'-'+SUBSTRC(m.tvvaluepole, 5, 2)+'-'+SUBSTRC(m.tvvaluepole, 7, 2)+'T'+SUBSTRC(m.tvvaluepole, 9, 2)+':'+SUBSTRC(m.tvvaluepole, 11, 2)+':'+SUBSTRC(m.tvvaluepole, 13, 2))
+			ENDIF
+		CASE m.lctypes='D'
+			IF m.tlpack_extract
+			*приготовить к сохранению в softpole
+				tvvaluepole=DTOS(m.tvvaluepole)
+			ELSE
+			*приготовить к использованию из softpole
+				tvvaluepole=CTOD(LEFTC(m.tvvaluepole, 4)+'-'+SUBSTRC(m.tvvaluepole, 5, 2)+'-'+SUBSTRC(m.tvvaluepole, 7, 2))
+			ENDIF
+		CASE m.lctypes="TM"
+			IF m.tlpack_extract
+			*приготовить к сохранению в softpole
+				tvvaluepole=STRTRAN(m.tvvaluepole, ':', '')
+			ELSE
+			*приготовить к использованию из softpole
+				tvvaluepole=LEFTC(m.tvvaluepole, 2)+':'+SUBSTRC(m.tvvaluepole, 3, 2)+':'+SUBSTRC(m.tvvaluepole, 5, 2)
+			ENDIF
+		OTHERWISE
+			tvvaluepole="[Неизвестный тип]"
+		ENDCASE
+RETURN m.tvvaluepole
+ENDPROC
+PROCEDURE getvaluesid
+LPARAMETERS tnid_pole as Integer, tnid_data as Integer, tddateact as Datetime
+*пустой dateact означает возврат самой последней модификации
+LOCAL lvretvalue as Variant, lnI as Integer
+LOCAL ARRAY lamaxdatechange[1] as Datetime, laarrret[1] as String
+	IF SEEK(m.tnid_pole, "DESCRIBEPOLE", "ID")
+		*нашли поле - выбираем данные
+		lvretvalue = ''
+
+		IF DESCRIBEPOLE.TYPEPOLE="HARD"
+			FOR lnI=1 TO ALEN(THIS.asoftpole, 1)
+				IF THIS.asoftpole[m.lnI, 2] == RTRIM(DESCRIBEPOLE.NAME)
+				*считать поле из физ.таблицы
+					lvretvalue = EVALUATE(THIS.asoftpole[m.lnI, 5] + '.' + THIS.asoftpole[m.lnI, 2])
+
+					IF VARTYPE(m.lvretvalue) = 'L'
+						lvretvalue = IIF(m.lvretvalue, "Да", "Нет")
+					ENDIF
+
+					EXIT
+				ENDIF
+			ENDFOR
+		ELSE
+			IF EMPTY(m.tddateact) OR VARTYPE(m.tddateact) <> 'T'
+				SELECT MAX(DATECHANGE);
+				FROM SOFTPOLE INTO ARRAY lamaxdatechange;
+				WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(m.tnid_pole) + BINTOC(m.tnid_data)
+			ELSE
+				SELECT MAX(DATECHANGE);
+				FROM SOFTPOLE INTO ARRAY lamaxdatechange;
+				WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(m.tnid_pole) + BINTOC(m.tnid_data);
+					  AND DATECHANGE <= m.tddateact
+			ENDIF
+
+			IF !ISNULL(lamaxdatechange[1])
+				SELECT VALUEPOLE;
+				FROM SOFTPOLE INTO ARRAY laarrret;
+				WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(m.tnid_pole) + BINTOC(m.tnid_data);
+					  AND DATECHANGE = lamaxdatechange[1]
+			ELSE
+				SELECT VALUEPOLE;
+				FROM SOFTPOLE INTO ARRAY laarrret;
+				WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(m.tnid_pole) + BINTOC(m.tnid_data);
+					  AND EMPTY(DATECHANGE)
+			ENDIF
+
+			IF !ISNULL(laarrret[1])
+				FOR lnI = 1 TO _Tally
+					IF !EMPTY(laarrret[m.lnI])
+						lvretvalue = m.lvretvalue + laarrret[m.lnI]
+					ENDIF
+				ENDFOR
+			ENDIF
+
+			lvretvalue = THIS.extypepole(DESCRIBEPOLE.TYPEPOLE, .f., RTRIM(m.lvretvalue))
+		ENDIF
+	ELSE
+		lvretvalue = .f.
+	ENDIF
+RETURN m.lvretvalue
+ENDPROC
+PROCEDURE getvaluesname
+LPARAMETERS tcnamepole as String, tnid_data as Integer, tddateact as Datetime
+*пустой dateact означает возврат самой последней модификации
+LOCAL lvretvalue as Variant, lnI as Integer, lnJ as Integer
+LOCAL ARRAY lamaxdatechange[1] as Datetime, laarrret[1] as String
+	lvretvalue = .NULL.
+
+	FOR lnI=1 TO ALEN(THIS.asoftpole, 1)
+		IF THIS.asoftpole[m.lnI, 2] == m.tcnamepole
+			*нашли поле - выбираем данные
+			lvretvalue = ''
+
+			IF THIS.aSoftPole[m.lnI, 3] = "HARD"
+			*считать поле из физ.таблицы
+				lvretvalue = EVALUATE(THIS.asoftpole[m.lnI, 5] + '.' + THIS.asoftpole[m.lnI, 2])
+
+				IF VARTYPE(m.lvretvalue) = 'L'
+					lvretvalue = IIF(m.lvretvalue, "Да", "Нет")
+				ENDIF
+			ELSE
+				IF EMPTY(m.tddateact) OR VARTYPE(m.tddateact) <> 'T'
+					SELECT MAX(DATECHANGE);
+					FROM SOFTPOLE INTO ARRAY lamaxdatechange;
+					WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(THIS.asoftpole[m.lnI, 1]) + BINTOC(m.tnid_data)
+				ELSE
+					SELECT MAX(DATECHANGE);
+					FROM SOFTPOLE INTO ARRAY lamaxdatechange;
+					WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(THIS.asoftpole[m.lnI, 1]) + BINTOC(m.tnid_data);
+						  AND DATECHANGE <= m.tddateact
+				ENDIF
+
+				IF !ISNULL(lamaxdatechange[1])
+					SELECT VALUEPOLE;
+					FROM SOFTPOLE INTO ARRAY laarrret;
+					WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(THIS.asoftpole[m.lnI, 1]) + BINTOC(m.tnid_data);
+						  AND DATECHANGE = lamaxdatechange[1]
+				ELSE
+					SELECT VALUEPOLE;
+					FROM SOFTPOLE INTO ARRAY laarrret;
+					WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(THIS.asoftpole[m.lnI, 1]) + BINTOC(m.tnid_data);
+						  AND EMPTY(DATECHANGE)
+				ENDIF
+
+				IF !ISNULL(laarrret[1])
+					FOR lnJ = 1 TO _Tally
+						IF !EMPTY(laarrret[m.lnJ])
+							lvretvalue = m.lvretvalue + laarrret[m.lnJ]
+						ENDIF
+					ENDFOR
+				ENDIF
+
+				lvretvalue = THIS.extypepole(THIS.asoftpole[m.lnI, 3], .f., RTRIM(m.lvretvalue))
+			ENDIF
+
+			EXIT
+		ENDIF
+	ENDFOR
+RETURN m.lvretvalue
+ENDPROC
+PROCEDURE listsoftpole
+PARAMETERS tctablenames as String
+LOCAL lcpid as String, lnNCol as Integer, lnI as Integer, lnJ as Integer
+LOCAL ARRAY laspispoles[1, 4]
+*добавляем софтовые поля
+	THIS.aSoftPole[1, 1] = 0
+	lnNCol = 1
+
+	IF USED("DESCRIBEPOLE")
+		FOR lnI = 1 TO GETWORDCOUNT(m.tctablenames, ',')
+			IF SEEK(UPPER(GETWORDNUM(m.tctablenames, m.lnI, ',')), "DESCRIBEPOLE", "NAME") AND DESCRIBEPOLE.TYPEPOLE = "TABLE"
+				lcpid = BINTOC(DESCRIBEPOLE.ID)
+
+				DIMENSION laspispoles[1, 4]
+
+				SELECT ID, NAME, TYPEPOLE, COMMENTS;
+				FROM DESCRIBEPOLE INTO ARRAY laspispoles;
+				WHERE BINTOC(PID) + BINTOC(SORTID) = m.lcpid;
+				ORDER BY SORTID
+
+				FOR lnJ = 1 TO ALEN(laspispoles, 1)
+					IF !(ISNULL(laspispoles[m.lnJ, 1]) OR EMPTY(laspispoles[m.lnJ, 1]))
+						THIS.aSoftPole[m.lnNCol, 1] = laspispoles[m.lnJ, 1]			&&id поля
+						THIS.aSoftPole[m.lnNCol, 2] = RTRIM(laspispoles[m.lnJ, 2])	&&наименование поля
+						THIS.aSoftPole[m.lnNCol, 3] = laspispoles[m.lnJ, 3]			&&тип поля
+						THIS.aSoftPole[m.lnNCol, 4] = laspispoles[m.lnJ, 4]			&&описанин поля
+						THIS.aSoftPole[m.lnNCol, 5] = IIF(laspispoles[m.lnJ, 3] = "HARD", UPPER(GETWORDNUM(m.tctablenames, m.lnI, ',')), '') &&название таблицы
+
+						lnNCol = m.lnNCol + 1
+
+						DIMENSION THIS.aSoftPole[m.lnNCol, 5]
+					ELSE
+						EXIT
+					ENDIF
+				ENDFOR
+
+				IF m.lnNCol > 1
+					lnNCol = m.lnNCol - 1
+
+					DIMENSION THIS.aSoftPole[m.lnNCol, 5]
+				ENDIF
+			ENDIF
+		ENDFOR цикл по tctablenames
+*!*		ELSE
+*!*			MESSAGEBOX("Отсутствует доступ к таблице с описаниями полей!",0+48,_Screen.Caption)
+	ENDIF
+ENDPROC
+PROCEDURE setvaluesid
+LPARAMETERS tnid_pole as Integer, tnid_data as Integer, tvstore_data as Variant, tddateact as Datetime
+*пустой dateact означает замену самой последней модификации
+LOCAL lnlenvaluepole as Integer, lvretvalue as Logical, lnoldali as Integer, lnI as Integer
+LOCAL ARRAY lamaxdatechange[1] as Datetime
+	llretvalue = .f.
+
+	IF SEEK(m.tnid_pole, "DESCRIBEPOLE", "ID")
+		*нашли поле - сохраняем данные
+		IF DESCRIBEPOLE.TYPEPOLE = "HARD"
+			FOR lnI = 1 TO ALEN(THIS.softpole, 1)
+				IF THIS.asoftpole[m.lnI, 2] == RTRIM(DESCRIBEPOLE.NAME)
+				*сохранить поле в физ.таблицу
+					IF SUBSTRC(THIS.asoftpole[m.lnI, 3], 6, 2) = 'L' AND VARTYPE(m.tvstore_data) = 'C'
+						tvstore_data = IIF(m.tvstore_data = "Да", .T., .F.)
+					ENDIF
+
+					LOCAL lcupdstr as String
+					lcupdstr= "UPDATE " + THIS.asoftpole[m.lnI, 5] + " SET " + THIS.asoftpole[m.lnI, 2];
+							  + "=m.tvstore_data WHERE ID=" + TRANSFORM(EVALUATE(THIS.asoftpole[m.lnI, 5] + ".ID"))
+
+					TRY
+						BEGIN TRANSACTION 
+							&lcupdstr
+							llretvalue = .t.
+						END TRANSACTION
+					CATCH
+						ROLLBACK
+					ENDTRY
+
+					EXIT
+				ENDIF
+			ENDFOR
+		ELSE
+			tvstore_data = THIS.extypepole(DESCRIBEPOLE.TYPEPOLE, .t., m.tvstore_data)
+			lnoldali = SELECT()
+
+			IF EMPTY(m.tddateact) OR !("MD" $ DESCRIBEPOLE.TYPEPOLE) OR VARTYPE(m.tddateact) <> 'T'
+				SELECT MAX(DATECHANGE);
+				FROM SOFTPOLE INTO ARRAY lamaxdatechange;
+				WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(m.tnid_pole) + BINTOC(m.tnid_data)
+
+				tddateact = IIF(ISNULL(lamaxdatechange[1]), CTOT(''), lamaxdatechange[1])
+			ENDIF
+
+			TRY
+				BEGIN TRANSACTION
+					SELECT SOFTPOLE
+					lnlenvaluepole = FSIZE("VALUEPOLE")
+
+					SCAN FOR BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(m.tnid_pole) + BINTOC(m.tnid_data);
+							 AND DATECHANGE = m.tddateact
+						IF LENC(m.tvstore_data) > 0
+						*сохраняем
+							REPLACE VALUEPOLE WITH LEFTC(m.tvstore_data, m.lnlenvaluepole)
+
+							tvstore_data = SUBSTRC(m.tvstore_data, m.lnlenvaluepole + 1)
+						ELSE
+							DELETE
+						ENDIF
+					ENDSCAN
+
+					IF LENC(m.tvstore_data) > 0
+					*сохранили не все
+						DO WHILE LENC(m.tvstore_data) > 0
+							INSERT INTO SOFTPOLE (ID_POLE, ID_DATA, VALUEPOLE, DATECHANGE);
+										  VALUES (m.tnid_pole, m.tnid_data, LEFTC(m.tvstore_data, m.lnlenvaluepole), m.tddateact)
+
+							tvstore_data = SUBSTRC(m.tvstore_data, m.lnlenvaluepole + 1)
+						ENDDO
+					ENDIF
+
+					llretvalue = .t.
+				END TRANSACTION
+			CATCH
+				ROLLBACK
+			ENDTRY
+
+			SELECT (m.lnoldali)
+		ENDIF
+	ELSE
+		llretvalue = .f.
+	ENDIF
+RETURN m.llretvalue
+ENDPROC
+PROCEDURE setvaluesname
+LPARAMETERS tcnamepole as String, tnid_data as Integer, tvstore_data as Variant, tddateact as Datetime
+*пустой dateact означает замену самой последней модификации
+LOCAL lnlenvalupole as Integer, lvretvalue as Logical, lnoldali as Integer, lnI as Integer
+LOCAL ARRAY lamaxdatechange[1] as Datetime
+	llretvalue = .f.
+
+	FOR lnI = 1 TO ALEN(THIS.asoftpole, 1)
+		IF THIS.asoftpole[m.lnI, 2] == m.tcnamepole
+			*нашли поле - сохраняем данные
+			IF THIS.asoftpole[m.lnI, 3] = "HARD"
+			*сохранить поле в физ.таблицу
+				IF SUBSTRC(THIS.asoftpole[m.lnI, 3], 6, 2) = 'L' AND VARTYPE(m.tvstore_data) = 'C'
+					tvstore_data = IIF(m.tvstore_data = "Да", .T., .F.)
+				ENDIF
+
+				LOCAL lcupdstr as String
+				lcupdstr = "UPDATE " + THIS.softpole[m.lnI, 5] + " SET " + THIS.asoftpole[m.lnI, 2];
+						   + "=m.tvstore_data WHERE ID=" + TRANSFORM(EVALUATE(THIS.asoftpole[m.lnI, 5] + ".ID"))
+
+				TRY
+					BEGIN TRANSACTION 
+						&lcupdstr
+						llretvalue = .t.
+					END TRANSACTION
+				CATCH
+					ROLLBACK
+				ENDTRY
+			ELSE
+				lnoldali = SELECT()
+
+				tvstore_data = THIS.extypepole(THIS.asoftpole[m.lnI, 3], .t., m.tvstore_data)
+
+				IF EMPTY(m.tddateact) OR !("MD" $ THIS.asoftpole[m.lnI, 3]) OR VARTYPE(m.tddateact) <> 'T'
+					SELECT MAX(DATECHANGE);
+					FROM SOFTPOLE INTO ARRAY lamaxdatechange;
+					WHERE BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(THIS.asoftpole[m.lnI, 1]) + BINTOC(m.tnid_data)
+
+					tddateact = IIF(ISNULL(lamaxdatechange[1]), CTOT(''), lamaxdatechange[1])
+				ENDIF
+
+				TRY
+					BEGIN TRANSACTION
+						SELECT SOFTPOLE
+						lnlenvalupole = FSIZE("VALUEPOLE")
+
+						SCAN FOR BINTOC(ID_POLE) + BINTOC(ID_DATA) = BINTOC(THIS.asoftpole[m.lnI, 1]) + BINTOC(m.tnid_data);
+								 AND DATECHANGE = m.tddateact
+							IF LENC(m.tvstore_data) > 0
+							*сохраняем
+								REPLACE VALUEPOLE WITH LEFTC(m.tvstore_data, m.lnlenvalupole)
+
+								tvstore_data = SUBSTRC(m.tvstore_data, m.lnlenvalupole + 1)
+							ELSE
+								DELETE
+							ENDIF
+						ENDSCAN
+
+						IF LENC(m.tvstore_data) > 0
+						*сохранили не все
+							DO WHILE LENC(m.tvstore_data) > 0
+								INSERT INTO SOFTPOLE (ID_POLE, ID_DATA, VALUEPOLE, DATECHANGE);
+											  VALUES (THIS.asoftpole[m.lnI, 1], m.tnid_data, LEFTC(m.tvstore_data, m.lnlenvalupole), m.tddateact)
+
+								tvstore_data = SUBSTRC(m.tvstore_data, m.lnlenvalupole + 1)
+							ENDDO
+						ENDIF
+
+						llretvalue = .t.
+					END TRANSACTION
+				CATCH
+					ROLLBACK
+				ENDTRY
+
+				SELECT (m.lnoldali)
+			ENDIF
+
+			EXIT
+		ENDIF
+	ENDFOR
+RETURN m.llretvalue
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*delvaluesid Удаление содержимого поля
+*extypepole Расшифровать тип поля
+*getvaluesid Получить софтовое поле по его числовому идентификатору
+*getvaluesname получить значение поля по имени поля
+*listsoftpole Создание массива софтовых полей
+*setvaluesid записать данные по софтовому полю
+*setvaluesname cj[hfybnm значение поля по его имени
+^asoftpole[1,5] Таблица c описанием полей
+cinittable
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] softpole
+[EOF]

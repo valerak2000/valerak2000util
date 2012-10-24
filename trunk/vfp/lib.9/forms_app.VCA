@@ -1,0 +1,947 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S20H5AGB
+[CLASS] editfile_form
+[CLASSLOC] standart_dictionary_form.vcx
+[BASECLASS] form
+[OBJNAME] objects_file_form
+[START PROPERTIES]
+Deletebutton.Name = "Deletebutton"
+Dialog_shape.Name = "Dialog_shape"
+DoCreate = .T.
+Name = "objects_file_form"
+Name_label.Caption = "Наименование объекта:"
+Name_label.Height = 28
+Name_label.Name = "Name_label"
+Name_label.Width = 78
+Name_textbox.ControlSource = "Objects.Name"
+Name_textbox.Height = 21
+Name_textbox.Left = 98
+Name_textbox.Name = "Name_textbox"
+Name_textbox.Width = 310
+Refreshbutton.Name = "Refreshbutton"
+_memberdata =     3221<VFPData><memberdata name="cinittable" type="property" display="cInitTable"/><memberdata name="lisload" type="property" display="lIsLoad"/><memberdata name="loaddata" type="method" display="LoadData"/><memberdata name="longtonum" type="method" display="LongToNum"/><memberdata name="noldrecno" type="property" display="nOldRecno"/><memberdata name="prechange" type="method" display="PreChange"/><memberdata name="predelete" type="method" display="PreDelete"/><memberdata name="quantitymarked" type="property" display="QuantityMarked"/><memberdata name="refreshmain" type="method" display="RefreshMain"/><memberdata name="result" type="property" display="Result"/><memberdata name="sqlcreate" type="method" display="SQLCreate"/><memberdata name="csqlcursorname" type="property" display="cSQLCursorName"/><memberdata name="csqlfields" type="property" display="cSQLFields"/><memberdata name="csqljoin" type="property" display="cSQLJoin"/><memberdata name="csqlorder" type="property" display="cSQLOrder"/><memberdata name="sqlrequery" type="method" display="SQLRequery"/><memberdata name="csqlwhere" type="property" display="cSQLWhere"/><memberdata name="tabletype" type="property" display="TableType"/><memberdata name="lviewtree" type="property" display="lViewTree"/><memberdata name="cwintitle" type="property" display="cWinTitle"/><memberdata name="cbackupsqlorder" type="property" display="cBackupSqlOrder"/><memberdata name="buildtree" type="method" display="BuildTree"/><memberdata name="cddir" type="method" display="CdDir"/><memberdata name="ndatabasetype" type="property" display="nDatabaseType"/><memberdata name="oeditfile_form" type="property" display="oEditFile_Form"/><memberdata name="oeditfolder_form" type="property" display="oEditFolder_Form"/><memberdata name="lenabletree" type="property" display="lEnableTree"/><memberdata name="lenabletreechild" type="property" display="lEnableTreeChild"/><memberdata name="ofind_form" type="property" display="oFind_Form"/><memberdata name="ogetfolder" type="property" display="oGetFolder"/><memberdata name="ogetfolder_form" type="property" display="oGetFolder_Form"/><memberdata name="nlentoleft" type="property" display="nLenToLeft"/><memberdata name="nlentotop" type="property" display="nLenToTop"/><memberdata name="apathdir" type="property" display="aPathDir"/><memberdata name="npid" type="property" display="nPID"/><memberdata name="sqlcreateloaddata" type="method" display="SqlCreateLoadData"/><memberdata name="sqlrequeryloaddata" type="method" display="SqlRequeryLoadData"/><memberdata name="sqlloaddata" type="method" display="SQLLoadData"/><memberdata name="sqlloaddescribes" type="method" display="SQLLoadDescribes"/><memberdata name="adescribes" type="property" display="aDescribes"/><memberdata name="getdescribe" type="method" display="GetDescribe"/><memberdata name="cschema" type="property" display="cSchema"/><memberdata name="ceditfile_formname" type="property" display="cEditFile_FormName"/><memberdata name="ceditfolder_formname" type="property" display="cEditFolder_FormName"/><memberdata name="cname_object" type="property" display="cName_Object"/><memberdata name="lockobject" type="method" display="LockObject"/><memberdata name="unlockobje
+cancelbutton.Name = "cancelbutton"
+cancelbutton.TabIndex = 12
+cntHeader.Image1.Name = "Image1"
+cntHeader.Name = "cntHeader"
+cntHeader.TabIndex = 1
+cntHeader.shpBorder.Name = "shpBorder"
+dbcontainer.Name = "dbcontainer"
+okbutton.Name = "okbutton"
+okbutton.TabIndex = 11
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.TabIndex = 2
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE okbutton.Click
+LPARAMETERS tcErrorMessage as String
+	IF Objects.ID_Row = 0
+		REPLACE Objects.ID_Row WITH .NULL.
+	ENDIF
+
+	DODEFAULT(m.tcErrorMessage)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S50MEQO8
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] IDROW_label
+[PARENT] objects_file_form
+[START PROPERTIES]
+Caption = "№ записи:"
+Height = 15
+Left = 8
+Name = "IDROW_label"
+TabIndex = 9
+Top = 120
+Width = 53
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S50MEQO9
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] IDROW_textbox
+[PARENT] objects_file_form
+[START PROPERTIES]
+ControlSource = "Objects.ID_Row"
+Height = 21
+Left = 98
+Name = "IDROW_textbox"
+TabIndex = 10
+Top = 120
+Width = 126
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S20H5AGA
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] LName_label
+[PARENT] objects_file_form
+[START PROPERTIES]
+Caption = "Таблица связей:"
+Height = 15
+Left = 8
+Name = "LName_label"
+TabIndex = 7
+Top = 97
+Width = 85
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S20H5AGA
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] LName_textbox
+[PARENT] objects_file_form
+[START PROPERTIES]
+ControlSource = "Objects.System_LinkName"
+Height = 21
+Left = 98
+Name = "LName_textbox"
+TabIndex = 8
+Top = 96
+Width = 310
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S20H5AGA
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] SName_label
+[PARENT] objects_file_form
+[START PROPERTIES]
+Caption = "Таблица:"
+Left = 8
+Name = "SName_label"
+TabIndex = 5
+Top = 78
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S20H5AGA
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] SName_textbox
+[PARENT] objects_file_form
+[START PROPERTIES]
+ControlSource = "Objects.System_name"
+Height = 21
+Left = 98
+Name = "SName_textbox"
+TabIndex = 6
+Top = 72
+Width = 310
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] objects_file_form
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QU167QEV
+[CLASS] main_form
+[CLASSLOC] standart_dictionary_form.vcx
+[BASECLASS] form
+[OBJNAME] objects_main_form
+[START PROPERTIES]
+DBDictionary.Name = "DBDictionary"
+DBDictionary.cfromcmd = Objects
+DBDictionary.clocaltable = Objects
+DBDictionary.cordercmd = LID
+DoCreate = .T.
+GrdDict.GrdPnl.COLUMN1.ControlSource = ""
+GrdDict.GrdPnl.COLUMN1.Name = "COLUMN1"
+GrdDict.GrdPnl.COLUMN1.Standart_dictionary_grdhdr1.Caption = ""
+GrdDict.GrdPnl.COLUMN1.Standart_dictionary_grdhdr1.Name = "Standart_dictionary_grdhdr1"
+GrdDict.GrdPnl.COLUMN1.cntFile.Image1.Height = 16
+GrdDict.GrdPnl.COLUMN1.cntFile.Image1.Name = "Image1"
+GrdDict.GrdPnl.COLUMN1.cntFile.Image1.Width = 16
+GrdDict.GrdPnl.COLUMN1.cntFile.Name = "cntFile"
+GrdDict.GrdPnl.COLUMN1.cntFolder.Image1.Height = 16
+GrdDict.GrdPnl.COLUMN1.cntFolder.Image1.Name = "Image1"
+GrdDict.GrdPnl.COLUMN1.cntFolder.Image1.Width = 16
+GrdDict.GrdPnl.COLUMN1.cntFolder.Name = "cntFolder"
+GrdDict.GrdPnl.COLUMN1.cntOpFolder.Image1.Height = 16
+GrdDict.GrdPnl.COLUMN1.cntOpFolder.Image1.Name = "Image1"
+GrdDict.GrdPnl.COLUMN1.cntOpFolder.Image1.Width = 16
+GrdDict.GrdPnl.COLUMN1.cntOpFolder.Name = "cntOpFolder"
+GrdDict.GrdPnl.Column2.Comment = "Name"
+GrdDict.GrdPnl.Column2.HeaderClass = "standart_dictionary_grdhdr"
+GrdDict.GrdPnl.Column2.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdDict.GrdPnl.Column2.Name = "Column2"
+GrdDict.GrdPnl.Column2.Tag = "Objects.Name"
+GrdDict.GrdPnl.Column2.Width = 126
+GrdDict.GrdPnl.Column3.Comment = "System_name"
+GrdDict.GrdPnl.Column3.HeaderClass = "standart_dictionary_grdhdr"
+GrdDict.GrdPnl.Column3.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdDict.GrdPnl.Column3.Name = "Column3"
+GrdDict.GrdPnl.Column3.Tag = "Objects.System_name"
+GrdDict.GrdPnl.Column3.Width = 83
+GrdDict.GrdPnl.Column4.Comment = "System_LinkName"
+GrdDict.GrdPnl.Column4.HeaderClass = "standart_dictionary_grdhdr"
+GrdDict.GrdPnl.Column4.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdDict.GrdPnl.Column4.Name = "Column4"
+GrdDict.GrdPnl.Column4.Tag = "Objects.System_LinkName"
+GrdDict.GrdPnl.Column4.Width = 82
+GrdDict.GrdPnl.Column5.Comment = "ID_Row"
+GrdDict.GrdPnl.Column5.HeaderClass = "standart_dictionary_grdhdr"
+GrdDict.GrdPnl.Column5.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdDict.GrdPnl.Column5.Name = "Column5"
+GrdDict.GrdPnl.Column5.Tag = "Objects.ID_Row"
+GrdDict.GrdPnl.Column5.Width = 57
+GrdDict.GrdPnl.ColumnCount = 5
+GrdDict.GrdPnl.Name = "GrdPnl"
+GrdDict.GrdPnl.Panel = 1
+GrdDict.Name = "GrdDict"
+Icon = ..\bmp\id_cards.ico
+Name = "objects_main_form"
+ceditfile_formname = FORMS\dict_objects_file
+cinittable = Objects
+cname_object = Справочник объектов
+cntBorderForm.Name = "cntBorderForm"
+cntToolbars.CNTNEWCHILD.Name = "CNTNEWCHILD"
+cntToolbars.CNTNEWCHILD.cmdBtn.Name = "cmdBtn"
+cntToolbars.CNTNEWCHILD.shpForEvent.Name = "shpForEvent"
+cntToolbars.Name = "cntToolbars"
+cntToolbars.Shape1.Name = "Shape1"
+cntToolbars.Shape2.Name = "Shape2"
+cntToolbars.Shape3.Name = "Shape3"
+cntToolbars.Shape4.Name = "Shape4"
+cntToolbars.Shape5.Name = "Shape5"
+cntToolbars.cntCopy.Name = "cntCopy"
+cntToolbars.cntCopy.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntCopy.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntCut.Name = "cntCut"
+cntToolbars.cntCut.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntCut.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntDelete.Name = "cntDelete"
+cntToolbars.cntDelete.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntDelete.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntDisTree.Name = "cntDisTree"
+cntToolbars.cntDisTree.cmdBtn.Alignment = 0
+cntToolbars.cntDisTree.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntDisTree.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntDown.Name = "cntDown"
+cntToolbars.cntDown.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntDown.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntEdit.Name = "cntEdit"
+cntToolbars.cntEdit.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntEdit.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntExit.Name = "cntExit"
+cntToolbars.cntExit.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntExit.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntExport.Name = "cntExport"
+cntToolbars.cntExport.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntExport.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntFind.Name = "cntFind"
+cntToolbars.cntFind.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntFind.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntImport.Name = "cntImport"
+cntToolbars.cntImport.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntImport.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntNewFile.Name = "cntNewFile"
+cntToolbars.cntNewFile.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntNewFile.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntPaste.Name = "cntPaste"
+cntToolbars.cntPaste.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntPaste.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntPrint.Name = "cntPrint"
+cntToolbars.cntPrint.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntPrint.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntRequery.Name = "cntRequery"
+cntToolbars.cntRequery.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntRequery.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntTree.Name = "cntTree"
+cntToolbars.cntTree.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntTree.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntUp.Name = "cntUp"
+cntToolbars.cntUp.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntUp.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntView.Name = "cntView"
+cntToolbars.cntView.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntView.shpForEvent.Name = "shpForEvent"
+cschema = work_schema
+custSprUtil.Name = "custSprUtil"
+pnltreefolder.Name = "pnltreefolder"
+pnltreefolder.TreePnl.Height = 188
+pnltreefolder.TreePnl.Left = 4
+pnltreefolder.TreePnl.Name = "TreePnl"
+pnltreefolder.TreePnl.Top = 4
+pnltreefolder.TreePnl.Width = 183
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset.Name = "saveset"
+shapegrid.Name = "shapegrid"
+v_Splitter.Name = "v_Splitter"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0ZQX3R
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] objects_main_form.GrdDict.GrdPnl.Column2
+[START PROPERTIES]
+Caption = "Наименование объекта"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QW14EDGZ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] objects_main_form.GrdDict.GrdPnl.Column2
+[START PROPERTIES]
+BackColor = 199,254,204
+BorderStyle = 0
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0Y0YVJ
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] objects_main_form.GrdDict.GrdPnl.Column3
+[START PROPERTIES]
+Caption = "Таблица"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QW168LLQ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] objects_main_form.GrdDict.GrdPnl.Column3
+[START PROPERTIES]
+BackColor = 199,254,204
+BorderStyle = 0
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+NullDisplay = " "
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0Y0YVK
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] objects_main_form.GrdDict.GrdPnl.Column4
+[START PROPERTIES]
+Caption = "Таблица связей"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S403DRY3
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] objects_main_form.GrdDict.GrdPnl.Column4
+[START PROPERTIES]
+BackColor = 199,254,204
+BorderStyle = 0
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0Y0YVL
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] objects_main_form.GrdDict.GrdPnl.Column5
+[START PROPERTIES]
+Caption = "№ записи"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S403DRY5
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] objects_main_form.GrdDict.GrdPnl.Column5
+[START PROPERTIES]
+BackColor = 199,254,204
+BorderStyle = 0
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] objects_main_form
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Ms Sans Serif, 1, 8, 6, 13, 11, 12, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S20H5AGB
+[CLASS] editfile_form
+[CLASSLOC] standart_dictionary_form.vcx
+[BASECLASS] form
+[OBJNAME] users_file_form
+[START PROPERTIES]
+Deletebutton.Name = "Deletebutton"
+Deletebutton.TabIndex = 11
+Dialog_shape.Name = "Dialog_shape"
+DoCreate = .T.
+Name = "users_file_form"
+Name_label.Caption = "Имя пользователя:"
+Name_label.Height = 15
+Name_label.Name = "Name_label"
+Name_label.TabIndex = 3
+Name_label.Width = 99
+Name_textbox.ControlSource = "Users.Name"
+Name_textbox.Name = "Name_textbox"
+Name_textbox.TabIndex = 4
+Refreshbutton.Name = "Refreshbutton"
+Refreshbutton.TabIndex = 10
+_memberdata = <VFPData><memberdata name="lisaddnew" type="property" display="lIsAddNew"/><memberdata name="findusertype" type="method" display="FindUserType"/><memberdata name="nusertype" type="property" display="nUserType"/></VFPData>
+cancelbutton.Name = "cancelbutton"
+cancelbutton.TabIndex = 13
+cntHeader.Image1.Name = "Image1"
+cntHeader.Name = "cntHeader"
+cntHeader.TabIndex = 1
+cntHeader.shpBorder.Name = "shpBorder"
+dbcontainer.Name = "dbcontainer"
+nusertype = .F.
+okbutton.Name = "okbutton"
+okbutton.TabIndex = 12
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.TabIndex = 2
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS tofrmMain as Form, tnIsAddNew as Integer
+	DODEFAULT(m.tofrmMain, m.tnIsAddNew)
+
+	THIS.FindUserType()
+ENDPROC
+PROCEDURE Refreshbutton.Click
+DODEFAULT()
+
+THISFORM.FindUserType()
+ENDPROC
+PROCEDURE findusertype
+LOCAL lcCursorName as String, llResult as Logical
+	lcCursorName = SYS(2015)
+
+	llResult = THIS.Main_Form.DBContainer.DBDictionary.Execute("SELECT pg_has_role('";
+															   + LOWER(ALLTRIM(Users.System_Name));
+															   + "', 'manager_data', 'usage');",;
+															   m.lcCursorName)
+
+	IF m.llResult 
+		THIS.nUserType = IIF(EVALUATE(m.lcCursorName + ".pg_has_role") == '1', .T., .F.)
+		THIS.userType_checkbox.Refresh()
+		USE IN (m.lcCursorName)
+
+		SELECT (THIS.Main_Form.InitTable)
+	ENDIF
+ENDPROC
+PROCEDURE okbutton.Click
+LPARAMETERS tcErrorMessage as String
+	IF EMPTY(Users.System_Name)
+		REPLACE Users.System_Name WITH .NULL.
+	ENDIF
+
+	DODEFAULT()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+6[END RESERVED2]
+[START RESERVED3]
+*findusertype 
+nusertype
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S400YEZQ
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] CanLogin_checkbox
+[PARENT] users_file_form
+[START PROPERTIES]
+Alignment = 0
+Caption = "Может логиниться"
+ControlSource = "Users.CanLogin"
+Left = 8
+Name = "CanLogin_checkbox"
+TabIndex = 7
+Top = 101
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S400YEZR
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] MustAudit_checkbox
+[PARENT] users_file_form
+[START PROPERTIES]
+Alignment = 0
+Caption = "Сохранять логи действий"
+ControlSource = "Users.MustAudit"
+Left = 8
+Name = "MustAudit_checkbox"
+TabIndex = 8
+Top = 119
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S400W9NE
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] SName_label
+[PARENT] users_file_form
+[START PROPERTIES]
+Caption = "Системное имя:"
+Height = 15
+Left = 8
+Name = "SName_label"
+TabIndex = 5
+Top = 75
+Width = 82
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S60DAJRR
+[CLASS] select_values
+[CLASSLOC] select_values.vcx
+[BASECLASS] control
+[OBJNAME] SName_SelValues
+[PARENT] users_file_form
+[START PROPERTIES]
+Delbutton.Name = "Delbutton"
+Left = 112
+Name = "SName_SelValues"
+Sel_textbox.Name = "Sel_textbox"
+Selbutton.Name = "Selbutton"
+TabIndex = 6
+Top = 71
+Visible = .F.
+Width = 296
+boundcolumn = RolName
+ccolumns = RolName,RolSuper
+ccolumnsheader = "Системная роль","Суперпользователь"
+controlsource = Users.System_Name
+csqldataset = SELECT RolName, RolSuper FROM SystemRole ORDER BY 1
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S60ANRAT
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] UserType_checkbox
+[PARENT] users_file_form
+[START PROPERTIES]
+Alignment = 0
+Anchor = 9
+Caption = "Тип пользователя:"
+ControlSource = "THISFORM.nUserType"
+DownPicture = ..\bmp\24x24\angel_24x24.bmp
+Height = 30
+Left = 272
+Name = "UserType_checkbox"
+Picture = ..\bmp\24x24\worker_24x24.bmp
+PicturePosition = 4
+ReadOnly = .T.
+Style = 1
+TabIndex = 9
+Top = 104
+Width = 138
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] users_file_form
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QU167QEV
+[CLASS] main_form
+[CLASSLOC] standart_dictionary_form.vcx
+[BASECLASS] form
+[OBJNAME] users_main_form
+[START PROPERTIES]
+DBDictionary.Name = "DBDictionary"
+DBDictionary.ccastfields = CanLogin::integer,MustAudit::integer
+DBDictionary.cfromcmd = Users
+DBDictionary.clistfields = CanLogin,MustAudit,System_Name,System_OID
+DBDictionary.clocaltable = Users
+DBDictionary.cordercmd = LID
+DoCreate = .T.
+GrdDict.GrdPnl.COLUMN1.ControlSource = ""
+GrdDict.GrdPnl.COLUMN1.Name = "COLUMN1"
+GrdDict.GrdPnl.COLUMN1.Standart_dictionary_grdhdr1.Caption = ""
+GrdDict.GrdPnl.COLUMN1.Standart_dictionary_grdhdr1.Name = "Standart_dictionary_grdhdr1"
+GrdDict.GrdPnl.COLUMN1.cntFile.Image1.Height = 16
+GrdDict.GrdPnl.COLUMN1.cntFile.Image1.Name = "Image1"
+GrdDict.GrdPnl.COLUMN1.cntFile.Image1.Width = 16
+GrdDict.GrdPnl.COLUMN1.cntFile.Name = "cntFile"
+GrdDict.GrdPnl.COLUMN1.cntFolder.Image1.Height = 16
+GrdDict.GrdPnl.COLUMN1.cntFolder.Image1.Name = "Image1"
+GrdDict.GrdPnl.COLUMN1.cntFolder.Image1.Width = 16
+GrdDict.GrdPnl.COLUMN1.cntFolder.Name = "cntFolder"
+GrdDict.GrdPnl.COLUMN1.cntOpFolder.Image1.Height = 16
+GrdDict.GrdPnl.COLUMN1.cntOpFolder.Image1.Name = "Image1"
+GrdDict.GrdPnl.COLUMN1.cntOpFolder.Image1.Width = 16
+GrdDict.GrdPnl.COLUMN1.cntOpFolder.Name = "cntOpFolder"
+GrdDict.GrdPnl.Column2.Comment = "Name"
+GrdDict.GrdPnl.Column2.HeaderClass = "standart_dictionary_grdhdr"
+GrdDict.GrdPnl.Column2.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdDict.GrdPnl.Column2.Name = "Column2"
+GrdDict.GrdPnl.Column2.Tag = "Users.Name"
+GrdDict.GrdPnl.Column2.Width = 126
+GrdDict.GrdPnl.Column3.Comment = "CanLogin"
+GrdDict.GrdPnl.Column3.HeaderClass = "standart_dictionary_grdhdr"
+GrdDict.GrdPnl.Column3.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdDict.GrdPnl.Column3.Name = "Column3"
+GrdDict.GrdPnl.Column3.Sparse = .F.
+GrdDict.GrdPnl.Column3.Tag = "Users.CanLogin"
+GrdDict.GrdPnl.Column4.Comment = "MustAudit"
+GrdDict.GrdPnl.Column4.HeaderClass = "standart_dictionary_grdhdr"
+GrdDict.GrdPnl.Column4.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdDict.GrdPnl.Column4.Name = "Column4"
+GrdDict.GrdPnl.Column4.Sparse = .F.
+GrdDict.GrdPnl.Column4.Tag = "Users.MustAudit"
+GrdDict.GrdPnl.Column5.Comment = "System_name"
+GrdDict.GrdPnl.Column5.HeaderClass = "standart_dictionary_grdhdr"
+GrdDict.GrdPnl.Column5.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdDict.GrdPnl.Column5.Name = "Column5"
+GrdDict.GrdPnl.Column5.Tag = "Users.System_name"
+GrdDict.GrdPnl.ColumnCount = 5
+GrdDict.GrdPnl.Name = "GrdPnl"
+GrdDict.GrdPnl.Panel = 1
+GrdDict.Name = "GrdDict"
+Icon = ..\bmp\id_cards.ico
+Name = "users_main_form"
+ceditfile_formname = FORMS\dict_users_file
+cinittable = Users
+cname_object = Справочник пользователей
+cntBorderForm.Name = "cntBorderForm"
+cntToolbars.CNTNEWCHILD.Name = "CNTNEWCHILD"
+cntToolbars.CNTNEWCHILD.cmdBtn.Name = "cmdBtn"
+cntToolbars.CNTNEWCHILD.shpForEvent.Name = "shpForEvent"
+cntToolbars.Name = "cntToolbars"
+cntToolbars.Shape1.Name = "Shape1"
+cntToolbars.Shape2.Name = "Shape2"
+cntToolbars.Shape3.Name = "Shape3"
+cntToolbars.Shape4.Name = "Shape4"
+cntToolbars.Shape5.Name = "Shape5"
+cntToolbars.cntCopy.Name = "cntCopy"
+cntToolbars.cntCopy.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntCopy.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntCut.Name = "cntCut"
+cntToolbars.cntCut.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntCut.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntDelete.Name = "cntDelete"
+cntToolbars.cntDelete.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntDelete.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntDisTree.Name = "cntDisTree"
+cntToolbars.cntDisTree.cmdBtn.Alignment = 0
+cntToolbars.cntDisTree.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntDisTree.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntDown.Name = "cntDown"
+cntToolbars.cntDown.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntDown.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntEdit.Name = "cntEdit"
+cntToolbars.cntEdit.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntEdit.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntExit.Name = "cntExit"
+cntToolbars.cntExit.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntExit.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntExport.Name = "cntExport"
+cntToolbars.cntExport.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntExport.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntFind.Name = "cntFind"
+cntToolbars.cntFind.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntFind.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntImport.Name = "cntImport"
+cntToolbars.cntImport.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntImport.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntNewFile.Name = "cntNewFile"
+cntToolbars.cntNewFile.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntNewFile.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntPaste.Name = "cntPaste"
+cntToolbars.cntPaste.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntPaste.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntPrint.Name = "cntPrint"
+cntToolbars.cntPrint.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntPrint.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntRequery.Name = "cntRequery"
+cntToolbars.cntRequery.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntRequery.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntTree.Name = "cntTree"
+cntToolbars.cntTree.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntTree.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntUp.Name = "cntUp"
+cntToolbars.cntUp.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntUp.shpForEvent.Name = "shpForEvent"
+cntToolbars.cntView.Name = "cntView"
+cntToolbars.cntView.cmdBtn.Name = "cmdBtn"
+cntToolbars.cntView.shpForEvent.Name = "shpForEvent"
+cschema = work_schema
+custSprUtil.Name = "custSprUtil"
+pnltreefolder.Name = "pnltreefolder"
+pnltreefolder.TreePnl.Height = 188
+pnltreefolder.TreePnl.Left = 4
+pnltreefolder.TreePnl.Name = "TreePnl"
+pnltreefolder.TreePnl.Top = 4
+pnltreefolder.TreePnl.Width = 183
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset.Name = "saveset"
+shapegrid.Name = "shapegrid"
+v_Splitter.Name = "v_Splitter"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TS0CX1GS
+[CLASS] dbtable
+[CLASSLOC] base_idb.vcx
+[BASECLASS] custom
+[OBJNAME] DbSystemRole
+[PARENT] users_main_form
+[START PROPERTIES]
+Left = 579
+Name = "DbSystemRole"
+Top = 3
+cfromcmd = pg_roles
+clistfields = rolname,rolsuper
+clocaltable = SystemRole
+cschema = pg_catalog
+cwherecmd = rolcanlogin=true
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0ZGCRH
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] users_main_form.GrdDict.GrdPnl.Column2
+[START PROPERTIES]
+Caption = "Имя пользователя"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QW14EDGZ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] users_main_form.GrdDict.GrdPnl.Column2
+[START PROPERTIES]
+BackColor = 199,254,204
+BorderStyle = 0
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0ZGCRI
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] users_main_form.GrdDict.GrdPnl.Column3
+[START PROPERTIES]
+Caption = "Может логиниться"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RK0YQ9JJ
+[CLASS] grid_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] Grid_checkbox1
+[PARENT] users_main_form.GrdDict.GrdPnl.Column3
+[START PROPERTIES]
+Alignment = 0
+Left = 35
+Name = "Grid_checkbox1"
+Top = 23
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0ZGCRJ
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] users_main_form.GrdDict.GrdPnl.Column4
+[START PROPERTIES]
+Caption = "Сохранять логи"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RK0YQ9JK
+[CLASS] grid_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] Grid_checkbox1
+[PARENT] users_main_form.GrdDict.GrdPnl.Column4
+[START PROPERTIES]
+Alignment = 0
+Left = 39
+Name = "Grid_checkbox1"
+Top = 23
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0ZGCRK
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] users_main_form.GrdDict.GrdPnl.Column5
+[START PROPERTIES]
+Caption = "Имя системной роли"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QW168LLQ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] users_main_form.GrdDict.GrdPnl.Column5
+[START PROPERTIES]
+BackColor = 199,254,204
+BorderStyle = 0
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+NullDisplay = " "
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] users_main_form
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Ms Sans Serif, 1, 8, 6, 13, 11, 12, 2, 0
+[END PROPERTIES]
+[EOF]

@@ -1,0 +1,2318 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1P91CXS9W
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cbx2grd
+[START PROPERTIES]
+Caption = "n"
+Height = 17
+MousePointer = 1
+Name = "cbx2grd"
+SpecialEffect = 2
+Width = 22
+lisdblclick = 0
+lthisdayforecolor = 255
+nday = {}
+ndefaultdayforecolor = 8388608
+nmyforecolor = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*!*	IF SECONDS() - THIS.nIsDblClick <= _DBLCLICK
+*!*	    NODEFAULT
+    KEYBOARD "{ENTER}"
+*!*	ELSE
+*!*	    THIS.nIsDblClick = SECONDS()
+*!*	ENDIF
+ENDPROC
+PROCEDURE GotFocus
+IF !THISFORM.lisClickTrue AND VARTYPE(THISFORM.SelDelButt) = 'O' AND;
+   !ISNULL(THISFORM.SelDelButt) AND THIS.NAME <> THISFORM.SelDelButt.NAME
+    DO CASE
+    CASE THIS.nDAY = DATE()
+        THIS.FORECOLOR = THIS.nmyForeColor &&THIS.thisdayforecolor
+        THIS.FONTBOLD = .F.
+    CASE THIS.nDAY = THISFORM.noldDay
+        THIS.FORECOLOR = THIS.ndefaultdayforecolor
+        THIS.FONTBOLD = .T.
+    OTHERWISE
+        THIS.FORECOLOR = THIS.nmyForeColor
+        THIS.FONTBOLD = .F.
+    ENDCASE
+
+    NODEFAULT
+    THISFORM.SelDelButt.SETFOCUS
+    RETURN .F.
+ELSE
+    THIS.VALID()
+ENDIF
+
+THISFORM.lisClickTrue = .T.
+ENDPROC
+PROCEDURE Init
+THIS.nmyforecolor = THIS.FORECOLOR
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+LOCAL lnOldDate, lnNewDate
+	THISFORM.LOCKSCREEN = .T.
+
+	DO CASE
+	CASE m.tnKeyCode = 9 AND m.tnShiftAltCtrl = 0
+	    THISFORM.CmbMonth.SETFOCUS()
+
+	    NODEFAULT
+	CASE m.tnKeyCode = 15 AND m.tnShiftAltCtrl = 1
+	    THISFORM.spYear.SETFOCUS()
+
+	    NODEFAULT
+	CASE INLIST(m.tnKeyCode, 5, 24, 4, 19, 1, 6, 18, 3) AND m.tnShiftAltCtrl = 0;
+		 OR	INLIST(m.tnKeyCode, 31, 30) AND m.tnShiftAltCtrl = 2
+	    NODEFAULT
+
+	    THISFORM.lisClickTrue = .F.
+	    THISFORM.SelDelButt = .NULL.
+	    THIS.VisualEffect = 0
+	    lnOldDate = THIS.nDAY
+
+	    DO CASE
+	    CASE m.tnKeyCode = 5		&& верх
+	        lnNewDate = m.lnOldDate - 7
+	    CASE m.tnKeyCode = 24	&& низ
+	        lnNewDate = m.lnOldDate + 7
+	    CASE m.tnKeyCode = 19	&& лево
+	        lnNewDate = m.lnOldDate - 1
+	    CASE m.tnKeyCode = 4		&& право
+	        lnNewDate = m.lnOldDate + 1
+	    CASE m.tnKeyCode = 1		&& Home
+	        lnNewDate = DATE()
+	    CASE m.tnKeyCode = 6		&& End
+	        lnNewDate = THISFORM.nOldDay
+	    CASE m.tnKeyCode = 18	&& PAGE UP
+	        lnNewDate = GOMONTH(m.lnOldDate, -1)
+	    CASE m.tnKeyCode = 3		&& PAGE DOWN
+	        lnNewDate = GOMONTH(m.lnOldDate, 1)
+	    CASE m.tnKeyCode = 31	&& PAGE UP + Ctrl
+	        lnNewDate = GOMONTH(m.lnOldDate, -12)
+	    CASE m.tnKeyCode = 30	&& PAGE DOWN + Ctrl
+	        lnNewDate = GOMONTH(m.lnOldDate, 12)
+	    ENDCASE
+
+	    IF MONTH(m.lnNewDate) <> MONTH(m.lnOldDate) OR YEAR(m.lnNewDate) <> YEAR(m.lnOldDate);
+	       OR INLIST(m.tnKeyCode, 1, 6)
+	        THISFORM.UnDate(m.lnNewDate)
+	        THISFORM.SetGrid()
+	        THISFORM.REFRESH()
+	    ELSE
+	        DO CASE
+	        CASE THIS.nDAY = DATE()
+	            THIS.FORECOLOR = THIS.nmyForeColor &&THIS.thisdayforecolor
+	            THIS.FONTBOLD = .F.
+	        CASE THIS.nDAY = THISFORM.noldDay
+	            THIS.FORECOLOR = THIS.ndefaultdayforecolor
+	            THIS.FONTBOLD = .T.
+	        OTHERWISE
+	            THIS.FORECOLOR = THIS.nmyForeColor
+	            THIS.FONTBOLD = .F.
+	        ENDCASE
+
+	        lnRowD = VAL(SUBSTR(THIS.NAME, AT("_w", THIS.NAME) + 2, AT("_d", THIS.NAME);
+	        		 - AT("_w", THIS.NAME) - 2))
+	        lnColD = VAL(SUBSTR(THIS.NAME, AT("_d", THIS.NAME) + 2))
+
+	        DO CASE
+	        CASE m.tnKeyCode = 5		&& верх
+	            lnRowD = IIF(m.lnRowD = 1, 6, m.lnRowD-1)
+	        CASE m.tnKeyCode = 24	&& низ
+	            lnRowD = IIF(m.lnRowD = 6, 1, m.lnRowD+1)
+	        CASE m.tnKeyCode = 19	&& лево
+	            IF lnColD = 1
+	                lnColD = 7
+	                lnRowD = m.lnRowD - 1
+	            ELSE
+	                lnColD = m.lnColD - 1
+	            ENDIF
+	        CASE m.tnKeyCode = 4		&& право
+	            IF m.lnColD = 7
+	                lnColD = 1
+	                lnRowD = m.lnRowD + 1
+	            ELSE
+	                lnColD = m.lnColD + 1
+	            ENDIF
+	        ENDCASE
+
+	        THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnRowD) + "_d" + TRANSFORM(m.lnColD);
+	        			 + ".valid()", .NULL.)
+	    ENDIF
+
+	    THIS.GOTFOCUS()
+	ENDCASE
+
+	THISFORM.LOCKSCREEN = .F.
+ENDPROC
+PROCEDURE LostFocus
+IF VARTYPE(THISFORM.SelDelButt) = 'O' AND !ISNULL(THISFORM.SelDelButt) AND;
+   THISFORM.SelDelButt.Name = THIS.Name
+	THIS.VisualEffect = 0
+ENDIF
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF tnButton = 2
+		NODEFAULT 
+		KEYBOARD "{ESCAPE}"
+	ENDIF
+ENDPROC
+PROCEDURE MouseWheel
+LPARAMETERS tnDirection, tnShift, tnXCoord, tnYCoord
+	DO CASE 
+	CASE m.tnDirection > 0
+		THISFORM.lisClickTrue = .f.
+		THIS.SetFocus()
+
+		KEYBOARD "{PGUP}"
+	CASE m.tnDirection < 0
+		THISFORM.lisClickTrue = .f.
+		THIS.SetFocus()
+
+		KEYBOARD "{PGDN}"
+	ENDCASE
+ENDPROC
+PROCEDURE Valid
+WITH THISFORM
+	IF VARTYPE(.SelDelButt) = 'O' AND !ISNULL(.SelDelButt) 
+		IF .SelDelButt.Name <> THIS.Name
+		    WITH .SelDelButt
+		        .VISUALEFFECT = 0
+
+		        DO CASE
+		        CASE .nDAY = DATE()
+		            .FORECOLOR = .nmyForeColor &&.thisdayforecolor
+		            .FONTBOLD = .F.
+		        CASE .nDAY = THISFORM.noldDay
+		            .FORECOLOR = .ndefaultdayforecolor
+		            .FONTBOLD = .T.
+		        OTHERWISE
+		            .FORECOLOR = .nmyForeColor
+		            .FONTBOLD = .F.
+		        ENDCASE
+		    ENDWITH
+
+			.SelDelButt = (THIS)
+			THIS.FORECOLOR = 16711680
+			THIS.VISUALEFFECT = 2
+		ENDIF
+	ELSE
+		.SelDelButt = (THIS)
+		THIS.FORECOLOR = 16711680
+		THIS.VISUALEFFECT = 2
+	ENDIF
+
+	.nDAY = VAL(THIS.CAPTION)
+ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lisdblclick
+lthisdayforecolor
+nday
+ndefaultdayforecolor
+nmyforecolor
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cbx2grd
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M20VPN22
+[CLASS] control
+[BASECLASS] control
+[OBJNAME] datecnt
+[START PROPERTIES]
+BackColor = 255,255,255
+Height = 26
+Name = "datecnt"
+SpecialEffect = 1
+Width = 97
+century = 1
+clibrary = polcld
+controlsource = 
+dateformat = 0
+datemark = .
+fontbold = .F.
+fontitalic = .F.
+fontname = Tahoma
+fontsize = 9
+value = (None)
+[END PROPERTIES]
+[START PROTECTED]
+century_assign^
+controlsource_assign^
+dateformat_assign^
+datemark_assign^
+fontbold_assign^
+fontitalic_assign^
+fontname_assign^
+fontsize_assign^
+value_assign^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+*!*	IF _VFP.StartMode = 0 AND AT(UPPER(THIS.library), SET("LIBRARY")) = 0
+IF AT(UPPER(THIS.clibrary), SET("LIBRARY")) = 0
+	SET CLASSLIB TO (THIS.clibrary) ADDITIVE
+ENDIF
+
+DO CASE 
+CASE !INLIST(TYPE(THIS.ControlSource), 'D', 'T')
+	THIS.ControlSource = ''
+	THIS.Value = DATE()
+CASE EMPTY(THIS.Value)
+	THIS.Value = DATE()
+ENDCASE
+ENDPROC
+PROCEDURE century_assign
+LPARAMETERS vNewVal
+	THIS.DateCnt.Century = m.vNewVal
+	THIS.Century = m.vNewVal
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS tcNewVal as String
+	THIS.DateCnt.ControlSource = m.tcNewVal
+	THIS.ControlSource = m.tcNewVal
+ENDPROC
+PROCEDURE dateformat_assign
+LPARAMETERS vNewVal
+	THIS.DateCnt.dateformat = m.vNewVal
+	THIS.dateformat = m.vNewVal
+ENDPROC
+PROCEDURE datemark_assign
+LPARAMETERS vNewVal
+	THIS.DateCnt.datemark = m.vNewVal
+	THIS.datemark = m.vNewVal
+ENDPROC
+PROCEDURE fontbold_assign
+LPARAMETERS vNewVal
+	THIS.DateCnt.fontbold = m.vNewVal
+	THIS.fontbold = m.vNewVal
+ENDPROC
+PROCEDURE fontitalic_assign
+LPARAMETERS vNewVal
+	THIS.DateCnt.fontitalic = m.vNewVal
+	THIS.fontitalic = m.vNewVal
+ENDPROC
+PROCEDURE fontname_assign
+LPARAMETERS vNewVal
+	THIS.DateCnt.fontname = m.vNewVal
+	THIS.fontname = m.vNewVal
+ENDPROC
+PROCEDURE fontsize_assign
+LPARAMETERS vNewVal
+	THIS.DateCnt.fontsize = m.vNewVal
+	THIS.fontsize = m.vNewVal
+ENDPROC
+PROCEDURE value_assign
+LPARAMETERS vNewVal
+	vNewVal = IIF(VARTYPE(m.vNewVal) = 'T', TTOD(m.vNewVal), m.vNewVal)
+	THIS.DateCnt.Value = m.vNewVal
+	THIS.Value = m.vNewVal
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*century_assign 
+*controlsource_assign 
+*dateformat_assign 
+*datemark_assign 
+*fontbold_assign 
+*fontitalic_assign 
+*fontname_assign 
+*fontsize_assign 
+*valid Occurs before a control loses the focus.
+*value_assign 
+century Specifies if the century is displayed as four or two digits.
+clibrary
+controlsource Specifies the source of data to which an object is bound.
+dateformat Specifies the date format.
+datemark Specifies the date separator mark.
+fontbold Specifies if the text is bold.
+fontitalic Specifies if the text is italic.
+fontname Specifies the name of the font used to display text.
+fontsize Specifies the font size for text displayed with an object.
+value Specifies the current state of a control.
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\calendar.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\calendar.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0ME10JJDF
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] DateCnt
+[PARENT] datecnt
+[START PROPERTIES]
+Alignment = 2
+BackStyle = 0
+BorderStyle = 0
+Century = 0
+FontName = "Tahoma"
+Height = 17
+Hours = 24
+Left = 2
+Margin = 1
+Name = "DateCnt"
+Seconds = 0
+Top = 2
+Width = 69
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.ForeColor = THIS.Parent.ForeColor 
+THIS.Height = THIS.Parent.Height - 4
+THIS.Width = THIS.Parent.Width - THIS.Parent.Height - 2
+THIS.Century = THIS.Parent.Century
+THIS.DateFormat = THIS.Parent.DateFormat
+THIS.DateMark = THIS.Parent.DateMark
+THIS.FontBold = THIS.Parent.FontBold
+THIS.FontItalic = THIS.Parent.FontItalic
+THIS.FontName = THIS.Parent.FontName
+THIS.FontSize = THIS.Parent.FontSize
+THIS.ControlSource = THIS.Parent.ControlSource
+THIS.Value = IIF(VARTYPE(THIS.Value) = 'T', TTOD(THIS.Value), THIS.Value)
+THIS.Parent.Value = THIS.Value
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	IF m.tnKeyCode = 13 AND m.tnShiftAltCtrl = 1	&& Enter+Shift
+		NODEFAULT 
+
+		THIS.Parent.DateCntC.SetFocus()
+		THIS.Parent.DateCntC.Valid()
+	ENDIF
+ENDPROC
+PROCEDURE Valid
+	THIS.Value = IIF(VARTYPE(THIS.Value) = 'T', TTOD(THIS.Value), THIS.Value)
+	THIS.Parent.Value = THIS.Value
+RETURN THIS.PARENT.VALID()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0ME10FBZS
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] DateCntC
+[PARENT] datecnt
+[START PROPERTIES]
+Caption = ""
+Height = 21
+Left = 74
+Name = "DateCntC"
+Picture = ..\bmp\16x16\calendar.bmp
+TabStop = .F.
+Top = 2
+Width = 22
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.Height = THIS.Parent.Height - 4
+THIS.Width = THIS.Height + 1
+THIS.Left = THIS.Parent.WIDTH - THIS.Parent.Height + 2
+ENDPROC
+PROCEDURE Valid
+LOCAL loFrmCld as Object
+	THIS.Parent.datecnt.Valid()
+
+	loFrmCld = CREATEOBJECT("TopCld", IIF(VARTYPE(THIS.Parent.Value) = 'T',;
+										  TTOD(THIS.Parent.Value), THIS.Parent.Value))
+	*Обрезаем убегание за экран
+*!*		loFrmCld.Top=MAX(OBJTOCLIENT(THIS.Parent,1)+IIF(THISFORM.ShowWindow=2,0,THISFORM.Top+IIF(THISFORM.TitleBar=1,SYSMETRIC(9),0))-loFrmCld.Height,0)
+*!*		loFrmCld.Left=MAX(OBJTOCLIENT(THIS.Parent,2)+IIF(THISFORM.ShowWindow=2,0,THISFORM.Left)-loFrmCld.Width+THIS.Parent.Width,0)
+	loFrmCld.Top = MAX(OBJTOCLIENT(THIS.Parent, 1) + IIF(THISFORM.ShowWindow = 2,;
+														 0,;
+														 THISFORM.Top;
+														 + IIF(THISFORM.TitleBar = 1,;
+														 	   SYSMETRIC(9),;
+														 	   0));
+														 + THIS.Parent.Height, 0)
+	loFrmCld.Left = MAX(OBJTOCLIENT(THIS.Parent, 2) + IIF(THISFORM.ShowWindow = 2,;
+														  0,;
+														  THISFORM.Left);
+													  + THIS.Parent.BorderWidth, 0)
+	loFrmCld.Show(1, THIS.Parent)
+
+	THIS.Parent.DATECNT.Valid()
+	THIS.Parent.DATECNT.SetFocus()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] datecnt
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00RL1YW
+[CLASS] base_form
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] topcld
+[START PROPERTIES]
+
+AlwaysOnTop = .T.
+BackColor = 221,221,221
+BorderStyle = 0
+Caption = ""
+Closable = .F.
+ControlBox = .F.
+DataSession = 2
+DoCreate = .T.
+Height = 164
+KeyPreview = .T.
+Left = 0
+MaxButton = .F.
+MinButton = .F.
+Name = "topcld"
+SAVESET_FORM.Name = "SAVESET_FORM"
+ShowInTaskBar = .F.
+TabIndex = 1
+TitleBar = 0
+Top = 0
+Width = 193
+_memberdata =       80<VFPData><memberdata name="setgrid" type="Method" favorites="True"/></VFPData>
+dbcontainer.Name = "dbcontainer"
+dbcontainer.ZOrderSet = 62
+lflagfocus = .T.
+lisclicktrue = .F.
+ncycl = 0
+nday = 1
+nmonth = 1
+nyear = 2000
+ocldobj2value = .NULL.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+DODEFAULT()
+
+THIS.tmrCheckTitleBarClick.Enabled = .t.
+
+ENDPROC
+PROCEDURE Destroy
+	DODEFAULT()
+RETURN THIS.noldday
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tdDate AS Date
+	DODEFAULT()
+	*начальная дата
+	THIS.cOldSetDate = SET("Date")
+	THIS.cOldSetCentury = SET("Century")
+	SET DATE TO DMY
+	SET CENTURY ON
+
+	IF !INLIST(VARTYPE(m.tdDate), 'D', 'T') OR EMPTY(m.tdDate)
+	    THIS.UnDate(DATE())
+	    THIS.noldday = DATE()
+	ELSE
+	    THIS.noldday = m.tdDate
+	    THIS.UnDate(m.tdDate)
+	ENDIF
+
+	THIS.SetGrid()
+
+	IF VARTYPE(m.lnTop) = 'N'
+	    THIS.TOP = m.lnTop
+	ENDIF
+
+	PUSH KEY CLEAR
+
+	WITH THIS
+	    .AMes[01] = "Январь"
+	    .AMes[02] = "Февраль"
+	    .AMes[03] = "Март"
+	    .AMes[04] = "Апрель"
+	    .AMes[05] = "Май"
+	    .AMes[06] = "Июнь"
+	    .AMes[07] = "Июль"
+	    .AMes[08] = "Август"
+	    .AMes[09] = "Сентябрь"
+	    .AMes[10] = "Октябрь"
+	    .AMes[11] = "Ноябрь"
+	    .AMes[12] = "Декабрь"
+
+	    .lblMes.Caption = .AMes[.nmonth]
+	    .lblGod.Caption = TRANSFORM(.nYEAR, "9999")
+	    .lblMes.Visible = .T.
+	    .lblGod.Visible = .T.
+
+	    .ShowHeader()
+	ENDWITH
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	NODEFAULT
+
+	DO CASE
+	CASE THIS.viewHelp.Height <> 10
+		NODEFAULT 
+		THIS.viewHelp.Click()
+	CASE m.tnKeyCode = 27 and m.tnShiftAltCtrl = 0
+		NODEFAULT 
+		THISFORM.Release()
+	CASE m.tnKeyCode = 13 AND m.tnShiftAltCtrl = 0
+		NODEFAULT 
+		THISFORM.Release(.T.)
+	ENDCASE
+ENDPROC
+PROCEDURE Release
+LPARAMETERS tlIsReturn
+LOCAL lca as String
+	POP KEY ALL
+
+	IF m.tlIsReturn
+	    THIS.noldday = CTOD(STRTRAN(TRANSFORM(THIS.nDAY, "99") + '/';
+	    			   + TRANSFORM(THIS.nMONTH, "99") + '/';
+	    			   + TRANSFORM(THIS.nYEAR, "9999"), ' ', '0'))
+	ENDIF
+
+	IF VARTYPE(THIS.oCldObj2Value) = 'O' AND !ISNULL(THIS.oCldObj2Value)
+	    STORE THIS.nOldday TO THIS.oCldObj2Value.VALUE
+*!*		    RELEASE oCldObj2Value
+	ENDIF
+
+	SET DATE TO (THIS.cOldSetDate)
+	lca = "SET CENTURY " + THIS.cOldSetCentury
+
+	&lca
+ENDPROC
+PROCEDURE SAVESET_FORM.loadset
+NODEFAULT
+ENDPROC
+PROCEDURE SAVESET_FORM.saveset
+NODEFAULT
+ENDPROC
+PROCEDURE Scrolled
+LPARAMETERS tnDirection
+	WAIT WINDOW ' '
+ENDPROC
+PROCEDURE Show
+LPARAMETERS tnStyle, toCldObj2Value
+*!*	PUBLIC oCldObj2Value
+	THIS.oCldObj2Value = m.toCldObj2Value
+ENDPROC
+PROCEDURE set
+LPARAMETERS tcVarMet, tValue
+	tcVarMet = STRTRAN(m.tcVarMet, ' ', '')
+
+	IF ISNULL(m.tValue)
+	    RETURN m.&tcVarMet
+	ELSE
+	    m.&tcVarMet = m.tValue
+	ENDIF
+ENDPROC
+PROCEDURE setgrid
+LOCAL ldDate, lOldLock, lnDW, lnWW, lnDay, lnRowD, lnColD, lcField, lni as Integer, lnj as Integer
+	lOldLock = THISFORM.LOCKSCREEN
+	THISFORM.LOCKSCREEN = .T.
+
+	ldDate = CTOD(STRTRAN("01/" + TRANSFORM(THIS.nMONTH, "99") + '/';
+			 + TRANSFORM(THIS.nYEAR, "9999"), ' ', '0'))
+
+	THISFORM.cmw1.CAPTION = LTRIM(TRANSFORM(WEEK(m.ldDate, 1, 2)))
+
+	FOR lni = 2 TO 6
+	    THISFORM.SET("THISFORM.cmw" + TRANSFORM(m.lni) + ".Caption",;
+	    			 LTRIM(TRANSFORM(VAL(THISFORM.cmw1.CAPTION) + m.lni - 1)))
+	ENDFOR
+
+	THISFORM.shapeToday.Visible = .F.
+	THISFORM.SETALL("visible", .F., "cbx2grd")
+
+	lnWW = 1
+	lnDW = 1
+
+	DO WHILE MONTH(m.ldDate) = THIS.nMONTH
+	    IF m.lnDW = 7 	&&  Если прошлый день воскресенье
+	        lnWW = m.lnWW + 1	&& Текущая неделя
+	    ENDIF
+
+	    lnDW = DOW(m.ldDate, 2)	&& день недели
+	    lnDay = DAY(m.ldDate)	&& день
+
+	    IF lnDay = THIS.nDAY 	&& текущий
+	        lnRowD = m.lnWW
+	        lnColD = m.lnDW
+	    ENDIF
+
+	    THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	    			 + TRANSFORM(m.lnDW) + ".caption", LTRIM(TRANSFORM(m.lnDay)))
+	    THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	    			 + TRANSFORM(m.lnDW) + ".visible", .T.)
+	    THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	    			 + TRANSFORM(m.lnDW) + ".nDay", m.ldDate)
+
+	    DO CASE
+	    CASE m.ldDate = DATE()
+	        THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 + TRANSFORM(m.lnDW) + ".ForeColor",;
+	        			THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        						 + TRANSFORM(m.lnDW) + ".nmyforecolor", .NULL.))
+	        THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 + TRANSFORM(m.lnDW) + ".FontBold", .F.)
+
+	        THISFORM.SET("THISFORM.shapeToday.Left",;
+	        			 THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 			  + TRANSFORM(m.lnDW) + ".Left", .NULL.) - 1)
+	        THISFORM.SET("THISFORM.shapeToday.Top",;
+	        			 THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 			  + TRANSFORM(m.lnDW) + ".Top", .NULL.) - 1)
+        	THISFORM.shapeToday.Visible = .T.
+	    CASE m.ldDate = THIS.noldDay
+	        THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 + TRANSFORM(m.lnDW) + ".ForeColor",;
+	        			 THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 			  + TRANSFORM(m.lnDW) + ".ndefaultdayforecolor ", .NULL.))
+	        THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 + TRANSFORM(m.lnDW) + ".FontBold", .T.)
+	    OTHERWISE
+	        THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 + TRANSFORM(m.lnDW) + ".ForeColor",;
+	        			 THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 + TRANSFORM(m.lnDW) + ".nmyforecolor", .NULL.))
+	        THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnWW) + "_d";
+	        			 + TRANSFORM(m.lnDW) + ".FontBold", .F.)
+	    ENDCASE
+
+	    ldDate = m.ldDate + 1
+	ENDDO
+
+	IF VARTYPE(m.lnRowD) <> 'N' OR VARTYPE(m.lnColD) <> 'N'	&& если нет текущего дня
+	    lnRowD = m.lnWW
+	    lnColD = m.lnDW
+	    THIS.nDAY = m.lnDay
+	ENDIF
+
+	THISFORM.SET("THISFORM.cmd_w" + TRANSFORM(m.lnRowD) + "_d";
+				 + TRANSFORM(m.lnColD) + ".valid()", .NULL.)
+	THISFORM.LOCKSCREEN = m.lOldLock
+ENDPROC
+PROCEDURE showheader
+* Расчет нового расположения заголовка
+THIS.lblMes.CAPTION = THIS.AMes[THISFORM.nMonth]
+THIS.lblGod.CAPTION = TRANSFORM(THISFORM.nYEAR, "9999")
+
+THIS.lblMes.LEFT = (THIS.WIDTH - (THIS.lblMes.WIDTH + 2 + THIS.lblGod.WIDTH)) / 2
+THIS.lblGod.LEFT = THIS.lblMes.LEFT + THIS.lblMes.WIDTH + 2
+ENDPROC
+PROCEDURE undate
+LPARAMETERS tdDate
+	THIS.nDAY = DAY(m.tdDate)
+	THIS.nMONTH = MONTH(m.tdDate)
+	THIS.nYEAR = YEAR(m.tdDate)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+66[END RESERVED2]
+[START RESERVED3]
+*set 
+*setgrid 
+*showheader 
+*undate 
+^ames[12,1] 
+coldsetcentury
+coldsetdate
+lflagfocus
+lisclicktrue
+ncycl
+nday
+nmonth
+noldcol
+noldday
+noldrow
+nyear
+ocldobj2value
+seldelbutt
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PA03XN5R
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] btnNextGod
+[PARENT] topcld
+[START PROPERTIES]
+Caption = ""
+Height = 15
+Left = 128
+Name = "btnNextGod"
+Picture = ..\bmp\polcld\top.bmp
+TabStop = .F.
+Top = 2
+Visible = .F.
+Width = 15
+ZOrderSet = 11
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	DO CASE
+	CASE INLIST(m.tnKeyCode, 9, 4) AND m.tnShiftAltCtrl = 0	&& выходим в другое поле
+	    NODEFAULT
+
+	    THISFORM.lisClickTrue = .F.
+	    THISFORM.CMD_W2_D1.SetFocus()
+	ENDCASE
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton <> 1
+		RETURN 
+	ENDIF 
+
+	THISFORM.tmrNextMesGod.Tag = '3'
+	THISFORM.tmrNextMesGod.Timer()
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+LOCAL luPodMouse
+	luPodMouse = SYS(1270)
+
+	IF VARTYPE(m.luPodMouse) = 'L' OR THIS <> m.luPodMouse
+	    THISFORM.tmrNextMesGod.TAG = ''
+	ENDIF
+	*!*	IF tnButton = 2
+	*!*		NODEFAULT
+	*!*		KEYBOARD "{ESCAPE}"
+	*!*	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0UT05IYYL
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] btnNextMes
+[PARENT] topcld
+[START PROPERTIES]
+Caption = ""
+Height = 15
+Left = 163
+Name = "btnNextMes"
+Picture = ..\bmp\polcld\next.bmp
+TabStop = .F.
+Top = 9
+Width = 20
+ZOrderSet = 7
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	DO CASE
+	CASE m.tnKeyCode = 4 AND m.tnShiftAltCtrl = 0
+	*right
+	    NODEFAULT
+	    THISFORM.tmrNextMesGod.TAG = '1'
+	    THISFORM.tmrNextMesGod.TIMER()
+
+	    THISFORM.btnNextGod.VISIBLE = .F.
+	    THISFORM.btnPrevGod.VISIBLE = .F.
+	*!*	CASE tnKeyCode = 19 AND tnShiftAltCtrl = 0 OR tnKeyCode = 15 AND tnShiftAltCtrl = 1 	&& выходим в другое поле
+	*!*		NODEFAULT
+	*!*		thisform.isClickTrue = .f.
+	*!*		thisform.conTAINER1.CMD_W2_D1.SetFocus()
+	ENDCASE
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton <> 1
+	    RETURN
+	ENDIF
+
+	THISFORM.tmrNextMesGod.TAG = '1'
+	THISFORM.tmrNextMesGod.TIMER()
+
+	THISFORM.btnNextGod.VISIBLE = .F.
+	THISFORM.btnPrevGod.VISIBLE = .F.
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+LOCAL luPodMouse
+	luPodMouse = SYS(1270)
+
+	IF VARTYPE(m.luPodMouse) = 'L' OR THIS <> m.luPodMouse
+	  THISFORM.tmrNextMesGod.Tag = ''
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PA03XN5Q
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] btnPrevGod
+[PARENT] topcld
+[START PROPERTIES]
+Caption = ""
+Height = 15
+Left = 128
+Name = "btnPrevGod"
+Picture = ..\bmp\polcld\bottom.bmp
+TabStop = .F.
+Top = 18
+Visible = .F.
+Width = 15
+ZOrderSet = 12
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	DO CASE 
+	CASE INLIST(m.tnKeyCode, 9, 4) AND m.tnShiftAltCtrl = 0	&& выходим в другое поле
+		NODEFAULT 
+
+		THISFORM.lIsClickTrue = .F.
+		THISFORM.CMD_W2_D1.SetFocus()
+	ENDCASE
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton <> 1
+	    RETURN
+	ENDIF
+
+	THISFORM.tmrNextMesGod.TAG = '4'
+	THISFORM.tmrNextMesGod.TIMER()
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+LOCAL luPodMouse
+	luPodMouse = SYS(1270)
+
+	IF VARTYPE(m.luPodMouse) = 'L' OR THIS <> m.luPodMouse
+	    THISFORM.tmrNextMesGod.TAG = ''
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0UT05IYYY
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] btnPrevMes
+[PARENT] topcld
+[START PROPERTIES]
+Caption = ""
+Height = 15
+Left = 8
+Name = "btnPrevMes"
+Picture = ..\bmp\polcld\previous.bmp
+TabStop = .F.
+Top = 9
+Width = 20
+ZOrderSet = 8
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	DO CASE
+	CASE m.tnKeyCode = 19 AND m.tnShiftAltCtrl = 0
+	*left
+	    NODEFAULT
+
+	    THISFORM.tmrNextMesGod.TAG = '2'
+	    THISFORM.tmrNextMesGod.TIMER()
+
+	    THISFORM.btnNextGod.VISIBLE = .F.
+	    THISFORM.btnPrevGod.VISIBLE = .F.
+	*!*	CASE tnKeyCode = 19 AND tnShiftAltCtrl = 0 OR tnKeyCode = 15 AND tnShiftAltCtrl = 1 	&& выходим в другое поле
+	*!*		NODEFAULT
+	*!*		thisform.isClickTrue = .f.
+	*!*		thisform.conTAINER1.CMD_W2_D1.SetFocus()
+	ENDCASE
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton <> 1
+	    RETURN
+	ENDIF
+
+	THISFORM.tmrNextMesGod.TAG = '2'
+	THISFORM.tmrNextMesGod.TIMER()
+
+	THISFORM.btnNextGod.Visible = .F.
+	THISFORM.btnPrevGod.Visible = .F.
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+LOCAL luPodMouse
+	luPodMouse = SYS(1270)
+
+	IF VARTYPE(m.luPodMouse) = 'L' OR THIS <> m.luPodMouse
+	    THISFORM.tmrNextMesGod.TAG = ''
+	ENDIF
+	*!*	IF nButton = 2
+	*!*		NODEFAULT
+	*!*		KEYBOARD '{ESCAPE}'
+	*!*	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M20VPN22
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] CldTimer
+[PARENT] topcld
+[START PROPERTIES]
+Height = 23
+Left = 112
+Name = "CldTimer"
+Top = 8
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.Interval = 50
+ENDPROC
+PROCEDURE Timer
+*если курсор увели с календаря на долго - закрываемся
+LOCAL loPodMouse as Object, lcNameObj
+	loPodMouse = SYS(1270)
+	lcNameObj = UPPER(SYS(1272, m.loPodMouse))
+
+	IF (VARTYPE(m.loPodMouse) = 'L' AND !m.lopodmouse) OR;
+	   !(UPPER(THISFORM.Name) $ m.lcNameObj OR UPPER(THISFORM.oCldObj2Value.Name) $ m.lcNameObj)
+	    THISFORM.nCYCL = THISFORM.nCYCL + 1
+	ELSE
+	    THISFORM.nCYCL = 0
+	ENDIF
+
+	IF THISFORM.nCYCL = _WAIT_CYCLE 
+	    THISFORM.Release()
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0ME10FBZS
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w1_d1
+[PARENT] topcld
+[START PROPERTIES]
+Left = 27
+Name = "cmd_w1_d1"
+Top = 50
+ZOrderSet = 19
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0ME10JJDF
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w1_d2
+[PARENT] topcld
+[START PROPERTIES]
+Left = 50
+Name = "cmd_w1_d2"
+Top = 50
+ZOrderSet = 20
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w1_d3
+[PARENT] topcld
+[START PROPERTIES]
+Left = 73
+Name = "cmd_w1_d3"
+Top = 50
+ZOrderSet = 21
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00RL1YW
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w1_d4
+[PARENT] topcld
+[START PROPERTIES]
+Left = 96
+Name = "cmd_w1_d4"
+Top = 50
+ZOrderSet = 22
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M10TG0GQ
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w1_d5
+[PARENT] topcld
+[START PROPERTIES]
+Left = 119
+Name = "cmd_w1_d5"
+Top = 50
+ZOrderSet = 23
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00RL1YW
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w1_d6
+[PARENT] topcld
+[START PROPERTIES]
+Left = 142
+Name = "cmd_w1_d6"
+Top = 50
+ZOrderSet = 24
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133SD
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w1_d7
+[PARENT] topcld
+[START PROPERTIES]
+ForeColor = 255,0,0
+Left = 166
+Name = "cmd_w1_d7"
+Top = 50
+ZOrderSet = 25
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00RL1YW
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w2_d1
+[PARENT] topcld
+[START PROPERTIES]
+Left = 27
+Name = "cmd_w2_d1"
+Top = 68
+ZOrderSet = 26
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00SAS7J
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w2_d2
+[PARENT] topcld
+[START PROPERTIES]
+Left = 50
+Name = "cmd_w2_d2"
+Top = 68
+ZOrderSet = 27
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00SAS8G
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w2_d3
+[PARENT] topcld
+[START PROPERTIES]
+Left = 73
+Name = "cmd_w2_d3"
+Top = 68
+ZOrderSet = 28
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00SAS8K
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w2_d4
+[PARENT] topcld
+[START PROPERTIES]
+Left = 96
+Name = "cmd_w2_d4"
+Top = 68
+ZOrderSet = 29
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M0101IP9
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w2_d5
+[PARENT] topcld
+[START PROPERTIES]
+Left = 119
+Name = "cmd_w2_d5"
+Top = 68
+ZOrderSet = 30
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00SAS8P
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w2_d6
+[PARENT] topcld
+[START PROPERTIES]
+Left = 142
+Name = "cmd_w2_d6"
+Top = 68
+ZOrderSet = 31
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00SAS8S
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w2_d7
+[PARENT] topcld
+[START PROPERTIES]
+ForeColor = 255,0,0
+Left = 166
+Name = "cmd_w2_d7"
+Top = 68
+ZOrderSet = 32
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00SYLYH
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w3_d1
+[PARENT] topcld
+[START PROPERTIES]
+Left = 27
+Name = "cmd_w3_d1"
+Top = 86
+ZOrderSet = 33
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133U7
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w3_d2
+[PARENT] topcld
+[START PROPERTIES]
+Left = 50
+Name = "cmd_w3_d2"
+Top = 86
+ZOrderSet = 34
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133UD
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w3_d3
+[PARENT] topcld
+[START PROPERTIES]
+Left = 73
+Name = "cmd_w3_d3"
+Top = 86
+ZOrderSet = 35
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133UI
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w3_d4
+[PARENT] topcld
+[START PROPERTIES]
+Left = 96
+Name = "cmd_w3_d4"
+Top = 86
+ZOrderSet = 36
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133UO
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w3_d5
+[PARENT] topcld
+[START PROPERTIES]
+Left = 119
+Name = "cmd_w3_d5"
+Top = 86
+ZOrderSet = 37
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133V2
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w3_d6
+[PARENT] topcld
+[START PROPERTIES]
+Left = 142
+Name = "cmd_w3_d6"
+Top = 86
+ZOrderSet = 38
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133V7
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w3_d7
+[PARENT] topcld
+[START PROPERTIES]
+ForeColor = 255,0,0
+Left = 166
+Name = "cmd_w3_d7"
+Top = 86
+ZOrderSet = 39
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133SD
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w4_d1
+[PARENT] topcld
+[START PROPERTIES]
+Left = 27
+Name = "cmd_w4_d1"
+Top = 104
+ZOrderSet = 40
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133VJ
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w4_d2
+[PARENT] topcld
+[START PROPERTIES]
+Left = 50
+Name = "cmd_w4_d2"
+Top = 104
+ZOrderSet = 41
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133VQ
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w4_d3
+[PARENT] topcld
+[START PROPERTIES]
+Left = 73
+Name = "cmd_w4_d3"
+Top = 104
+ZOrderSet = 42
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133VV
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w4_d4
+[PARENT] topcld
+[START PROPERTIES]
+Left = 96
+Name = "cmd_w4_d4"
+Top = 104
+ZOrderSet = 43
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133W1
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w4_d5
+[PARENT] topcld
+[START PROPERTIES]
+Left = 119
+Name = "cmd_w4_d5"
+Top = 104
+ZOrderSet = 44
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133W7
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w4_d6
+[PARENT] topcld
+[START PROPERTIES]
+Left = 142
+Name = "cmd_w4_d6"
+Top = 104
+ZOrderSet = 45
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133WC
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w4_d7
+[PARENT] topcld
+[START PROPERTIES]
+ForeColor = 255,0,0
+Left = 166
+Name = "cmd_w4_d7"
+Top = 104
+ZOrderSet = 46
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00RL1YW
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w5_d1
+[PARENT] topcld
+[START PROPERTIES]
+Left = 27
+Name = "cmd_w5_d1"
+Top = 122
+ZOrderSet = 47
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133WO
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w5_d2
+[PARENT] topcld
+[START PROPERTIES]
+Left = 50
+Name = "cmd_w5_d2"
+Top = 122
+ZOrderSet = 48
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133WU
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w5_d3
+[PARENT] topcld
+[START PROPERTIES]
+Left = 73
+Name = "cmd_w5_d3"
+Top = 122
+ZOrderSet = 49
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133WZ
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w5_d4
+[PARENT] topcld
+[START PROPERTIES]
+Left = 96
+Name = "cmd_w5_d4"
+Top = 122
+ZOrderSet = 50
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133X5
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w5_d5
+[PARENT] topcld
+[START PROPERTIES]
+Left = 119
+Name = "cmd_w5_d5"
+Top = 122
+ZOrderSet = 51
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133XA
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w5_d6
+[PARENT] topcld
+[START PROPERTIES]
+Left = 142
+Name = "cmd_w5_d6"
+Top = 122
+ZOrderSet = 52
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133XG
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w5_d7
+[PARENT] topcld
+[START PROPERTIES]
+ForeColor = 255,0,0
+Left = 166
+Name = "cmd_w5_d7"
+Top = 122
+ZOrderSet = 53
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00SAS7J
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w6_d1
+[PARENT] topcld
+[START PROPERTIES]
+Left = 27
+Name = "cmd_w6_d1"
+Top = 140
+ZOrderSet = 54
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133XR
+[CLASS] cbx2grd
+[CLASSLOC] polcld.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmd_w6_d2
+[PARENT] topcld
+[START PROPERTIES]
+Left = 50
+Name = "cmd_w6_d2"
+Top = 140
+ZOrderSet = 55
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M0121CJ5
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmw1
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "1"
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 19
+Left = 4
+Name = "cmw1"
+SpecialEffect = 1
+TabStop = .F.
+Top = 50
+Visible = .T.
+Width = 22
+ZOrderSet = 56
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00RL1YW
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmw2
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "2"
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 19
+Left = 4
+Name = "cmw2"
+SpecialEffect = 1
+TabStop = .F.
+Top = 68
+Visible = .T.
+Width = 22
+ZOrderSet = 57
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M0121CJH
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmw3
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "3"
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 19
+Left = 4
+Name = "cmw3"
+SpecialEffect = 1
+TabStop = .F.
+Top = 86
+Visible = .T.
+Width = 22
+ZOrderSet = 58
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M0121CJN
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmw4
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "4"
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 19
+Left = 4
+Name = "cmw4"
+SpecialEffect = 1
+TabStop = .F.
+Top = 104
+Visible = .T.
+Width = 22
+ZOrderSet = 59
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M0121CJT
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmw5
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "5"
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 19
+Left = 4
+Name = "cmw5"
+SpecialEffect = 1
+TabStop = .F.
+Top = 122
+Visible = .T.
+Width = 22
+ZOrderSet = 60
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M0121CK0
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmw6
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "6"
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 19
+Left = 4
+Name = "cmw6"
+SpecialEffect = 1
+TabStop = .F.
+Top = 140
+Visible = .T.
+Width = 22
+ZOrderSet = 61
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0UT05IYY9
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntHeader
+[PARENT] topcld
+[START PROPERTIES]
+BackStyle = 0
+BorderWidth = 0
+Height = 31
+Left = 2
+Name = "cntHeader"
+Top = 2
+Width = 187
+ZOrderSet = 5
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1P91EL49C
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Command1
+[PARENT] topcld
+[START PROPERTIES]
+Caption = ""
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 15
+Left = 4
+Name = "Command1"
+SpecialEffect = 1
+TabStop = .F.
+Top = 35
+Visible = .T.
+Width = 22
+ZOrderSet = 18
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133YK
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Command_fri
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "Пт."
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 15
+Left = 119
+Name = "Command_fri"
+SpecialEffect = 1
+TabStop = .F.
+Top = 35
+Width = 24
+ZOrderSet = 15
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133XW
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Command_mon
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "Пн."
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 15
+Left = 27
+Name = "Command_mon"
+SpecialEffect = 1
+TabStop = .F.
+Top = 35
+Width = 24
+ZOrderSet = 4
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133ZO
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Command_sat
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "Вс."
+DisabledForeColor = 128,64,64
+Enabled = .F.
+FontSize = 7
+ForeColor = 255,0,0
+Height = 15
+Left = 166
+Name = "Command_sat"
+SpecialEffect = 1
+TabStop = .F.
+Top = 35
+Width = 24
+ZOrderSet = 17
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M00SAS8G
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Command_sun
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "Сб."
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 15
+Left = 142
+Name = "Command_sun"
+SpecialEffect = 1
+TabStop = .F.
+Top = 35
+Width = 24
+ZOrderSet = 16
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133YD
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Command_thu
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "Чт."
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 15
+Left = 96
+Name = "Command_thu"
+SpecialEffect = 1
+TabStop = .F.
+Top = 35
+Width = 24
+ZOrderSet = 14
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133Y2
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Command_tue
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "Вт."
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 15
+Left = 50
+Name = "Command_tue"
+SpecialEffect = 1
+TabStop = .F.
+Top = 35
+Width = 24
+ZOrderSet = 9
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M01133Y7
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Command_wed
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "Ср."
+DisabledForeColor = 0,0,128
+Enabled = .F.
+FontSize = 7
+Height = 15
+Left = 73
+Name = "Command_wed"
+SpecialEffect = 1
+TabStop = .F.
+Top = 35
+Width = 24
+ZOrderSet = 10
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0UT05IYYG
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblGod
+[PARENT] topcld
+[START PROPERTIES]
+Alignment = 0
+BackStyle = 0
+Caption = "lblGod"
+FontBold = .T.
+FontName = "Ms Sans Serif"
+FontSize = 8
+Height = 15
+Left = 85
+Name = "lblGod"
+Top = 10
+Visible = .F.
+Width = 37
+ZOrderSet = 13
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseEnter
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	WITH THISFORM
+		.btnNextGod.LEFT = THIS.LEFT + THIS.WIDTH
+		.btnPrevGod.LEFT = THIS.LEFT + THIS.WIDTH
+	*!*	.shpClrGod.ZOrder(0)
+		.btnNextGod.ZORDER(0)
+		.btnPrevGod.ZORDER(0)
+	*!*	.shpClrGod.Visible = .T.
+		.btnNextGod.Visible = .T.
+		.btnPrevGod.Visible = .T.
+	ENDWITH
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+*!*		THISFORM.btnNextGod.ZORDER(1)
+*!*		THISFORM.btnPrevGod.ZORDER(1)
+*!*		*
+*!*		THISFORM.btnNextGod.VISIBLE = .F.
+*!*		THISFORM.btnPrevGod.VISIBLE = .F.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0UT05IYYB
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lblMes
+[PARENT] topcld
+[START PROPERTIES]
+Alignment = 1
+AutoSize = .T.
+BackStyle = 0
+Caption = "lblMes"
+FontBold = .T.
+FontName = "Ms Sans Serif"
+FontSize = 8
+Height = 15
+Left = 43
+Name = "lblMes"
+Top = 9
+Visible = .F.
+Width = 37
+ZOrderSet = 6
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcPopuMes as String, lnBar as Integer, lnRow as Integer, lnCol as Integer, lnI as Integer
+	lcPopMes = SYS(2015) && имя меню
+	lnBar = 0
+	*********************** Памятка для себя ***********************
+	*! Расчет высоты окна в фоксилах
+	*  Wrows() = Thisform.Height/Fontmetric(1,Thisform.FontName,Thisform.FontSize)
+	*! Расчет ширины окна в фоксилах
+	*  Wcols() = Thisform.Width/Fontmetric(6,Thisform.FontName,Thisform.FontSize)
+	*****************************************************************
+	lnRow = (THIS.TOP + FONTMETRIC(1, THIS.FONTNAME, THIS.FONTSIZE));
+			/ FONTMETRIC(1, THISFORM.FONTNAME, THISFORM.FONTSIZE)
+	lnCol = (THIS.Left + FONTMETRIC(6, THIS.FONTNAME, THIS.FONTSIZE));
+			/ FONTMETRIC(6, THISFORM.FONTNAME, THISFORM.FONTSIZE)
+
+	DEFINE POPUP (m.lcPopMes) FROM m.lnRow, m.lnCol SHORTCUT
+
+	FOR lnI = 1 TO 12
+	    DEFINE BAR m.lnI OF (m.lcPopMes) PROMPT THISFORM.AMes[m.lni]
+	ENDFOR
+
+	ON SELECTION POPUP (m.lcPopMes) m.lnBar = BAR()
+	ACTIVATE POPUP (m.lcPopMes)
+
+	IF m.lnBar > 0
+	    THISFORM.MONTH = m.lnBar
+	    THISFORM.ShowHeader()
+	    THISFORM.SetGrid()
+	ENDIF
+
+	RELEASE POPUP(m.lcPopMes)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TO0BV21O
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] lbToDay
+[PARENT] topcld
+[START PROPERTIES]
+Caption = "Сегодня:"
+FontBold = .T.
+FontItalic = .T.
+Left = 75
+Name = "lbToDay"
+Top = 141
+ZOrderSet = 65
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M10TG0GQ
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Shape
+[PARENT] topcld
+[START PROPERTIES]
+BackColor = 0,0,0
+BackStyle = 0
+Height = 164
+Left = 0
+Name = "Shape"
+SpecialEffect = 0
+Top = 0
+Width = 193
+ZOrderSet = 2
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton = 2
+		NODEFAULT
+		KEYBOARD "{ESCAPE}"
+	ENDIF
+ENDPROC
+PROCEDURE MouseWheel
+LPARAMETERS tnDirection, tnShift, tnXCoord, tnYCoord
+	DO CASE 
+	CASE m.tnDirection > 0
+*!*			THISFORM.isClickTrue=.f.
+*!*			THISFORM.cmd_w1_d1.SetFocus()
+		KEYBOARD "{PGUP}"
+	CASE m.tnDirection < 0
+*!*			THISFORM.isClickTrue=.f.
+*!*			THISFORM.cmd_w1_d1.SetFocus()
+		KEYBOARD "{PGDN}"
+	ENDCASE
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PA047ZBF
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] shapeToday
+[PARENT] topcld
+[START PROPERTIES]
+BackStyle = 0
+BorderColor = 255,0,0
+BorderWidth = 2
+Height = 19
+Left = 40
+Name = "shapeToday"
+Style = 0
+Top = 21
+Width = 24
+ZOrderSet = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2D40NXVNO
+[CLASS] base_timer
+[CLASSLOC] base_gui.vcx
+[BASECLASS] timer
+[OBJNAME] tmrCheckTitleBarClick
+[PARENT] topcld
+[START PROPERTIES]
+Enabled = .F.
+Height = 23
+Interval = 100
+Left = 88
+Name = "tmrCheckTitleBarClick"
+Top = 8
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+IF MDOWN() AND (MCOL() = -1 OR MROW() = -1)
+	THISFORM.Release()
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0UT069EWD
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] tmrNextMesGod
+[PARENT] topcld
+[START PROPERTIES]
+Height = 25
+Left = 136
+Name = "tmrNextMesGod"
+Top = 8
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+* Наращиваем скорость при условии что кнопка мыши нажата
+IF MDOWN()
+    IF THIS.INTERVAL = 0
+        THIS.INTERVAL = 300
+    ELSE
+        IF THIS.INTERVAL > 50
+            THIS.INTERVAL = THIS.INTERVAL - 25
+        ENDIF
+    ENDIF
+ELSE
+    THIS.INTERVAL = 0
+    RETURN
+ENDIF
+
+DO CASE
+CASE THIS.TAG == '1' && Следующий месяц
+    IF THISFORM.nMONTH < 12
+        THISFORM.nMONTH = THISFORM.nMONTH + 1
+    ELSE
+        IF THISFORM.nYEAR < 9999
+            THISFORM.nMONTH = 1
+            THISFORM.nYEAR = THISFORM.nYEAR + 1
+        ENDIF
+    ENDIF
+
+    THISFORM.ShowHeader()
+    THISFORM.SetGrid()
+*!*	  Thisform.DispNum
+CASE THIS.TAG == '2' && Предыдущий месяц
+    IF THISFORM.nMONTH > 1
+        THISFORM.nMONTH = THISFORM.nMONTH - 1
+    ELSE
+        IF THISFORM.nYEAR > 1601
+            THISFORM.nMONTH = 12
+            THISFORM.nYEAR = THISFORM.nYEAR - 1
+        ENDIF
+    ENDIF
+
+    THISFORM.ShowHeader()
+    THISFORM.SetGrid()
+*!*	  Thisform.DispNum
+CASE THIS.TAG == '3' && Следующий год
+    IF THISFORM.nYEAR < 9999
+        THISFORM.nYEAR = THISFORM.nYEAR + 1
+        THISFORM.lblGod.CAPTION = TRANSFORM(THISFORM.nYEAR, "9999")
+        THISFORM.SetGrid()
+*    Thisform.DispNum
+    ENDIF
+CASE THIS.TAG == '4' && Предыдущий год
+    IF THISFORM.nYEAR > 1601
+        THISFORM.nYEAR = THISFORM.nYEAR - 1
+        THISFORM.lblGod.CAPTION = TRANSFORM(THISFORM.nYEAR, 4)
+        THISFORM.SetGrid()
+*!*	    Thisform.DispNum
+    ENDIF
+OTHERWISE
+    THIS.INTERVAL = 0
+ENDCASE
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0ME1ADN2C
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] ViewHelp
+[PARENT] topcld
+[START PROPERTIES]
+Alignment = 2
+AutoSize = .F.
+BackColor = 255,255,221
+BackStyle = 0
+Caption = "?"
+FontBold = .F.
+FontSize = 6
+ForeColor = 128,64,0
+Height = 10
+Left = 175
+Name = "ViewHelp"
+ToolTipText = "Нажмите сюда для получения справки"
+Top = 147
+Width = 6
+ZOrderSet = 3
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH THIS
+	IF .HEIGHT = 10
+	    .CAPTION = "Щелчок закроет это окно" + CHR(13);
+	    		   + "ГОРЯЧИЕ КЛАВИШИ" + CHR(13);
+	    		   + "Вправо/влево - День (-/+)" + CHR(13);
+	    		   + "Вверх/вниз - Неделя (-/+)" + CHR(13);
+	    		   + "PageUp/PageDn - Месяц (-/+)" + CHR(13);
+	    		   + "Ctrl+PageUp/PageDw - Год (-/+)" + CHR(13);
+	    		   + "HOME - Сегодняшнее число" + CHR(13);
+	    		   + "END - Число по умолчанию" + CHR(13);
+	    		   + "Enter(Двойной щелчек) - Выбрать " + CHR(13);
+	    		   + "Esc - Отмена"
+	    .BACKSTYLE = 1
+	    STORE 1 TO .LEFT, .TOP
+	    .HEIGHT = .PARENT.HEIGHT - 2
+	    .WIDTH = .PARENT.WIDTH - 2
+	    .FORECOLOR = 0
+	    .FONTSIZE = 7
+	    .TOOLTIPTEXT = "Нажмите сюда чтобы убрать справку"
+	    .ZORDER(0)
+	ELSE
+	    .CAPTION = '?'
+	    .BACKSTYLE = 0
+	    STORE 10 TO .HEIGHT, .WIDTH
+	    .TOP = .PARENT.HEIGHT - 10
+	    .LEFT = .PARENT.WIDTH - 10
+	    .FORECOLOR = 16512
+	    .FONTSIZE = 6
+	    .TOOLTIPTEXT = "Нажмите сюда для получения справки"
+	ENDIF
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] topcld
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 7, 4, 12, 10, 18, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+[EOF]

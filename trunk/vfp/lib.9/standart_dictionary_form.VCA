@@ -1,0 +1,4573 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AY11Q66Q
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntforselection
+[START PROPERTIES]
+BackColor = 255,255,255
+Height = 21
+Name = "cntforselection"
+SpecialEffect = 1
+Style = 3
+TabIndex = 7
+Width = 100
+controlsource = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.ControlSource = THIS.txtSelection.ControlSource
+THIS.txtSelection.ControlSource = ''
+ENDPROC
+PROCEDURE Refresh
+IF !EMPTY(THIS.ControlSource)
+	THIS.txtSelection.Value = EVALUATE(THIS.ControlSource)
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+controlsource Specifies the source of data to which an object is bound.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+поле ввода с кнопкой для вызова вспомогательных программ для его заполнения[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG0A0S1W
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntSelection
+[PARENT] cntforselection
+[START PROPERTIES]
+Height = 17
+Left = 82
+Name = "cntSelection"
+Style = 3
+TabIndex = 2
+Top = 2
+Width = 17
+cmdBtn.Caption = "..."
+cmdBtn.Height = 17
+cmdBtn.Name = "cmdBtn"
+cmdBtn.SpecialEffect = 0
+cmdBtn.Width = 17
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+
+THIS.Left = THIS.Parent.Width - 18
+ENDPROC
+PROCEDURE cmdBtn.Click
+IF !EMPTY(THIS.Parent.Parent.ControlSource)
+	THIS.Parent.Parent.txtSelection.Value = EVALUATE(THIS.Parent.Parent.ControlSource)
+ENDIF
+
+THIS.Parent.Parent.txtSelection.SetFocus()
+THIS.Parent.Parent.txtSelection.Refresh()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG09JVAL
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] txtBorder
+[PARENT] cntforselection
+[START PROPERTIES]
+Height = 21
+Left = 0
+Name = "txtBorder"
+Top = 0
+Width = 100
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+THIS.Parent.txtSelection.SetFocus()
+
+NODEFAULT
+ENDPROC
+PROCEDURE Init
+THIS.Width = THIS.Parent.Width
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG09UTFL
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] txtSelection
+[PARENT] cntforselection
+[START PROPERTIES]
+BorderStyle = 0
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 13
+Left = 4
+Margin = 0
+Name = "txtSelection"
+ReadOnly = .T.
+SelectOnEntry = .T.
+TabIndex = 1
+Top = 4
+Width = 76
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+*!*	If Empty(This.Value)
+*!*	  This.Parent.cntSelection.Click
+*!*	Endif
+ENDPROC
+PROCEDURE Init
+THIS.Width = THIS.Parent.Width - 24
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	DO CASE
+	CASE m.tnKeyCode = 32 && space
+		THIS.Parent.cntSelection.Click()
+	CASE m.tnKeyCode = 7 && del
+		IF !EMPTY(THIS.Value) AND THIS.ReadOnly AND MESSAGEBOX("Хотите очистить текущее значение?", 4 + 32 + 256) = 6
+			DO CASE
+			CASE VARTYPE(THIS.Value) = 'N'
+				THIS.Value = 0
+			CASE VARTYPE(THIS.Value) = 'D'
+				THIS.Value = {..}
+			OTHERWISE
+				THIS.Value = ''
+			ENDCASE
+
+			THIS.Refresh()
+		ENDIF
+	ENDCASE
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntforselection
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS16PLQB
+[CLASS] dialog_form_szgr_2buttons
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] editfile_form
+[START PROPERTIES]
+BorderStyle = 3
+Caption = "Редактирование записи"
+DataSession = 1
+Dialog_shape.Height = 105
+Dialog_shape.Left = 3
+Dialog_shape.Name = "Dialog_shape"
+Dialog_shape.Top = 43
+Dialog_shape.Width = 409
+DoCreate = .T.
+Height = 186
+Icon = (THIS.oMain_Form.Icon)
+Left = 0
+MaxButton = .T.
+MinHeight = 184
+MinWidth = 415
+Name = "editfile_form"
+Top = 0
+Width = 417
+WindowType = 0
+_memberdata =      351<VFPData><memberdata name="lisaddnew" type="property" display="lIsAddNew"/><memberdata name="omain_form" type="property" display="oMain_Form"/><memberdata name="noldrecno" type="property" display="nOldRecno"/><memberdata name="noldsessionid" type="property" display="nOldSessionId"/><memberdata name="nid_lock" type="property" display="nID_Lock"/></VF
+cancelbutton.Left = 312
+cancelbutton.Name = "cancelbutton"
+cancelbutton.TabIndex = 7
+cancelbutton.Top = 152
+dbcontainer.Name = "dbcontainer"
+nid_lock = 0
+noldrecno = 0
+noldsessionid = 0
+okbutton.Left = 217
+okbutton.Name = "okbutton"
+okbutton.TabIndex = 6
+okbutton.Top = 152
+omain_form = .NULL.
+resizecorner.DefLeft = 
+resizecorner.DefTop = 
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Left = 400
+resizecorner.Name = "resizecorner"
+resizecorner.TabIndex = 8
+resizecorner.Top = 168
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+DODEFAULT()
+
+THIS.oMain_Form.Activate()
+ENDPROC
+PROCEDURE Init
+*tnIsAddNew - 0-редактирование, 1-новая запись, 2-новая запись детка
+LPARAMETERS tofrmMain as Form, tnIsAddNew as Integer
+LOCAL loI as Object, llResult
+	IF VARTYPE(m.tofrmMain) <> 'O'
+		RETURN .F.
+	ENDIF
+
+	DODEFAULT()
+	*позиционируем кнопки
+	THIS.Refreshbutton.Anchor = 0
+	THIS.Refreshbutton.Top = THIS.Okbutton.Top
+	THIS.Refreshbutton.Left = 8
+	THIS.Refreshbutton.Anchor = 6
+
+	THIS.Deletebutton.Anchor = 0
+	THIS.Deletebutton.Top = THIS.Okbutton.Top
+	THIS.Deletebutton.Left = 104
+	THIS.Deletebutton.Anchor = 6
+
+	THIS.oMain_Form = m.tofrmMain
+	llResult = .T.
+
+	WITH m.tofrmMain
+		*изменить источники данных на таблицу cInitTable
+		FOR EACH loI IN THIS.Controls
+			IF PEMSTATUS(m.loI, "ControlSource", 5) AND ATC('.', m.loI.ControlSource) = 0
+			*меняем там где не ставили руками
+				loI.ControlSource = .cInitTable + '.' + IIF(!EMPTY(m.loI.Comment), m.loI.Comment, m.loI.ControlSource)
+			ENDIF
+		ENDFOR
+		
+		SELECT (.cInitTable)
+
+		IF CHLCNT > 0
+		*сменить картинку в заголовке
+			THIS.cntHeader.Image1.Picture = "..\bmp\closed folder.bmp"
+		ENDIF
+
+		LOCAL lnLID as Integer, lnID as Integer, lnPID as Integer, lnName as String
+		lnLID = LID
+
+		DO CASE
+		CASE m.tnIsAddNew = 1
+			lnPID = PID
+			.nOldRecno = IIF(BOF() OR EOF(), -1, RECNO())
+			THIS.Caption = .Caption + " (новая запись)"
+
+			INSERT INTO (.cInitTable) (LID, ID, CHLCNT, PID) VALUES (-1, -1, 0, m.lnPID)
+			*выполнить инициализацию записи
+			llResult = .preChange(THIS, .T.)
+		CASE m.tnIsAddNew = 2
+			.nOldRecno = IIF(BOF() OR EOF(), -1, RECNO())
+			THIS.Caption = .Caption + " (новая запись)"
+
+			INSERT INTO (.cInitTable) (LID, ID, CHLCNT, PID) VALUES (-1, -1, 0, m.lnLID)
+			*выполнить инициализацию записи
+			llResult = .preChange(THIS, .T.)
+		OTHERWISE
+			lnID = ID
+			lnName = ALLTRIM(NAME)
+			.nOldRecno = -1
+			*заблокировать запись
+			THIS.nID_Lock = .lockObject(m.lnLID, m.lnID, m.lnName)
+
+			IF THIS.nID_Lock > 0
+				THIS.Caption = .Caption + " (редактирование записи)"
+				*обновить запись
+				.DBContainer.DBDictionary.select(m.lnLID)
+				*выполнить инициализацию записи
+				llResult = .preChange(THIS)
+
+				THIS.Refresh()
+
+				RETURN .T.
+			ELSE
+				*выйти либо сделать доступ только на чтение
+				RETURN .F.
+			ENDIF
+		ENDCASE
+	ENDWITH
+RETURN m.llResult
+ENDPROC
+PROCEDURE Load
+NODEFAULT
+ENDPROC
+PROCEDURE QueryUnload
+NODEFAULT
+
+THIS.CancelButton.Click()
+ENDPROC
+PROCEDURE cancelbutton.Click
+LOCAL lnLID as Integer
+	NODEFAULT
+	*Отмена внесенных изменений
+	WITH THISFORM
+		lnLID = EVALUATE(.oMain_Form.cInitTable + ".LID")
+
+		TABLEREVERT(.F., .oMain_Form.cInitTable)
+		*Если хотели добавить новую запись и отменили,
+		*возвращаемся на запомненную запись
+		IF m.lnLID = -1
+			IF .nOldRecno > 0
+				GO .nOldRecno
+			ENDIF
+		ELSE
+			*разблокировать запись
+			.oMain_Form.unLockObject(.nID_Lock)
+		ENDIF
+
+		.Release()
+	ENDWITH
+ENDPROC
+PROCEDURE okbutton.Click
+LPARAMETERS tcErrorMessage as String
+LOCAL llRet as Logical, lnLID as Integer
+	llRet = .F.
+
+	WITH THISFORM
+		lnLID = EVALUATE(.oMain_Form.cInitTable + ".LID")
+
+		IF m.lnLID = -1
+		*новая запись, добавить на сервер
+			LOCAL ARRAY laKey[1, 2], laNewKey[1, 2]
+
+			IF .oMain_Form.DBContainer.DBDictionary.insert(@laKey, @laNewKey)
+				FOR lnI = 1 TO ALEN(laNewKey, 1)
+					IF VARTYPE(laNewKey[m.lnI, 1]) = 'C' AND laNewKey[m.lnI, 1] == "lid"
+						llRet = .T.
+						lnLID = laNewKey[1, 2]
+
+						UPDATE (.oMain_Form.cInitTable) SET LID = m.lnLID;
+						WHERE LID = -1
+
+						EXIT
+					ENDIF
+				ENDFOR
+			ENDIF
+		ELSE
+			IF .oMain_Form.DBContainer.DBDictionary.update(m.lnLID)
+				llRet = .T.
+				*разблокировать запись
+				.oMain_Form.unLockObject(.nID_Lock)
+			ENDIF
+		ENDIF
+
+		IF m.llRet
+		*подтверждение изменений
+			TABLEUPDATE(0, .T., .oMain_Form.cInitTable)
+			*обновить запись
+			.oMain_Form.DBContainer.DBDictionary.select(m.lnLID)
+
+			.Release()
+			.oMain_Form.refreshMain()
+		ENDIF
+	ENDWITH
+RETURN m.llRet
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED3]
+nid_lock
+noldrecno Номер записи на которой находились до вызова окна
+noldsessionid
+omain_form
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS16R2LV
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntHeader
+[PARENT] editfile_form
+[START PROPERTIES]
+Anchor = 11
+BackColor = 255,255,255
+Height = 42
+Left = -1
+Name = "cntHeader"
+SpecialEffect = 1
+TabIndex = 1
+Top = 0
+Width = 417
+ZOrderSet = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS16R2LW
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] editfile_form.cntHeader
+[START PROPERTIES]
+Anchor = 3
+Height = 32
+Left = 5
+Name = "Image1"
+Picture = ..\bmp\text.bmp
+Stretch = 1
+Top = 5
+Width = 32
+ZOrderSet = 3
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS16R2LX
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBorder
+[PARENT] editfile_form.cntHeader
+[START PROPERTIES]
+Anchor = 14
+Height = 2
+Left = -1
+Name = "shpBorder"
+SpecialEffect = 0
+Top = 40
+Width = 417
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S609WX3M
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Deletebutton
+[PARENT] editfile_form
+[START PROPERTIES]
+Anchor = 6
+Caption = "Удалить"
+Enabled = .F.
+Left = 104
+Name = "Deletebutton"
+Picture = ..\bmp\16x16\data_delete.bmp
+TabIndex = 5
+Top = 152
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S60C020R
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] Name_label
+[PARENT] editfile_form
+[START PROPERTIES]
+Caption = "Наименование:"
+Height = 15
+Left = 8
+Name = "Name_label"
+TabIndex = 2
+Top = 50
+Width = 79
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S60BYR52
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] Name_textbox
+[PARENT] editfile_form
+[START PROPERTIES]
+Comment = "Name"
+Height = 21
+Left = 112
+Name = "Name_textbox"
+TabIndex = 3
+Top = 48
+Width = 296
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1S609WX3L
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Refreshbutton
+[PARENT] editfile_form
+[START PROPERTIES]
+Anchor = 6
+Caption = "Обновить"
+Left = 8
+Name = "Refreshbutton"
+Picture = ..\bmp\16x16\data_refresh.bmp
+TabIndex = 4
+Top = 152
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lnLID as Integer
+	lnLID = EVALUATE(THISFORM.oMain_Form.cInitTable + ".LID")
+	*обновить запись
+	THISFORM.oMain_Form.DBContainer.DBDictionary.select(m.lnLID)
+
+	THISFORM.Refresh()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] editfile_form
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS128MXF
+[CLASS] dialog_form_szgr_2buttons
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] find_form
+[START PROPERTIES]
+BorderStyle = 3
+Caption = "Поиск"
+DataSession = 1
+Dialog_shape.Height = 54
+Dialog_shape.Left = 3
+Dialog_shape.Name = "Dialog_shape"
+Dialog_shape.Top = 43
+Dialog_shape.Width = 372
+DoCreate = .T.
+Height = 132
+Icon = (THIS.oMain_Form.Icon)
+Left = 0
+MDIForm = .T.
+MinHeight = 132
+MinWidth = 378
+Name = "find_form"
+Top = 0
+Width = 378
+WindowType = 0
+cancelbutton.Left = 275
+cancelbutton.Name = "cancelbutton"
+cancelbutton.TabIndex = 6
+cancelbutton.Top = 99
+dbcontainer.Name = "dbcontainer"
+lisfound = .F.
+noldrecno = 0
+okbutton.Left = 180
+okbutton.Name = "okbutton"
+okbutton.TabIndex = 5
+okbutton.Top = 99
+omain_form = .NULL.
+resizecorner.DefLeft = 
+resizecorner.DefTop = 
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Left = 362
+resizecorner.Name = "resizecorner"
+resizecorner.TabIndex = 7
+resizecorner.Top = 117
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+DODEFAULT()
+
+WITH THIS
+	.oMain_Form.Activate()
+
+	.lIsFound = .F.
+	.Caption = "Поиск: " + .oMain_Form.Caption
+
+	.Refresh()
+	.nOldRecno = IIF(BOF() OR EOF(), -1, RECNO())
+ENDWITH
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tofrmMain as Form
+	DODEFAULT()
+
+	THIS.oMain_Form = m.tofrmMain
+	THIS.Icon = m.tofrmMain.Icon
+
+	IF EMPTY(THIS.txtFindName.Value)
+		THIS.okbutton.Enabled = .F.
+	ELSE
+		THIS.okbutton.Enabled = .T.
+	ENDIF
+ENDPROC
+PROCEDURE Load
+NODEFAULT
+ENDPROC
+PROCEDURE okbutton.Click
+IF !EMPTY(THISFORM.txtFindName.VALUE)
+	IF THISFORM.lIsFound
+		CONTINUE
+	ELSE
+		LOCAL lcsearchname as String, lcsearchtype as Character, lnI as Column
+		lcsearchname = ''
+
+		WITH THISFORM.oMain_Form.GrdDict
+			FOR EACH lnI IN .GrdPnl.Columns
+				IF lnI.ColumnOrder = .GrdPnl.LeftColumn + .nOldColumn - 1
+					lcsearchname = m.lnI.ControlSource
+
+					EXIT
+				ENDIF
+			ENDFOR
+		ENDWITH
+
+		lcsearchtype = VARTYPE(EVALUATE(m.lcsearchname))
+		THISFORM.txtFindName.Value = ALLTRIM(THISFORM.txtFindName.Value)
+
+		DO CASE
+		CASE m.lcsearchtype = 'C'
+			IF !m.goApp.oVars.oCurrentTask.oVars.lSearchMode
+				LOCATE FOR UPPER(EVALUATE(m.lcsearchname)) = THISFORM.txtFindName.Value
+			ELSE
+				LOCATE FOR THISFORM.txtFindName.Value $ UPPER(EVALUATE(m.lcsearchname))
+			ENDIF
+		CASE m.lcsearchtype = 'D'
+			IF !m.goApp.oVars.oCurrentTask.oVars.lSearchMode
+				LOCATE FOR EVALUATE(m.lcsearchname) = CTOD(THISFORM.txtFindName.Value)
+			ELSE
+				LOCATE FOR THISFORM.txtFindName.VALUE $ DTOC(EVALUATE(m.lcsearchname))
+			ENDIF
+		CASE m.lcsearchtype = 'T'
+			IF !m.goApp.oVars.oCurrentTask.oVars.lSearchMode
+				LOCATE FOR EVALUATE(m.lcsearchname) = CTOT(THISFORM.txtFindName.Value)
+			ELSE
+				LOCATE FOR THISFORM.txtFindName.VALUE $ TTOC(EVALUATE(m.lcsearchname))
+			ENDIF
+		CASE m.lcsearchtype = 'N'
+			IF !m.goApp.oVars.oCurrentTask.oVars.lSearchMode
+				LOCATE FOR EVALUATE(m.lcsearchname) = VAL(THISFORM.txtFindName.Value)
+			ELSE
+				LOCATE FOR THISFORM.txtFindName.VALUE $ TRANSFORM(EVALUATE(m.lcsearchname), "999999999999.999999999999")
+			ENDIF
+		ENDCASE
+	ENDIF
+
+	THISFORM.lIsFound = FOUND()
+ELSE
+	THISFORM.lIsFound = .f.
+ENDIF
+
+IF !THISFORM.lIsFound
+	MESSAGEBOX("Значение не найдено", 64, m.goApp.oVars.cTaskCaption)
+ENDIF
+
+THISFORM.oMain_Form.GrdDict.GrdPnl.SetFocus()
+THISFORM.oMain_Form.GrdDict.Refresh()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED3]
+lisfound
+noldrecno Номер записи на которой находились до вызова окна
+omain_form
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS12G0SV
+[CLASS] base_checkbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] checkbox
+[OBJNAME] Check1
+[PARENT] find_form
+[START PROPERTIES]
+Alignment = 0
+Anchor = 3
+BackStyle = 0
+Caption = "Поиск по подстроке"
+ControlSource = "m.goApp.oVars.oCurrentTask.oVars.lSearchMode"
+Left = 48
+Name = "Check1"
+TabIndex = 4
+Top = 77
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS12G0SQ
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntHeader
+[PARENT] find_form
+[START PROPERTIES]
+Anchor = 11
+BackColor = 255,255,255
+Height = 42
+Left = -1
+Name = "cntHeader"
+SpecialEffect = 1
+TabIndex = 1
+Top = 0
+Width = 380
+ZOrderSet = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS12G0SR
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] find_form.cntHeader
+[START PROPERTIES]
+Anchor = 3
+Height = 32
+Left = 9
+Name = "Image1"
+Picture = ..\bmp\find_s.bmp
+Stretch = 1
+Top = 6
+Width = 32
+ZOrderSet = 3
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS12G0SS
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBorder
+[PARENT] find_form.cntHeader
+[START PROPERTIES]
+Anchor = 14
+Height = 2
+Left = -1
+Name = "shpBorder"
+SpecialEffect = 0
+Top = 40
+Width = 380
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS12G0SU
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] LabelName
+[PARENT] find_form
+[START PROPERTIES]
+Caption = "Найти:"
+Left = 8
+Name = "LabelName"
+TabIndex = 2
+Top = 53
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS12G0ST
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] txtFindName
+[PARENT] find_form
+[START PROPERTIES]
+Anchor = 11
+ControlSource = ""
+Format = "!K"
+Height = 21
+Left = 48
+Name = "txtFindName"
+TabIndex = 3
+Top = 49
+Width = 324
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+IF EMPTY(THIS.Value)
+	THISFORM.okbutton.Enabled = .F.
+ELSE
+	THISFORM.okbutton.Enabled = .T.
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] find_form
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PS16PLQB
+[CLASS] dialog_form_szgr_2buttons
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] getfolder_form
+[START PROPERTIES]
+BorderStyle = 3
+Caption = "Выбор группы"
+DataSession = 1
+Dialog_shape.Height = 259
+Dialog_shape.Left = 3
+Dialog_shape.Name = "Dialog_shape"
+Dialog_shape.Top = 3
+Dialog_shape.Width = 297
+DoCreate = .T.
+Height = 297
+Icon = (THIS.oMain_Form.Icon)
+Left = 0
+MaxButton = .T.
+MinHeight = 297
+MinWidth = 302
+Name = "getfolder_form"
+Top = 0
+Width = 302
+WindowType = 0
+cancelbutton.Left = 199
+cancelbutton.Name = "cancelbutton"
+cancelbutton.TabIndex = 3
+cancelbutton.Top = 264
+dbcontainer.Name = "dbcontainer"
+lisload = .F.
+noldid = 0
+noldrecno = 0
+noldsessionid = 0
+okbutton.Left = 105
+okbutton.Name = "okbutton"
+okbutton.TabIndex = 2
+okbutton.Top = 264
+omain_form = .NULL.
+resizecorner.DefLeft = 
+resizecorner.DefTop = 
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Left = 288
+resizecorner.Name = "resizecorner"
+resizecorner.TabIndex = 4
+resizecorner.Top = 280
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset_form.Name = "saveset_form"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+DODEFAULT()
+
+WITH THIS
+	IF .lIsLoad
+		.lIsLoad = .F.
+		.lIsFound = .F.
+	ENDIF
+
+	.Refresh()
+	.nOldRecno = IIF(BOF() OR EOF(), -1, RECNO())
+
+	SELECT (.oMain_Form.cInitTable)
+ENDWITH
+ENDPROC
+PROCEDURE Hide
+IF VARTYPE(THIS.oMain_Form) = 'O'
+	THIS.oMain_Form.Enabled = .T.
+	THIS.Enabled = .F.
+ELSE
+	THIS.Release()
+ENDIF
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tofrmMain as Form
+	IF VARTYPE(m.tofrmMain) <> 'O'
+		RETURN .F.
+	ENDIF
+
+	THIS.oMain_Form = m.tofrmMain
+
+	WITH THIS
+		SELECT (.oMain_Form.cInitTable)
+		.Caption = .oMain_Form.getDescribe("=dict_" + LOWER(.oMain_Form.cInitTable)) + " (выбор группы)"
+
+		.buildTree()
+
+		.boveToCenter()
+		.Enabled = .T.
+		.Visible = .T.
+
+		.ZOrder(0)
+	ENDWITH
+
+	DODEFAULT()
+ENDPROC
+PROCEDURE Load
+NODEFAULT
+ENDPROC
+PROCEDURE QueryUnload
+IF THIS.Visible = .T.
+	NODEFAULT
+
+	THIS.CancelButton.Click()
+ENDIF
+ENDPROC
+PROCEDURE buildtree
+LOCAL lnOldObl as Integer, lcOldSelectKey as String, llOldLockScreen as Logical, llOldVisible as Logical
+	WITH THIS
+		llOldLockScreen = .LockScreen
+
+		IF !m.llOldLockScreen
+			.LockScreen = .T.
+		ENDIF
+
+		llOldVisible = .pnlTreeFolder.Visible
+
+		IF m.llOldVisible
+			.pnlTreeFolder.Visible = .F.
+		ENDIF
+
+		IF .oMain_Form.nResult > 0
+			lcOldSelectKey = LTRIM(TRANSFORM(EVALUATE(.oMain_Form.cInitTable + ".ID"))) + '_'
+		ENDIF
+
+		lnOldObl = SELECT()
+		* Заполнение дерева
+		.pnlTreeFolder.TreePnl.Nodes.CLEAR
+		.pnlTreeFolder.TreePnl.Nodes.ADD(, 1, "0_", .oMain_Form.getDescribe('=' + "dict_" + LOWER(.oMain_Form.cInitTable)), 1)
+		.pnlTreeFolder.TreePnl.Nodes["0_"].ExpandedImage = 2
+		.pnlTreeFolder.TreePnl.Nodes["0_"].Expanded = .T.
+
+		lcsql = "SELECT LID, PID, NAME, SORTID FROM " + .oMain_Form.cInitTable + " INTO CURSOR " + SYS(2015) + " WHERE CHLCNT > 0"
+
+		IF !EMPTY(.oMain_Form.cSqlWhere)
+			lcsql = m.lcsql + ' ' + .oMain_Form.cSqlWhere
+		ENDIF
+
+		lcsql = m.lcsql + " ORDER BY 2,4"
+		&lcsql
+
+		SCAN
+			IF PID = 0 OR ISNULL(PID)
+				.pnltreeFolder.TreePnl.Nodes.ADD("0_", 4, LTRIM(TRANSFORM(LID)) + '_', ALLTRIM(NAME), 1)
+				.pnltreeFolder.TreePnl.Nodes[LTRIM(TRANSFORM(LID))+'_'].ExpandedImage = 2
+			ELSE
+				.pnltreeFolder.TreePnl.Nodes.ADD(LTRIM(TRANSFORM(PID)) + '_', 4, LTRIM(TRANSFORM(ID)) + '_', ALLTRIM(NAME), 1)
+				.pnltreeFolder.TreePnl.Nodes[LTRIM(TRANSFORM(PID)) + '_'].ExpandedImage = 2
+			ENDIF
+		ENDSCAN
+
+		USE
+
+		SELECT (m.lnOldObl)
+		* Устанавливаем фокус на последний выделенный узел и делаем его видимым
+		IF VARTYPE(m.lcOldSelectKey) = 'C' AND TYPE(".pnlTreeFolder.TreePnl.Nodes[m.lcOldSelectKey]") = 'O';
+			AND !ISNULL(.pnlTreeFolder.TreePnl.Nodes[m.lcOldSelectKey])
+			.pnlTreeFolder.TreePnl.Nodes[m.lcOldSelectKey].Selected = .T.
+			.pnlTreeFolder.TreePnl.SelectedItem.EnsureVisible
+		ENDIF
+
+		IF m.llOldVisible
+			.pnlTreeFolder.Visible = .T.
+		ENDIF
+
+		IF !m.llOldLockScreen
+			.LockScreen = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE cancelbutton.Click
+NODEFAULT
+
+THISFORM.Visible = .F.
+THISFORM.Release()
+ENDPROC
+PROCEDURE okbutton.Click
+*Если выбран корневой каталог возвращаем отрицательное значение
+IF VAL(THISFORM.pnlTreeFolder.TreePnl.SelectedItem.KEY) = 0
+	THISFORM.nResult = -1
+ELSE 
+	IF ALIAS() <> THISFORM.oMain_Form.cInitTable
+		SELECT (THISFORM.oMain_Form.cInitTable)
+	ENDIF
+
+	LOCATE FOR LID = VAL(THISFORM.pnltreeFolder.TreePnl.SelectedItem.KEY)
+
+	IF FOUND()
+		THISFORM.nResult = RECNO(THISFORM.oMain_Form.cInitTable)
+	ELSE
+		THISFORM.nResult = 0
+	ENDIF
+ENDIF
+
+THISFORM.Visible = .F.
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+*buildtree Построение дерева
+lisload .T. - выполняется первая загрузка
+noldid Содержит ID того каталога, в который входим или выходим
+noldrecno Номер записи на которой находились до вызова окна
+noldsessionid
+omain_form
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QW07NYDD
+[CLASS] treeview
+[CLASSLOC] base_gui.vcx
+[BASECLASS] olecontrol
+[OBJNAME] TreeView
+[PARENT] getfolder_form
+[START PROPERTIES]
+Anchor = 15
+Height = 252
+Left = 12
+Name = "TreeView"
+TabIndex = 1
+Top = 6
+Visible = .F.
+Width = 276
+ZOrderSet = 6
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*** ActiveX Control Event ***
+LOCAL lnOldRecno as Integer, llOldLockScreen as Logical, lnOldId as Integer
+	llOldLockScreen = THISFORM.LockScreen
+
+	IF !m.llOldLockScreen
+		THISFORM.LockScreen = .T.
+	ENDIF
+
+	SELECT (THISFORM.cInitTable)
+	LOCATE FOR ID = VAL(THIS.SelectedItem.KEY)
+
+	IF FOUND()
+		lnOldRecno = RECNO()
+
+		THISFORM.nPId = PID
+		THISFORM.nId = ID
+		* Теперь заполним массив структуры
+		* для этого пройдем всю ветку в обратном порядке
+		DIMENSION THISFORM.aPathDir[1]
+
+		DO WHILE PID > 0
+			DIMENSION THISFORM.aPathDir[ALEN(THISFORM.aPathDir) + 1]
+			AINS(THISFORM.aPathDir, 2)
+			THISFORM.aPathDir[2] = PID
+
+			LOCATE FOR ID = THISFORM.aPathDir[2]
+*!*				SEEK THISFORM.PathDir[2] ORDER TAG ID IN THISFORM.InitTable
+		ENDDO
+
+		GO (m.lnOldRecno)
+		THISFORM.cdDir()
+
+		THISFORM.GrdDict.SetFocus()
+		THIS.SetFocus()
+	ELSE
+		DIMENSION THISFORM.PathDir[1]
+		THISFORM.nPId = .NULL.
+		THISFORM.sqlRequery()
+		THISFORM.GrdDict.Refresh()
+	ENDIF
+
+	IF !m.llOldLockScreen
+		THISFORM.LOCKSCREEN = .F.
+	ENDIF
+ENDPROC
+PROCEDURE DblClick
+*** ActiveX Control Event ***
+LOCAL lnOldRecno as Integer, llOldLockScreen as Logical, lnOldId as Integer
+	llOldLockScreen = THISFORM.LockScreen
+
+	IF !m.llOldLockScreen
+		THISFORM.LockScreen = .T.
+	ENDIF
+
+	SELECT (THISFORM.cInitTable)
+	LOCATE FOR ID = VAL(THIS.SelectedItem.KEY)
+
+*!*		IF SEEK(VAL(THIS.SELECTEDITEM.KEY), THISFORM.InitTable, "ID")
+	IF FOUND()
+		IF CHLCNT = 2
+			THISFORM.nPId = PID
+			THISFORM.nId = ID
+			THISFORM.cdDir()
+
+			THISFORM.cntToolbars.cntEdit.Click()
+
+			THISFORM.GrdDict.GrdPnl.SetFocus()
+			THIS.SetFocus()
+		ELSE
+			lnOldRecno = RECNO()
+
+			THISFORM.nPId = PID
+			THISFORM.nId = ID
+			* Теперь заполним массив структуры
+			* для этого пройдем всю ветку в обратном порядке
+			DIMENSION THISFORM.aPathDir[1]
+
+			DO WHILE PID > 0
+				DIMENSION THISFORM.aPathDir[ALEN(THISFORM.aPathDir) + 1]
+				AINS(THISFORM.aPathDir, 2)
+				THISFORM.aPathDir[2] = PID
+
+				LOCATE FOR ID = THISFORM.aPathDir[2]
+*!*					SEEK THISFORM.PathDir[2] ORDER TAG ID IN THISFORM.InitTable
+			ENDDO
+
+			GO (m.lnOldRecno)
+			THISFORM.cdDir()
+
+			THISFORM.GrdDict.GrdPnl.SetFocus()
+			THIS.SetFocus()
+		ENDIF
+	ELSE
+		DIMENSION THISFORM.aPathDir[1]
+
+		THISFORM.nPId = .NULL.
+		THISFORM.sqlRequery()
+		THISFORM.GrdDict.Refresh()
+	ENDIF
+
+	IF !m.llOldLockScreen
+		THISFORM.LockScreen = .F.
+	ENDIF
+ENDPROC
+[END METHODS]
+[BINSTART OLE]
+CHECKSUM=32913
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=26800
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] getfolder_form
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU05VCKT
+[CLASS] cntpnlgrd
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] grddict
+[START PROPERTIES]
+
+GrdPnl.Column1.FontName = "MS Sans Serif"
+GrdPnl.Column1.FontSize = 8
+GrdPnl.Column1.HeaderClass = "standart_dictionary_grdhdr"
+GrdPnl.Column1.HeaderClassLibrary = standart_dictionary_grdhdr.prg
+GrdPnl.Column1.Movable = .F.
+GrdPnl.Column1.Name = "Column1"
+GrdPnl.Column1.Resizable = .F.
+GrdPnl.Column1.Sparse = .F.
+GrdPnl.Column1.Width = 25
+GrdPnl.ColumnCount = 1
+GrdPnl.Name = "GrdPnl"
+Name = "grddict"
+_memberdata =      289<VFPData><memberdata name="noldrecno" type="property" display="nOldRecNo"/><memberdata name="noldsortid" type="property" display="nOldSORTID"/><memberdata name="noldlid" type="property" display="nOldLID"/><memberdata name="ndirectional" type="property" display="nDirectional"/></VFPData>
+ndirectional = 0
+noldlid = 0
+noldrecno = 0
+noldsortid = 0
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GrdPnl.Init
+DODEFAULT()
+
+FOR EACH loI IN THIS.Columns
+	IF PEMSTATUS(m.loI, "IncText1", 5)
+		WITH m.loI
+			.RemoveObject("IncText1")
+			.NewObject("IncText1", "IncText", "..\lib.9\standart_dictionary_form")
+			.CurrentControl = "IncText1"
+			.Format = "ZK"
+			.IncText1.Format = 'K'
+		ENDWITH
+	ENDIF
+ENDFOR
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED3]
+ndirectional
+noldlid
+noldrecno
+noldsortid
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\cntpanel.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\cntpanel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1WQ0ZBQF7
+[CLASS] standart_dictionary_grdhdr
+[BASECLASS] header
+[OBJNAME] Standart_dictionary_grdhdr1
+[PARENT] grddict.GrdPnl.Column1
+[START PROPERTIES]
+Caption = "Шапка"
+Name = "Standart_dictionary_grdhdr1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU06QJJ5
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntFile
+[PARENT] grddict.GrdPnl.Column1
+[START PROPERTIES]
+BackStyle = 0
+BorderWidth = 0
+Height = 18
+Left = 444
+Name = "cntFile"
+Top = 66
+Width = 25
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+NODEFAULT
+
+WITH THIS.Parent.Parent
+*Устанавливаем фокус на колонку с которой был произведен переход
+*на первый столбец
+    IF .Parent.nOldColumn > 1
+        .ActivateCell(.Parent.nOldRow, .Parent.nOldColumn)
+    ELSE
+        .ActivateCell(.Parent.nOldRow, 2)
+    ENDIF
+ENDWITH
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+*!*		DODEFAULT(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+
+	IF m.tnButton = 1 AND EMPTY(THISFORM.cSqlOrder)
+		LOCAL lnWhereOut, lnRelRowOut, lnShY, lnThisY, logrid as Grid, lnOldTop
+		LOCAL logrid as Grid
+		logrid = THIS.Parent.Parent
+		*узнать что ткнули на уже активную строку
+		m.logrid.GridHitTest(m.tnXCoord, m.tnYCoord, @m.lnWhereOut, @m.lnRelRowOut)
+
+		IF m.logrid.RelativeRow = m.lnRelRowOut
+			IF TYPE("THISFORM.Shape1") <> 'O'
+				THISFORM.AddObject("Shape1", "Shape")
+			ENDIF
+
+			WITH THISFORM.Shape1
+				*учитываем что грид в контейнере
+				.Left = m.logrid.Parent.Left + m.logrid.Left;
+						+ IIF(m.logrid.DeleteMark, 8, 0) + IIF(m.logrid.RecordMark, 10, 0)
+				.Width = m.logrid.Width;
+						 - IIF(INLIST(m.logrid.ScrollBars, 2, 3), SYSMETRIC(5), 0) - 2 && Вычитаем ширину полос прокрутки
+				.BackStyle = 0
+				.BorderStyle = 3
+				.Top = m.logrid.Parent.Top + m.logrid.Top;
+					   + m.logrid.HeaderHeight + (m.logrid.RelativeRow - 1) * m.logrid.RowHeight - 1
+				.Height = m.logrid.RowHeight + 3
+
+				.Visible = .T.
+			ENDWITH
+		ENDIF
+
+		WITH m.logrid
+			.Parent.nOldRow = .RelativeRow
+			.Parent.nDirectional = 0
+		ENDWITH
+	ENDIF
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton = 1
+		LOCAL lnWhereOut, lnRelRowOut, lnShY, lnThisY, logrid as Grid, lnOldTop
+		logrid = THIS.Parent.Parent
+		STORE 0 TO lnWhereOut, lnRelRowOut
+
+		WITH m.logrid.Parent
+			IF TYPE("THISFORM.Shape1") = 'O' AND m.logrid.GridHitTest(m.tnXCoord, m.tnYCoord, @m.lnWhereOut, @m.lnRelRowOut)
+				IF INLIST(m.lnWhereOut, 0, 7, 8, 9, 10, 15)	&& за пределами строк, на заголовке рамку - прятать
+					THISFORM.Shape1.Visible = .F.
+					.nDirectional = 0
+				ELSE 
+					IF m.lnWhereOut <> 14
+						LOCAL lndY, lndYGrd
+						lndY = .Top + m.logrid.Top + m.logrid.Height;
+							   - IIF(INLIST(m.logrid.SCROLLBARS, 1, 3), SYSMETRIC(6), 0)
+						lnOldTop = THISFORM.Shape1.Top
+
+						DO CASE
+						CASE INLIST(m.lnWhereOut, 1, 2, 13) && Если указатель крысы на HEADERе, то прокручиваем вверх
+							THISFORM.Shape1.Visible = .F.
+							.nDirectional = .nDirectional - 1
+
+							m.logrid.DoScroll(0)
+
+							IF m.lnRelRowOut < 1
+								lnRelRowOut = .nOldRow
+							ENDIF
+						CASE m.lnWhereOut = 16 && Если указатель крысы на нижнем скороле, то прокручиваем вниз
+							THISFORM.Shape1.Visible = .F.
+							.nDirectional = .nDirectional + 1
+
+							m.logrid.DoScroll(1)
+
+							IF m.lnRelRowOut < 1
+								lnRelRowOut = .nOldRow
+							ENDIF
+
+							THISFORM.Shape1.Top = .Top + m.logrid.Top + m.logrid.HeaderHeight;
+												  + (m.lnRelRowOut - 1) * m.logrid.RowHeight - 1
+
+							IF .Top + THISFORM.Shape1.Top + THISFORM.Shape1.Height > m.lndY
+								lnRelRowOut = m.lnRelRowOut - 1
+							ENDIF
+						OTHERWISE
+							THISFORM.Shape1.Top = .Top + m.logrid.Top + m.logrid.HeaderHeight;
+												  + (m.lnRelRowOut-1) * m.logrid.RowHeight - 1
+
+							IF THISFORM.Shape1.Top + THISFORM.Shape1.Height > m.lndY
+								lnRelRowOut = m.lnRelRowOut - 1
+							ENDIF
+
+							DO CASE
+							CASE m.lnOldTop < THISFORM.Shape1.Top
+								.nDirectional = .nDirectional + 1
+							CASE m.lnOldTop > THISFORM.Shape1.Top
+								.nDirectional = .nDirectional - 1
+							ENDCASE
+						ENDCASE
+
+						THISFORM.Shape1.Visible = .T.
+
+						.nOldRow = m.lnRelRowOut
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDWITH
+	ENDIF
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	IF m.tnButton = 1 AND TYPE("THISFORM.Shape1") = 'O'
+	*узнать над каким объектом нахожусь и сделать перенумерацию
+		LOCAL lnOldRecNo, lnOldLID, lnOldSORTID, logrid, lnCnt
+		logrid = THIS.Parent.Parent
+
+		IF m.logrid.Parent.nDirectional <> 0
+			WITH m.logrid
+				SELECT (.RecordSource)
+
+				lnOldRecNo = RECNO()
+				lnOldLID = LID
+				lnOldSORTID = SORTID
+
+				lnCnt = .Parent.nDirectional
+				lnSORTID = m.lnOldSORTID + IIF(.Parent.nDirectional < 0, 1, -1)
+
+				GO m.lnOldRecNo
+
+				DO WHILE !IIF(.Parent.nDirectional > 0, EOF(), BOF()) AND m.lnCnt <> 0
+					*запомнить в основной таблице
+					lnThisID = LID
+
+					UPDATE (.Parent.Parent.cInitTable) SET SORTID = m.lnSORTID;
+					WHERE LID = m.lnThisID
+
+					IF .Parent.nDirectional < 0
+						lnCnt = m.lnCnt + 1
+						lnSORTID = m.lnSORTID - 1
+
+						SKIP -1
+					ELSE
+						lnCnt = m.lnCnt - 1
+						lnSORTID = m.lnSORTID + 1
+
+						SKIP 1
+					ENDIF
+				ENDDO
+
+				GO m.lnOldRecNo
+				*запомнить в основной таблице
+				lnThisID = LID
+
+				UPDATE (.Parent.Parent.cInitTable) SET SORTID = m.lnSORTID;
+				WHERE LID = m.lnThisID
+			ENDWITH
+		ENDIF
+
+		THISFORM.Shape1.Visible = .F.
+		THISFORM.RemoveObject("Shape1")
+		*активировать новую строчку
+*!*			logrid.Parent.nOldRow = logrid.Parent.nOldRow-1
+		THIS.GotFocus()
+
+*!*			logrid.Parent.nOldRow = 0
+
+		TABLEUPDATE(.T., .T., m.logrid.Parent.Parent.cInitTable)
+
+		m.logrid.Parent.Parent.refreshMain()
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU06Z4Y3
+[CLASS] base_image
+[CLASSLOC] base_gui.vcx
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] grddict.GrdPnl.Column1.cntFile
+[START PROPERTIES]
+BackStyle = 0
+Height = 16
+Left = 4
+Name = "Image1"
+Picture = ..\bmp\16x16\document.bmp
+Top = 1
+Width = 16
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU068B44
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntFolder
+[PARENT] grddict.GrdPnl.Column1
+[START PROPERTIES]
+BackStyle = 0
+BorderWidth = 0
+Height = 18
+Left = 444
+Name = "cntFolder"
+Top = 66
+Width = 25
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+NODEFAULT
+
+WITH THIS.Parent.Parent
+*Устанавливаем фокус на колонку с которой был произведен переход
+*на первый столбец
+    IF .Parent.nOldColumn > 1
+        .ActivateCell(.Parent.noldRow, .Parent.nOldColumn)
+    ELSE
+        .ActivateCell(.Parent.noldRow, 2)
+    ENDIF
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU06GXHP
+[CLASS] base_image
+[CLASSLOC] base_gui.vcx
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] grddict.GrdPnl.Column1.cntFolder
+[START PROPERTIES]
+BackStyle = 0
+Height = 16
+Left = 4
+Name = "Image1"
+Picture = ..\bmp\16x16\folder_closed.bmp
+Top = 1
+Width = 16
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU06NESO
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntOpFolder
+[PARENT] grddict.GrdPnl.Column1
+[START PROPERTIES]
+BackStyle = 0
+BorderWidth = 0
+Height = 18
+Left = 444
+Name = "cntOpFolder"
+Top = 66
+Width = 25
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+NODEFAULT
+
+WITH THIS.Parent.Parent
+* Устанавливаем фокус на колонку с которой был произведен переход
+* на первый столбец
+    IF .Parent.nOldColumn > 1
+        .ActivateCell(.Parent.nOldRow, .Parent.nOldColumn)
+    ELSE
+        .ActivateCell(.Parent.nOldRow, 2)
+    ENDIF
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RU06PKEN
+[CLASS] base_image
+[CLASSLOC] base_gui.vcx
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] grddict.GrdPnl.Column1.cntOpFolder
+[START PROPERTIES]
+BackStyle = 0
+Height = 16
+Left = 4
+Name = "Image1"
+Picture = ..\bmp\16x16\folder.bmp
+Top = 1
+Width = 16
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] grddict
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Ms Sans Serif, 1, 8, 6, 13, 11, 12, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AV08UF2Q
+[CLASS] inctext
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] inctext
+[START PROPERTIES]
+Name = "inctext"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	DO CASE
+	CASE m.tnKeyCode = 93 AND m.tnShiftAltCtrl = 1 AND !THIS.lisActiveSearch
+		NODEFAULT
+		*корректно только для грида
+		WITH THISFORM
+			DO dictionary_grid_menu.prg WITH THISFORM,;
+						.Left + IIF(.BorderStyle = 3, SYSMETRIC(3), IIF(.BorderStyle = 0,;
+																		SYSMETRIC(10),;
+																		SYSMETRIC(12)));
+						+ OBJTOCLIENT(THIS.Parent, 2),;
+						.Top + IIF(THISFORM.BorderStyle = 3, SYSMETRIC(4), IIF(.BorderStyle = 0,;
+																			   SYSMETRIC(11),;
+																			   SYSMETRIC(13)));
+						+ IIF(.TitleBar = 1, SYSMETRIC(9), 0) + IIF(.HalfHeightCaption, SYSMETRIC(34), 0);
+						+ (OBJTOCLIENT(THIS.Parent, 1) + .grdDict.GrdPnl.HeaderHeight;
+						+ .grdDict.GrdPnl.ActiveRow * .grdDict.GrdPnl.RowHeight)
+		ENDWITH
+		*Выставляем флаг, что поиск уже проведен
+		THIS.lIsSeekMode = .F.
+	OTHERWISE
+		DODEFAULT(m.tnKeyCode, m.tnShiftAltCtrl)
+	ENDCASE
+ENDPROC
+PROCEDURE RightClick
+IF !THIS.lisActiveSearch
+	DO dictionary_grid_menu.prg WITH THISFORM
+
+	NODEFAULT
+ELSE
+	DODEFAULT()
+ENDIF
+ENDPROC
+PROCEDURE When
+THIS.Parent.Parent.Parent.nCurrRecno = RECNO()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] inctext
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CI15EW2Z
+[CLASS] base_form_szgr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] main_form
+[START PROPERTIES]
+
+BufferMode = 2
+Caption = "Справочник"
+DataSession = 1
+DoCreate = .T.
+Height = 238
+Left = 0
+LockScreen = .T.
+MDIForm = .T.
+MinHeight = 227
+MinWidth = 600
+Name = "main_form"
+Top = 0
+Visible = .F.
+WhatsThisButton = .T.
+Width = 620
+_memberdata =     3935<VFPData><memberdata name="cinittable" type="property" display="cInitTable"/><memberdata name="lisload" type="property" display="lIsLoad"/><memberdata name="loaddata" type="method" display="LoadData"/><memberdata name="longtonum" type="method" display="LongToNum"/><memberdata name="noldrecno" type="property" display="nOldRecno"/><memberdata name="prechange" type="method" display="preChange"/><memberdata name="predelete" type="method" display="preDelete"/><memberdata name="nquantitymarked" type="property" display="nQuantityMarked"/><memberdata name="refreshmain" type="method" display="refreshMain"/><memberdata name="nresult" type="property" display="nResult"/><memberdata name="sqlcreate" type="method" display="sqlCreate"/><memberdata name="csqlcursorname" type="property" display="cSQLCursorName"/><memberdata name="csqlfields" type="property" display="cSQLFields"/><memberdata name="csqljoin" type="property" display="cSQLJoin"/><memberdata name="csqlorder" type="property" display="cSQLOrder"/><memberdata name="sqlrequery" type="method" display="sqlRequery"/><memberdata name="csqlwhere" type="property" display="cSQLWhere"/><memberdata name="ctabletype" type="property" display="cTableType"/><memberdata name="lviewtree" type="property" display="lViewTree"/><memberdata name="cwintitle" type="property" display="cWinTitle"/><memberdata name="cbackupsqlorder" type="property" display="cBackupSqlOrder"/><memberdata name="buildtree" type="method" display="buildTree"/><memberdata name="cddir" type="method" display="cdDir"/><memberdata name="ndatabasetype" type="property" display="nDatabaseType"/><memberdata name="oeditfile_form" type="property" display="oEditFile_Form"/><memberdata name="oeditfolder_form" type="property" display="oEditFolder_Form"/><memberdata name="lenabletree" type="property" display="lEnableTree"/><memberdata name="lenabletreechild" type="property" display="lEnableTreeChild"/><memberdata name="ofind_form" type="property" display="oFind_Form"/><memberdata name="ogetfolder" type="property" display="oGetFolder"/><memberdata name="ogetfolder_form" type="property" display="oGetFolder_Form"/><memberdata name="nlentoleft" type="property" display="nLenToLeft"/><memberdata name="nlentotop" type="property" display="nLenToTop"/><memberdata name="apathdir" type="property" display="aPathDir"/><memberdata name="npid" type="property" display="nPID"/><memberdata name="sqlcreateloaddata" type="method" display="SqlCreateLoadData"/><memberdata name="sqlrequeryloaddata" type="method" display="SqlRequeryLoadData"/><memberdata name="sqlloaddata" type="method" display="sqlLoadData"/><memberdata name="sqlloaddescribes" type="method" display="SQLLoadDescribes"/><memberdata name="adescribes" type="property" display="aDescribes"/><memberdata name="getdescribe" type="method" display="getDescribe"/><memberdata name="cschema" type="property" display="cSchema"/><memberdata name="ceditfile_formname" type="property" display="cEditFile_FormName"/><memberdata name="ceditfolder_formname" type="property" display="cEditFolder_FormName"/><memberdata name="cname_object" type="property" display="cName_Object"/><memberdata name="lockobject" type="method" display="lockObject"/><memberdata name="pathdir" type="property" display="Pathdir"/><memberdata name="unlockobject" type="method" display="unLockObject"/><memberdata name="csql" type="property" display="cSql"/><memberdata name="nid" type="property" display="nId"/><memberdata name="lallowdelete" type="property" display="lAllowDelete"/><memberdata name="lallowedit" type="property" display="lAllowEdit"/><memberdata name="lallowinsert" type="property" display="lAllowInsert"/><memberdata name="lallownewfile" type="property" display="lAllowNewFile"/><memberdata name="tlbrprint" type="method" display="tlbrPrint"/><memberdata name="tlbrimport" type="method" display="tlbrImport"/><memberdata name="tlbrexport" type="method" display="tlbrExport"/></VFPData>
+cbackupsqlorder = 
+ceditfile_formname = 
+cinittable = 
+cname_object = Наименование объекта
+cschema = 
+csql = 
+csqlcursorname = 
+csqlfields = 
+csqljoin = 
+csqlorder = 
+csqlwhere = 
+ctabletype = '   '
+cwintitle = 
+dbcontainer.Left = 0
+dbcontainer.Name = "dbcontainer"
+dbcontainer.TabIndex = 1
+dbcontainer.Top = 215
+dbcontainer.ZOrderSet = 3
+lallowdelete = .T.
+lallowedit = .T.
+lallownewfile = .T.
+lenabletree = .T.
+lenabletreechild = .F.
+lisload = .T.
+lviewtree = .T.
+ndatabasetype = .F.
+nid = .F.
+nlentoleft = .F.
+nlentotop = .F.
+noldrecno = 0
+npid = .NULL.
+nquantitymarked = 0
+nresult = 0
+oeditfile_form = .NULL.
+ofind_form = .NULL.
+ogetfolder = .NULL.
+ogetfolder_form = .NULL.
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.TabIndex = 3
+resizecorner.ZOrderSet = 2
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset_form.Left = 600
+saveset_form.Name = "saveset_form"
+saveset_form.Top = 0
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+DODEFAULT()
+
+DO CASE
+CASE NOT ISNULL(THIS.oEditFile_Form)
+	IF !WONTOP(THIS.oEditFile_Form.Name)
+		ACTIVATE WINDOW (THIS.oEditFile_Form.Name)
+	ENDIF
+CASE NOT ISNULL(THIS.oGetFolder_Form)
+	IF !WONTOP(THIS.oGetFolder_Form.Name)
+		ACTIVATE WINDOW (THIS.oGetFolder_Form.Name)
+	ENDIF
+CASE NOT ISNULL(THIS.oFind_Form)
+	IF !WONTOP(THIS.oFind_Form.Name)
+		ACTIVATE WINDOW (THIS.oFind_Form.Name)
+	ENDIF
+ENDCASE
+ENDPROC
+PROCEDURE DragDrop
+LPARAMETERS oSource, nXCoord, nYCoord
+LPARAMETERS toSource as Object, tnXCoord as Integer, tnYCoord as Integer
+	toSource.LEFT = m.tnXCoord-THIS.LenToLeft
+	*toSource.TOP = m.tnYCoord-THISFORM.LenToTop
+
+	THIS.LenToLeft = 0
+	*THISFORM.LenToTop  =  0
+
+	= clipCursor(@cRectOld)
+	RELEASE cRectOld,cRectNew,cCursPos
+
+	THIS.pnltreeFolder.WIDTH = m.toSource.LEFT - THIS.pnltreeFolder.LEFT
+	THIS.GrdDict.WIDTH = THIS.GrdDict.WIDTH - (m.toSource.LEFT + m.toSource.WIDTH - THIS.GrdDict.LEFT)
+	THIS.GrdDict.LEFT = m.toSource.LEFT + m.toSource.WIDTH
+
+	THIS.Resize()
+ENDPROC
+PROCEDURE Init
+* tlModify - .T. - редактирование, .F. - выбор (закрывается по Enter)
+* tnId - идентификатор записи которая должна отображаться под курсором по умолчанию
+* ---== Эти параметры используются самим справочником ==---
+* tcWhere - дополнительное условие выборки. Для однотипных форм но с разными коллекциями данных из одного и того же источника
+* tcTitle - дополнение к заголовоку окна, используется только если не пусто tcWhere
+LPARAMETERS tlModify as Logical, tnLID as Integer, tcWhere as String, tcTitle as String
+LOCAL lnOldRecno as Integer, loFrm as Object, lnLID as Integer, loI as Object, lnNCol as Integer,;
+	  lcFields as String, lcOldCaption
+	lnOldRecno = 0
+	*Если справочник вызван не для редактирования, то показываем окно как модальное
+	WITH THIS
+		IF !m.tlModify
+			.WindowType = 1
+		ENDIF
+
+		IF VARTYPE(m.tnLID) <> 'N'
+			tnLID = .NULL.
+		ENDIF
+
+		IF VARTYPE(m.tcWhere) = 'C' AND !EMPTY(m.tcWhere)
+			.cSQLWhere = m.tcWhere
+			.cWinTitle = m.tcTitle
+		ENDIF
+		*Запоминаем алиас родительской таблицы открытой в текущей рабочей области
+		IF EMPTY(.cInitTable)
+			RETURN .F.
+		ENDIF
+		*Устанавлеваем начальное значение в массиве иерархий
+		.aPathDir[1] = .NULL.
+		.cBackupSqlOrder = .cSqlOrder
+		*инициализация объекта-списка софтовых полей
+		.AddObject("oSoftPoleObj", "SOFTPOLE.SOFTPOLE")
+		*удалить дерево если оно не нужно
+		IF !.lEnableTree
+			LOCAL lnanchor as Integer
+			lnanchor = .GrdDict.Anchor
+
+			.GrdDict.Anchor = 0
+			.GrdDict.Width = .GrdDict.Left + .GrdDict.Width - .pnlTreeFolder.Left
+			.GrdDict.Left = .pnlTreeFolder.Left
+			.GrdDict.Anchor = m.lnanchor
+
+			lnanchor = .shapegrid.Anchor
+			.shapegrid.Anchor = 0
+			.shapegrid.Init()
+			.shapegrid.Anchor = m.lnanchor
+
+			.RemoveObject("pnlTreeFolder")
+			.RemoveObject("V_splitter")
+*!*			ELSE
+*!*				*Устанавливаем для дерева набор картинок
+*!*				._ImageList.ListImages.Add(1,"_1",LOADPICTURE("..\bmp\16x16\folder_closed.bmp"))
+*!*				._ImageList.ListImages.Add(2,"_2",LOADPICTURE("..\bmp\16x16\folder.bmp"))
+*!*				._ImageList.ListImages.Add(3,"_3",LOADPICTURE("..\bmp\16x16\document.bmp"))
+		ENDIF
+		*Устанавливаем заголовок окна справочника
+		.Caption = .cName_Object + IIF(!EMPTY(.cwinTitle), ' ' + .cwinTitle, '') + IIF(m.tlModify, '', " (выбор)")
+*!*			.CAPTION = THIS.GetDescribe(' = '+"dict_"+LOWER(.InitTable))+IIF(!EMPTY(.winTitle), ' '+.winTitle, '')+IIF(m.tlModify, '', " (выбор)")
+		*Проверяем если окно с таким заголовком уже существует, то предотвращаем загрузку второй копии и показываем уже существующее окно
+		FOR EACH loI IN _Screen.Forms
+			IF m.loI <> THIS AND m.loI.Caption == .Caption
+				IF m.loI.WindowState = 1
+					loI.WindowState = 0
+				ENDIF
+
+				ACTIVATE WINDOW (m.loI.Name)
+
+				RETURN .F.
+			ENDIF
+		ENDFOR
+
+		SELECT (.cInitTable)
+		*Попытаемся найти строку указанную при вызове справочника и если все удачно, то отображаем папку ее содержащую
+		IF LID <> m.tnLID
+			LOCATE FOR LID = m.tnLID
+			IF FOUND()
+				.nPID = PID
+				lnOldRecno = IIF(EOF(), 0, RECNO())
+				*Теперь заполним массив структуры
+				*для этого пройдем всю ветку в обратном порядке
+				DO WHILE !ISNULL(PID) AND PID > 0
+					DIMENSION .aPathDir[ALEN(.aPathDir) + 1]
+					AINS(.aPathDir, 2)
+					.aPathDir[2] = PID
+
+					LOCATE FOR LID = .aPathDir[2]
+				ENDDO
+			ENDIF
+		ENDIF
+
+		IF m.lnOldRecno > 0
+			GO (m.lnOldRecno)
+		ENDIF
+
+		.nResult = m.lnOldRecno
+		SET ORDER TO
+
+		SET CLASSLIB TO (.ClassLibrary) ADDITIVE
+
+*!*			.GrdDict.cRecordSource = ALIAS()
+
+		WITH .GrdDict.GrdPnl
+			IF .ColumnCount = 1 &&Если колонки не были добавлены в ручную то добавляем все кроме служебных
+				AFIELDS(laFieldsList)
+				lcFields = ''
+
+				FOR lnNCol = 1 TO ALEN(laFieldsList, 1)
+					IF !INLIST(UPPER(laFieldsList[m.lnNCol, 1]), "LID", "PID", "CHLCNT", "SORTID", "LEVEL", "ID")
+						lcFields = m.lcFields + ", " + laFieldsList[m.lnNCol, 1]
+
+						.AddColumn(.ColumnCount + 1)
+						.Columns[.ColumnCount].ControlSource = ALIAS() + '.' + laFieldsList[m.lnNCol, 1]
+						.Columns[.ColumnCount].Header1.Caption = THIS.getDescribe(laFieldsList[m.lnNCol, 1]) && Заголовок колонки
+						.Columns[.ColumnCount].Width = MAX(laFieldsList[m.lnNCol, 3];
+														   + IIF(laFieldsList[m.lnNCol, 4] > 0,;
+														   		 laFieldsList[m.lnNCol, 4] + 1,;
+														   		 0),;
+														   LEN(.Columns[.ColumnCount].Header1.Caption));
+													   * FONTMETRIC(7, "MS Sanf Serif", 8)
+					ENDIF
+				ENDFOR
+			ENDIF
+			*добавляем софтовые поля
+			THIS.oSoftPoleObj.listSoftPole(THIS.cInitTable)
+
+			IF THIS.oSoftPoleObj.aSoftPole[1, 1] <> 0
+				FOR lnNCol = 1 TO ALEN(THIS.oSoftPoleObj.aSoftPole, 1)
+					IF 'V' $ THIS.oSoftPoleObj.aSoftPole[m.lnNCol, 3]
+						.AddColumn(.ColumnCount + 1)
+						* Заголовок колонки
+						.Columns[.ColumnCount].Header1.Caption = IIF(EMPTY(THIS.oSoftPoleObj.aSoftPole[m.lnNCol, 4]),;
+																	 ALLTRIM(THIS.oSoftPoleObj.aSoftPole[m.lnNCol, 2]),;
+																	 ALLTRIM(THIS.oSoftPoleObj.aSoftPole[m.lnNCol, 4]))
+						.Columns[.ColumnCount].Width = MAX(10, LEN(.COLUMNS[.ColumnCount].Header1.Caption));
+													   * FONTMETRIC(7, "MS Sanf Serif", 8)
+					ENDIF
+				ENDFOR
+			ENDIF
+		ENDWITH
+
+		lnLID = LID
+
+		.sqlCreate()
+		.sqlRequery()
+
+		SELECT (.cSQLCursorName)
+		*Теперь проходим по коллекции колонок и выставляем нужные параметры оформления
+		WITH .GrdDict.GrdPnl
+			FOR EACH loI IN .Columns
+				IF m.loI.ColumnOrder = 1
+					loI.standart_dictionary_grdhdr1.Caption = ''
+					loI.DynamicCurrentControl = "IIF(" + THIS.cSQLCursorName + '.CHLCNT = 1, "cntopFolder", IIF(';
+												+ THIS.cSQLCursorName + '.CHLCNT = 0, "cntFolder", "cntFile"))'
+
+					LOOP
+				ENDIF
+
+				lcOldCaption = loI.header1.Caption
+				m.loI.RemoveObject("header1")
+
+				loI.HeaderClassLibrary = "..\lib.9\standart_dictionary_grdhdr.prg"
+				loI.HeaderClass = "standart_dictionary_grdhdr"
+
+				m.loI.NewObject("standart_dictionary_grdhdr1", "standart_dictionary_grdhdr", "..\lib.9\standart_dictionary_grdhdr.prg")
+
+				loI.standart_dictionary_grdhdr1.Caption = m.lcOldCaption
+*!*					*перехват события
+*!*					BINDEVENT(m.loI.Header1, "MouseDown", .Column1.header1, "MouseDown", 0)
+*!*					BINDEVENT(m.loI.Header1, "Click", .Column1.header1, "Click", 0)
+
+				m.loI.AddProperty("nOldWidth", m.loI.Width)
+
+				loI.ReadOnly = .T.
+
+*!*					IF PEMSTATUS(m.loI, "Text1", 5)
+*!*						m.loI.AddObject("IncText1", "IncText")
+*!*						m.loI.RemoveObject("Text1")
+*!*						loI.CurrentControl = "IncText1"
+*!*						loI.Format = "ZK"
+*!*						loI.IncText1.Format = 'K'
+*!*					ENDIF
+*!*					IF PEMSTATUS(m.loI.Controls[2], "Caption", 5)
+*!*						STORE m.loI.Header1.CAPTION TO ("m.loI."+m.loI.CURRENTCONTROL+".Caption")
+*!*					ENDIF
+*!*	
+				loI.FontName = .Columns[1].FontName
+				loI.FontSize = .Columns[1].FontSize
+
+*!*					loI.DynamicForeColor = "IIF(ISMARK, "+LTRIM(TRANSFORM(RGB(0, 0, 0)))+", "+LTRIM(TRANSFORM(.Columns[1].ForeColor))+')'
+*!*					loI.DynamicBackColor = "IIF(ISMARK, "+LTRIM(TRANSFORM(RGB(255, 255, 0)))+", DBCOLOR)"
+				loI.DynamicFontBold = "ISMARK"
+
+				loI.standart_dictionary_grdhdr1.FontName = .Columns[1].standart_dictionary_grdhdr1.FontName
+				loI.standart_dictionary_grdhdr1.FontSize = .Columns[1].standart_dictionary_grdhdr1.FontSize
+				loI.standart_dictionary_grdhdr1.BackColor = .Columns[1].standart_dictionary_grdhdr1.BackColor
+				loI.standart_dictionary_grdhdr1.ForeColor = .Columns[1].standart_dictionary_grdhdr1.ForeColor
+				loI.standart_dictionary_grdhdr1.FontBold = .Columns[1].standart_dictionary_grdhdr1.FontBold
+				loI.standart_dictionary_grdhdr1.Alignment = .Columns[1].standart_dictionary_grdhdr1.Alignment
+				loI.standart_dictionary_grdhdr1.WordWrap = .Columns[1].standart_dictionary_grdhdr1.WordWrap
+			ENDFOR
+
+			.ReadOnly = .T.
+			.ActivateCell(1, 2)
+
+			IF THIS.nResult > 0
+				LOCATE FOR LID = m.lnLID
+
+				IF !FOUND()
+					GO TOP
+				ENDIF
+			ELSE
+				GO TOP
+			ENDIF
+
+			.Visible = .T.
+		ENDWITH
+		*Заполнение дерева
+		IF .lEnableTree
+			.buildTree()
+		ENDIF
+		*Выносим шапэ накрывающий грид на передний план
+		.ShapeGrid.ZOrder(0)
+		*восстановление размеров формы
+		DODEFAULT()
+
+		.Visible = .T.
+		*Отображаем справочник
+		.GrdDict.GrdPnl.SetFocus()
+		.Resize()
+		.LockScreen = .F.
+
+		IF .lEnableTree
+			.PnlTreeFolder.Visible = .lEnableTree
+*!*				.PnlTreeFolder.TreePnl.VISIBLE = .lEnableTree
+		ENDIF
+
+		.cntToolbars.cntNewFile.Enabled = .lAllowNewFile
+		.cntToolbars.cntEdit.Enabled = .lAllowEdit
+		.cntToolbars.cntDelete.Enabled = .lAllowDelete
+	ENDWITH
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+LOCAL lnID as Integer
+	WITH THIS
+		IF TYPE("THIS.ActiveControl") = 'O' AND .ActiveControl.Name = "GrdPnl" AND .ActiveControl.BaseClass = "Grid"
+			DO CASE
+			CASE INLIST(m.tnKeyCode, 4, 9) && стрелка вправо, табулятор
+				IF .GrdDict.GrdPnl.ActiveColumn = .GrdDict.GrdPnl.ColumnCount
+					NODEFAULT
+				ENDIF
+			CASE INLIST(m.tnKeyCode, 19, 15) && стрелка влево, шифт+табулятор
+				IF .GrdDict.GrdPnl.ActiveColumn = 2
+					.GrdDict.GrdPnl.DoScroll(6)
+
+					NODEFAULT
+				ENDIF
+			CASE m.tnKeyCode = 145 &&Ctrl+стрелка вниз
+				IF CHLCNT > 0 AND THIS.nPId <> LID
+					*Запускаем программу смены каталога
+					.CDDir()
+				ENDIF
+
+				NODEFAULT
+			CASE m.tnKeyCode = 141 &&Ctrl+стрелка вверх
+				IF .nPId > 0
+					LOCATE FOR LID = .nPId
+					*Запускаем программу смены каталога
+					.CDDir()
+				ENDIF
+
+				NODEFAULT
+			CASE m.tnKeyCode = 7 AND m.tnShiftAltCtrl = 0 &&Del
+				.cntToolbars.cntDelete.Click()
+
+				NODEFAULT
+			CASE m.tnKeyCode = 13 AND m.tnShiftAltCtrl = 0 && Enter
+				DO CASE
+				CASE CHLCNT < 2
+					IF .lViewTree
+						.cdDir()
+					ELSE
+						.cntToolbars.cntEdit.Click()
+					ENDIF
+				CASE .WindowType = 1 AND CHLCNT = 2
+					lnId = LID
+
+					SELECT (.cInitTable)
+
+					IF LID <> m.lnLId
+						LOCATE FOR LID = m.lnLID
+					ENDIF
+
+					.nResult = RECNO()
+					.cntToolbars.cntExit.Click()
+				CASE CHLCNT = 2
+					.cntToolbars.cntEdit.Click()
+				ENDCASE
+
+				NODEFAULT
+			CASE m.tnKeyCode = 13 AND m.tnShiftAltCtrl = 1 && Shift+Enter
+				IF CHLCNT <> 1
+					.cntToolbars.cntEdit.Click()
+				ENDIF
+
+				NODEFAULT
+			CASE m.tnKeyCode = 32 AND m.tnShiftAltCtrl = 0 && Space (пробел)
+				IF CHLCNT <> 1
+					IF !EOF()
+						.nQuantityMarked = IIF(ISMARK, .nQuantityMarked - 1, .nQuantityMarked + 1)
+						.cntToolbars.cntCopy.Enabled = (.nQuantityMarked > 0)
+						.cntToolbars.cntCut.Enabled = (.nQuantityMarked > 0)
+
+						REPLACE ISMARK WITH !ISMARK
+						SKIP
+					ENDIF
+
+					NODEFAULT
+				ENDIF
+			CASE m.tnKeyCode = 98 AND m.tnShiftAltCtrl = 2 && Ctrl+F5
+				IF CHLCNT <> 1
+					.cntToolbars.cntCopy.Click()
+				ENDIF
+
+				NODEFAULT
+			CASE m.tnKeyCode = 99 AND m.tnShiftAltCtrl = 2 && Ctrl+F6
+				IF CHLCNT <> 1
+					.cntToolbars.cntCut.Click()
+				ENDIF
+
+				NODEFAULT
+			CASE m.tnKeyCode = 102 AND m.tnShiftAltCtrl = 2 && Ctrl+F9
+				.cntToolbars.cntNewChild.Click()
+
+				NODEFAULT
+			CASE INLIST(m.tnKeyCode, 1, 2, 6, 26)
+				NODEFAULT
+			ENDCASE
+		ENDIF
+		*Обработка клавиш которые можно нажимать не находясь непосредственно на гриде
+		DO CASE
+		CASE m.tnKeyCode = -4 && F5
+			.cntToolbars.cntRequery.Click()
+
+			NODEFAULT
+		CASE m.tnKeyCode = 22 &&Ins
+			.cntToolbars.cntNewFile.Click()
+
+			NODEFAULT
+		CASE m.tnKeyCode = 27 && Esc
+			.cntToolbars.cntExit.Click()
+
+			NODEFAULT
+		CASE m.tnKeyCode = 6 AND m.tnShiftAltCtrl = 2 && Ctrl+F
+			.cntToolbars.cntFind.Click()
+
+			NODEFAULT
+		ENDCASE
+	ENDWITH
+ENDPROC
+PROCEDURE QueryUnload
+NODEFAULT
+
+IF !ISNULL(THIS.oFind_Form)
+	THIS.oFind_Form.Release()
+	THIS.oFind_Form = .NULL.
+ENDIF
+
+IF !ISNULL(THIS.oGetfolder_Form)
+	THIS.oGetfolder_Form.Release()
+	THIS.oGetfolder_Form = .NULL.
+ENDIF
+
+THIS.cntToolbars.cntExit.Click()
+ENDPROC
+PROCEDURE Release
+DO CASE
+CASE NOT ISNULL(THIS.oFind_Form)
+	THIS.oFind_Form.Release()
+CASE NOT ISNULL(THIS.oGetFolder_Form)
+	THIS.oGetFolder_Form.Release()
+CASE NOT ISNULL(THIS.oEditFile_Form)
+	THIS.oEditFile_Form.Release()
+ENDCASE
+
+DODEFAULT()
+ENDPROC
+PROCEDURE Resize
+LOCAL llOldLockScreen as Logical, lnkoef as Number,;
+	  lnGW as Number, lnNSh as Number, lnI as Integer
+	WITH THIS
+		llOldLockScreen = .LockScreen
+
+		IF !m.llOldLockScreen
+			.LockScreen = .T.
+		ENDIF
+
+		DODEFAULT()
+		*<<< Изменение размеов столбцов
+		WITH .GrdDict.GrdPnl
+		*Найдем доступную для столбцов ширину сетки
+			lnGW = .Width - .Column1.Width - SYSMETRIC(7) - (.GridLineWidth * .ColumnCount;
+															 - .GridLineWidth) - 4
+			*Найдем общую первоначельную ширину столбцов
+			lnNSh = 0
+
+			FOR lnI = 2 TO .ColumnCount
+				lnNSh = m.lnNSh + .Columns[m.lnI].nOldWidth
+			ENDFOR
+
+			lnkoef = m.lnGW / m.lnNSh
+			*Теперь пропорционально (относительно первоначальных размеров)
+			*распределим свободное пространство между всеми столбцами
+			*(кроме первого)
+			FOR lnI = 2 TO .ColumnCount
+				IF .Columns[m.lnI].nOldWidth = 0
+					LOOP
+				ELSE
+					.Columns[m.lnI].Width = .Columns[m.lnI].nOldWidth * m.lnkoef
+				ENDIF
+			ENDFOR
+			*После всех преобразований перерисуем нашу сетку
+			.Refresh()
+		ENDWITH
+		*Изменение размеров столбцов >>>
+		IF !m.llOldLockScreen
+			.LockScreen = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE Unload
+	IF THIS.nResult > 0
+		GO THIS.nResult IN (THIS.cInitTable)
+
+		STORE LID TO THIS.nResult
+	ENDIF
+	*удаление объекта-списка софтовых полей
+	IF VARTYPE("THIS.oSoftpoleobj") = 'O'
+		THIS.RemoveObject("oSoftpoleobj")
+	ENDIF
+
+	CLOSE DATABASES ALL
+RETURN THIS.nResult
+ENDPROC
+PROCEDURE buildtree
+LOCAL lnOldObl as Integer, lcOldSelectKey as String, llOldLockScreen as Logical,;
+	  llOldVisible as Logical, lcPID as String, lcSql as String
+	*курсор мышки в часики
+	WITH THIS
+		.MousePointer = 11
+
+		llOldLockScreen = .LockScreen
+
+		IF !m.llOldLockScreen
+			.LockScreen = .T.
+		ENDIF
+
+		llOldVisible = .pnlTreeFolder.Visible
+
+		IF m.llOldVisible
+			.pnlTreeFolder.Visible = .F.
+		ENDIF
+
+		IF VARTYPE(.pnlTreeFolder.TreePnl.SelectedItem) = 'O'
+			lcOldSelectKey = .pnlTreeFolder.TreePnl.SelectedItem.KEY
+		ENDIF
+
+		lnOldObl = SELECT()
+
+		SELECT 0
+		*Заполнение дерева
+		.pnlTreeFolder.TreePnl.Nodes.Clear()
+		.pnlTreeFolder.TreePnl.Nodes.ADD(, 1, "0_", .DBContainer.DBDictionary.aFields[1, 4], 1)
+		.pnlTreeFolder.TreePnl.Nodes["0_"].ExpandedImage = 2
+		.pnlTreeFolder.TreePnl.Nodes["0_"].Expanded = .T.
+
+		lcSql = "SELECT LID, PID, NAME, CHLCNT, SORTID, LEVEL, ID FROM " + .cInitTable + " INTO CURSOR " + SYS(2015)
+
+		IF !.lEnableTreeChild
+		*листья не выводить
+			lcSql = m.lcSql + " WHERE CHLCNT > 0"
+		ENDIF
+
+		lcSql = m.lcSql + " ORDER BY 4, 2, 5"
+		&lcSql
+
+		SCAN
+			lcPID = IIF(.lViewTree, IIF(ISNULL(PID), '0', LTRIM(TRANSFORM(PID))) + '_', "0_")
+
+			DO CASE
+			CASE CHLCNT > 0
+				.pnlTreeFolder.TreePnl.Nodes.ADD(m.lcPID, 4, LTRIM(TRANSFORM(LID)) + '_', ALLTRIM(NAME), 1)
+				.pnlTreeFolder.TreePnl.Nodes[LTRIM(TRANSFORM(IIF(ISNULL(PID), LID, PID))) + '_'].ExpandedImage = 2
+			CASE CHLCNT = 0
+				.pnlTreeFolder.TreePnl.Nodes.ADD(m.lcPID, 4, LTRIM(TRANSFORM(LID)) + '_', ALLTRIM(NAME), 3)
+			OTHERWISE
+			ENDCASE
+		ENDSCAN
+
+		USE
+
+		SELECT (m.lnOldObl)
+		*Устанавливаем фокус на последний выделенный узел и делаем его видимым
+		IF VARTYPE(m.lcOldSelectKey) = 'C' AND TYPE("THIS.pnlTreeFolder.TreePnl.Nodes[m.lcOldSelectKey]") = 'O';
+		   AND !ISNULL(.pnlTreeFolder.TreePnl.Nodes[m.lcOldSelectKey])
+			.pnlTreeFolder.TreePnl.Nodes[m.lcOldSelectKey].Selected = .T.
+			.pnlTreeFolder.TreePnl.SelectedItem.EnsureVisible()
+		ENDIF
+
+		IF m.llOldVisible
+			.pnlTreeFolder.Visible = .T.
+		ENDIF
+
+		IF !m.llOldLockScreen
+			.LockScreen = .F.
+		ENDIF
+		*курсор мышки в дефолт
+		.MousePointer = 0
+	ENDWITH
+ENDPROC
+PROCEDURE cddir
+*Переопределение фильтра и смена директории
+LOCAL lnOldID as Integer, lnN as Integer, llOldLockScreen as Logical
+	WITH THIS
+		llOldLockScreen = .LockScreen
+
+		IF !m.llOldLockScreen
+			.LockScreen = .T.
+		ENDIF
+
+		DO CASE
+		CASE ASCAN(.aPathDir, LID) > 0 &&переход вверх
+			lnN = ASCAN(.aPathDir, PID)
+
+			DIMENSION .aPathDir[m.lnN]
+
+			.nPID = PID
+			lnOldId = LID
+
+			.sqlRequery()
+			.GrdDict.GrdPnl.ActivateCell(.GrdDict.nOldRow, .GrdDict.nOldColumn)
+
+			SELECT (.cSQLCursorName)
+			LOCATE FOR LID = m.lnOldId
+
+			.GrdDict.GrdPnl.Refresh()
+		CASE CHLCNT < 2 AND (.nPID <> LID OR ISNULL(.nPID)) &&переход вниз
+			DIMENSION .aPathDir[ALEN(.aPathDir) + 1]
+
+			.aPathDir[ALEN(.aPathDir)] = LID
+			.nPID = LID
+
+			.sqlRequery()
+			.GrdDict.GrdPnl.ActivateCell(.GrdDict.nOldRow, .GrdDict.nOldColumn)
+
+			SELECT (.cSQLCursorName)
+			LOCATE FOR LID = .nPID
+
+			IF !EOF()
+				SKIP
+			ENDIF
+
+			.GrdDict.GrdPnl.Refresh()
+		CASE CHLCNT = 2
+			SELECT (.cSQLCursorName)
+			LOCATE FOR LID = .nLID
+
+			.GrdDict.GrdPnl.Refresh()
+		ENDCASE
+
+		IF !m.llOldLockScreen
+			.LockScreen = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE getdescribe
+LPARAMETERS tcNameField as String
+LOCAL lnI as Integer
+	tcNameField = LOWER(m.tcNameField)
+
+	FOR lnI = 2 TO ALEN(THIS.DBContainer.DBDictionary.aFields, 1)
+		IF THIS.DBContainer.DBDictionary.aFields[m.lnI, 1] == m.tcNameField
+			RETURN IIF(!EMPTY(THIS.DBContainer.DBDictionary.aFields[m.lnI, 4]),;
+					   THIS.DBContainer.DBDictionary.aFields[m.lnI, 4],;
+					   '')
+		ENDIF
+	ENDFOR
+RETURN ''
+ENDPROC
+PROCEDURE lockobject
+#INCLUDE "..\lib.9\base_idb.h"
+LPARAMETERS tnLID as Integer, tnID as Integer, tnName as String
+LOCAL lcCursorName as String, llResult as Logical, lcSql as String, lnID_Lock as Integer,;
+	  lnrepcnt as Integer
+	lnID_Lock = 0
+	lcCursorName = SYS(2015)
+	lnrepcnt = _WAIT_CYCLE
+	*заблокировать запись
+	DO WHILE m.lnrepcnt > 0 AND m.lnID_Lock = 0
+		DO CASE
+		CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_FoxPro
+			lnID_Lock = 1
+		CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_PostgreSQL
+TEXT TO m.lcsql NOSHOW TEXT
+SELECT <<m.goApp.oVars.oCurrentTask.cDBSchema>>.lock_Object(CAST(<<TRANSFORM(m.goApp.oVars.oCurrentTask.nIdSession)>> AS INTEGER),
+															CAST('<<THIS.cName_Object>>' AS VARCHAR),
+															CAST(<<TRANSFORM(m.tnID)>> AS INTEGER));
+ENDTEXT
+			llResult = THIS.DBContainer.DBDictionary.execute(m.lcSql, m.lcCursorName)
+
+			IF m.llResult
+				lnID_Lock = EVALUATE(m.lcCursorName + ".lock_object")
+
+				IF m.lnID_Lock > 0
+					EXIT
+				ELSE
+					*узнать кто заблокировал объект
+					llResult = THIS.DBContainer.DBDictionary.execute("SELECT * FROM ";
+																	 + m.goApp.oVars.oCurrentTask.oVars.cDBSchema;
+																	 + ".who_Lock_Object(CAST('";
+																	 + THIS.cName_Object + "' AS TEXT), CAST(";
+																	 + TRANSFORM(m.tnID) + " AS INTEGER));",;
+																	 m.lcCursorName)
+
+					IF m.llResult
+						IF MESSAGEBOX("Запись '" + m.tnName + "' заблокирована пользователем ";
+									  + EVALUATE(m.lcCursorName + ".NAME_User") + '!', 5 + 48,;
+									  m.goApp.oVars.cTaskCaption) = 2
+							EXIT
+						ENDIF
+					ENDIF
+				ENDIF
+			ENDIF
+		CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_MSSQL
+		CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_Oracle
+		CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_Access
+			lnID_Lock = 1
+		ENDCASE
+
+		lnrepcnt = m.lnrepcnt - 1
+	ENDDO
+
+	IF USED(m.lcCursorName)
+		USE IN (m.lcCursorName)
+	ENDIF
+RETURN m.lnID_Lock
+ENDPROC
+PROCEDURE prechange
+LPARAMETERS toEdit as Form, tlisNew as Logical
+ENDPROC
+PROCEDURE predelete
+LPARAMETERS tnid as Integer
+ENDPROC
+PROCEDURE refreshmain
+* Обновление основного окна
+LOCAL lnOldRecno as Integer, lnLID as Integer
+	WITH THIS
+		.LockScreen = .T.
+
+		lnLID = EVALUATE(.cSQLCursorName + ".LID")
+		lnOldRecno = IIF(EOF(.cSQLCursorName), 0, RECNO(.cSQLCursorName))
+
+		.sqlRequery()
+
+		IF .lEnableTree
+			.buildTree()
+		ENDIF
+
+		SELECT (.cSQLCursorName)
+		.GrdDict.GrdPnl.ActivateCell(.GrdDict.nOldRow, .GrdDict.nOldColumn)
+
+		LOCATE FOR LID = m.lnLID
+
+		IF !FOUND()
+			IF BETWEEN(m.lnOldRecno, 1, RECCOUNT())
+				GO (m.lnOldRecno)
+			ELSE
+				GO BOTTOM
+			ENDIF
+		ENDIF
+
+		.GrdDict.GrdPnl.Refresh()
+		.LockScreen = .F.
+	ENDWITH
+ENDPROC
+PROCEDURE sqlcreate
+LOCAL lcSQL as String, lcFields as String, lnI as Integer, lnJ as Integer, lcFieldName as String,;
+	lcOldExact as String
+LOCAL ARRAY laFieldsList[1]
+	WITH THIS
+		SELECT (.cInitTable)
+		*Формирование служебных полей
+		lcFields = " IIF(Ascan(THISFORM.aPathDir, " + .cInitTable+".LID) > 0, 1, IIF(" + .cInitTable + ".CHLCNT > 0, 0, 2)) AS CHLCNT, ";
+				   + "IIF(Ascan(THISFORM.aPathDir, " + .cInitTable+".LID) > 0, Ascan(THISFORM.aPathDir, " + THIS.cInitTable + ".LID), " + REPLICATE('9', FSIZE("LID")) + ") AS FolderSort, ";
+				   + .cInitTable + ".LID AS LID, " + .cInitTable+".PID AS PID, " + .cInitTable + ".SORTID AS SORTID, " + .cInitTable + ".LEVEL AS LEVEL, " + .cInitTable + ".ID AS ID, .F. AS IsMark, ";
+				   + " IIF(Ascan(THISFORM.aPathDir, " + .cInitTable+".LID) > 0, "+PADL(RGB(192, 192, 192),10, '0') + ", "+PADL(.GrdDict.GrdPnl.Columns[1].BackColor, 10, '0') + ") AS DBColor, ";
+				   + .cInitTable + ".NAME AS NAME"
+		*Формирование списка пользовательских полей
+		lcOldExact = SET("Exact")
+		SET EXACT ON
+
+		WITH .GrdDict.GrdPnl
+			IF .ColumnCount = 1 && Если колонки не были добавлены в ручную то добавляем все кроме служебных
+				FOR lnI = 2 TO ALEN(THIS.DBContainer.DBDictionary.aFields, 1)
+					IF INLIST(LOWER(THIS.DBContainer.DBDictionary.aFields[m.lnI, 3]),;
+							  "lid", "id", "pid", "sortid", "level", "chlcnt", "name")
+						LOOP
+					ELSE
+						lcFields = m.lcFields + ", " + THIS.DBContainer.DBDictionary.aFields[m.lnI, 1];
+								   + IIF(EMPTY(THIS.DBContainer.DBDictionary.aFields[m.lnI, 3]),;
+								   			   '',;
+								   			   " as " + THIS.DBContainer.DBDictionary.aFields[m.lnI, 3])
+					ENDIF
+				ENDFOR
+			ELSE
+				FOR lnI = 2 TO .ColumnCount
+					FOR lnJ = 1 TO .ColumnCount
+						IF .Columns[m.lnJ].ColumnOrder = m.lnI
+							EXIT
+						ENDIF
+					ENDFOR
+
+					IF !EMPTY(.Columns[m.lnJ].TAG)
+						lcFieldName = IIF(EMPTY(.Columns[m.lnJ].Comment), .Columns[m.lnJ].TAG, .Columns[m.lnJ].Comment)
+
+						IF INLIST(LOWER(m.lcFieldName), "lid", "id", "pid", "sortid", "level", "chlcnt", "name")
+							LOOP
+						ENDIF
+
+						lcFields = m.lcFields + ", " + .Columns[m.lnJ].TAG;
+								   + IIF(EMPTY(.Columns[m.lnJ].Comment), '', " as " + .Columns[m.lnJ].Comment)
+*!*							lcFields = m.lcFields+", "+IIF(GETWORDNUM(.Columns[m.lnJ].TAG, 1, '.') =  = THIS.InitTable, THIS.InitTable+"."+GETWORDNUM(.Columns[m.lnJ].TAG, 2, '.'), .Columns[m.lnJ].TAG)+;
+*!*									IIF(EMPTY(.Columns[m.lnJ].Comment), '', " as "+.Columns[m.lnJ].Comment)
+					ENDIF
+				ENDFOR
+			ENDIF
+		ENDWITH
+
+		SET EXACT &lcOldExact
+		*Формирование списка дополнительных полей
+		IF !EMPTY(.cSQLFields)
+			lcFields = m.lcFields + ", " + ALLTRIM(THIS.cSQLFields) + ' '
+		ENDIF
+
+		.cSQLCursorName = SYS(2015)
+		*Формирование SQL оператора
+		lcSQL = "SELECT" + m.lcFields + " FROM " + .cInitTable + " INTO CURSOR " + .cSQLCursorName + " READWRITE "
+
+		.cSQL = m.lcSQL
+	ENDWITH
+ENDPROC
+PROCEDURE sqlloaddata
+LOCAL lcFields as String, lcFrom as String, lcInto as String, lnI as Integer, lnJ as Integer,;
+	  loSql as dbsql OF ..\lib.9\base_idb, llResult as Logical
+	*Формирование служебных полей
+	lcFields = "View_" + THIS.cInitTable + ".LID AS LID, ";
+			   + "View_" + THIS.cInitTable + ".PID AS PID, ";
+			   + "View_" + THIS.cInitTable + ".SORTID AS SORTID, ";
+			   + "View_" + THIS.cInitTable + ".CHLCNT AS CHLCNT, ";
+			   + "View_" + THIS.cInitTable + ".LEVEL AS LEVEL, View_" + THIS.cInitTable + ".ID AS ID"
+	*список дополнительных софтовых и физических полей
+	IF TYPE("THIS.oSoftPoleObj") = 'O' AND !EMPTY(THIS.oSoftPoleObj.aSoftPole[1, 1])
+	*есть софтовые поля - включаем их в запрос
+		FOR lnI = 1 TO ALEN(THIS.oSoftPoleObj.aSoftPole, 1)
+			IF AT(THIS.oSoftPoleObj.aSoftPole[m.lnI, 2],m.lcFields) = 0;
+			   AND ('V' $ THIS.oSoftPoleObj.aSoftPole[m.lnI, 3])
+				IF LEFT(THIS.oSoftPoleObj.aSoftPole[m.lnI, 3], 4) = "HARD"
+					lcFields = m.lcFields + ", " + m.lcali + '.' + THIS.oSoftPoleObj.aSoftPole[m.lnI, 2];
+							   + " AS " + THIS.oSoftPoleObj.aSoftPole[m.lnI, 2]
+				ELSE
+					lcFields = m.lcFields + ", THISFORM.oSoftPoleObj.getValuesId(";
+							   + TRANSFORM(THIS.oSoftPoleObj.aSoftPole[m.lnI, 1], "9999999999") + ',';
+							   + m.lcali + ".ID) AS " + THIS.oSoftPoleObj.aSoftPole[m.lnI, 2]
+				ENDIF
+			ENDIF
+		ENDFOR
+	ENDIF
+	*Формирование выражения FROM
+	lcFrom = " FROM " + THIS.cSchema + ".View_" + THIS.cInitTable + " AS View_" + THIS.cInitTable
+
+	IF !EMPTY(THIS.cSqlJoin)
+		lcFrom = m.lcFrom + " " + THIS.cSqlJoin
+	ENDIF
+
+*!*		CREATE TABLE (THIS.InitTable) (ID i, pid i, name varchar(100), SORTID i, CHLCNT i)
+*!*		llResult = .t.
+	*Запрос к серверу
+	llResult = THIS.DBSQL.execute("SELECT " + m.lcFields + m.lcFrom + THIS.cSqlWhere, THIS.cInitTable)
+
+	IF m.llResult
+		INDEX ON BINTOC(PID) + BINTOC(SORTID) TAG SORTID
+
+		CURSORSETPROP("Buffering", 5)
+	ENDIF
+RETURN m.llResult
+ENDPROC
+PROCEDURE sqlrequery
+LOCAL lcSQL as String, lcWhere as String, lcOrder as String, lcGroup as String,;
+	  lnI as Integer, lnJ as Integer, lcWord as String, llOldDeleted as Logical,;
+	  lnOldObl as Integer, loExc as Exception, lcNameSource, lnIdSource
+
+	WITH THIS
+		*курсор мышки в часики
+		THIS.MousePointer = 11
+		*Сохраняем рабочую область
+		lnOldObl = SELECT()
+
+		SELECT (.cInitTable)
+		*Формирование полей сортировки
+		lcOrder = " ORDER BY 1, 2"
+
+		IF !EMPTY(.cSQLOrder)
+			FOR lnI = 1 TO m.goApp.oFunction.getWordCount(.cSQLOrder, ',')
+				lcWord = ALLTRIM(m.goApp.oFunction.getWordNum(.cSQLOrder, m.lnI, ','))
+
+				IF VAL(m.lcWord) > 0
+					lcOrder = m.lcOrder + "," + LTRIM(TRANSFORM(VAL(m.lcWord) + 8));
+							  + IIF(' ' $ m.lcWord, ' ' + m.goApp.oFunction.getWordNum(m.lcWord, 2), '')
+				ENDIF
+			ENDFOR
+		ELSE
+			lcOrder = m.lcOrder + ", 5"
+		ENDIF
+		*Формирование фильтра
+		IF .lViewTree
+		*выводить с учетом папок
+			lcWhere = " WHERE (" + IIF(ISNULL(.nPID), "ISNULL(PID)", "PID = " + LTRIM(TRANSFORM(.nPID))) + " OR LID IN ("
+			lnJ = 0
+
+			FOR lnI = 1 TO ALEN(THIS.aPathDir)
+				IF m.lnJ < 20
+					lnJ = m.lnJ + 1
+					lcWhere = m.lcWhere + IIF(m.lnJ = 1, '', ',') + LTRIM(TRANSFORM(.aPathDir[m.lnI]))
+				ELSE
+					lnJ = 0
+					lcWhere = m.lcWhere + ',' + LTRIM(TRANSFORM(.aPathDir[m.lnI])) + ") OR LID IN ("
+				ENDIF
+			ENDFOR
+
+			IF RAT('(', m.lcWhere) = LEN(m.lcWhere)
+				lcWhere = SUBSTR(m.lcWhere, 1, RATC("OR", m.lcWhere) - 1) + ") "
+			ELSE
+				lcWhere = m.lcWhere + IIF(!EMPTY(m.lcWhere), ") ", '')
+			ENDIF
+
+			lcWhere = m.lcWhere + ") " + IIF(!EMPTY(.cSqlWhere), "AND " + .cSqlWhere, '')
+		ELSE
+		*выводить все подрят
+			lcWhere = ''
+		ENDIF
+		*Формирование SQL оператора
+		lcSQL = .cSql + m.lcWhere + m.lcOrder
+
+*!*			.GrdDict.GrdPnl.RecordSource = .NULL.
+		.GrdDict.cRecordSource = .NULL.
+
+		llOldDeleted = SET("DELETED") = "ON"
+
+		IF !m.llOldDeleted
+			SET DELETED ON
+		ENDIF
+
+		SYS(3050, 1, VAL(SYS(3050, 1)) / 2) && оптимизация памяти
+#IF !_DEVELOP_MODE
+		TRY
+#ENDIF
+			&lcSQL
+#IF !_DEVELOP_MODE
+		CATCH TO loExc
+			m.goApp.oFunction.showErrMsg(m.loExc)
+
+			THROW
+		FINALLY
+#ENDIF
+			*курсор мышки по дефолту
+			.MousePointer = 0
+#IF !_DEVELOP_MODE
+		ENDTRY
+#ENDIF
+		IF !m.llOldDeleted
+			SET DELETED OFF
+		ENDIF
+		*Переопределение источника данных для грида
+*!*			.GrdDict.GrdPnl.RecordSource = .cSQLCursorName
+		.GrdDict.cRecordSource = .cSQLCursorName
+
+		FOR EACH loI IN .GrdDict.GrdPnl.Columns
+			lcNameSource = LOWER(IIF(!EMPTY(m.loI.Comment), m.loI.Comment, m.loI.TAG))
+
+*!*				DO CASE
+*!*				CASE EMPTY(m.lcNameSource)
+*!*					lnIdSource = 0
+*!*				CASE m.lcNameSource = "lid"
+*!*					lnIdSource = 3
+*!*				CASE m.lcNameSource = "pid"
+*!*					lnIdSource = 4
+*!*				CASE m.lcNameSource = "sortid"
+*!*					lnIdSource = 5
+*!*				CASE m.lcNameSource = "level"
+*!*					lnIdSource = 6
+*!*				CASE m.lcNameSource = "chlcnt"
+*!*					lnIdSource = 1
+*!*				CASE m.lcNameSource = "name"
+*!*					lnIdSource = 10
+*!*				OTHERWISE
+*!*					lnIdSource = m.loI.ColumnOrder+9
+*!*				ENDCASE
+
+*!*				lcFieldsSource = FIELD(m.lnIdSource, .cSQLCursorName)
+			lcFieldsSource = FIELD(m.lcNameSource, .cSQLCursorName)
+
+			IF !EMPTY(m.lcFieldsSource)
+				loI.ControlSource = .cSQLCursorName + '.' + m.lcFieldsSource
+			ENDIF
+		ENDFOR
+		*Обнуляем счетчик отмеченных записей
+		.nQuantityMarked = 0
+		.cntToolbars.cntCopy.Enabled = .F.
+		.cntToolbars.cntCut.Enabled = .F.
+		*Восстанавливаем рабочую область
+		IF USED(m.lnOldObl)
+			SELECT (m.lnOldObl)
+		ELSE
+			SELECT (.cInitTable)
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE tlbrprint
+*событие нажатия кнопки "печать" на "туллбаре"
+ENDPROC
+PROCEDURE unlockobject
+#INCLUDE "..\lib.9\base_idb.h"
+LPARAMETERS tnID_Lock as Integer
+LOCAL lcCursorName as String, llResult as Logical, llunlock as Logical
+	*заблокировать запись
+	IF m.tnID_Lock > 0
+		*снять блокировку, повторять пока не будет удачно
+		llunlock = .F.
+		llResult = .F.
+		lnrepcnt = _WAIT_CYCLE
+		lcCursorName = SYS(2015)
+
+		DO WHILE !m.llunlock AND m.lnrepcnt > 0
+			DO CASE
+			CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_FoxPro
+				llunlock = .T.
+			CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_PostgreSQL
+				llResult = THIS.DBContainer.DBDictionary.execute("SELECT " + m.goApp.oVars.oCurrentTask.oVars.cDBSchema;
+													 			 + ".unLock_Object(CAST(" + TRANSFORM(m.tnID_Lock);
+																 + " AS INTEGER));", m.lcCursorName)
+
+				IF m.llResult
+					llunlock = (EVALUATE(m.lcCursorName + ".unlock_object") == '1')
+				ENDIF
+			CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_MSSQL
+			CASE THIS.DBContainer.DBDictionary.oDBConnect.getDBType() = DB_Oracle
+			ENDCASE
+
+			lnrepcnt = m.lnrepcnt - 1
+		ENDDO
+
+		IF USED(m.lcCursorName)
+			USE IN (m.lcCursorName)
+		ENDIF
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED3]
+*buildtree Формирование дерева
+*cddir подпрограмма смены каталога
+*getdescribe 
+*lockobject 
+*prechange выполняется перед редактированием записи
+*predelete Выполняется перед удалением записи
+*refreshmain обновление формы с гридом
+*sqlcreate Формирование выражения для построения курсора
+*sqlloaddata Загрузка данных из внешнего источника
+*sqlrequery Обновление курсора
+*tlbrexport 
+*tlbrimport 
+*tlbrprint 
+*unlockobject 
+^apathdir[1,0] Массив, содержащий иерархию каталогов
+cbackupsqlorder первоначальное значение sqlorder
+ceditfile_formname
+cinittable Имя родительской таблицы открываемой по умолчанию
+cname_object
+cschema
+csql Выражение SQL оператора для построения курсора
+csqlcursorname Имя курсора в который выбираются данные SQL
+csqlfields Дополнительные поля которые должны попасть в курсор просматриваемый в гриде. Поля указываются по правилам задания списка полей для оператора Select SQL.
+csqljoin условие join
+csqlorder Сюда через запятую вписываются номера колонок (свойство ColumnOrder) по которым нужна сортировка. Например: '3 asc, 5 desc'.
+csqlwhere Дополнительное условие для данных которые должны попасть в курсор просматриваемый в гриде. Поля указываются по правилам задания списка полей для SQL
+ctabletype
+cwintitle Дополнение к заголовку окна
+lallowdelete
+lallowedit
+lallownewfile
+lenabletree Рисовать/Не рисовать дерево
+lenabletreechild Рисовать в дереве только Папки
+lisload .T. - выполняется первая загрузка
+lviewtree Выводить справочник сортируя его по папакам или списком
+ndatabasetype
+nid Содержит идентификатор открытого элемента
+nlentoleft
+nlentotop
+noldrecno Номер записи на которой находились до вызова окна
+npid Содержит идентификатор открытой папки
+nquantitymarked Количесво помеченных записей
+nresult При выходе из формы сдесь содержится номер записи выбранной строки если конечно выбор был сделан
+oeditfile_form Ссылка на форму для редактирования записи
+ofind_form Ссылка на форму поиска
+ogetfolder Если установлен в .T., отображается диалок выбора папки, иначе сам справочник
+ogetfolder_form Ссылка на форму выбора группы
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+base_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CJ02IFKK
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntBorderForm
+[PARENT] main_form
+[START PROPERTIES]
+Anchor = 15
+Height = 212
+Left = 0
+Name = "cntBorderForm"
+SpecialEffect = 1
+Style = 3
+TabIndex = 2
+Tag = "nm_g nm_v"
+Top = 28
+Width = 620
+ZOrderSet = 4
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CJ02IFKN
+[CLASS] toolbarsprav
+[CLASSLOC] standart_dictionary_form.vcx
+[BASECLASS] container
+[OBJNAME] cntToolbars
+[PARENT] main_form
+[START PROPERTIES]
+Anchor = 3
+Left = 0
+Name = "cntToolbars"
+Shape1.Name = "Shape1"
+Shape2.Name = "Shape2"
+Shape3.Name = "Shape3"
+Shape4.Name = "Shape4"
+Shape5.Name = "Shape5"
+TabIndex = 4
+Tag = "nm_g nm_v"
+Top = 0
+ZOrderSet = 5
+cntCopy.Name = "cntCopy"
+cntCopy.cmdBtn.Name = "cmdBtn"
+cntCopy.cmdBtn.Picture = ..\bmp\16x16\copy.bmp
+cntCopy.shpForEvent.Name = "shpForEvent"
+cntCut.Name = "cntCut"
+cntCut.cmdBtn.Name = "cmdBtn"
+cntCut.cmdBtn.Picture = ..\bmp\16x16\cut.bmp
+cntCut.shpForEvent.Name = "shpForEvent"
+cntDelete.Name = "cntDelete"
+cntDelete.cmdBtn.Name = "cmdBtn"
+cntDelete.cmdBtn.Picture = ..\bmp\16x16\data_delete.bmp
+cntDelete.shpForEvent.Name = "shpForEvent"
+cntDisTree.Name = "cntDisTree"
+cntDisTree.cmdBtn.Alignment = 0
+cntDisTree.cmdBtn.Name = "cmdBtn"
+cntDisTree.shpForEvent.Name = "shpForEvent"
+cntDown.Name = "cntDown"
+cntDown.cmdBtn.Name = "cmdBtn"
+cntDown.cmdBtn.Picture = ..\bmp\16x16\arwdn.bmp
+cntDown.shpForEvent.Name = "shpForEvent"
+cntEdit.Name = "cntEdit"
+cntEdit.cmdBtn.Name = "cmdBtn"
+cntEdit.cmdBtn.Picture = ..\bmp\16x16\data_edit.bmp
+cntEdit.shpForEvent.Name = "shpForEvent"
+cntExit.Name = "cntExit"
+cntExit.cmdBtn.Name = "cmdBtn"
+cntExit.cmdBtn.Picture = ..\bmp\exit.ico
+cntExit.shpForEvent.Name = "shpForEvent"
+cntExport.Name = "cntExport"
+cntExport.cmdBtn.Name = "cmdBtn"
+cntExport.shpForEvent.Name = "shpForEvent"
+cntFind.Name = "cntFind"
+cntFind.cmdBtn.Name = "cmdBtn"
+cntFind.cmdBtn.Picture = ..\bmp\16x16\data_find.bmp
+cntFind.shpForEvent.Name = "shpForEvent"
+cntImport.Name = "cntImport"
+cntImport.cmdBtn.Name = "cmdBtn"
+cntImport.shpForEvent.Name = "shpForEvent"
+cntNewChild.Name = "cntNewChild"
+cntNewChild.cmdBtn.Name = "cmdBtn"
+cntNewChild.shpForEvent.Name = "shpForEvent"
+cntNewFile.Name = "cntNewFile"
+cntNewFile.cmdBtn.Name = "cmdBtn"
+cntNewFile.cmdBtn.Picture = ..\bmp\16x16\data_add.bmp
+cntNewFile.shpForEvent.Name = "shpForEvent"
+cntPaste.Name = "cntPaste"
+cntPaste.cmdBtn.Name = "cmdBtn"
+cntPaste.shpForEvent.Name = "shpForEvent"
+cntPrint.Enabled = .F.
+cntPrint.Name = "cntPrint"
+cntPrint.cmdBtn.Name = "cmdBtn"
+cntPrint.cmdBtn.Picture = ..\bmp\16x16\printer.bmp
+cntPrint.shpForEvent.Name = "shpForEvent"
+cntRequery.Name = "cntRequery"
+cntRequery.cmdBtn.Name = "cmdBtn"
+cntRequery.cmdBtn.Picture = ..\bmp\16x16\data_refresh.bmp
+cntRequery.shpForEvent.Name = "shpForEvent"
+cntTree.Name = "cntTree"
+cntTree.cmdBtn.Name = "cmdBtn"
+cntTree.cmdBtn.Picture = ..\bmp\16x16\box closed.bmp
+cntTree.shpForEvent.Name = "shpForEvent"
+cntUp.Name = "cntUp"
+cntUp.cmdBtn.Name = "cmdBtn"
+cntUp.cmdBtn.Picture = ..\bmp\16x16\arwup.bmp
+cntUp.shpForEvent.Name = "shpForEvent"
+cntView.Enabled = .F.
+cntView.Name = "cntView"
+cntView.cmdBtn.Name = "cmdBtn"
+cntView.cmdBtn.Picture = ..\bmp\16x16\document_view.bmp
+cntView.shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE cntCopy.cmdBtn.Click
+LOCAL lnLId as Integer, lcCursName as String, lnOldObl as Integer
+	IF THISFORM.nQuantityMarked > 0
+		lcCursName = SYS(2015)
+		lnOldObl = SELECT()
+IF ISNULL(THISFORM.oFind_Form)
+	TRY
+		THISFORM.oFind_Form = CREATEOBJECT("Find_Form", THISFORM)
+	CATCH
+		THISFORM.oFind_Form = .NULL.
+
+		IF !ISNULL(THISFORM.oFind_Form)
+			THISFORM.oFind_Form.Release()
+			THISFORM.oFind_Form = .NULL.
+		ENDIF
+
+		RETURN
+	ENDTRY
+ENDIF
+
+IF !ISNULL(THISFORM.oFind_Form)
+	WITH THISFORM.oFind_Form
+		.lIsLoad = .T.
+		.nOldRecno = IIF(BOF() OR EOF(), -1, RECNO())
+		.MoveToCenter()
+
+		.ENABLED = .T.
+		.VISIBLE = .T.
+
+		IF _SCREEN.ACTIVEFORM<>THISFORM.oFind_Form
+			.ZORDER(0)
+		ENDIF
+	ENDWITH
+ENDIF
+
+		DO FORM (SYS(1271, THISFORM)) WITH .F., .F., .T. TO lnLId
+
+		IF VARTYPE(m.lnLId) <> 'N' OR m.lnLId = 0
+			RETURN
+		ENDIF
+
+		SELECT (THISFORM.cInitTable)
+		IF THISFORM.nPId = m.lnLId
+			MESSAGEBOX("Записи не могут быть скопированны в исходную папку!", 16)
+			RETURN
+		ENDIF
+
+		SELECT a.* ;
+		FROM (THISFORM.cInitTable) AS a INNER JOIN (THISFORM.cSQLCursorName) AS b ON a.LID = b.LID;
+		INTO CURSOR (m.lcCursName) READWRITE;
+		WHERE b.ISMARK
+
+		REPLACE PID WITH IIF(m.lnLId < 0, 0, m.lnLId) ALL
+
+		ALTER TABLE (m.lcCursName) DROP COLUMN LID
+
+		SELECT (THISFORM.cInitTable)
+
+		BEGIN TRANSACTION
+			APPEND FROM (DBF(m.lcCursName))
+			TABLEUPDATE(1, .T., THISFORM.cInitTable)
+		END TRANSACTION
+
+		USE IN m.lcCursName
+		SELECT (m.lnOldObl)
+
+		THISFORM.cntToolbars.cntRequery.CLICK()
+	ENDIF
+ENDPROC
+PROCEDURE cntCut.cmdBtn.Click
+LOCAL lnLId as Integer, lnOldObl as Integer
+	IF THISFORM.nQuantityMarked > 0
+		lcCursName = SYS(2015)
+		lnOldObl = SELECT()
+
+IF ISNULL(THISFORM.oFind_Form)
+	TRY
+		THISFORM.oFind_Form = CREATEOBJECT("Find_Form",THISFORM)
+	CATCH
+		THISFORM.oFind_Form = .NULL.
+
+		IF !ISNULL(THISFORM.oFind_Form)
+			THISFORM.oFind_Form.Release()
+			THISFORM.oFind_Form = .NULL.
+		ENDIF
+
+		RETURN
+	ENDTRY
+ENDIF
+
+IF !ISNULL(THISFORM.oFind_Form)
+	WITH THISFORM.oFind_Form
+		.lIsLoad = .T.
+		.nOldRecno = IIF(BOF() OR EOF(), -1, RECNO())
+		.MoveToCenter()
+
+		.ENABLED = .T.
+		.VISIBLE = .T.
+
+		IF _SCREEN.ACTIVEFORM <> THISFORM.oFind_Form
+			.ZORDER(0)
+		ENDIF
+	ENDWITH
+ENDIF		
+		DO FORM (SYS(1271, THISFORM)) WITH .F., .F., .T. TO lnLId
+
+		IF VARTYPE(m.lnLId) <> 'N' OR m.lnLId = 0
+			RETURN
+		ENDIF
+
+		SELECT (THISFORM.cInitTable)
+		IF THISFORM.nPId = m.lnLId
+			MESSAGEBOX("Записи не могут быть перемещены в исходную папку!", 16)
+			RETURN
+		ENDIF
+
+		IF FLOCK(THISFORM.cInitTable) && Пытаемся блокировать таблицу перед добавлением
+			BEGIN TRANSACTION
+				UPDATE (THISFORM.cInitTable) SET PID = IIF(m.lnLId < 0, 0, m.lnLId) ;
+				WHERE LID IN (SELECT LID FROM (THISFORM.cSQLCursorName) WHERE ISMARK)
+
+				TABLEUPDATE(1, .T., THISFORM.cInitTable)
+			END TRANSACTION
+
+			UNLOCK IN THISFORM.cInitTable
+		ELSE
+			MESSAGEBOX("Файл заблокирован другим пользователем." + CHR(13) + "Повторите попытку чуть позже", 16)
+			SELECT(m.lnOldObl)
+			RETURN
+		ENDIF
+
+		SELECT (m.lnOldObl)
+		THISFORM.cntToolbars.cntRequery.Click()
+	ENDIF
+ENDPROC
+PROCEDURE cntDelete.cmdBtn.Click
+LPARAMETERS tcMessageList as String
+LOCAL lnLID as Integer, lnID as Integer, lnCHLCNT as Integer, lnNAME as String,;
+	  lnID_Lock as Integer, lnI as Integer, lcCurs as String
+LOCAL ARRAY laKeysValue[1]
+	WITH THISFORM
+		lnLID = EVALUATE(.cSQLCursorName + ".LID")
+
+		IF ASCAN(.aPathDir, m.lnLID) > 0 &&если указатель стоит на открытой группе, то редактировать не даем
+			RETURN
+		ENDIF
+
+		.LockScreen = .T.
+
+		lnID = EVALUATE(.cSQLCursorName + ".ID")
+		lnCHLCNT = EVALUATE(.cSQLCursorName + ".CHLCNT")
+		lnNAME = EVALUATE(.cSQLCursorName + ".NAME")
+		lnOldRecno = IIF(BOF(.cSQLCursorName) OR EOF(.cSQLCursorName), 0, RECNO(.cSQLCursorName))
+
+		IF VARTYPE(m.tcMessageList) <> 'C'
+			tcMessageList = ALLTRIM(UPPER(m.lnNAME))
+		ELSE
+			tcMessageList = EVALUATE(m.tcMessageList)
+		ENDIF
+
+		IF MESSAGEBOX("Вы действительно хотите удалить текущую " + IIF(m.lnCHLCNT < 2, "группу?", "запись?") + CRLF;
+					  + m.tcmessagelist, 36, m.goApp.oVars.cTaskCaption) <> 6
+			.LockScreen = .F.
+
+			RETURN .F.
+		ENDIF
+		*Перед удалением блокируем всю таблицу
+		lnID_Lock = .lockObject(m.lnLID, m.lnID, m.lnName)
+
+		IF m.lnID_Lock <= 0
+			*В случае неудачи захвата таблицы спрашиваем пользователя о дальнейших действиях
+			m.goApp.oFunction.showErrMsg("Не удается блокировать запись." + CRLF + "Повторите попытку чуть позже")
+
+			.LockScreen = .F.
+
+			RETURN .F.
+		ENDIF
+
+		SELECT (.cInitTable)
+		LOCATE FOR LID = m.lnLID
+
+		.preDelete(m.lnLID)
+
+		laKeysValue[1] = m.lnLID
+
+		IF .DBContainer.DBDictionary.delete(@laKeysValue)
+			IF BETWEEN(m.lnOldRecno, 1, RECCOUNT(.cSQLCursorName))
+				GO m.lnOldRecno IN (.cSQLCursorName)
+			ELSE
+				GO BOTTOM IN (.cSQLCursorName)
+			ENDIF
+			*обновить курсор
+			.cntToolbars.cntRequery.cmdBtn.Click()
+		ENDIF
+		*Разблокируем запись
+		.unLockObject(m.lnID_Lock)
+
+		.LockScreen = .F.
+	ENDWITH
+RETURN .T.
+ENDPROC
+PROCEDURE cntDown.cmdBtn.Click
+IF !EMPTY(THISFORM.cSqlOrder)
+	MESSAGEBOX("Текущий порядок отличается от системного!", 0 + 16, m.goApp.oVars.cTaskCaption)
+ELSE
+	LOCAL lnLID as Integer, lnDownLID as Integer, lnsortid, lnsortidpost
+
+	SELECT (THISFORM.cSQLCursorName)
+	lnLID = LID
+	lnsortid = SORTID
+#IF !_DEVELOP_MODE
+	TRY
+#ENDIF
+		SKIP
+
+		IF !EOF()
+			lnsortidpost = SORTID
+			lnDownLID = LID
+			
+			UPDATE (THISFORM.cInitTable) SET SORTID = m.lnsortid;
+			WHERE LID = m.lnDownLID
+
+			SKIP -1
+
+			UPDATE (THISFORM.cInitTable) SET SORTID = m.lnsortidpost;
+			WHERE LID = m.lnLID
+
+			TABLEUPDATE(.T., .T., THISFORM.cInitTable)
+
+			THISFORM.refreshMain()
+		ENDIF
+#IF !_DEVELOP_MODE
+	CATCH
+	ENDTRY
+#ENDIF
+ENDIF
+ENDPROC
+PROCEDURE cntEdit.cmdBtn.Click
+PRIVATE poForm as Form
+LOCAL lnLID as Integer
+	WITH THISFORM
+		IF ISNULL(.oEditFile_Form)
+			IF !EMPTY(.cEditFile_FormName)
+				lnLID = EVALUATE(.cSQLCursorName + ".LID")
+
+				IF ASCAN(.aPathDir, m.lnLID) > 0 &&если указатель стоит на открытой группе, то редактировать не даем
+					RETURN
+				ENDIF
+
+				SELECT (.cInitTable)
+				LOCATE FOR LID = m.lnLID
+				*форма редактирования
+				poForm = .NULL.
+
+*!*					m.goApp.goForm(.cEditFile_FormName, SET("Datasession"), m.goApp.oFunction.arrayPointer("THISFORM.oEditFile_Form"), .NULL., THISFORM, 0)
+				m.goApp.goForm(.cEditFile_FormName, SET("Datasession"), "m.poForm", .NULL., THISFORM, 0)
+
+				.oEditFile_Form = m.poForm
+			ENDIF
+		ELSE
+			ACTIVATE WINDOW (.oEditFile_Form.Name)
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE cntExit.cmdBtn.Click
+#IF !_DEVELOP_MODE
+	TRY
+#ENDIF
+		TABLEREVERT(.T., THISFORM.cInitTable)
+#IF !_DEVELOP_MODE
+	CATCH
+	ENDTRY
+#ENDIF
+	THISFORM.Visible = .F.
+	THISFORM.Release()
+ENDPROC
+PROCEDURE cntExport.cmdBtn.Click
+LOCAL lnLID as Integer
+	SELECT (THISFORM.cSQLCursorName)
+	lnLID = LID
+
+	SELECT (THISFORM.cInitTable)
+	LOCATE FOR LID = m.lnLID
+ENDPROC
+PROCEDURE cntFind.cmdBtn.Click
+WITH THISFORM
+	IF ISNULL(.oFind_Form)
+#IF !_DEVELOP_MODE
+		TRY
+#ENDIF
+			.oFind_Form = CREATEOBJECT("Find_Form", THISFORM)
+			.oFind_Form.nOldRecno = IIF(BOF() OR EOF(), -1, RECNO())
+			.oFind_Form.moveToCenter()
+			.oFind_Form.Show()
+#IF !_DEVELOP_MODE
+		CATCH
+			IF !ISNULL(.oFind_Form)
+				.oFind_Form.Release()
+			ENDIF
+		ENDTRY
+#ENDIF
+	ELSE
+		.oFind_Form.nOldRecno = IIF(BOF() OR EOF(), -1, RECNO())
+
+		ACTIVATE WINDOW (.oFind_Form.Name)
+	ENDIF
+ENDWITH
+ENDPROC
+PROCEDURE cntImport.cmdBtn.Click
+LOCAL lnLID as Integer
+	SELECT (THISFORM.cSQLCursorName)
+	lnLID = LID
+
+	SELECT (THISFORM.cInitTable)
+	LOCATE FOR LID = m.lnLID
+ENDPROC
+PROCEDURE cntNewChild.cmdBtn.Click
+PRIVATE poForm as Form
+LOCAL lnLID as Integer
+	WITH THISFORM
+		IF ISNULL(.oEditFile_Form) AND !EMPTY(.cEditFile_FormName)
+			lnLID = EVALUATE(.cSQLCursorName + ".LID")
+
+			SELECT (.cInitTable)
+			LOCATE FOR LID = m.lnLID
+			*форма редактирования
+			poForm = .NULL.
+			m.goApp.goForm(.cEditFile_FormName, SET("Datasession"), "m.poForm", .NULL., THISFORM, 2)
+
+			.oEditFile_Form = m.poForm
+		ELSE
+			ACTIVATE WINDOW (.oEditFile_Form.Name)
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE cntNewFile.cmdBtn.Click
+PRIVATE poForm as Form
+LOCAL lnLID as Integer
+	WITH THISFORM
+		IF ISNULL(.oEditFile_Form) AND !EMPTY(.cEditFile_FormName)
+			lnLID = EVALUATE(.cSQLCursorName + ".LID")
+
+			SELECT (.cInitTable)
+			LOCATE FOR LID = m.lnLID
+			*форма редактирования
+			poForm = .NULL.
+
+			m.goApp.goForm(.cEditFile_FormName, SET("Datasession"), "m.poForm", .NULL., THISFORM, 1)
+
+			.oEditFile_Form = m.poForm
+		ELSE
+			ACTIVATE WINDOW (.oEditFile_Form.Name)
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE cntPrint.cmdBtn.Click
+LOCAL lnLID as Integer
+	SELECT (THISFORM.cSQLCursorName)
+	lnLID = LID
+
+	SELECT (THISFORM.cInitTable)
+	LOCATE FOR LID = m.lnLID
+	*вызов обработчика печати
+	THISFORM.tlbrPrint()
+ENDPROC
+PROCEDURE cntRequery.cmdBtn.Click
+LOCAL lnLID as Integer, lnOldRecno as Integer
+	WITH THISFORM
+		.LockScreen = .T.
+
+		SELECT (.cSQLCursorName)
+
+		lnLID = LID
+		lnOldRecno = IIF(BOF() OR EOF(), 0, RECNO())
+
+		.DBContainer.DBDictionary.select()
+		.sqlRequery()
+
+		.GrdDict.GrdPnl.ActivateCell(.GrdDict.nOldRow, .GrdDict.nOldColumn)
+
+		LOCATE FOR LID = m.lnLID
+
+		IF !FOUND()
+			IF BETWEEN(m.lnOldRecno, 1, RECCOUNT())
+				GO m.lnOldRecno
+			ELSE
+				GO BOTTOM
+			ENDIF
+		ENDIF
+
+		.GrdDict.Refresh()
+
+		IF .lEnableTree
+			.buildTree()
+		ENDIF
+
+		CLEAR TYPEAHEAD && очищаем буфер клавиатуры
+
+		.LockScreen = .F.
+	ENDWITH
+ENDPROC
+PROCEDURE cntUp.cmdBtn.Click
+IF !EMPTY(THISFORM.cSqlOrder)
+	MESSAGEBOX("Текущий порядок отличается от системного!", 0 + 16, m.goApp.oVars.cTaskCaption)
+ELSE
+	LOCAL lnLID as Integer, lnUpLID as Integer, lnsortid, lnsortidprev
+
+	SELECT (THISFORM.cSqlCursorName)
+	lnLID = LID
+	lnsortid = SORTID
+#IF !_DEVELOP_MODE
+	TRY
+#ENDIF
+		SKIP -1
+
+		IF !BOF()
+			lnsortidprev = SORTID
+			lnUpLID = LID
+			
+			UPDATE (THISFORM.cInitTable) SET SORTID = m.lnSortId;
+			WHERE LID = m.lnUpLID
+
+			SKIP
+
+			UPDATE (THISFORM.cInitTable) SET SORTID = m.lnSortIdPrev;
+			WHERE LID = m.lnLID
+
+			TABLEUPDATE(.T., .T., THISFORM.cInitTable)
+
+			THISFORM.refreshMain()
+		ENDIF
+#IF !_DEVELOP_MODE
+	CATCH
+	ENDTRY
+#ENDIF
+ENDIF
+ENDPROC
+PROCEDURE cntView.cmdBtn.Click
+LOCAL lnLID as Integer
+	SELECT (THISFORM.cSQLCursorName)
+	lnLID = LID
+
+	SELECT (THISFORM.cInitTable)
+	LOCATE FOR LID = m.lnLID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CJ02IFNW
+[CLASS] sprutil
+[CLASSLOC] standart_dictionary_form.vcx
+[BASECLASS] custom
+[OBJNAME] custSprUtil
+[PARENT] main_form
+[START PROPERTIES]
+Left = 453
+Name = "custSprUtil"
+Top = 10
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CI15KNVB
+[CLASS] dbtable
+[CLASSLOC] base_idb.vcx
+[BASECLASS] custom
+[OBJNAME] DBDictionary
+[PARENT] main_form.dbcontainer
+[START PROPERTIES]
+Left = 0
+Name = "DBDictionary"
+Top = 0
+lisdictionary = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CJ02IFN3
+[CLASS] grddict
+[CLASSLOC] standart_dictionary_form.vcx
+[BASECLASS] container
+[OBJNAME] Grddict
+[PARENT] main_form
+[START PROPERTIES]
+Anchor = 15
+GrdPnl.Column1.Enabled = .T.
+GrdPnl.Column1.Name = "Column1"
+GrdPnl.Column1.Standart_dictionary_grdhdr1.Name = "Standart_dictionary_grdhdr1"
+GrdPnl.Column1.cntFile.Image1.Height = 16
+GrdPnl.Column1.cntFile.Image1.Name = "Image1"
+GrdPnl.Column1.cntFile.Image1.Width = 16
+GrdPnl.Column1.cntFile.Name = "cntFile"
+GrdPnl.Column1.cntFolder.Enabled = .T.
+GrdPnl.Column1.cntFolder.Image1.Height = 16
+GrdPnl.Column1.cntFolder.Image1.Name = "Image1"
+GrdPnl.Column1.cntFolder.Image1.Width = 16
+GrdPnl.Column1.cntFolder.Name = "cntFolder"
+GrdPnl.Column1.cntOpFolder.Image1.Height = 16
+GrdPnl.Column1.cntOpFolder.Image1.Name = "Image1"
+GrdPnl.Column1.cntOpFolder.Image1.Width = 16
+GrdPnl.Column1.cntOpFolder.Name = "cntOpFolder"
+GrdPnl.Height = 188
+GrdPnl.Name = "GrdPnl"
+GrdPnl.Width = 401
+Height = 196
+Left = 203
+Name = "Grddict"
+TabIndex = 6
+Tag = "nm_v"
+Top = 33
+Width = 409
+ZOrderSet = 8
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GrdPnl.AfterRowColChange
+LPARAMETERS tnColIndex
+	WITH THISFORM
+		SELECT (.cSQLCursorName)
+
+		IF .lAllowEdit AND .cntToolbars.cntEdit.Enabled <> (CHLCNT <> 1)
+			.cntToolbars.cntEdit.Enabled = (CHLCNT <> 1)
+		ENDIF
+
+		IF .lAllowDelete AND .cntToolbars.cntDelete.Enabled <> (CHLCNT <> 1)
+			.cntToolbars.cntDelete.Enabled = (CHLCNT <> 1)
+		ENDIF
+		*в дереве активизировать новый элемент
+		IF .lEnableTree AND (.lEnableTreeChild OR CHLCNT < 2)
+			.pnlTreeFolder.TreePnl.Nodes[LTRIM(TRANSFORM(LID)) + '_'].Selected = .T.
+			.pnlTreeFolder.TreePnl.SelectedItem.EnsureVisible
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE GrdPnl.DragDrop
+LPARAMETERS toSource as Object, tnXCoord, tnYCoord
+	DODEFAULT()
+
+	THISFORM.DragDrop(m.toSource, m.tnXCoord, m.tnYCoord)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CJ02IFMN
+[CLASS] cntpnltree
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] PnlTreeFolder
+[PARENT] main_form
+[START PROPERTIES]
+Anchor = 7
+Height = 196
+Left = 7
+Name = "PnlTreeFolder"
+TabIndex = 5
+Tag = "n_mg"
+Top = 33
+TreePnl.Height = 188
+TreePnl.Left = 4
+TreePnl.Name = "TreePnl"
+TreePnl.Top = 4
+TreePnl.Visible = .F.
+TreePnl.Width = 183
+Visible = .F.
+Width = 191
+ZOrderSet = 7
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE TreePnl.Click
+*** ActiveX Control Event ***
+LOCAL lnOldRecno as Integer, llOldLockScreen as Logical, lnOldId as Integer
+	WITH THISFORM
+		llOldLockScreen = .LockScreen
+
+		IF !m.llOldLockScreen
+			.LockScreen = .T.
+		ENDIF
+
+		SELECT (.cInitTable)
+		LOCATE FOR LID = VAL(THIS.SelectedItem.KEY)
+
+		IF FOUND()
+			lnOldRecno = RECNO()
+
+			.nPID = PID
+			* Теперь заполним массив структуры
+			* для этого пройдем всю ветку в обратном порядке
+			DIMENSION .aPathDir[1]
+
+			DO WHILE PID > 0
+				DIMENSION .aPathDir[ALEN(.aPathDir) + 1]
+				AINS(.aPathDir, 2)
+				.aPathDir[2] = PID
+
+				LOCATE FOR LID = .aPathDir[2]
+			ENDDO
+
+			GO (m.lnOldRecno)
+			.cdDir()
+
+			.GrdDict.SetFocus()
+			THIS.SETFOCUS()
+		ELSE
+			DIMENSION .aPathDir[1]
+
+			.nPID = .NULL.
+			.sqlRequery()
+
+			.GrdDict.Refresh()
+		ENDIF
+
+		IF !m.llOldLockScreen
+			.LockScreen = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+PROCEDURE TreePnl.DblClick
+*** ActiveX Control Event ***
+LOCAL lnOldRecno as Integer, llOldLockScreen as Logical, lnOldId as Integer
+	WITH THISFORM
+		llOldLockScreen = .LockScreen
+
+		IF !m.llOldLockScreen
+			.LockScreen = .T.
+		ENDIF
+
+		SELECT (.cInitTable)
+		LOCATE FOR LID = VAL(THIS.SelectedItem.KEY)
+
+		IF FOUND()
+			IF CHLCNT = 2
+				.nPID = PID
+				.cdDir()
+
+				.cntToolbars.cntEdit.Click()
+
+				.GrdDict.GrdPnl.SetFocus()
+				THIS.SetFocus()
+			ELSE
+				lnOldRecno = RECNO()
+
+				.nPID = PID
+				* Теперь заполним массив структуры
+				* для этого пройдем всю ветку в обратном порядке
+				DIMENSION .aPathDir[1]
+
+				DO WHILE PID > 0
+					DIMENSION .aPathDir[ALEN(.aPathDir) + 1]
+					AINS(.aPathDir, 2)
+					.aPathDir[2] = PID
+
+					LOCATE FOR ID = .aPathDir[2]
+				ENDDO
+
+				GO (m.lnOldRecno)
+				.cdDir()
+
+				.GrdDict.GrdPnl.SetFocus()
+				THIS.SetFocus()
+			ENDIF
+		ELSE
+			DIMENSION .aPathDir[1]
+
+			.nPID = .NULL.
+
+			.sqlRequery()
+			.GrdDict.Refresh()
+		ENDIF
+
+		IF !m.llOldLockScreen
+			.LockScreen = .F.
+		ENDIF
+	ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CJ02IFMJ
+[CLASS] shapegrid
+[CLASSLOC] standart_dictionary_form.vcx
+[BASECLASS] shape
+[OBJNAME] Shapegrid
+[PARENT] main_form
+[START PROPERTIES]
+Anchor = 15
+Left = 480
+Name = "Shapegrid"
+Top = 0
+ZOrderSet = 6
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH THIS.cGridName
+	IF .LeftColumn = 1 AND THIS.nActCol = 1
+		NODEFAULT
+
+		.ActivateCell(THIS.nActRow, .RelativeColumn)
+		.SetFocus()
+
+		THIS.nActCol = .RelativeColumn
+	ELSE
+		DODEFAULT()
+	ENDIF
+ENDWITH
+ENDPROC
+PROCEDURE DblClick
+LOCAL lnLID as Integer
+	NODEFAULT
+
+	WITH THIS.cGridname
+		THIS.nActCol = .RelativeColumn
+		.SetFocus()
+
+		DO CASE
+		CASE THISFORM.WindowType = 1 AND CHLCNT = 2
+			lnLID = LID
+
+			SELECT (THISFORM.cInitTable)
+			LOCATE FOR LID = m.lnLID
+
+			THISFORM.nResult = RECNO()
+
+			THISFORM.cntToolbars.cntExit.Click()
+		CASE CHLCNT = 2 OR (!THISFORM.lViewTree AND CHLCNT = 0)
+			THISFORM.cntToolbars.cntEdit.Click()
+		CASE CHLCNT < 2
+			THISFORM.cdDir()
+		ENDCASE
+	ENDWITH
+ENDPROC
+PROCEDURE DragDrop
+LPARAMETERS toSource, tnXCoord, tnYCoord
+	DODEFAULT()
+
+	THISFORM.DragDrop(m.toSource, m.tnXCoord, m.tnYCoord)
+ENDPROC
+PROCEDURE Init
+THIS.cGridName = THISFORM.GrdDict.GrdPnl
+
+DODEFAULT()
+ENDPROC
+PROCEDURE RightClick
+LOCAL lcPopuMes as String, lnBar as Integer, lnRow as Integer, lnCol as Integer,;
+	  lnWhere_Out as Integer, lnRelRow_Out as Integer, lnRelCol_Out as Integer
+	lnRow = MROW(0, 3)
+	lnCol = MCOL(0, 3)
+
+	THIS.cGridName.GridHitTest(m.lnCol, m.lnRow, @m.lnWhere_Out, @m.lnRelRow_Out, @m.lnRelCol_Out)
+
+	IF m.lnWhere_Out = 3 AND THIS.cGridName.LeftColumn = 1 AND m.lnRelCol_Out > 1
+		THIS.cGridName.ActivateCell(m.lnRelRow_Out, m.lnRelCol_Out)
+
+		DO dictionary_grid_menu.prg WITH THISFORM
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2CJ02IFNU
+[CLASS] splitter
+[CLASSLOC] splitter.vcx
+[BASECLASS] shape
+[OBJNAME] v_Splitter
+[PARENT] main_form
+[START PROPERTIES]
+Anchor = 7
+Height = 196
+Left = 198
+Name = "v_Splitter"
+Tag = "nm_v"
+Top = 33
+Width = 5
+ZOrderSet = 9
+nmaximumsize = 60
+nminimumsize = 60
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] main_form
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Ms Sans Serif, 1, 8, 6, 13, 11, 12, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0ET0J2O59
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] shapegrid
+[START PROPERTIES]
+BackStyle = 0
+BorderColor = 0,0,255
+Height = 22
+Name = "shapegrid"
+Style = 3
+Width = 22
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH THIS.cGridName
+	IF THIS.nActRow > 0 AND THIS.nActCol > 0
+		.ActivateCell(THIS.nActRow, THIS.nActCol)
+		.SetFocus()
+	ELSE
+		THIS.nActRow = 0
+		THIS.nActCol = 0
+	ENDIF
+ENDWITH
+ENDPROC
+PROCEDURE Init
+IF VARTYPE(THIS.cGridName) <> 'O'
+	THIS.Visible = .F.
+	THIS.Enabled = .F.
+
+	RETURN
+ENDIF
+
+WITH THIS.cGridName
+	THIS.BorderStyle = 0
+	THIS.BackStyle = 0
+
+	THIS.Left = .Parent.Left + .Left + 1
+	THIS.Left = THIS.Left + IIF(.DeleteMark, 8, 0) && учитываем ширину DELETEMARK
+	THIS.Left = THIS.Left + IIF(.RecordMark, 10, 0) && учитываем ширину RECORDMARK
+
+	THIS.Top = .Parent.Top + .Top
+	THIS.Top = THIS.Top + .HeaderHeight && Прибавляем высоту заголовка грида
+
+	THIS.Width = .Width - 2
+	THIS.Width = THIS.Width - (THIS.Left - (.Parent.Left + .Left))
+	THIS.Width = THIS.Width - IIF(INLIST(.ScrollBars, 2, 3), SYSMETRIC(5), 0) && Вычитаем ширину полос прокрутки
+
+	THIS.Height = .Height - .HeaderHeight - 1
+	THIS.Height = THIS.Height - IIF(INLIST(.ScrollBars, 1, 3), SYSMETRIC(8), 0) && Вычитаем ширину полос прокрутки
+ENDWITH
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+LOCAL lnWhere_Out as Integer, lnRelRow_Out as Integer, lnRelCol_Out as Integer, lnView_Out as Integer
+*!*		  lnI as Integer, loI as Object, lnWd as Integer,
+	IF m.tnButton = 1
+		WITH THIS.cGridName
+			.GridHitTest(m.tnXCoord, m.tnYCoord, @m.lnWhere_Out, @m.lnRelRow_Out, @m.lnRelCol_Out, @m.lnView_Out)
+			THIS.nActRow = m.lnRelRow_Out
+			THIS.nActCol = m.lnRelCol_Out
+
+			IF m.lnRelCol_Out = 1 AND INLIST(EVALUATE(.Columns(1).DynamicCurrentControl), "cntFile", "cntFolder")
+				.Columns(1).cntFile.MouseDown(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+			ENDIF
+		ENDWITH
+	ELSE
+		DODEFAULT()
+	ENDIF
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	THIS.cGridName.COLUMNS[1].cntFile.MouseMove(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+
+	DODEFAULT(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
+	THIS.cGridName.COLUMNS[1].cntFile.MouseUp(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+
+	DODEFAULT(m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord)
+ENDPROC
+PROCEDURE MouseWheel
+LPARAMETERS tnDirection, tnShift, tnXCoord, tnYCoord
+	WITH THIS.cGridName
+		IF m.tnDirection > 0
+			.DOSCROLL(0)
+			.DOSCROLL(0)
+			.DOSCROLL(0)
+		ELSE
+			.DOSCROLL(1)
+			.DOSCROLL(1)
+			.DOSCROLL(1)
+		ENDIF
+	ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+cgridname Ссылка на объект грид
+nactcol Столбец в гриде по которому щелкнули
+nactrow Строка в гриде по которой щелкнули
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Объект шапэ размещаемый над гридом для изменения формы курсора и отслеживания кликов[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] shapegrid
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BM151B5L
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] sprutil
+[START PROPERTIES]
+Height = 22
+Name = "sprutil"
+Width = 22
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE createcursorfolder
+LPARAMETERS tcTable as String, tnLID as Integer
+* tcTable - имятаблицы
+* tnID - Идентификатор директории, иерархию которой нужно построить,
+*        если не задано, то полная иерархия справочника
+LOCAL lcCursResult as Variant, lcCursTmp1 as String, lcCursTmp2 as String,;
+	  lnOldObl as Integer, lnLId as Integer, lnOldReccount as Integer
+LOCAL laTransport[1, FCOUNT(m.tcTable)], laTableStru[1]
+	IF PARAMETERS() < 2
+		tnLID = 0
+	ENDIF
+
+	lnOldObl = SELECT()
+	* Создаем список каталогов самого верхнего уровня выборки
+	lcCursResult = SYS(2015)
+
+	IF m.tnLID = 0 OR ISNULL(m.tnLID)
+		SELECT *, 0000000000 AS FldOrder;
+		FROM (m.tcTable);
+		INTO CURSOR (m.lcCursResult) READWRITE;
+		WHERE ISNULL(PID) AND CHLCNT = 1
+	ELSE
+		SELECT *, 0000000000 AS FldOrder;
+		FROM (m.tcTable);
+		INTO CURSOR (m.lcCursResult) READWRITE;
+		WHERE LID = m.tnLID
+	ENDIF
+
+*!*		INDEX ON BINTOC(PID) TAG PId
+*!*		INDEX ON DELETED() TAG Del
+*!*		SET ORDER TO 0
+	* Создяем временную пустую таблицу для сортировки в нее
+	lcCursTmp1 = SYS(2015)
+	AFIELDS(laTableStru)
+
+	CREATE CURSOR (m.lcCursTmp1) FROM ARRAY laTableStru
+*!*		INDEX ON BINTOC(PID) TAG PId
+*!*		INDEX ON DELETED() TAG Del
+*!*		SET ORDER TO 0
+
+	DIMENSION laTransport[1, FCOUNT(m.tcTable)]
+
+	DO WHILE .T.
+		SELECT (m.lcCursResult)
+		lnOldReccount = RECCOUNT()
+		lnLId = 0
+
+		SCAN
+			COPY TO ARRAY laTransport NEXT 1
+
+			lnLId = LID
+
+			SELECT (m.lcCursTmp1)
+			APPEND FROM ARRAY laTransport
+
+			lncurrecno = RECNO()
+
+			LOCATE FOR PID = m.lnLId
+
+			IF !FOUND() &&!INDEXSEEK(BINTOC(m.lnId),.F.,m.lcCursResult, "PID")
+				APPEND FROM (m.tcTable) FOR PID = m.lnLId AND CHLCNT = 1 && если будет тормозить, нужно будет сделять предварительную выборку всех веток в отдельный курсор
+			ENDIF
+
+			GO m.lncurrecno
+		ENDSCAN
+		* Меняем между собой таблицы
+		lcCursTmp2 = SYS(2015)
+
+		IF m.lnOldReccount < RECCOUNT(m.lcCursTmp1)
+			USE (DBF(m.lcCursResult)) AGAIN ALIAS (m.lcCursTmp2) IN 0
+			USE (DBF(m.lcCursTmp1)) AGAIN ALIAS (m.lcCursResult) IN (m.lcCursResult)
+			USE (DBF(m.lcCursTmp2)) AGAIN ALIAS (m.lcCursTmp1) IN (m.lcCursTmp1)
+			USE IN (m.lcCursTmp2)
+
+			ZAP IN (m.lcCursTmp1)
+		ELSE
+			EXIT
+		ENDIF
+	ENDDO
+
+	USE IN (m.lcCursTmp1)
+
+	SELECT (m.lcCursResult)
+	REPLACE ALL FldOrder WITH RECNO()
+*!*		INDEX ON ID TAG ID
+	INDEX ON FLDORDER TAG FldOrder
+	SET ORDER TO 0
+	GO TOP
+
+	SELECT (m.lnOldObl)
+RETURN m.lcCursResult
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*createcursorfolder Создает курсор содержащий иерархию директорий
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Вспомогательный класс с методами-утилитами[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sprutil
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1ALM72
+[CLASS] base_container
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] toolbarsprav
+[START PROPERTIES]
+BorderColor = 0,0,255
+Height = 27
+Name = "toolbarsprav"
+Style = 3
+Width = 461
+ZOrderSet = 4
+_memberdata =      323<VFPData><memberdata name="olastobject" type="property" display="oLastObject"/><memberdata name="specialeffect_assign" type="method" display="Specialeffect_Assign"/><memberdata name="visible_assign" type="method" display="Visible_Assign"/><memberdata name="enabled_assign" type="method" display="Enabled_Assign"/></VFPData>
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.BorderWidth = 0
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+24[END RESERVED2]
+[START RESERVED3]
+olastobject Объект, который будет терять свой фокус при клике на тулбаре
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Панель инструментов[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG06OYGD
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntCopy
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 104
+Name = "cntCopy"
+TabIndex = 5
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\copy.bmp
+cmdBtn.ToolTipText = "Копировать в группу (Ctrl+F5)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AY11Q66Q
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntCut
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 127
+Name = "cntCut"
+TabIndex = 6
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\cut.bmp
+cmdBtn.ToolTipText = "Перенести в группу (Ctrl+F6)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG06OYGG
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntDelete
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 75
+Name = "cntDelete"
+TabIndex = 4
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\data_delete.bmp
+cmdBtn.ToolTipText = "Удалить (Del)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1RK13JBCY
+[CLASS] spidcheckbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntDisTree
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Left = 205
+Name = "cntDisTree"
+TabIndex = 9
+Top = 3
+cmdBtn.Alignment = 0
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\text_tree.bmp
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+
+THIS.Enabled = THIS.Parent.Parent.lEnableTree
+
+IF THIS.Enabled
+	THIS.StatusBarText = "Убрать окно дерева"
+	THIS.cmdBtn.Value = 1
+*!*		THIS.cmdBtn.VisualEffect = 2
+ELSE
+*!*		THIS.cmdBtn.VisualEffect = 1
+	THIS.cmdBtn.Value = 0
+ENDIF
+ENDPROC
+PROCEDURE cmdBtn.Click
+WITH THIS.PARENT.PARENT.PARENT
+	STORE !.lEnableTree TO .lEnableTree
+
+	LOCAL lnanchor as Integer, lllockscreen as Logical
+
+	lllockscreen = .LockScreen
+
+	IF !m.lllockscreen
+		.LockScreen = .T.
+	ENDIF
+
+	IF !.lEnableTree
+		.pnltreeFolder.Enabled = .F.
+		.pnltreeFolder.Visible = .F.
+		.V_splitter.Enabled = .F.
+		.V_splitter.Visible = .F.
+
+		lnanchor = .GrdDict.ANCHOR
+
+		.GrdDict.ANCHOR = 0
+		.GrdDict.Width = .GrdDict.Left + .GrdDict.Width - .pnlTreeFolder.Left
+		.GrdDict.Left = .pnltreeFolder.Left
+		.GrdDict.ANCHOR = m.lnanchor
+
+		lnanchor = .shapegrid.ANCHOR
+		.shapegrid.ANCHOR = 0
+		.shapegrid.INIT()
+		.shapegrid.ANCHOR = m.lnanchor
+
+		THIS.StatusBarText = "Показать окно дерева"
+*!*			THIS.VisualEffect = 1
+	ELSE
+		lnanchor = .GrdDict.ANCHOR
+
+		.GrdDict.ANCHOR = 0
+		.GrdDict.Left = .V_splitter.Left + .V_splitter.Width
+		.GrdDict.Width = .Width - .GrdDict.Left - 8
+		.GrdDict.ANCHOR = m.lnanchor
+
+		lnanchor = .shapegrid.ANCHOR
+		.shapegrid.ANCHOR = 0
+		.shapegrid.INIT()
+		.shapegrid.ANCHOR = m.lnanchor
+
+		.BuildTree()
+		.pnltreeFolder.Enabled = .T.
+		.pnltreeFolder.Visible = .T.
+		.V_splitter.Enabled = .T.
+		.V_splitter.Visible = .T.
+
+		THIS.StatusBarText = "Убрать окно дерева"
+*!*			THIS.VisualEffect = 2
+	ENDIF
+
+	.GrdDict.GrdPnl.SetFocus()
+	.Resize()
+
+	.LockScreen = m.lllockscreen
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1F50GA00O
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntDown
+[PARENT] toolbarsprav
+[START PROPERTIES]
+CMDBTN.Name = "CMDBTN"
+CMDBTN.Picture = ..\bmp\16x16\arwdn.bmp
+CMDBTN.ToolTipText = "Опустить"
+Height = 22
+Left = 276
+Name = "cntDown"
+SHPFOREVENT.Name = "SHPFOREVENT"
+TabIndex = 12
+Top = 3
+Width = 23
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG06OYGC
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntEdit
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 52
+Name = "cntEdit"
+TabIndex = 3
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\data_edit.bmp
+cmdBtn.ToolTipText = "Изменить (Shift+Enter)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1ENHBS
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntExit
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 432
+Name = "cntExit"
+TabIndex = 18
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\exit.ico
+cmdBtn.ToolTipText = "Закрыть"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AY11Q66Q
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntExport
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Enabled = .F.
+Height = 22
+Left = 380
+Name = "cntExport"
+TabIndex = 16
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\export1_16x16.bmp
+cmdBtn.ToolTipText = "Экспорт"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1ENHBS
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntFind
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 305
+Name = "cntFind"
+TabIndex = 13
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\data_find.bmp
+cmdBtn.ToolTipText = "Поиск (Ctrl+F)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1T606R5CG
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntImport
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Enabled = .F.
+Height = 22
+Left = 403
+Name = "cntImport"
+TabIndex = 17
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\import2_16x16.bmp
+cmdBtn.ToolTipText = "Импорт"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AY11Q66Q
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntNewChild
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 29
+Name = "cntNewChild"
+TabIndex = 2
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\branch_element.bmp
+cmdBtn.ToolTipText = "Новая группа (Ctrl+F9)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG06OYG5
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntNewFile
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 6
+Name = "cntNewFile"
+TabIndex = 1
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\data_add.bmp
+cmdBtn.ToolTipText = "Новая строка (Ins)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1T80TBD23
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntPaste
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 150
+Name = "cntPaste"
+TabIndex = 7
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\paste.bmp
+cmdBtn.ToolTipText = "Перенести в группу (Ctrl+F6)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AY11Q66Q
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntPrint
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Enabled = .F.
+Height = 22
+Left = 357
+Name = "cntPrint"
+TabIndex = 15
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\printer.bmp
+cmdBtn.ToolTipText = "Печать (Ctrl+P)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AY11Q66Q
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntRequery
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Left = 179
+Name = "cntRequery"
+TabIndex = 8
+Top = 3
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\data_refresh.bmp
+cmdBtn.ToolTipText = "Обновить (F5)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1ENHBS
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntTree
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 22
+Left = 229
+Name = "cntTree"
+TabIndex = 10
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\box closed.bmp
+cmdBtn.ToolTipText = "Свернуть/Раскрыть"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE cmdBtn.Click
+WITH THIS.Parent.Parent
+	STORE !.Parent.lViewTree TO .Parent.lViewTree
+
+	IF .Parent.lViewTree
+	    THIS.Picture = "..\bmp\16x16\box closed.bmp"
+	ELSE
+	    THIS.Picture = "..\bmp\16x16\box open.bmp"
+	ENDIF
+
+	.cntDown.Enabled = .Parent.lViewTree
+	.cntUp.Enabled = .Parent.lViewTree
+
+	THIS.Refresh()
+	.cntRequery.Click()
+ENDWITH
+ENDPROC
+PROCEDURE cmdBtn.Init
+DODEFAULT()
+
+IF THIS.Parent.Parent.Parent.lViewTree
+    THIS.Picture = "..\bmp\16x16\box closed.bmp"
+ELSE
+    THIS.Picture = "..\bmp\16x16\box open.bmp"
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1ENHBS
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntUp
+[PARENT] toolbarsprav
+[START PROPERTIES]
+CMDBTN.Name = "CMDBTN"
+CMDBTN.Picture = ..\bmp\16x16\arwup.bmp
+CMDBTN.ToolTipText = "Поднять"
+Height = 22
+Left = 252
+Name = "cntUp"
+SHPFOREVENT.Name = "SHPFOREVENT"
+TabIndex = 11
+Top = 3
+Width = 23
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1ENHBS
+[CLASS] spidbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] container
+[OBJNAME] cntView
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Enabled = .F.
+Height = 22
+Left = 334
+Name = "cntView"
+TabIndex = 14
+Top = 3
+Width = 23
+cmdBtn.Name = "cmdBtn"
+cmdBtn.Picture = ..\bmp\16x16\document_view.bmp
+cmdBtn.ToolTipText = "Просмотр (Ctrl+V)"
+shpForEvent.Name = "shpForEvent"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG06OYG7
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 23
+Left = 100
+Name = "Shape1"
+SpecialEffect = 0
+Style = 0
+Top = 3
+Width = 2
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1G111OJNV
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Shape2
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 23
+Left = 330
+Name = "Shape2"
+SpecialEffect = 0
+Style = 0
+Top = 3
+Width = 2
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG06OYG9
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Shape3
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 23
+Left = 175
+Name = "Shape3"
+SpecialEffect = 0
+Style = 0
+Top = 3
+Width = 2
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AG06OYGA
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Shape4
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 23
+Left = 301
+Name = "Shape4"
+SpecialEffect = 0
+Style = 0
+Top = 3
+Width = 2
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1ENHBS
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Shape5
+[PARENT] toolbarsprav
+[START PROPERTIES]
+Height = 23
+Left = 428
+Name = "Shape5"
+SpecialEffect = 0
+Style = 0
+Top = 3
+Width = 2
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] toolbarsprav
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[EOF]

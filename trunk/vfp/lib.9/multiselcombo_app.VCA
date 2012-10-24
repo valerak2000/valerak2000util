@@ -1,0 +1,181 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2QL0YZ8X0
+[CLASS] cboms
+[CLASSLOC] multiselcombo.vcx
+[BASECLASS] combobox
+[OBJNAME] cboms
+[START PROPERTIES]
+Name = "multiselcombo_cboms"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DropDown
+LOCAL lnI, llFirst
+	NODEFAULT
+
+	WITH THIS
+		.lDroppedDown=.t.
+
+		SELECT (.cSourceAlias)
+
+		IF RECCOUNT(.cSourceAlias)=0
+			RETURN 
+		ELSE
+			IF ALEN(.aSelRecnos, 1)<>RECCOUNT(.cSourceAlias)
+				DIMENSION .aSelRecnos[RECCOUNT(.cSourceAlias)]
+			ENDIF
+
+			llFirst = .T.
+
+			FOR lnI=1 TO ALEN(.aSelRecnos, 1)
+				IF VARTYPE(.aSelRecnos[m.lnI])<>'N'		&&default array value
+					.aSelRecnos[m.lnI]=0
+				ELSE
+					*установить курсор на первую выбранную запись
+					IF .aSelRecnos[m.lnI] = 1 AND m.llFirst
+						GO m.lnI
+						llFirst = .F.
+					ENDIF
+				ENDIF
+			ENDFOR
+		ENDIF 
+		
+		IF THISFORM.ShowWindow=2
+			.oComboformRef=Newobject('ComboForm_desktop', THIS.ClassLibrary, '', THIS, THISFORM)
+		ELSE
+			.oComboformRef=Newobject('ComboForm', THIS.ClassLibrary, '', THIS, THISFORM)
+		ENDIF
+
+		.oComboformRef.Visible=.t.
+		.oComboformRef.grdList.Refresh()
+		.oComboformRef.Show()
+	ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cboms
+[START PROPERTIES]
+Courier New, 0, 8, 7, 14, 11, 7, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2QL10ZX1A
+[CLASS] comboform
+[CLASSLOC] multiselcombo.vcx
+[BASECLASS] form
+[OBJNAME] comboform
+[START PROPERTIES]
+DoCreate = .T.
+GRDLIST.Name = "GRDLIST"
+GRDLIST.colSelection.Name = "colSelection"
+GRDLIST.colSelection.chkSelection.Alignment = 0
+GRDLIST.colSelection.chkSelection.Name = "chkSelection"
+GRDLIST.colSelection.hdSelection.Name = "hdSelection"
+Name = "comboform"
+cmdAll.Name = "cmdAll"
+cmdExit.Name = "cmdExit"
+cmdNone.Name = "cmdNone"
+dbcontainer.Name = "dbcontainer"
+saveset_form.Name = "saveset_form"
+tmrCheckMousOut.Name = "tmrCheckMousOut"
+tmrCheckTitleBarClick.Name = "tmrCheckTitleBarClick"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] comboform
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Wingdings, 0, 8, 10, 12, 10, 15, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2QL111AC0
+[CLASS] comboform_desktop
+[CLASSLOC] multiselcombo.vcx
+[BASECLASS] form
+[OBJNAME] comboform_desktop
+[START PROPERTIES]
+DoCreate = .T.
+GRDLIST.Name = "GRDLIST"
+GRDLIST.colSelection.Name = "colSelection"
+GRDLIST.colSelection.chkSelection.Alignment = 0
+GRDLIST.colSelection.chkSelection.Name = "chkSelection"
+GRDLIST.colSelection.hdSelection.Name = "hdSelection"
+Name = "comboform_desktop"
+cmdAll.Name = "cmdAll"
+cmdExit.Name = "cmdExit"
+cmdNone.Name = "cmdNone"
+dbcontainer.Name = "dbcontainer"
+saveset_form.Name = "saveset_form"
+tmrCheckMousOut.Name = "tmrCheckMousOut"
+tmrCheckTitleBarClick.Name = "tmrCheckTitleBarClick"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] comboform_desktop
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Wingdings, 0, 8, 10, 12, 10, 15, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2QL111OAZ
+[CLASS] tmrsearch
+[CLASSLOC] multiselcombo.vcx
+[BASECLASS] timer
+[OBJNAME] tmrsearch
+[START PROPERTIES]
+Name = "tmrsearch"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tmrsearch
+[EOF]

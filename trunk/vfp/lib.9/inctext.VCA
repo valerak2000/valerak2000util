@@ -1,0 +1,276 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0DZ15IIIU
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] inctext
+[START PROPERTIES]
+BorderStyle = 0
+FontName = "MS Sans Serif"
+Margin = 0
+Name = "inctext"
+ReadOnly = .T.
+ccomparisonexpression = 
+csearchsrt = 
+ctypefield = 
+[END PROPERTIES]
+[START PROTECTED]
+ccomparisonexpression^
+csearchsrt^
+ctypefield^
+initsearch^
+lisactivesearch^
+lisseekmode^
+osearchwindow^
+search^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE GotFocus
+THIS.lisSeekMode=.F.
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS tnKeyCode, tnShiftAltCtrl
+	DO CASE
+	CASE m.tnKeyCode=93 AND m.tnShiftAltCtrl=1 &&WinProperties
+		IF THIS.lisActiveSearch
+			DO txt_menu.prg WITH THISFORM.Left+IIF(THISFORM.BorderStyle=3, SYSMETRIC(3), IIF(THISFORM.BorderStyle=0, SYSMETRIC(10), SYSMETRIC(12)))+;
+								 THIS.oSearchWindow.Left,;
+								 THISFORM.Top+IIF(THISFORM.BorderStyle=3, SYSMETRIC(4), IIF(THISFORM.BorderStyle=0, SYSMETRIC(11), SYSMETRIC(13)))+;
+								 IIF(THISFORM.TitleBar=1, SYSMETRIC(9), 0)+IIF(THISFORM.HalfHeightCaption, SYSMETRIC(34), 0)+;
+								 THIS.oSearchWindow.Top+THIS.oSearchWindow.Height
+		ELSE
+		*корректно только для грида
+			DO dictionary_grid_menu.prg WITH THISFORM,;
+						THISFORM.Left+IIF(THISFORM.BorderStyle=3, SYSMETRIC(3), IIF(THISFORM.BorderStyle=0, SYSMETRIC(10),SYSMETRIC(12)))+;
+						OBJTOCLIENT(THIS.Parent, 2),;
+						THISFORM.Top+IIF(THISFORM.BorderStyle=3, SYSMETRIC(4), IIF(THISFORM.BorderStyle=0, SYSMETRIC(11),SYSMETRIC(13)))+;
+						IIF(THISFORM.TitleBar=1, SYSMETRIC(9), 0)+IIF(THISFORM.HalfHeightCaption,SYSMETRIC(34), 0)+;
+						(OBJTOCLIENT(THIS.Parent, 1)+THISFORM.grdSprav.HeaderHeight+THISFORM.grdSprav.ActiveRow*THISFORM.grdSprav.RowHeight)
+		ENDIF
+	CASE m.tnKeyCode=10 AND THIS.lisActiveSearch && Ctrl+Enter - продолжение поиска
+	    NODEFAULT
+	    THIS.Search(2)
+	CASE BETWEEN(m.tnKeyCode, 32, 126) OR BETWEEN(m.tnKeyCode, 192, 255) OR m.tnKeyCode=128	&& AlphaNumeric
+	    NODEFAULT
+		* Определяем тип данных в текущей колонке
+	    THIS.cTypeField=TYPE(THIS.Parent.ControlSource)
+		* Если тип поля по которому может проводиться поиск не верный, возврат
+	    IF !(THIS.cTypeField$"NDC")
+	        RETURN
+	    ENDIF
+		* Если происходит активизация нового поиска, запускаем прогрраму его организации
+	    IF !THIS.lIsActiveSearch
+		* Обнуляем свойства учавствующие в поиске
+	        THIS.cComparisonExpression=''
+	        THIS.cSearchSrt=UPPER(CHR(m.tnKeyCode))
+	        THIS.InitSearch()
+			* Выставляем флаг активизации в .T.
+	        THIS.lIsActiveSearch=.T.
+	    ELSE
+	        THIS.cSearchSrt=THIS.cSearchSrt+UPPER(CHR(m.tnKeyCode))
+	    ENDIF
+
+	    THIS.oSearchWindow.loSearchText.CAPTION=THIS.cSearchSrt
+	    THIS.Search(1)
+	CASE m.tnKeyCode=127 AND THIS.lisActiveSearch && Backspace
+	    NODEFAULT
+	    THIS.cSearchSrt=LEFT(THIS.cSearchSrt, LEN(THIS.cSearchSrt)-1)
+	    THIS.oSearchWindow.loSearchText.CAPTION=THIS.cSearchSrt
+	    THIS.Search(1)
+	OTHERWISE
+	    THIS.LOSTFOCUS()
+	ENDCASE
+	* Выставляем флаг, что поиск уже проведен
+	THIS.lIsSeekMode=.F.
+ENDPROC
+PROCEDURE LostFocus
+IF !THIS.lisSeekMode
+* Деактивизация поиска
+    IF THIS.lisActiveSearch
+	* Удаляем "окно" вывода символов поиска
+        IF VARTYPE(THIS.oSearchWindow)='O'
+            THISFORM.REMOVEOBJECT(THIS.oSearchWindow.NAME)
+			* Перерисовываем грид
+            THISFORM.REFRESH()
+            THIS.lisActiveSearch=.F.
+        ENDIF
+    ENDIF
+ENDIF
+ENDPROC
+PROCEDURE RightClick
+DO txt_menu.prg
+ENDPROC
+PROCEDURE When
+THIS.PARENT.PARENT.TAG=TRANSFORM(RECNO())
+ENDPROC
+PROCEDURE initsearch
+********************************************************************************
+******************* Процедура подготовки к новому поиску ***********************
+********************************************************************************
+LOCAL lcSearchWindow as String, loI as Object, lcFieldName as String, lnFieldLen as Integer
+	*Создам на форме 'окно' для показа в нем набераемых символов
+	lcSearchWindow=SYS(2015)
+	THISFORM.ADDOBJECT(m.lcSearchWindow, "CONTAINER")
+	THIS.oSearchWindow=THISFORM.&lcSearchWindow
+
+	WITH THIS.oSearchWindow
+	    .WIDTH=THIS.PARENT.WIDTH+2
+	    .HEIGHT=26
+		*!!!Устанавливаем верх 'окошка' под последней целиком видимой строкой в гриде !!!
+	    WITH THIS.PARENT.PARENT
+		*Вычисляем общую высоту целиком видимых строк
+	        THIS.oSearchWindow.TOP=FLOOR(((.HEIGHT-.HEADERHEIGHT)-IIF(INLI(.SCROLLBARS,1,3),SYSMETRIC(8),0))/.ROWHEIGHT)*.ROWHEIGHT
+	    ENDWITH
+
+	    .TOP=.TOP+OBJTOCLIENT(THIS.PARENT.PARENT, 1) && Прибовляем расстояние от верха формы до грида
+	    .TOP=.TOP+THIS.PARENT.PARENT.HEADERHEIGHT && Прибавляем высоту заголовка грида
+		*!!!Устанавливаем 'окошко' по горизонтали над текущим столбцом !!!
+	    .LEFT=OBJTOCLIENT(THIS.PARENT.PARENT, 2) && Расстояние от левого края формы до грида
+	    .LEFT=.LEFT+IIF(THIS.PARENT.PARENT.DELETEMARK, 8, 0) && учитываем ширину DELETEMARK
+	    .LEFT=.LEFT+IIF(THIS.PARENT.PARENT.RECORDMARK, 10, 0) && учитываем ширину RECORDMARK
+		*Сканируем видимые колнки и учитываем их ширину
+	    FOR EACH loI IN THIS.PARENT.PARENT.COLUMNS
+	        IF BETWEEN(loI.COLUMNORDER, ;
+	            THIS.PARENT.PARENT.LEFTCOLUMN, ;
+	            THIS.PARENT.COLUMNORDER-1)
+	            .LEFT=.LEFT+loI.WIDTH+1
+	        ENDIF
+	    ENDFOR
+
+	    .SPECIALEFFECT=0
+	    .VISIBLE=.T.
+		*Добавляем второй контейнер для создания объемных крав
+	    .ADDOBJECT("loBorder","CONTAINER")
+
+	    WITH .loBorder
+	        .TOP=2
+	        .LEFT=2
+	        .WIDTH=.PARENT.WIDTH-4
+	        .HEIGHT=.PARENT.HEIGHT-4
+	        .BACKCOLOR=RGB(0, 128, 192)
+	        .SPECIALEFFECT=1
+	        .VISIBLE=.T.
+	    ENDWITH
+		*Добавляем объект Label, в который будем выводить набираемый при поиске текст
+	    .ADDOBJECT("loSearchText", "LABEL")
+
+	    WITH .loSearchText
+	        .CAPTION=THIS.cSearchSrt
+	        .FORECOLOR=RGB(255, 255, 255)
+	        .AUTOSIZE=.T.
+	        .BACKSTYLE=0
+	        .LEFT=5
+	        .FONTNAME="MS Sans Serif"
+	        .FONTSIZE=8
+	        .TOP=(.PARENT.HEIGHT-FONTMETRIC(1, .FONTNAME, .FONTSIZE))/2
+	        .VISIBLE=.T.
+	    ENDWITH
+	ENDWITH
+
+	lcFieldName=THIS.PARENT.CONTROLSOURCE && название поля
+	*ширина поля символов
+	DO CASE
+	CASE THIS.cTypeField='D'
+	    lnFieldLen=IIF(SET("Century")='ON', 10, 8)
+	OTHERWISE
+	    IF RAT('.', m.lcFieldName)>0
+	        IF TYPE("Fsize(Upper(Subs(m.lcFieldName, Rat('.', m.lcFieldName)+1)), Left(m.lcFieldName, At('.', m.lcFieldName)-1))")='N'
+	            lnFieldLen=FSIZE(UPPE(SUBS(m.lcFieldName, RAT('.', m.lcFieldName)+1)), LEFT(m.lcFieldName, AT('.', m.lcFieldName)-1))
+	        ELSE
+	            lnFieldLen=30 && если мы не смогли вычислить длянну поля
+	        ENDIF
+	    ELSE
+	        lnFieldLen=FSIZE(m.lcFieldName)
+	    ENDIF
+
+		IF THIS.cTypeField='I' OR (THIS.cTypeField='N' AND m.lnFieldLen=4)
+		    lnFieldLen=11
+		ENDIF
+	ENDCASE
+
+	IF THIS.cTypeField='C'
+	    THIS.cComparisonExpression="UPPER("+m.lcFieldName+')'
+	ELSE
+	    THIS.cComparisonExpression="PADR("+m.lcFieldName+','+ALLTRIM(TRANSFORM(m.lnFieldLen))+')'
+	ENDIF
+ENDPROC
+PROCEDURE search
+********************************************************************************
+* Непосредственно сама функция поиска
+********************************************************************************
+LPARAMETERS tnContinueSearch
+LOCAL lnOldRecno
+PRIVATE pcRequiredLine
+	THIS.lisSeekMode=.T.
+	pcRequiredLine=THIS.cSearchSrt
+	lnOldRecno=IIF(EOF() OR BOF(), 0, RECNO())
+	lcLocateExpression="LOCATE FOR "+THIS.cComparisonExpression+"=m.pcRequiredLine"
+
+	IF m.tnContinueSearch=1
+	    &lcLocateExpression
+	ELSE
+	    IF FOUND()
+	        CONTINUE
+	    ELSE
+	        &lcLocateExpression
+	    ENDIF
+	ENDIF
+
+	IF !FOUND()
+	    IF m.tnContinueSearch=1
+	        THIS.cSearchSrt=LEFT(THIS.cSearchSrt, LEN(THIS.cSearchSrt)-1)
+	        THIS.oSearchWindow.loSearchText.CAPTION=THIS.cSearchSrt
+	    ENDIF
+
+	    IF m.lnOldRecno>0
+	        GO m.lnOldRecno
+	    ENDIF
+
+	    THIS.oSearchWindow.loBorder.BACKCOLOR=RGB(255, 0, 128)
+	    THIS.PARENT.PARENT.REFRESH()
+
+	    RETURN .F.
+	ELSE
+	    THIS.oSearchWindow.loBorder.BACKCOLOR=RGB(0, 128, 192)
+	    THIS.PARENT.PARENT.REFRESH()
+
+	    RETURN .T.
+	ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*initsearch Инициализация нового поиска
+*search Функция выполняющая поик
+ccomparisonexpression Выражение для сравнения с искомой строкой
+csearchsrt Искомая строка
+ctypefield Тип данных в поле
+lisactivesearch Активен ли поиск
+lisseekmode Флаг подавления  GotFocus/LostFocus  во время поиска
+osearchwindow Ссылка на окно вывода искомого текста 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] inctext
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[EOF]

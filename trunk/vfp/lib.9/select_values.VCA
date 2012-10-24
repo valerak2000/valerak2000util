@@ -1,0 +1,2587 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1251
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18M0JU7WG
+[CLASS] base_combobox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] combobox
+[OBJNAME] cmbsearch
+[START PROPERTIES]
+
+ColumnCount = 1
+DisabledBackColor = 248,247,241
+DisabledForeColor = 0,0,0
+DisplayCount = 7
+FontName = "Tahoma"
+FontSize = 8
+Format = "iT"
+Height = 22
+Name = "cbsearch"
+RowSourceType = 3
+SelectOnEntry = .T.
+_memberdata =      161<VFPData><memberdata name="ccolumns" type="property" display="cColumns"/><memberdata name="ccolumnsheader" type="property" display="cColumnsHeader"/></VFPData>
+addnewcaption = /<New Entry
+addnewcommand = 
+autodropdown = .T.
+ccolumns = 
+ccolumnsheader = 
+charlimit = 3
+clastsearchresult = found
+comboformref = .NULL.
+droppeddown = .F.
+indextag = 
+locateexpr = evaluate(this.aColumns[this.BoundColumn]) = '%'
+oldsetexact = 
+oldsetfilter = 
+oldsetorder = 
+pkindex = 
+refreshscriptexpr = 
+savedrowsource = 
+scriptexpr = 
+searchmode = FILTER
+searchstring = 
+seekexpr = '%'
+showheaders = .T.
+textboxname = 
+[END PROPERTIES]
+[START PROTECTED]
+RowSourceType^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+IF TYPE('thisform.'+this.textboxname)='O'
+	thisform.RemoveObject(this.textboxname)
+ENDIF 
+
+ENDPROC
+PROCEDURE DropDown
+*2004-05-30 changed "this.parent" with "thisform", was a bug, didn't worked with
+*other container types (container, pages in pageframe
+*2005-01-21, more complex search code than before, moved from comboForm here
+
+WITH this
+
+	DO CASE
+
+	*try to send  .charLimit chars to script and get some rows to be in the list
+	*in SCRIPT mode
+	CASE .searchmode='SCRIPT' AND EMPTY(.searchstring)
+		IF  NOT EMPTY(.DisplayValue) AND NOT ISNULL(.DisplayValue)
+			lcExpression=STRTRAN( .ScriptExpr , '%' , LEFT(.DisplayValue ;
+				,IIF(.charlimit < LEN(.DisplayValue) ,.charlimit,LEN(.DisplayValue))))
+			EXECSCRIPT(lcExpression)
+			SELECT (.SourceAlias)
+			LOCATE
+		ENDIF
+	
+	*script mode and already typed search string, execute search
+	CASE .searchmode='SCRIPT' AND NOT EMPTY(.searchstring)
+		IF .executeSearch()
+			.fillvalue()
+		ELSE 
+			.fillvalue(.null.)
+		ENDIF
+
+		*dynamic search is disabled, try to search now, if successfull, assign value to textbox
+		*and fill the combo DisplayValue
+	CASE .IncrementalSearch=.F. AND NOT EMPTY(.searchstring)
+		IF .executeSearch()
+			.fillvalue()
+		ENDIF
+	OTHERWISE 	&&try to locate first row bsed on textbox value
+
+		SELECT (.SourceAlias)
+		*get the associated textbox reference to locate the row with its value
+		LOCAL oTextboxRef 
+		oTextboxRef=EVALUATE('.parent.'+.TextBoxName)
+
+		*try to locate the row in list and set DisplayValue accordingly
+		IF NOT .PkIndex == ''		&&key specified, we can use indexed search
+			lcOrder=ORDER()
+			SET ORDER TO (.PkIndex)
+			SEEK oTextboxRef.Value
+			IF !FOUND()
+				GO TOP IN (.SourceAlias)
+			ENDIF
+			SET ORDER TO &lcOrder
+		ELSE	&& use LOCATE instead
+			lcCondition=.aColumns[ .BoundColumn ] + '=oTextboxRef.Value '
+			LOCATE FOR &lcCondition
+			IF !FOUND()
+				GO TOP IN (.SourceAlias)
+			ENDIF
+		ENDIF
+	ENDCASE
+	
+	.DroppedDown=.t.
+	SELECT (.sourceAlias)
+	IF thisform.ShowWindow=2
+		.comboformref=CREATEOBJECT('ComboForm_desktop',this,thisform)
+	ELSE
+		.comboformref=CREATEOBJECT('ComboForm',this,thisform)
+	ENDIF
+	.comboformref.visible=.t.
+	.comboformref.grdList.Refresh()
+	IF NOT EOF(.SourceAlias)
+		.comboformref.grdList.SetFocus()
+	ENDIF 
+
+ENDWITH
+
+ENDPROC
+PROCEDURE GotFocus
+*save some settings and initialize internal search string
+WITH this
+	.oldSetExact=SET('exact')
+	.oldSetOrder=ORDER(.SourceAlias)
+	.oldSetFilter=FILTER(.sourceAlias)
+	IF .DroppedDown=.F.
+		.SearchString=''
+	ENDIF 
+ENDWITH
+
+ENDPROC
+PROCEDURE Init
+#define MSG_WRONG_ROWSOURCETYPE "This combobox class works only if RowSourceType is 2,3,4 or 6"
+#define MSG_CLASS_INIT_ERROR	"Error in class Init(). Missing required values for existing RowSourceType"
+#define DEF_DISPLAYCOUNT	7
+
+WITH this
+	*Some checks 
+	IF !INLIST(.RowSourceType , 2,3,4,6)
+		MESSAGEBOX(MSG_WRONG_ROWSOURCETYPE ,64 ,"Class error")
+		RETURN .f. 
+	ENDIF 
+	IF (INLIST(.RowSourceType , 2,3,4) AND EMPTY( .ColumnsList)) ;
+		OR INLIST(.RowSourceType , 2,3,4) AND EMPTY( .SourceAlias)
+		MESSAGEBOX(MSG_CLASS_INIT_ERROR,64 ,"Class error")
+		RETURN .f.
+	ENDIF 
+	*fix .Displaycount
+	IF .DisplayCount=0
+		.DisplayCount=DEF_DISPLAYCOUNT
+	ENDIF 
+	*get .SourceAlias or .ColumsList, if not specified
+	IF  .RowSourceType=2 AND EMPTY( .SourceAlias )
+		.SourceAlias=.RowSource
+	ENDIF 
+	IF  .RowSourceType=6 AND EMPTY( .SourceAlias )
+		.SourceAlias=LEFT( .RowSource, ATC('.', .RowSource , 1) - 1)
+	ENDIF 
+	IF .RowSourceType=6 AND EMPTY( .ColumnsList )
+		.ColumnsList=SUBSTR( .RowSource , ATC('.', .RowSource) + 1)
+	ENDIF 
+	IF EMPTY( .ColumnHeaders )
+		.ColumnHeaders=.ColumnsList
+	ENDIF 
+	
+	*fill arrays	
+	ALINES( .aColumns, .ColumnsList , .t. , ',')
+	ALINES( .aColumnHeaders, .ColumnHeaders , .t. , ',')
+	ALINES( .aColumnWidths, .ColumnWidths, .t. , ',')
+
+	*if SearchMode = SCRIPT, execute code with empty string as parameter
+	* the code must create/open the SourceAlias cursor
+	*the best approach is TOP n rows (50-100, even fewer) if lookup tables are on server
+	*(Client/Server)
+	IF .SearchMode='SCRIPT'
+		EXECSCRIPT( STRTRAN(.ScriptExpr,'%' , '' ))
+	ENDIF 
+	
+	*create textbox
+	.TextboxName =SYS(2015)	&&associated textbox name
+	lcName=.TextboxName
+	.parent.AddObject(.TextboxName,'cbsearch_value_textbox', .Name)
+	.parent.&lcName..ControlSource=.ControlSource
+
+	*clear RowSource, RowSourceType and .ControlSource
+	.SavedRowSource=.RowSource	&&save this one, reused in Requery()
+	.RowSource=''
+	.ControlSource=''
+ENDWITH
+ENDPROC
+PROCEDURE InteractiveChange
+LPARAMETERS vValue
+*2005-01-21, will be called if value is assighned to associated textbox
+*the value will be passed from here if something is assigned to associated textbox 
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+*History:	2004-05-30, added Del key to initialize .SearchString
+*2005-01-20, added support for .IncrementalSearch
+*			 if .F. , search will be performed only in LostFocus()
+
+*some partial code from Tastrade sample->tsifcombo class
+*
+LOCAL lFound, cSearchExprDelimiters
+
+*Ctrl+Down , Alt+Down, F4
+IF nKeyCode=145 OR nKeycode=-3 OR nKeyCode=160
+	this.DropDown()
+	RETURN
+ENDIF
+IF BITAND(4, nShiftAltCtrl) == 4
+	*- the Alt key is pressed
+	RETURN
+ENDIF
+
+IF INLIST(nKeyCode, 4, 19) OR;
+		(INLIST(nKeyCode,52, 54) AND BITAND(1, nShiftAltCtrl) == 1) OR ;
+		(INLIST( 2, 26) AND BITAND(2, nShiftAltCtrl) == 2)
+	*- left, right arrow
+	RETURN
+ENDIF
+
+DO CASE
+CASE nKeyCode=24
+	*- down arrow
+	IF EMPTY(THIS.DISPLAYVALUE)
+		*- nothing there yet, so go to first record
+		GO TOP IN (THIS.SourceAlias)
+	ELSE
+		IF !EOF(THIS.SourceAlias)
+			*- not at end of file, so go to next record
+			SKIP IN (THIS.SourceAlias)
+		ENDIF
+		IF EOF(THIS.SourceAlias)
+			GO BOTTOM IN (THIS.SourceAlias)
+		ENDIF
+	ENDIF
+CASE nKeyCode=5
+	*- up arrow
+	IF EMPTY(THIS.DISPLAYVALUE)
+		*- nothing there yet, so go to first record
+		GO TOP IN (THIS.SourceAlias)
+	ELSE
+		IF !BOF(THIS.SourceAlias)
+			*- not at beginning of file, so go to previos record
+			SKIP -1 IN (THIS.SourceAlias)
+		ENDIF
+		IF BOF(THIS.SourceAlias)
+			GO TOP IN (THIS.SourceAlias)
+		ENDIF
+	ENDIF
+
+	*- changed to allow any ASCII character between 32 - 126
+	*-- Valid chars include letters, digits, spaces, and apostrophes
+CASE BETWEEN(nKeyCode, 32, 126)	&& OR BETWEEN(nKeyCode, 97, 122) OR ;
+	&& BETWEEN(nKeyCode, 48, 57) OR ;
+	&& BETWEEN(nKeyCode, 33, 42) OR ;
+	&& nKeyCode = 32 OR nKeyCode = 64 OR nKeyCode = 94
+	
+	*-- Build the internal search string
+	*--First check for delimiters in expressions, can lead to errors in evaluation
+	DO case
+	CASE   "[" $ this.locateExpr + this.seekExpr + this.scriptExpr + this.refreshScriptExpr  
+		cSearchExprDelimiters='[]'
+	CASE "'" $ this.locateExpr + this.seekExpr + this.scriptExpr + this.refreshScriptExpr  
+		cSearchExprDelimiters=[']
+	CASE ["] $ this.locateExpr + this.seekExpr + this.scriptExpr + this.refreshScriptExpr  
+		cSearchExprDelimiters=["]
+	OTHERWISE 
+		cSearchExprDelimiters=''
+	ENDCASE 
+	
+	IF NOT CHR(nKeyCode) $ cSearchExprDelimiters 
+		THIS.SearchString=THIS.SearchString + IIF( not '!'$ this.Format,  CHR(nKeyCode), UPPER(CHR(nKeyCode)))
+	ENDIF 
+	
+CASE nKeyCode=127 	&&backspace, trim one char from right
+	IF NOT EMPTY(this.searchstring)
+		this.searchstring=LEFT(this.searchstring,LEN(this.searchstring)-1)
+	ENDIF
+CASE INLIST(nKeyCode , 7,147,163)	&&Del, single or with modifiers
+	this.Searchstring=''
+OTHERWISE
+	RETURN
+ENDCASE
+
+*-- Cancel the default action. NODEFAULT is necessary to prevent
+*-- two copies of the character from being displayed in the combo
+*-- since we control the DisplayValue property manually.
+NODEFAULT
+
+SELECT (this.Sourcealias)
+WITH THIS
+	IF NOT INLIST(nKeyCode, 5,  24, 7, 147, 163)
+		
+		*if the dropdown list is active, search is performed, though
+		IF .IncrementalSearch OR .droppedDown
+
+
+			.executeSearch()
+
+			IF LEN(ALLTRIM( .SearchString ))>= .charlimit ;
+					AND NOT .DroppedDown ;
+					AND .AutoDropDown
+				.DropDown()
+			ENDIF
+
+			IF .DroppedDown
+				.ComboformRef.grdList.Refresh
+			ENDIF
+
+			IF .cLastSearchResult='found'
+				.FillValue()
+			ELSE
+				.FillValue(.null.)
+			ENDIF
+		ELSE
+			.DisplayValue=.SearchString
+			.SelStart=LEN(.SearchString)
+		ENDIF
+	ELSE
+		IF nKeyCode=5 OR nKeyCode=24
+			loTextboxRef=EVALUATE('.parent.'+ .TextboxName)
+			lotextboxref.Value=EVALUATE( .acolumns[.BoundColumn] )
+			.DisplayValue=EVALUATE( .acolumns[1] )
+			.InteractiveChange(lotextboxref.Value)
+			.searchstring=''
+			.Refresh()
+		ELSE
+			.fillvalue(.Null.)	&&del, reset to default empty
+		ENDIF
+	ENDIF
+ENDWITH
+RETURN
+
+ENDPROC
+PROCEDURE LostFocus
+*restore settings or search, if IncrementalSearch = .F.
+LOCAL lcSetOrder, lcSetExact, lcSetFilter, oTextboxRef, lcExpression, lDrop, lResetFilters
+
+lDrop=.f. 		&&drop list and stay on control?
+lResetFilters=.F.
+WITH this
+	oTextboxRef=EVALUATE('.parent.'+.TextBoxName)
+
+	IF NOT .DroppedDown=.T. 	&&we don't need execution of this code when
+								&&list is activated
+		
+		IF NOT .IncrementalSearch AND NOT EMPTY(.searchstring)
+			IF .executeSearch()
+				SELECT (.SourceAlias)
+				DO CASE 
+				CASE INLIST( .searchmode, 'SCRIPT', 'FILTER', 'SETKEY')
+					COUNT 
+					GO TOP 
+					IF _tally > 1
+						lDrop=.t.
+					ELSE 
+						lDrop=.f. 
+					ENDIF 
+				CASE .searchmode='LOCATE'
+					lcExpression=STRTRAN( .LocateExpr , '%' , .SearchString )
+					skip 
+					lDrop=IIF( &lcExpression , .t. , .f. )
+					SKIP -1
+				CASE .searchmode='SEEK'
+					lDrop=.f.
+				ENDCASE 
+				
+			ELSE 
+				.fillvalue(.Null.)		
+				lDrop=.T. 	 
+			ENDIF 
+
+			IF lDrop=.t. 	&&stay on combo and drop down the list 
+				NODEFAULT 
+				lResetFilters=.f.
+				KEYBOARD '{Ctrl+DnArrow}'
+			ELSE
+				lResetFilters=.t.
+				oTextBoxRef.Value=EVALUATE(.aColumns[.BoundColumn])
+				.DisplayValue=EVALUATE(.aColumns[1])
+				.InteractiveChange(oTextBoxRef.Value)
+			ENDIF
+		ELSE 
+			IF NOT .cLastSearchResult='found'
+				NODEFAULT 
+				lResetFilters=.f. 
+				KEYBOARD '{Ctrl+DnArrow}'
+			ELSE 
+				lResetFilters=.t.
+				IF NOT EMPTY(.DisplayValue)
+					IF ALLTRIM(.DisplayValue) <> ALLTRIM(EVALUATE(.aColumns[1]))
+						.DisplayValue=EVALUATE(.aColumns[1])
+					ENDIF 
+				ENDIF 
+			ENDIF 
+		ENDIF 
+
+	ENDIF 
+
+	IF lResetFilters
+		SELECT (.SourceAlias)
+		SET FILTER TO
+
+		IF !EMPTY(.oldSetOrder)
+			lcSetOrder=.oldSetOrder
+			SET ORDER TO &lcsetOrder
+		ENDIF
+
+		lcSetExact=.oldSetExact
+		SET EXACT &lcSetExact
+
+		IF !EMPTY(ORDER(.sourcealias))
+			SET KEY TO
+		ENDIF
+		
+	ENDIF
+
+ENDWITH
+
+ENDPROC
+PROCEDURE Refresh
+IF NOT EMPTY(this.refreshScriptExpr)
+	this.DisplayValue=EVALUATE(this.refreshScriptExpr)
+ELSE 
+	loTextboxRef=EVALUATE('this.parent.'+this.textboxname)
+	this.fillvalue(loTextboxRef.Value)
+ENDIF  
+ENDPROC
+PROCEDURE Requery
+DO case
+CASE this.RowSourceType= 4
+	EXECSCRIPT(this.RowSource)
+CASE this.RowSourceType=4 
+	EXECSCRIPT("DO "+this.RowSource)
+OTHERWISE 
+	DODEFAULT()
+ENDCASE 
+
+ENDPROC
+PROCEDURE executesearch
+*code moved here from initial location, KeyPress()
+
+LOCAL lFound
+lFound=.F. 
+WITH this
+
+	DO CASE
+	CASE .SearchMode='SEEK'
+		lcExpression=EVALUATE(STRTRAN( .SeekExpr , '%' , .SearchString))
+		SET ORDER TO .IndexTag
+		SEEK lcExpression
+		IF FOUND()
+			lFound=.T.
+		ENDIF
+	CASE .SearchMode='SETKEY'
+		lcExpression=EVALUATE(STRTRAN( .SeekExpr , '%' , .SearchString ))
+		SET ORDER TO .IndexTag
+		SET KEY TO lcExpression
+		LOCATE
+		IF !EOF(.SourceAlias)
+			lFound=.T.
+		ENDIF
+	CASE .SearchMode='LOCATE'
+		lcExpression=STRTRAN( .LocateExpr , '%' , .SearchString )
+		LOCATE FOR &lcExpression
+		IF FOUND()
+			lFound=.T.
+		ENDIF
+	CASE .SearchMode='FILTER'
+		lcExpression=STRTRAN( .LocateExpr , '%' , .SearchString )
+		SET FILTER TO &lcExpression
+		LOCATE
+		IF !EOF(.SourceAlias)
+			lFound=.T.
+		ENDIF
+	CASE .SearchMode='SCRIPT'
+		lcExpression=STRTRAN( .ScriptExpr , '%' , .SearchString )
+		IF .DroppedDown			&&list is active, remove recordsource first and the restore it
+			.ComboFormRef.grdList.RecordSource=''
+			EXECSCRIPT(lcExpression)
+			.ComboFormRef.grdList.RecordSource=.SourceAlias
+		ELSE
+			EXECSCRIPT(lcExpression)
+		ENDIF
+		SELECT (.SourceAlias)
+		LOCATE
+		IF !EOF(.SourceAlias)
+			lFound=.T.
+		ENDIF
+	ENDCASE
+	.cLastSearchResult=IIF( lFound , 'found', 'notfound' )
+ENDWITH
+
+
+RETURN lFound
+
+ENDPROC
+PROCEDURE fillvalue
+LPARAMETERS tValue
+
+*
+*2005-01-20, code cleanup, given up using value_assign() and flag (not supported)
+*			 .InteractiveCahnge call if value is assigned to associated textbox
+
+WITH this
+	IF NOT USED(this.sourcealias)  &&nothing yet, possible with 'SCRIPT' search mode
+		RETURN
+	ENDIF
+
+	LOCAL loTextboxRef
+	loTextboxRef=EVALUATE('this.parent.'+this.textboxname)
+	DO CASE 
+	CASE ISNULL(tValue)	&& reset the Value for associated textbox if nothing is found
+						&& in lookup operations of KeyPress
+		SELECT (.SourceAlias)
+		DO CASE
+		CASE INLIST(TYPE('loTextboxRef.Value'),'C','M')
+			loTextboxRef.Value=''
+		CASE INLIST(TYPE('loTextboxRef.Value'),'N','Y')
+			loTextboxRef.Value=0
+		CASE INLIST(TYPE('loTextboxRef.Value'),'D','T')
+			loTextboxRef.Value={}
+		OTHERWISE
+			loTextboxRef.Value=.null.
+		ENDCASE
+		.DisplayValue=.searchstring
+		.SelStart=LEN(.searchstring)
+		.InteractiveChange(loTextboxRef.Value)
+
+	CASE TYPE('tValue')='L'	&& called from KeyPress event, need to fill textbox portion
+		SELECT (.SourceAlias)
+		LOCAL iCount, l_Value
+	
+		FOR iCount=1 TO .ColumnCount
+			l_value=TRANSFORM(EVALUATE(.aColumns[iCount]))
+			
+			*check to see if typed search string is inside column
+			*and set display value to the entire string value
+			IF  UPPER(ALLTRIM(.SearchString)) $ UPPER(l_value)  ;
+					or EMPTY(.Searchstring )
+				IF .Droppeddown &&the list is active, show only typed chars
+					.DisplayValue=.Searchstring
+				ELSE 				&&show all chars
+					.DisplayValue=l_value
+					.SelStart=ATC(UPPER(.SearchString ),UPPER(l_value)) ;
+						+ LEN(.Searchstring) ;
+						- IIF(LEN(.Searchstring)=0 , 0 ,1 )
+					.SelLength=0
+				ENDIF
+				
+				*assign the value to associated textbox
+				loTextBoxRef.Value=EVALUATE(.aColumns[.BoundColumn])
+				.InteractiveChange(loTextBoxRef.Value)
+				EXIT 
+			ENDIF
+		NEXT
+	OTHERWISE && called from associate textbox Refresh(), search is needed
+
+		IF .searchmode='SCRIPT' AND NOT EMPTY( .refreshScriptExpr )
+			.DisplayValue=EVALUATE( .refreshScriptExpr )
+			RETURN
+		ENDIF
+	
+		SELECT (.sourcealias)
+
+		lcOrder=SET('order')
+		lcFilter=SET('filter')
+		lcKey=SET('key')
+		IF !EMPTY(.pkindex)
+			SET FILTER TO
+			SET ORDER TO (.pkindex)
+			SEEK tValue
+			IF FOUND()
+				.DisplayValue=EVALUATE(.aColumns[1])
+			ELSE
+				.DisplayValue=''
+			ENDIF
+		ELSE
+			lcCondition=.aColumns[.BoundColumn] + '=tValue'
+			
+			*don't search if already on row that matches condition
+			IF NOT &lcCondition
+				LOCATE FOR &lcCondition
+				IF FOUND()
+					.DisplayValue=EVALUATE(.aColumns[1])
+				ELSE
+					.DisplayValue=''
+				ENDIF
+			ENDIF 
+		ENDIF
+		SET ORDER TO &lcOrder
+		IF !EMPTY(lcKey)
+			SET KEY TO LEFT(lcKey,ATC(',',lcKey)-1)
+		ENDIF
+		SET filter TO &lcFilter
+	ENDCASE 
+	SELECT (.sourcealias)
+
+ENDWITH
+RETURN 
+
+
+ENDPROC
+PROCEDURE value_access
+*2005-01-21, tha value from associated textbox is returned if combo value is required
+
+LOCAL loTextboxRef
+loTextboxRef=EVALUATE('this.parent.'+this.textboxname)
+RETURN loTextboxRef.Value
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*executesearch execute search in source alias
+*fillvalue Fill the textbox portion with data if something is found or show only typed string.
+*value_access return textbox value instead combo value
+^acolumnheaders[1,0] array for headers captions. If not columnsHeaders not specified, filled from .ColumnsList
+^acolumns[1,0] array to hold grid columns sources. If not specified and RowSourceType = Alias, filled from that property
+^acolumnwidths[1,0] Array to hold column widths, filled in Init from ColumnWidths. If not defined, default for a column is 100 pixels
+_memberdata XML Metadata for customizable properties
+addnewcaption The caption for cmdAddNew button on ComboForm.
+addnewcommand Command passed to comboform to handle adding new item action.
+autodropdown Specifies if the list will be shown automatically when search begin, after .CharLimit entered chars
+ccolumns comma delimited columns list. For RowSourceType 3 or 4
+ccolumnsheader Comma delimited column headers. If absent, the class tries to get column headers from field names
+charlimit Integer, specifies after how many typed chars the list is activated
+clastsearchresult last search operation result. 'found' or 'notfound'
+comboformref Reference to form that mimics combo list. Internal use.
+droppeddown is the list form active?
+indextag Index tag used when SearchMode='SEEK' or 'SETKEY'
+locateexpr Locate/filter expression, if SearchMode = "LOCATE" or "FILTER" , with % as placeholder for search string
+oldsetexact old SET EXACT setting. SET EXACT OFF is needed.
+oldsetfilter old set filter for source alias
+oldsetorder old SET ORDER setting for SourceAlias
+pkindex index used to search values to be displayed when .BoundColumn is different than 1. If empty, a LOCATE is used.
+refreshscriptexpr custom expression (ex: "getCustomer( alias.customerId )" ) , used to "disconnect" combobox display from combobox source alias (which can be empty). The expression is evaluated in Refresh() and the result is assigned to DisplayValue.
+savedrowsource saved row source, used in Requery() 
+scriptexpr Scrip expression executed when SearchMode = SCRIPT
+searchmode How searches will be performed: LOCATE, SEEK, FILTER, SETKEY,SCRIPT
+searchstring Search/filter string used for locate/seek/filter/setkey. Internal.
+seekexpr Seek expression with % as placeholder (Ex.  UPPER('%')   )
+showheaders Show headers for list. Logical.
+textboxname name of  the "dummy" textbox that keeps Value and ControlSource. Initialized using sys(2015) as name in Init()
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+special combo object[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cmbsearch
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18Q0MG88U
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] cmbsearch_value_textbox
+[START PROPERTIES]
+Height = 23
+Name = "cbsearch_value_textbox"
+Width = 100
+linkedcomboname = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS tcComboName
+this.linkedcomboname=tcComboName
+ENDPROC
+PROCEDURE Refresh
+LOCAL loComboRef
+*2005-01-20, lFlag not longer used, the same value_assign()
+
+loComboRef=EVALUATE("this.parent."+this.LinkedComboName)	
+loComboRef.FillValue(this.Value)
+
+ENDPROC
+PROCEDURE visible_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.Visible=.f. &&always hidden
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*visible_assign keep .Visible=.f. all the time
+linkedcomboname name of linked combobox.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+associated textbox to keep .ControlSource and .Value[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cmbsearch_value_textbox
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18M0PPFE5
+[CLASS] base_form_szgr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] comboform
+[START PROPERTIES]
+AlwaysOnTop = .T.
+BorderStyle = 0
+Caption = "ComboForm"
+Closable = .F.
+Desktop = .F.
+DoCreate = .T.
+Height = 141
+KeyPreview = .T.
+Left = 0
+Name = "comboform"
+ShowInTaskBar = .F.
+ShowWindow = 1
+Themes = .T.
+TitleBar = 0
+Top = 0
+Width = 200
+comboboxref = .NULL.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+*2005-01-21
+this.tmrCheckTitleBarClick.Enabled=.t. 
+ENDPROC
+PROCEDURE Deactivate
+THIS.Release
+ENDPROC
+PROCEDURE Init
+LPARAMETERS toComboRef, toFormRef
+IF ISNULL(toComboRef) OR VARTYPE(toComboRef) <> 'O'
+	RETURN .f.
+ELSE
+	this.comboboxref=toComboRef 
+ENDIF 
+
+LOCAL oTopLevelForm
+oTopLevelForm=this.gettoplevelform() &&get host form reference for setting position
+
+LOCAL i, lnTotalWidth, oTextboxRef, lcOrder, lcCondition
+lntotalWidth=0
+
+WITH this
+
+	oTextboxRef=EVALUATE('.comboboxref.parent.'+.comboboxref.TextBoxName)
+	.OldDisplayValue=.ComboboxRef.DisplayValue 	&&just in case for Esc or Deactivate
+	.OldValue=oTextboxRef.Value
+
+	*initialize the grid list, build columns from combobox aColumns array property
+	.grdList.RecordSource=.ComboboxRef.SourceAlias
+	.grdList.ColumnCount=0
+	FOR i=1 TO .ComboboxRef.ColumnCount
+		IF TYPE(".ComboboxRef.aColumns[i]")='C'
+			.grdList.AddColumn(i)
+			.grdList.Columns(i).ControlSource=.ComboboxRef.SourceAlias +'.'+.comboboxref.aColumns[i]
+			.grdList.Columns(i).Tag=.ComboboxRef.SourceAlias +'.'+.comboboxref.aColumns[i]
+			.grdList.Columns(i).Controls(1).Caption=.comboboxref.aColumnHeaders[i]
+			.grdList.Columns(i).ReadOnly=.T.
+			.grdList.Columns(i).FontName=.ComboboxRef.FontName
+			.grdList.Columns(i).FontSize=.ComboboxRef.FontSize
+			.grdList.Columns(i).Controls(1).FontName=.ComboboxRef.FontName
+			.grdList.Columns(i).Controls(1).FontSize=.ComboboxRef.FontSize
+			.grdList.Columns(i).Controls(2).FontName=.ComboboxRef.FontName
+			.grdList.Columns(i).Controls(2).FontSize=.ComboboxRef.FontSize
+			
+			*check if width for the column is specified, otherwise default is 100
+			IF TYPE("val(.ComboboxRef.aColumnWidths[i])")='N'
+				.grdList.Columns(i).Width=VAL(.ComboboxRef.aColumnWidths[i])
+			ELSE 
+				IF TYPE("laColumns[i]")='C'
+					.grdList.Columns(i).Width 
+						= FONTMETRIC(6, .grdList.FontName))*LEN(EVALUATE(.ComboboxRef.aColumns[i])
+				ELSE
+					.grdList.Columns(i).Width=100
+				ENDIF 
+			ENDIF
+			lnTotalWidth=lnTotalWidth + .grdList.Columns(i).Width ;
+			  			   + .grdList.GridLineWidth
+			IF TYPE("laColumnHeaders[i]")='C'
+				.grdList.Columns(i).Header1.Caption=.ComboboxRef.aColumnHeaders[i]
+			ENDIF 
+		ENDIF 
+	NEXT i
+	lnTotalWidth=lnTotalWidth + SYSMETRIC(5)
+	
+	*total height and width of grid
+	.grdList.Height=.grdList.HeaderHeight + (.grdList.RowHeight * .ComboboxRef.DisplayCount)
+	.grdList.Width=lnTotalWidth + 4
+	
+	*add cmdAddNew button if needed
+	IF NOT .Comboboxref.AddNewCommand == ''
+		.AddObject('cmdAddNew','cmdAddNew')
+		.cmdAddNew.Top=.grdList.Height
+		.cmdAddNew.Left=0
+		.cmdAddNew.Caption=.ComboboxRef.AddNewCaption
+		.cmdAddNew.Width=.grdList.Width
+		.cmdAddNew.Visible=.T.
+	ENDIF
+	
+	*Calculate width, height and position
+	IF .ComboboxRef.ShowHeaders=.f.
+		.grdList.HeaderHeight=0
+	ENDIF 
+
+	.Height=IIF(NOT .ComboboxRef.AddNewCommand == '' ;
+				, .grdList.Height + .cmdAddNew.Height ;
+				, .grdList.Height)
+	.Width=lnTotalWidth + 4
+
+	.Top=.ComboboxRef.Height + OBJTOCLIENT(.ComboboxRef,1)  ;
+		+ SYSMETRIC(4) + SYSMETRIC(9) + toFormRef.top
+	.Left=OBJTOCLIENT(.ComboboxRef,2) + SYSMETRIC(3) + toFormRef.left 
+
+*check to see if "drop up" or horizontal position shifting needed	
+	DO CASE 
+	CASE toFormRef.ShowWindow=0 OR toFormRef.ShowWindow=1
+		IF .Left + .Width > oTopLevelForm.Width 	
+			.Left=oTopLevelForm.Width - .Width - 4
+		ENDIF
+	
+		IF .Top + .Height  > oTopLevelForm.Height
+			.Top=.Top - .ComboboxRef.Height - .Height - 2
+		ENDIF 
+	CASE  toFormRef.ShowWindow=2
+		IF .Left + .Width > SYSMETRIC(1)
+			.Left=SYSMETRIC(1) - .Width - 4
+		ENDIF
+	
+		IF .Top + .Height  > SYSMETRIC(2)
+			.Top=.Top - .ComboboxRef.Height - .Height - 2
+		ENDIF 
+	ENDC
+	
+	*finally, add the shape
+	.AddObject('shpGridCover','shpGridCover')
+	.grdList.Refresh()
+
+ENDWITH 
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+*2004-05-30, added Del key into accepted keystrokes
+*2005-01-20, code cleanup, get rid of flag use
+
+LOCAL oTextboxRef, lcRS
+
+WITH this.comboboxref 
+	.DroppedDown=.T.
+	
+	DO CASE 
+	CASE nKeyCode=13
+		this.Tag='selection'	&&
+		oTextboxRef=EVALUATE('this.ComboboxRef.parent.'+this.comboboxref.TextBoxName)
+		oTextBoxRef.Value=EVALUATE(.aColumns[.BoundColumn])
+		.DisplayValue=EVALUATE(.aColumns[1])
+		.InteractiveChange(oTextBoxRef.Value)
+		.SearchString=''
+		.cLastSearchResult='found'
+		this.Release 
+	CASE nKeyCode=27
+		this.Tag='cancel'
+		.SearchString=''
+		.cLastSearchResult='found'
+		this.Release 
+	CASE BETWEEN(nKeyCode , 32, 127) 
+				
+		NODEFAULT 
+		this.LockScreen=.t.
+		lcRS=this.GRDLIST.RecordSource
+		this.comboboxref.KeyPress(nKeyCode, nShiftAltCtrl)
+		this.grdList.RecordSource=''
+		this.grdList.RecordSource=lcRS
+		FOR i=1 TO this.grdList.ColumnCount 
+			this.grdList.Columns(i).ControlSource=this.grdList.Columns(i).Tag
+		NEXT i
+		this.grdList.SetFocus()
+		this.LockScreen=.f.
+	CASE INLIST(nKeyCode, 7,147,163) 
+		.SearchString=''
+		.cLastSearchResult='notfound'
+		.fillValue(.null.)
+	ENDCASE 
+	
+ENDWITH
+
+ENDPROC
+PROCEDURE Release
+SELECT (this.comboboxref.sourcealias)
+
+IF this.tag <> 'selection' AND !EMPTY(this.Tag)
+	LOCAL textboxRef
+	this.comboboxref.DisplayValue=this.OldDisplayValue 
+	textboxRef=EVALUATE('this.ComboboxRef.parent.'+this.comboboxref.TextBoxName)
+	textboxref.Value=this.OldValue 
+ENDIF 
+
+this.comboboxref.droppeddown=.f. 
+
+IF !ORDER() == ''
+	SET KEY TO
+ENDIF 
+SET FILTER TO 
+
+ENDPROC
+PROCEDURE addnew
+IF NOT EMPTY(this.comboboxref.addnewcommand)
+	EXECSCRIPT(this.comboboxref.addnewcommand)
+ENDIF 
+
+ENDPROC
+PROCEDURE gettoplevelform
+*from Foundation Classes "_ui.vcx"
+
+ASSERT TYPE("_SCREEN.ActiveForm") # "O"  OR ;
+       INLIST(_SCREEN.ActiveForm.ShowWindow, 0,1,2)
+
+DO CASE
+CASE _SCREEN.FormCount=0 OR ;
+     (TYPE("_SCREEN.ActiveForm")="O" AND ;
+     _SCREEN.ActiveForm.ShowWindow=0 )     && ShowWindow In Screen
+		     
+     loTopForm=_SCREEN
+
+CASE (TYPE("_SCREEN.ActiveForm")="O" AND ;
+      _SCREEN.ActiveForm.ShowWindow=2 )    && ShowWindow As Top Form
+
+     loTopForm=_SCREEN.ActiveForm
+		     
+OTHERWISE 
+		                                       
+     FOR EACH loForm IN _SCREEN.Forms  && note: these may be toolbars
+                                       && if undocked, but that's okay --
+                                       && they are only ShowWIndow 0 or 1.
+
+        IF loForm.ShowWindow=2 && the first one in the collection will
+                                && be "active top form"
+           loTopForm=loForm
+           EXIT
+        ENDIF
+     ENDFOR
+		     
+     IF VARTYPE(loTopForm) # "O"
+        loTopForm=_SCREEN
+     ENDIF
+		          
+ENDCASE
+
+RETURN loTopForm     
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*addnew executes linked combobox AddNewCommand
+*buildgridcolumns 
+*gettoplevelform 
+comboboxref
+olddisplayvalue savel old value, needed for Esc or Deactivate event.
+oldvalue old combobox value, for Escape/Deactivate
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+the "always on top" form that mimics combo list[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18M0QRSGW
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] grdList
+[PARENT] comboform
+[START PROPERTIES]
+AllowAutoColumnFit = 2
+AllowCellSelection = .F.
+AllowHeaderSizing = .F.
+AllowRowSizing = .F.
+DeleteMark = .F.
+FontName = "Tahoma"
+FontSize = 8
+GridLineColor = 192,192,192
+GridLines = 2
+HeaderHeight = 16
+Height = 140
+HighlightRow = .T.
+HighlightStyle = 0
+Left = 0
+Name = "grdList"
+ReadOnly = .T.
+RecordMark = .F.
+RecordSourceType = 1
+RowHeight = 16
+ScrollBars = 2
+Top = 0
+Width = 200
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE AfterRowColChange
+LPARAMETERS nColIndex
+
+*assign combo displayvalue and associated textbox value as user
+*navigates in list
+IF NOT BETWEEN(LASTKEY(),32, 127)
+	LOCAL oTextBoxRef
+	WITH thisform.ComboboxRef
+		oTexBoxRef=EVALUATE('thisform.ComboboxRef.parent.'+thisform.comboboxref.TextBoxName)
+		IF !EOF(.SourceAlias)
+			.DisplayValue=thisform.grdList.Columns(1).Controls(2).Value
+		ENDIF 
+	ENDWITH 
+ENDIF
+ENDPROC
+PROCEDURE Click
+THIS.AfterRowColChange 
+this.Tag='selection'
+thisform.KeyPress(13,0)
+
+
+ENDPROC
+PROCEDURE DblClick
+THIS.AfterRowColChange 
+this.Tag='selection'
+thisform.KeyPress(13,0)
+
+ENDPROC
+PROCEDURE When
+THIS.AfterRowColChange
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1GD0U4M5L
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] tmrCheckTitleBarClick
+[PARENT] comboform
+[START PROPERTIES]
+Enabled = .F.
+Height = 23
+Interval = 100
+Left = 176
+Name = "tmrCheckTitleBarClick"
+Top = 116
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+IF MDOWN() AND ( MCOL()=-1 OR MROW()=-1 )
+	thisform.release 
+ENDIF 
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] comboform
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18U0KAIDG
+[CLASS] comboform
+[CLASSLOC] select_values.vcx
+[BASECLASS] form
+[OBJNAME] comboform_desktop
+[START PROPERTIES]
+Desktop = .T.
+DoCreate = .T.
+GRDLIST.Name = "GRDLIST"
+Name = "comboform_desktop"
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset.Name = "saveset"
+tmrCheckTitleBarClick.Name = "tmrCheckTitleBarClick"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+subclass of comboform with .Desktop = .T., for top level forms[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] comboform_desktop
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015PDY4
+[CLASS] dialog_form_szgr
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] findform
+[START PROPERTIES]
+BorderStyle = 3
+Caption = "Выбрать"
+DataSession = 1
+DoCreate = .T.
+Height = 241
+Icon = ..\bmp\efiles.ico
+Left = 0
+MinHeight = 97
+MinWidth = 115
+Name = "findform"
+Top = 0
+Width = 375
+cycl = 0
+resizecorner.Image.Height = 16
+resizecorner.Image.Name = "Image"
+resizecorner.Image.Width = 16
+resizecorner.Name = "resizecorner"
+resizecorner.resize_timer.Name = "resize_timer"
+resizecorner.tmrRefresh.Name = "tmrRefresh"
+saveset.Name = "saveset"
+whoali = .F.
+whocheck = .F.
+whomas = .F.
+whomulti = .F.
+whoseek = .F.
+whoseekval = .F.
+whosource = .F.
+whosrcid = .F.
+whotext = .F.
+[END PROPERTIES]
+[START PROTECTED]
+amas^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+PARAMETERS s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11
+LOCAL lcI as Integer, lctypelist as String
+	THIS.whoali=m.s4
+	IF EMPTY(m.s1)
+		THIS.whosource=FIELD(1,(m.s4))
+	ELSE
+		THIS.whosource=m.s1
+	ENDIF
+	THIS.whomas=m.s5
+	THIS.whosrcID=m.s3
+	THIS.whotext="m.s2"
+	THIS.gridfind.namefiel.controlsource=m.s1
+	*
+	THIS.caption=m.s6
+*!*		this.width=s7
+*!*		this.height=s8
+	THIS.whoMulti=m.s9
+	THIS.whoSeek=m.s10
+	THIS.whoCheck=m.s11
+	*
+	IF ALEN((THIS.whoMas))#0
+		DIMENSION THIS.aMas[ALEN((THIS.whoMas),1)]
+		ACOPY((THIS.whoMas),THIS.aMas)
+	ELSE 
+		DIMENSION THIS.aMas[1]
+	ENDIF 
+	*
+	IF USED((THIS.whoAli))
+		SELECT (THIS.whoAli)
+		LOCATE
+		*
+		IF !EMPTY(EVALUATE(THIS.whoMas))
+			LOCATE FOR EVALUATE((THIS.whoSrcId))=EVALUATE((THIS.whoMas))
+		ENDIF
+	ENDIF
+	*
+	DODEFAULT()
+	*
+	THIS.gridfind.Setfocus()
+ENDPROC
+PROCEDURE insert_item
+IF !EOF() AND !EMPTY(THIS.whoSource)
+	LOCAL lcolex as String, lni as Integer
+	*
+	lcolex=SET("Exact")
+	SET EXACT ON
+	lni=ASCAN(THIS.aMas,EVALUATE(THIS.whoSrcID))
+	SET EXACT &lcolex
+	*
+	IF m.lni#0
+		LOCAL lnlens as Integer
+		lnlens=ALEN(THIS.aMas,1)
+		ADEL(THIS.aMas,m.lni)
+		*
+		IF m.lnlens>1
+			DIMENSION THIS.aMas[ALEN(THIS.aMas,1)-1]
+		ENDIF 
+	ELSE 
+		IF !EMPTY(THIS.aMas[ALEN(THIS.aMas,1)]) AND THIS.whoMulti
+			DIMENSION THIS.aMas[ALEN(THIS.aMas,1)+1]
+		ENDIF
+		*
+		STORE EVALUATE(THIS.whoSrcID) TO THIS.aMas[ALEN(THIS.aMas,1)]
+	ENDIF
+	*
+	SKIP
+	*	
+	THIS.gridfind.Refresh()
+ENDIF
+ENDPROC
+PROCEDURE okevent
+LOCAL lnlens as Integer, lcstrs as String
+	IF USED((THIS.whoAli))
+		lnlens=ALEN(THIS.aMas,1)
+		*
+		SELECT (THIS.whoAli)
+		IF m.lnlens<=1 OR !THIS.whoMulti
+			IF m.lnlens=0 OR EMPTY(THIS.aMas[1]) OR !THIS.whoMulti
+				DIMENSION THIS.aMas[1]
+				STORE EVALUATE(THIS.whoSrcID) TO THIS.aMas[1]
+			ELSE 
+				LOCATE FOR EVALUATE(THIS.whoSrcId)=THIS.aMas[1]
+				IF !FOUND()
+					STORE .F. TO THIS.aMas[1]
+				ENDIF
+			ENDIF
+*!*				*
+*!*				STORE EVALUATE(THIS.whoSource) TO (THIS.whoText)
+*!*			ELSE 
+*!*				STORE "Выбрано "+LTRIM(STR(ALEN(THIS.aMas,1))) TO (THIS.whoText)
+		ENDIF
+*!*		ELSE
+*!*			STORE "Ошибка доступа!" TO (THIS.whoText)
+	ENDIF 
+	*
+	IF ALEN(THIS.aMas,1)#0
+		PUBLIC (THIS.whoMas)
+		*
+		lcstrs=THIS.whoMas+"[ALEN(THIS.aMas,1)]"
+		DIMENSION &lcstrs
+		ACOPY(THIS.aMas,(THIS.whoMas))
+	ELSE 
+		lcstrs=THIS.whoMas+"[1]"
+		DIMENSION &lcstrs
+		STORE '' TO (THIS.whoMas)
+	ENDIF
+	*
+	THISFORM.Release()
+ENDPROC
+PROCEDURE seekval
+PARAMETERS tcwhat as String
+LOCAL lctypos as String
+	IF VARTYPE(m.tcwhat)#'C'
+		tcwhat=''
+	ENDIF 
+	*
+	IF !EMPTY(THISFORM.whoSeekVal)
+		IF USED((THISFORM.whoAli))
+			SELECT (THISFORM.whoAli)
+			lctypos=TYPE(THISFORM.whoSeek)
+			*
+			IF m.tcwhat=="NEXT"
+				IF !EOF()
+					SKIP
+				ENDIF 
+				*
+				DO CASE 
+*				case m.lctypos='N'
+				CASE m.lctypos='C'
+					LOCATE FOR ATC(THISFORM.whoSeekVal,ALLTRIM(EVALUATE(THISFORM.whoSeek)))#0 REST 
+				OTHERWISE 
+					LOCATE FOR ATC(THISFORM.whoSeekVal,EVALUATE(THISFORM.whoSeek))#0 REST
+				ENDCASE 
+			ELSE 
+				DO CASE 
+*				case m.lctypos='N'
+				CASE m.lctypos='C'
+					LOCATE FOR ATC(THISFORM.whoSeekVal,ALLTRIM(EVALUATE(THISFORM.whoSeek)))#0
+				OTHERWISE
+					LOCATE FOR ATC(THISFORM.whoSeekVal,EVALUATE(THISFORM.whoSeek))#0
+				ENDCASE 
+			ENDIF 
+		ENDIF 
+	ENDIF
+ENDPROC
+PROCEDURE whocolor
+LOCAL lcsrc as String, lcolex as String, lcretval as String
+	lcolex=SET("Exact")
+	SET EXACT ON
+	lcsrc=EVALUATE(THISFORM.whoSrcId)
+	IF VARTYPE(m.lcsrc)='C'
+		lcsrc=RTRIM(m.lcsrc)
+	ENDIF
+	lcretval=IIF(!EMPTY(THISFORM.whoSrcId) AND ASCAN(THIS.aMas,m.lcsrc)#0,RGB(255,255,10),THISFORM.gridfind.Columns[1].BackColor)
+	SET EXACT &lcolex
+RETURN m.lcretval
+ENDPROC
+PROCEDURE whotooltext
+LOCAL lcretval as String
+	IF !EMPTY(THISFORM.whoSeek)
+		lcretval=EVALUATE(THISFORM.whoSeek)
+	ELSE
+		lcretval=""
+	ENDIF
+RETURN m.lcretval
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED3]
+*insert_item 
+*okevent 
+*seekval 
+*whocolor 
+*whotooltext 
+^amas[1,0] 
+cycl
+whoali
+whocheck
+whomas
+whomulti
+whoseek
+whoseekval
+whosource
+whosrcid
+whotext
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O41BZZUB
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] Base_label1
+[PARENT] findform
+[START PROPERTIES]
+Caption = "F3-следующая запись"
+FontBold = .T.
+Left = 8
+Name = "Base_label1"
+Top = 226
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O41C1C1U
+[CLASS] base_label
+[CLASSLOC] base_gui.vcx
+[BASECLASS] label
+[OBJNAME] Base_label2
+[PARENT] findform
+[START PROPERTIES]
+Caption = "Ctrl-F-поиск записи"
+FontBold = .T.
+Left = 8
+Name = "Base_label2"
+Top = 210
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O01624KF
+[CLASS] cancelbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] delcomm
+[PARENT] findform
+[START PROPERTIES]
+Left = 291
+Name = "delcomm"
+TabIndex = 6
+Top = 214
+Width = 80
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015TR0O
+[CLASS] selgrid
+[CLASSLOC] select_values.vcx
+[BASECLASS] grid
+[OBJNAME] gridfind
+[PARENT] findform
+[START PROPERTIES]
+AllowCellSelection = .F.
+Anchor = 15
+Column1.ControlSource = "space(200)"
+Column1.FontName = "Tahoma"
+Column1.Name = "namefiel"
+Column1.ReadOnly = .T.
+Column1.Width = 342
+ColumnCount = 1
+GridLines = 0
+Height = 207
+Left = 0
+Name = "gridfind"
+ReadOnly = .T.
+ScrollBars = 2
+TabIndex = 1
+Top = 0
+Width = 375
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+THISFORM.okevent()
+ENDPROC
+PROCEDURE Init
+*!*	this.SetAll('DynamicBackColor','IIF(thisform.whomulti,IIF(EMPTY(thisform.whoColor),this.parent.myColor(),EVALUATE(thisform.whoColor)),RGB(255,255,255))','Column')
+THIS.SetAll("DynamicBackColor","THIS.Parent.whoColor()","Column")
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	DO CASE 
+	CASE nKeyCode=13
+	*энтер
+		DODEFAULT()
+		THISFORM.okevent()
+	CASE nKeyCode=22
+	*инсерт
+		THISFORM.insert_item()
+		NODEFAULT
+ 	CASE nkeyCode=-2
+ 	*поиск следующей
+		DODEFAULT()
+ 		THISFORM.seekVal("NEXT")
+	CASE ISALPHA(CHR(nkeyCode)) OR ISDIGIT(CHR(nkeyCode)) OR (nKeyCode=6 AND nShiftAltCtrl=2)
+ 	*поиск
+ 		LOCAL lcseekform as String
+ 		*
+		DODEFAULT()
+		KEYBOARD CHR(nkeyCode)
+		*
+		lcseekform=CREATEOBJECT("selseek",THISFORM.left,THISFORM.top,"Поиск значения",THISFORM.whoSeek,THISFORM)
+		*
+		SET CURSOR ON
+		lcseekform.show()
+		SET CURSOR OFF
+	OTHERWISE
+	ENDCASE
+ENDPROC
+PROCEDURE RightClick
+THISFORM.insert_item()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015TR0P
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] headfiel
+[PARENT] findform.gridfind.namefiel
+[START PROPERTIES]
+Alignment = 2
+Caption = "Название"
+FontBold = .T.
+FontName = "Tahoma"
+Name = "headfiel"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015TR0Q
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] findform.gridfind.namefiel
+[START PROPERTIES]
+DateFormat = 14
+FontName = "Tahoma"
+Margin = 0
+Name = "Text1"
+ReadOnly = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O01624KG
+[CLASS] okbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] okcomm
+[PARENT] findform
+[START PROPERTIES]
+Left = 208
+Name = "okcomm"
+TabIndex = 5
+Top = 214
+Width = 80
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.okevent()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O015TR0R
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] Shapefind
+[PARENT] findform
+[START PROPERTIES]
+Anchor = 14
+BackStyle = 0
+Height = 0
+Left = 3
+Name = "Shapefind"
+SpecialEffect = 0
+Top = 210
+Width = 369
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] findform
+[START PROPERTIES]
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+Tahoma, 1, 9, 6, 14, 12, 28, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BB19HO8E
+[CLASS] control
+[BASECLASS] control
+[OBJNAME] select_values
+[START PROPERTIES]
+
+Anchor = 11
+BackStyle = 0
+Height = 23
+Name = "select_values"
+Width = 327
+_memberdata =     2409<VFPData><memberdata name="controlsource" type="property" display="ControlSource"/><memberdata name="controlsource_assign" type="method" display="ControlSource_Assign"/><memberdata name="enabled_assign" type="method" display="Enabled_Assign"/><memberdata name="specialeffect_assign" type="method" display="Specialeffect_Assign"/><memberdata name="visible_assign" type="method" display="Visible_Assign"/><memberdata name="whoali" type="property" display="WhoAli"/><memberdata name="whocheck" type="property" display="WhoCheck"/><memberdata name="whocolor" type="property" display="WhoColor"/><memberdata name="whodo" type="method" display="WhoDo"/><memberdata name="whofastseek" type="property" display="WhoFastSeek"/><memberdata name="whomas" type="property" display="WhoMas"/><memberdata name="whomulti" type="property" display="WhoMulti"/><memberdata name="whoname" type="property" display="WhoName"/><memberdata name="whopict" type="property" display="WhoPict"/><memberdata name="whoseek" type="property" display="WhoSeek"/><memberdata name="whosource" type="property" display="WhoSource"/><memberdata name="whosrcid" type="property" display="WhoSrcId"/><memberdata name="whotext" type="property" display="WhoText"/><memberdata name="cdbtableobject" type="property" display="cDBTableObject"/><memberdata name="avalues" type="property" display="aValues"/><memberdata name="cvaluefield" type="property" display="cValueField"/><memberdata name="lmulti" type="property" display="lMulti"/><memberdata name="cdisplayfields" type="property" display="cDisplayFields"/><memberdata name="ctitledisplayfields" type="property" display="cTitleDisplayFields"/><memberdata name="csqldataset" type="property" display="cSqlDataSet"/><memberdata name="laddnew" type="property" display="lAddNew"/><memberdata name="lallowdelete" type="property" display="lAllowDelete"/><memberdata name="ctext" type="property" display="cText"/><memberdata name="afterselect" type="method" display="AfterSelect"/><memberdata name="beforeselect" type="method" display="BeforeSelect"/><memberdata name="clearselect" type="method" display="ClearSelect"/><memberdata name="ccolumns" type="property" display="cColumns"/><memberdata name="ccolumnsheader" type="property" display="cColumnsHeader"/><memberdata name="boundcolumn" type="property" display="BoundColumn"/><memberdata name="ccursorname" type="property" display="cCursorName"/></VFPData>
+boundcolumn = 
+ccolumns = 
+ccolumnsheader = 
+ccursorname = 
+controlsource = 
+csqldataset = 
+laddnew = .F.
+lallowdelete = .F.
+lmulti = .F.
+[END PROPERTIES]
+[START PROTECTED]
+ccursorname^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Click
+THIS.selbutton.Click()
+ENDPROC
+PROCEDURE Init
+LOCAL lctxt_values as String, lcSql as String, lcoldali as String, loI as Object, lncnt as Integer,;
+	  lcstrs as String
+	WITH THIS
+		*шаманство с якорями для корректного изменения размеров в подобъектах
+		.Delbutton.Anchor=0
+		.Delbutton.Left=.Width-1-.Delbutton.Width
+		.Delbutton.Anchor=13
+		*
+		.Selbutton.Anchor=0
+		.Selbutton.Left=.Delbutton.Left-.Delbutton.Width
+		.Selbutton.Anchor=13
+		*
+		.Sel_textbox.Anchor=0
+		.Sel_textbox.Width=.Selbutton.Left
+		.Sel_textbox.Anchor=15
+		*
+		.Enabled_assign(.Enabled)
+		*
+		.cCursorName=SYS(2015)
+		*
+		TRY
+			lctxt_values=EVALUATE(.ColorSource)
+			*
+			lcSql=.cSqlDataSet+" INTO CURSOR "+.cCursorName
+			m.&lcSql
+		CATCH
+			lctxt_values=''
+		FINALLY
+		ENDTRY
+		*
+		IF USED(.cCursorName)
+		ELSE
+		ENDIF
+	ENDWITH
+	
+*!*		THIS.whoAli=ALLTRIM(THIS.whoAli)
+*!*		*
+*!*		IF TYPE(THIS.whoMas)='U'
+*!*			PUBLIC (THIS.whoMas)
+*!*			*
+*!*			lcstrs=THIS.whoMas+"[1]"
+*!*			DIMENSION (m.lcstrs)
+*!*			STORE .F. TO (THIS.whoMas+"[1]")
+*!*		ENDIF
+*!*		*
+*!*		IF EMPTY(THIS.whoText) &&AND !EMPTY(THIS.whoAli)
+*!*			lcoldali=SELECT()
+*!*			IF !USED(THIS.whoAli)
+*!*				THIS.whoDo("BEGIN")
+*!*			ENDIF
+*!*			*
+*!*			IF USED(THIS.whoAli)
+*!*				SELECT (THIS.whoAli)
+*!*				IF VARTYPE(THIS.whoSource)<>'U' AND !EMPTY(THIS.whoSource)
+*!*					IF !THIS.whoMulti OR ALEN((THIS.whoMas), 1)=1
+*!*						IF !EMPTY(EVALUATE((THIS.whoMas)))
+*!*							LOCATE FOR EVALUATE(THIS.whoSrcId)=EVALUATE(THIS.whoMas)
+*!*						ELSE
+*!*							LOCATE
+*!*						ENDIF
+*!*						*
+*!*						IF FOUND() 
+*!*							THIS.whoText=EVALUATE(THIS.whoSource)
+*!*							IF !THIS.whoMulti
+*!*								STORE EVALUATE(this.whoSrcId) TO (THIS.whoMas)
+*!*							ENDIF
+*!*						ELSE
+*!*							THIS.whoText=''
+*!*						ENDIF
+*!*					ELSE
+*!*						lncnt=ALEN((THIS.whoMas), 1)
+*!*						THIS.whoText="Выбрано "+LTRIM(TRANSFORM(m.lncnt))
+*!*					ENDIF
+*!*				ELSE
+*!*					THIS.whoText=''
+*!*				ENDIF
+*!*			ELSE
+*!*				THIS.whoText=''
+*!*			ENDIF
+*!*			*
+*!*			SELECT (m.lcoldali)
+*!*		ENDIF
+
+ENDPROC
+PROCEDURE Refresh
+LOCAL loControl AS Object
+	FOR EACH loControl IN THIS.Controls
+		IF PEMSTATUS(m.loControl, "Refresh", 5)
+			m.loControl.Refresh()
+		ENDIF
+	ENDFOR
+
+ENDPROC
+PROCEDURE begin
+LOCAL lcctext as String, lcoldali as String, lnI as Integer, lcstrs as String, loform as Form
+	lcoldali=SELECT()
+	lcctext=THIS.whoText
+	*
+	THIS.whoDo("BEGIN")
+	*
+	IF USED((THIS.whoAli))
+		SELECT (THIS.whoAli)
+	ENDIF
+	*
+	SET CURSOR OFF 
+	loform=CREATEOBJECT("findform", THIS.whoSource, lcctext, THIS.whoSrcId, THIS.whoAli, THIS.whoMas, THIS.whoName, THIS.whoWidht, THIS.whoHeigth, THIS.whoMulti, THIS.whoSeek)
+	loform.Show()
+	RELEASE m.loform
+	SET CURSOR ON
+	*
+	IF ALEN((THIS.whoMas),1)>1
+		FOR lnI=1 TO ALEN((THIS.whoMas))
+			lcstrs=THIS.whoMas+'['+TRANSFORM(m.lnI)+']'
+			IF EMPTY(EVALUATE(m.lcstrs)) AND ALEN((THIS.whoMas),1)>1
+				ADEL((THIS.whoMas),m.lnI)
+				lcstrs=THIS.whoMas+"[alen("+THIS.whoMas+",1)-1]"
+				DIMENSION (m.lcstrs)
+			ENDIF 
+		ENDFOR 
+	ENDIF 
+	*
+	IF !THIS.whoMulti OR ALEN((THIS.whoMas),1)=1
+		IF USED((THIS.whoAli))
+			SELECT (THIS.whoAli)
+			IF !EMPTY(EVALUATE((THIS.whoMas)))
+				LOCATE FOR EVALUATE((THIS.whoSrcId))=EVALUATE((THIS.whoMas))
+				IF FOUND()
+					THIS.whoText=EVALUATE(THIS.whoSource)
+					STORE EVALUATE(this.whoSrcId) TO (THIS.whoMas)
+				ENDIF
+			ELSE
+				THIS.whoText=''
+			ENDIF
+		ENDIF
+	ELSE 
+		lncnt=ALEN((THIS.whoMas),1)
+		THIS.whoText="Выбрано "+LTRIM(TRANSFORM(m.lncnt))
+	ENDIF
+	*
+	IF USED(THIS.whoAli)
+		SELECT (THIS.whoAli)
+	ENDIF
+	*
+	THIS.whoDo("END")
+*	THIS.seltext.Refresh()
+	THIS.Refresh()
+	SELECT (m.lcoldali)
+
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS tcNewVal
+	THIS.ControlSource=m.tcNewVal
+	*
+	TRY
+		THIS.selText.Value=EVALUATE(m.tcNewVal)
+	CATCH
+		THIS.selText.Value=''
+	ENDTRY
+*	THIS.selText.ControlSource=m.tcNewVal
+
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+LOCAL loI as Object
+*To do: Modify this routine for the Assign method
+	THIS.Enabled=m.vNewVal
+	*содержимое контейнера enabl-им как и хозяина
+	FOR EACH loI IN THIS.Objects
+		loI.Enabled=m.vNewVal
+	ENDFOR
+
+ENDPROC
+PROCEDURE specialeffect_assign
+* ОБХОД БАГА MSDN : Q170597
+* Special Effect Does Not Work for Container Control
+LPARAMETERS tnSpecialEffect AS Integer
+LOCAL llLockScreen AS Logical, llVisible AS Logical
+	llLockScreen=ThisForm.LockScreen
+	THISFORM.LockScreen=.T.
+	*
+	WITH THIS
+		llVisible=.Visible
+		.Visible=.F.
+		.SpecialEffect=m.tnSpecialEffect
+		.Visible=m.llVisible
+	ENDWITH
+	*
+	THISFORM.LockScreen=m.llLockScreen
+
+ENDPROC
+PROCEDURE visible_assign
+LPARAMETERS tlNewVal
+*To do: Modify this routine for the Assign method
+	THIS.Visible=m.tlNewVal
+	*содержимое контейнера Visible-им как и хозяина
+	FOR EACH loI IN THIS.Objects
+		loI.Visible=m.tlNewVal
+	ENDFOR
+
+ENDPROC
+PROCEDURE whodo
+PARAMETERS tcpar as String
+	DO CASE 
+	CASE m.tcpar="BEGIN"
+	CASE m.tcpar="END"
+	CASE m.tcpar="CLEAR"
+	ENDCASE
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*afterselect Действия после выбора значения
+*beforeselect Действия перед началом выбора значения
+*begin 
+*clearselect Действия для очистки значения
+*controlsource_assign 
+*enabled_assign 
+*specialeffect_assign 
+*visible_assign 
+*whodo Процедура исполняемая по нажатию кнопки
+^avalues[1,0] 
+_memberdata XML Metadata for customizable properties
+boundcolumn Ключевое поле
+ccolumns Список полей выводимых в окне выбора
+ccolumnsheader Заголовки полей
+ccursorname Временный курсор
+controlsource Имя поля источника данных.
+csqldataset SQL-выражения для формирования курсора с данными
+ctext Текст фильтра
+laddnew Добавлять новые элементы
+lallowdelete Разрешить удаление элементов
+lmulti Признак множественного выбора
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\lookup.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\lookup.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1H60UR2R9
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Delbutton
+[PARENT] select_values
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Left = 304
+Name = "Delbutton"
+Picture = ..\bmp\16x16\trash03.bmp
+TabIndex = 3
+ToolTipText = "Очистить значение"
+Top = 0
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcstrs as String
+	lcstrs=THIS.PARENT.whoMas+"[1]"
+	DIMENSION (m.lcstrs)
+	STORE '' TO (m.lcstrs)
+	THIS.PARENT.whoText=""
+	THIS.PARENT.Refresh()
+	*
+	THIS.PARENT.whoDo("CLEAR")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O01FALW4
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] Sel_textbox
+[PARENT] select_values
+[START PROPERTIES]
+Anchor = 15
+Comment = "Строка ввода параметра поиска"
+Height = 23
+Left = 0
+Name = "Sel_textbox"
+TabIndex = 1
+ToolTipText = "Строка для ввода/отображения значения"
+Top = 0
+Width = 282
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	IF m.nKeyCode=145 AND m.nShiftAltCtrl
+		THIS.Parent.begin()
+	ELSE
+		DODEFAULT(m.nKeyCode, m.nShiftAltCtrl)
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BH1F0L0S
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Selbutton
+[PARENT] select_values
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Default = .T.
+Left = 281
+Name = "Selbutton"
+Picture = ..\bmp\16x16\lookup.bmp
+TabIndex = 2
+ToolTipText = "Выбрать значение"
+Top = 0
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+NODEFAULT
+THIS.Parent.begin()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] select_values
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BB19HO8E
+[CLASS] control
+[BASECLASS] control
+[OBJNAME] select_values1
+[START PROPERTIES]
+
+Anchor = 11
+BackStyle = 0
+Height = 23
+Name = "select_values"
+Width = 327
+_memberdata =     2409<VFPData><memberdata name="controlsource" type="property" display="ControlSource"/><memberdata name="controlsource_assign" type="method" display="ControlSource_Assign"/><memberdata name="enabled_assign" type="method" display="Enabled_Assign"/><memberdata name="specialeffect_assign" type="method" display="Specialeffect_Assign"/><memberdata name="visible_assign" type="method" display="Visible_Assign"/><memberdata name="whoali" type="property" display="WhoAli"/><memberdata name="whocheck" type="property" display="WhoCheck"/><memberdata name="whocolor" type="property" display="WhoColor"/><memberdata name="whodo" type="method" display="WhoDo"/><memberdata name="whofastseek" type="property" display="WhoFastSeek"/><memberdata name="whomas" type="property" display="WhoMas"/><memberdata name="whomulti" type="property" display="WhoMulti"/><memberdata name="whoname" type="property" display="WhoName"/><memberdata name="whopict" type="property" display="WhoPict"/><memberdata name="whoseek" type="property" display="WhoSeek"/><memberdata name="whosource" type="property" display="WhoSource"/><memberdata name="whosrcid" type="property" display="WhoSrcId"/><memberdata name="whotext" type="property" display="WhoText"/><memberdata name="cdbtableobject" type="property" display="cDBTableObject"/><memberdata name="avalues" type="property" display="aValues"/><memberdata name="cvaluefield" type="property" display="cValueField"/><memberdata name="lmulti" type="property" display="lMulti"/><memberdata name="cdisplayfields" type="property" display="cDisplayFields"/><memberdata name="ctitledisplayfields" type="property" display="cTitleDisplayFields"/><memberdata name="csqldataset" type="property" display="cSqlDataSet"/><memberdata name="laddnew" type="property" display="lAddNew"/><memberdata name="lallowdelete" type="property" display="lAllowDelete"/><memberdata name="ctext" type="property" display="cText"/><memberdata name="afterselect" type="method" display="AfterSelect"/><memberdata name="beforeselect" type="method" display="BeforeSelect"/><memberdata name="clearselect" type="method" display="ClearSelect"/><memberdata name="ccolumns" type="property" display="cColumns"/><memberdata name="ccolumnsheader" type="property" display="cColumnsHeader"/><memberdata name="boundcolumn" type="property" display="BoundColumn"/><memberdata name="ccursorname" type="property" display="cCursorName"/></VFPData>
+boundcolumn = 
+ccolumns = 
+ccolumnsheader = 
+ccursorname = 
+controlsource = 
+csqldataset = 
+laddnew = .F.
+lallowdelete = .F.
+lmulti = .F.
+[END PROPERTIES]
+[START PROTECTED]
+ccursorname^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+LOCAL lctxt_values as String, lcSql as String, lcoldali as String, loI as Object, lncnt as Integer,;
+	  lcstrs as String
+	WITH THIS
+		*шаманство с якорями для корректного изменения размеров в подобъектах
+		.Delbutton.Anchor=0
+		.Delbutton.Left=.Width-1-.Delbutton.Width
+		.Delbutton.Anchor=13
+		*
+		.Selbutton.Anchor=0
+		.Selbutton.Left=.Delbutton.Left-.Delbutton.Width
+		.Selbutton.Anchor=13
+		*
+		.Sel_textbox.Anchor=0
+		.Sel_textbox.Width=.Selbutton.Left
+		.Sel_textbox.Anchor=15
+		*
+		.Enabled_assign(.Enabled)
+		*
+		.cCursorName=SYS(2015)
+		*
+		TRY
+			lctxt_values=EVALUATE(.ColorSource)
+			*
+			lcSql=.cSqlDataSet+" INTO CURSOR "+.cCursorName
+			m.&lcSql
+		CATCH
+			lctxt_values=''
+		FINALLY
+		ENDTRY
+		*
+		IF USED(.cCursorName)
+		ELSE
+		ENDIF
+	ENDWITH
+	
+*!*		THIS.whoAli=ALLTRIM(THIS.whoAli)
+*!*		*
+*!*		IF TYPE(THIS.whoMas)='U'
+*!*			PUBLIC (THIS.whoMas)
+*!*			*
+*!*			lcstrs=THIS.whoMas+"[1]"
+*!*			DIMENSION (m.lcstrs)
+*!*			STORE .F. TO (THIS.whoMas+"[1]")
+*!*		ENDIF
+*!*		*
+*!*		IF EMPTY(THIS.whoText) &&AND !EMPTY(THIS.whoAli)
+*!*			lcoldali=SELECT()
+*!*			IF !USED(THIS.whoAli)
+*!*				THIS.whoDo("BEGIN")
+*!*			ENDIF
+*!*			*
+*!*			IF USED(THIS.whoAli)
+*!*				SELECT (THIS.whoAli)
+*!*				IF VARTYPE(THIS.whoSource)<>'U' AND !EMPTY(THIS.whoSource)
+*!*					IF !THIS.whoMulti OR ALEN((THIS.whoMas), 1)=1
+*!*						IF !EMPTY(EVALUATE((THIS.whoMas)))
+*!*							LOCATE FOR EVALUATE(THIS.whoSrcId)=EVALUATE(THIS.whoMas)
+*!*						ELSE
+*!*							LOCATE
+*!*						ENDIF
+*!*						*
+*!*						IF FOUND() 
+*!*							THIS.whoText=EVALUATE(THIS.whoSource)
+*!*							IF !THIS.whoMulti
+*!*								STORE EVALUATE(this.whoSrcId) TO (THIS.whoMas)
+*!*							ENDIF
+*!*						ELSE
+*!*							THIS.whoText=''
+*!*						ENDIF
+*!*					ELSE
+*!*						lncnt=ALEN((THIS.whoMas), 1)
+*!*						THIS.whoText="Выбрано "+LTRIM(TRANSFORM(m.lncnt))
+*!*					ENDIF
+*!*				ELSE
+*!*					THIS.whoText=''
+*!*				ENDIF
+*!*			ELSE
+*!*				THIS.whoText=''
+*!*			ENDIF
+*!*			*
+*!*			SELECT (m.lcoldali)
+*!*		ENDIF
+
+ENDPROC
+PROCEDURE Refresh
+LOCAL loControl AS Object
+	FOR EACH loControl IN THIS.Controls
+		IF PEMSTATUS(m.loControl, "Refresh", 5)
+			m.loControl.Refresh()
+		ENDIF
+	ENDFOR
+
+ENDPROC
+PROCEDURE begin
+LOCAL lcctext as String, lcoldali as String, lnI as Integer, lcstrs as String, loform as Form
+	lcoldali=SELECT()
+	lcctext=THIS.whoText
+	*
+	THIS.whoDo("BEGIN")
+	*
+	IF USED((THIS.whoAli))
+		SELECT (THIS.whoAli)
+	ENDIF
+	*
+	SET CURSOR OFF 
+	loform=CREATEOBJECT("findform", THIS.whoSource, lcctext, THIS.whoSrcId, THIS.whoAli, THIS.whoMas, THIS.whoName, THIS.whoWidht, THIS.whoHeigth, THIS.whoMulti, THIS.whoSeek)
+	loform.Show()
+	RELEASE m.loform
+	SET CURSOR ON
+	*
+	IF ALEN((THIS.whoMas),1)>1
+		FOR lnI=1 TO ALEN((THIS.whoMas))
+			lcstrs=THIS.whoMas+'['+TRANSFORM(m.lnI)+']'
+			IF EMPTY(EVALUATE(m.lcstrs)) AND ALEN((THIS.whoMas),1)>1
+				ADEL((THIS.whoMas),m.lnI)
+				lcstrs=THIS.whoMas+"[alen("+THIS.whoMas+",1)-1]"
+				DIMENSION (m.lcstrs)
+			ENDIF 
+		ENDFOR 
+	ENDIF 
+	*
+	IF !THIS.whoMulti OR ALEN((THIS.whoMas),1)=1
+		IF USED((THIS.whoAli))
+			SELECT (THIS.whoAli)
+			IF !EMPTY(EVALUATE((THIS.whoMas)))
+				LOCATE FOR EVALUATE((THIS.whoSrcId))=EVALUATE((THIS.whoMas))
+				IF FOUND()
+					THIS.whoText=EVALUATE(THIS.whoSource)
+					STORE EVALUATE(this.whoSrcId) TO (THIS.whoMas)
+				ENDIF
+			ELSE
+				THIS.whoText=''
+			ENDIF
+		ENDIF
+	ELSE 
+		lncnt=ALEN((THIS.whoMas),1)
+		THIS.whoText="Выбрано "+LTRIM(TRANSFORM(m.lncnt))
+	ENDIF
+	*
+	IF USED(THIS.whoAli)
+		SELECT (THIS.whoAli)
+	ENDIF
+	*
+	THIS.whoDo("END")
+*	THIS.seltext.Refresh()
+	THIS.Refresh()
+	SELECT (m.lcoldali)
+
+ENDPROC
+PROCEDURE controlsource_assign
+LPARAMETERS tcNewVal
+	THIS.ControlSource=m.tcNewVal
+	*
+	TRY
+		THIS.selText.Value=EVALUATE(m.tcNewVal)
+	CATCH
+		THIS.selText.Value=''
+	ENDTRY
+*	THIS.selText.ControlSource=m.tcNewVal
+
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+LOCAL loI as Object
+*To do: Modify this routine for the Assign method
+	THIS.Enabled=m.vNewVal
+	*содержимое контейнера enabl-им как и хозяина
+	FOR EACH loI IN THIS.Objects
+		loI.Enabled=m.vNewVal
+	ENDFOR
+
+ENDPROC
+PROCEDURE specialeffect_assign
+* ОБХОД БАГА MSDN : Q170597
+* Special Effect Does Not Work for Container Control
+LPARAMETERS tnSpecialEffect AS Integer
+LOCAL llLockScreen AS Logical, llVisible AS Logical
+	llLockScreen=ThisForm.LockScreen
+	THISFORM.LockScreen=.T.
+	*
+	WITH THIS
+		llVisible=.Visible
+		.Visible=.F.
+		.SpecialEffect=m.tnSpecialEffect
+		.Visible=m.llVisible
+	ENDWITH
+	*
+	THISFORM.LockScreen=m.llLockScreen
+
+ENDPROC
+PROCEDURE visible_assign
+LPARAMETERS tlNewVal
+*To do: Modify this routine for the Assign method
+	THIS.Visible=m.tlNewVal
+	*содержимое контейнера Visible-им как и хозяина
+	FOR EACH loI IN THIS.Objects
+		loI.Visible=m.tlNewVal
+	ENDFOR
+
+ENDPROC
+PROCEDURE whodo
+PARAMETERS tcpar as String
+	DO CASE 
+	CASE m.tcpar="BEGIN"
+	CASE m.tcpar="END"
+	CASE m.tcpar="CLEAR"
+	ENDCASE
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*afterselect Действия после выбора значения
+*beforeselect Действия перед началом выбора значения
+*begin 
+*clearselect Действия для очистки значения
+*controlsource_assign 
+*enabled_assign 
+*specialeffect_assign 
+*visible_assign 
+*whodo Процедура исполняемая по нажатию кнопки
+^avalues[1,0] 
+_memberdata XML Metadata for customizable properties
+boundcolumn Ключевое поле
+ccolumns Список полей выводимых в окне выбора
+ccolumnsheader Заголовки полей
+ccursorname Временный курсор
+controlsource Имя поля источника данных.
+csqldataset SQL-выражения для формирования курсора с данными
+ctext Текст фильтра
+laddnew Добавлять новые элементы
+lallowdelete Разрешить удаление элементов
+lmulti Признак множественного выбора
+[END RESERVED3]
+[START RESERVED4]
+..\bmp\16x16\lookup.bmp[END RESERVED4]
+[START RESERVED5]
+..\bmp\16x16\lookup.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1H60UR2R9
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Delbutton
+[PARENT] select_values1
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Left = 304
+Name = "Delbutton"
+Picture = ..\bmp\16x16\trash03.bmp
+TabIndex = 3
+ToolTipText = "Очистить значение"
+Top = 0
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcstrs as String
+	lcstrs=THIS.PARENT.whoMas+"[1]"
+	DIMENSION (m.lcstrs)
+	STORE '' TO (m.lcstrs)
+	THIS.PARENT.whoText=""
+	THIS.PARENT.Refresh()
+	*
+	THIS.PARENT.whoDo("CLEAR")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O01FALW4
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] Sel_textbox
+[PARENT] select_values1
+[START PROPERTIES]
+Anchor = 15
+Comment = "Строка ввода параметра поиска"
+Height = 23
+Left = 0
+Name = "Sel_textbox"
+TabIndex = 1
+ToolTipText = "Строка для ввода/отображения значения"
+Top = 0
+Width = 282
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+	IF m.nKeyCode=145 AND m.nShiftAltCtrl
+		THIS.Parent.begin()
+	ELSE
+		DODEFAULT(m.nKeyCode, m.nShiftAltCtrl)
+	ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BH1F0L0S
+[CLASS] commonbutton
+[CLASSLOC] base_gui.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Selbutton
+[PARENT] select_values1
+[START PROPERTIES]
+Anchor = 13
+Caption = ""
+Default = .T.
+Left = 281
+Name = "Selbutton"
+Picture = ..\bmp\16x16\lookup.bmp
+TabIndex = 2
+ToolTipText = "Выбрать значение"
+Top = 0
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+NODEFAULT
+THIS.Parent.begin()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] select_values1
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BH1F0L0S
+[CLASS] base_form
+[CLASSLOC] base_gui.vcx
+[BASECLASS] form
+[OBJNAME] selform
+[START PROPERTIES]
+Caption = "Простая форма"
+DoCreate = .T.
+FontName = "Tahoma"
+Height = 250
+Left = 0
+Name = "selform"
+Top = 0
+Width = 377
+saveset.Name = "saveset"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+if nKeyCode=27
+	this.release
+endif
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*adds Добавить
+*calc Расчет
+*dels Удалить
+*okevent 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] selform
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BE02PRRC
+[CLASS] base_grid
+[CLASSLOC] base_gui.vcx
+[BASECLASS] grid
+[OBJNAME] selgrid
+[START PROPERTIES]
+DeleteMark = .F.
+FontName = "Tahoma"
+Height = 200
+HighlightStyle = 2
+Name = "selgrid"
+TabStop = .F.
+Width = 320
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] selgrid
+[START PROPERTIES]
+Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0P21D3U1U
+[CLASS] selform
+[CLASSLOC] select_values.vcx
+[BASECLASS] form
+[OBJNAME] selseek
+[START PROPERTIES]
+BorderStyle = 2
+Caption = ""
+Closable = .F.
+ContinuousScroll = .F.
+ControlBox = .F.
+DoCreate = .T.
+Height = 28
+KeyPreview = .T.
+Left = 0
+MaxButton = .F.
+MinButton = .F.
+Name = "selseek"
+TitleBar = 0
+Top = 0
+Width = 265
+WindowType = 1
+saveset.Name = "saveset"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+param s1,s2,s3,s4,s5
+	*
+	this.left=s1
+	this.top=s2
+	this.caption=s3
+	this.whoSeek=s4
+	this.whoparent=s5
+	if !empty(this.whoparent.whoseekval)
+		this.SeekVal.value=this.whoparent.whoseekval
+	endif
+	*
+	this.autocenter=.t.
+	this.resize()
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nkeycode,nshiftaltctrl
+	*
+	DO CASE
+	CASE nKeyCode=27
+		thisform.release
+*		clear event
+	CASE nKeyCode=13
+		this.whoparent.whoseekval=alltr(this.SeekVal.value)
+		this.whoparent.seekVal()
+		*
+		thisform.release
+*		clear event
+	OTHERWISE
+	ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+whoparent
+whoseek
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1O41C4GZQ
+[CLASS] base_textbox
+[CLASSLOC] base_gui.vcx
+[BASECLASS] textbox
+[OBJNAME] SeekVal
+[PARENT] selseek
+[START PROPERTIES]
+Height = 25
+Left = 0
+Name = "SeekVal"
+TabIndex = 1
+Top = 0
+Width = 264
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] selseek
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18U0MCQ9E
+[CLASS] base_shape
+[CLASSLOC] base_gui.vcx
+[BASECLASS] shape
+[OBJNAME] shpgridcover
+[START PROPERTIES]
+BackStyle = 0
+BorderStyle = 0
+Height = 126
+Name = "shpgridcover"
+Width = 125
+gridactiverow = 0
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.top=this.Parent.grdList.HeaderHeight + 2
+this.left=0
+this.Width=this.Parent.grdList.Width - SYSMETRIC(5)
+this.Height=this.Parent.grdList.Height - this.Parent.grdList.HeaderHeight - 2
+this.Visible=.t.
+this.ZOrder(0)
+this.Parent.grdList.Setfocus()
+
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+LOCAL lnRow
+lnRow=CEILING((nYCoord - this.Parent.grdList.HeaderHeight - 2) ;
+				/this.Parent.grdList.RowHeight)
+IF this.GridActiveRow <> lnRow				
+	this.Parent.grdList.ActivateCell(lnRow,1)
+	this.GridActiveRow=lnRow
+ENDIF 				
+
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+*LOCAL lnRow
+*lnRow = CEILING((nYCoord - this.Parent.grdList.HeaderHeight - 2) ;
+				/this.Parent.grdList.RowHeight)
+*IF this.GridActiveRow <> lnRow				
+*	this.Parent.grdList.ActivateCell(lnRow,1)
+*	this.GridActiveRow = lnRow
+*ENDIF 				
+
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+this.Parent.grdList.Click()
+ENDPROC
+PROCEDURE MouseWheel
+LPARAMETERS nDirection, nShift, nXCoord, nYCoord
+IF nDirection > 0
+	this.Parent.grdList.DoScroll(0)
+ELSE
+	this.Parent.grdList.DoScroll(1)
+ENDIF 
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+gridactiverow used to detect click on another row
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+transparent shape to cover the grid. I think that this is not needed in VFP8[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] shpgridcover
+[EOF]
