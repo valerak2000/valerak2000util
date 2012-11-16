@@ -19,8 +19,7 @@ import java.util.List;
  * @author Ian F. Darwin (translation into Java and removal of I/O)
  * @author Ben Ballard (rewrote advQuoted to handle '""' and for readability)
  */
-public class CSV {  
-
+public class CSV {
   public static final char DEFAULT_SEP = ',';
 
   /** Construct a CSV parser, with the default separator (`,'). */
