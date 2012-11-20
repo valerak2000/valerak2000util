@@ -14,7 +14,7 @@ public class PrintAction extends Action {
 	 * CloseAction constructor
    	*/
 	public PrintAction() {
-		super(Zebra.getApp().getConfZebra().getMString("Print_zebra_file"), Zebra.getApp().getImageFor("print"));
+		super(Zebra.getApp().getConfZebra().getString("Print_zebra_file"), Zebra.getApp().getImageFor("print"));
  /*   setDisabledImageDescriptor(ImageDescriptor.createFromFile(OpenAction.class,
         "/images/disabledOpen.gif"));*/
 		setToolTipText("Print_zebra_file");

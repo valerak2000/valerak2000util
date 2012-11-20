@@ -13,17 +13,17 @@ public class AboutAction extends Action {
 	 * AboutAction constructor
 	 */
 	public AboutAction() {
-		super(Zebra.getApp().getConfZebra().getMString("About"), Zebra.getApp().getImageFor("about"));
+		super(Zebra.getApp().getConfZebra().getString("About"), Zebra.getApp().getImageFor("about"));
 /*    setDisabledImageDescriptor(ImageDescriptor.createFromFile(AboutAction.class,
         "/images/disabledAbout.gif"));*/
-		setToolTipText(Zebra.getApp().getConfZebra().getMString("About"));
+		setToolTipText(Zebra.getApp().getConfZebra().getString("About"));
 	}
 
 	/**
 	 * Shows an about box
 	 */
 	public void run() {
-		MessageDialog.openInformation(Zebra.getApp().getShell(), Zebra.getApp().getConfZebra().getMString("About"),
+		MessageDialog.openInformation(Zebra.getApp().getShell(), Zebra.getApp().getConfZebra().getString("About"),
 				"Zebra--to manage your books");
 	}
 }

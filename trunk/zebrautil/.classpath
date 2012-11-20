@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/config"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/swt"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commonlibs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jface"/>
+	<classpathentry kind="lib" path="/usr/Work/Java/Apache.org/commons/proper/csv/target/commons-csv-1.0-SNAPSHOT.jar" sourcepath="/usr/Work/Java/Apache.org/commons/proper/csv"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

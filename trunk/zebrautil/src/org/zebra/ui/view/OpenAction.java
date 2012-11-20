@@ -14,7 +14,7 @@ public class OpenAction extends Action {
 	 * OpenAction constructor
    	*/
 	public OpenAction() {
-		super(Zebra.getApp().getConfZebra().getMString("Open_zebra_file"), Zebra.getApp().getImageFor("open"));
+		super(Zebra.getApp().getConfZebra().getString("Open_zebra_file"), Zebra.getApp().getImageFor("open"));
  /*   setDisabledImageDescriptor(ImageDescriptor.createFromFile(OpenAction.class,
         "/images/disabledOpen.gif"));*/
 		setToolTipText("Open_zebra_file");

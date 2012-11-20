@@ -38,8 +38,9 @@ import org.eclipse.swt.widgets.*;
 
 import org.apache.commons.configuration.ConfigurationException;
 
-import org.library.config.MXMLConfiguration;
+import org.library.config.MenuXMLConfiguration;
 import org.library.csv.CSV;
+import org.apache.commons.csv.*;
 //import org.library.swt.BasicApplication;
 
 import org.zebra.ui.model.ZebraTableModel;
@@ -56,7 +57,7 @@ import org.zebra.util.FormPrintUnilever;
 
 public class Zebra extends ApplicationWindow {
 	// A static instance to the running application
-	private static Zebra APP;
+	final private static Zebra APP;
 	private TableViewer tv;
 
 	// The actions
@@ -67,7 +68,7 @@ public class Zebra extends ApplicationWindow {
 	private AboutAction aboutAction;
 	private ExitAction exitAction;
 
-	private static MXMLConfiguration confZebra = null;
+	private static MenuXMLConfiguration confZebra = null;
 
 	private static final String[] columnNames = new String[3];
 	private CSV csv = new CSV(';');
@@ -96,7 +97,7 @@ public class Zebra extends ApplicationWindow {
 		hashImages.put("exit", ImageDescriptor.createFromFile(Zebra.class, "/org/images/exit.png"));
 
 		try	{
-			confZebra = new MXMLConfiguration();
+			confZebra = new MenuXMLConfiguration();
 			confZebra.setFile(new File("Zebra.xml"));
 			//запрет использования разделителей списков
 /*			confZebra.setDelimiterParsingDisabled(true);
@@ -175,8 +176,8 @@ public class Zebra extends ApplicationWindow {
 		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
 	}
 
-	public MXMLConfiguration getConfZebra() {
-		return (MXMLConfiguration) confZebra;
+	public MenuXMLConfiguration getConfZebra() {
+		return (MenuXMLConfiguration) confZebra;
 	}
 
 	protected Table createTable(TableViewer tv, int mode) {
@@ -260,7 +261,7 @@ public class Zebra extends ApplicationWindow {
 	    MenuManager mmng = new MenuManager();
 
 	    // Create the File menu
-	    MenuManager fileMenu = new MenuManager(confZebra.getMString("File_menu_title"));
+	    MenuManager fileMenu = new MenuManager(confZebra.getString("File_menu_title"));
 	    mmng.add(fileMenu);
 
 	    // Add the actions to the File menu
@@ -364,7 +365,9 @@ public class Zebra extends ApplicationWindow {
 	}
 
 	private void loadZebraFile(String name) {	
-		if (name == null) return;
+		if (name == null) {
+			return;
+		}
 
 		Cursor waitCursor = new Cursor(getShell().getDisplay(), SWT.CURSOR_WAIT);
 		getShell().setCursor(waitCursor);
@@ -436,14 +439,18 @@ public class Zebra extends ApplicationWindow {
 	}
 
 	public boolean printZebraFile() {
-		//проверить выбран ли файл?
+/*		//проверить выбран ли файл?
 		if (file != null && file.exists()) {
 			PrintDialog dialog = new PrintDialog(getShell());
 			PrinterData prnSel = dialog.open();
 			new FormPrintUnilever(this, file.getAbsolutePath(), prnSel.name);
 		}
-
+*/
 		return false;
+	}
+
+	public boolean closeZebraFile() {
+		return true;		
 	}
 
 	public boolean configZebraFile() {
@@ -539,8 +546,7 @@ public class Zebra extends ApplicationWindow {
 
 		if (args.length > 0) {
 //			new FormPrintUnilever(appZebra, args[0], null);
-		}
-		else {
+		} else {
 			new Zebra().run();
 		}
 	}

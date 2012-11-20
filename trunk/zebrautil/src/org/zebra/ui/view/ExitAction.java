@@ -11,7 +11,7 @@ public class ExitAction extends Action {
    * ExitAction constructor
    */
   public ExitAction() {
-    super(Zebra.getApp().getConfZebra().getMString("Exit"), Zebra.getApp().getImageFor("exit"));
+    super(Zebra.getApp().getConfZebra().getString("Exit"), Zebra.getApp().getImageFor("exit"));
 //    setToolTipText("Exit");
   }
 

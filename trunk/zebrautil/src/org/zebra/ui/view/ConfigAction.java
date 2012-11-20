@@ -14,7 +14,7 @@ public class ConfigAction extends Action {
 	 * ConfigAction constructor
    	*/
 	public ConfigAction() {
-		super(Zebra.getApp().getConfZebra().getMString("Config_print_file"), Zebra.getApp().getImageFor("configure"));
+		super(Zebra.getApp().getConfZebra().getString("Config_print_file"), Zebra.getApp().getImageFor("configure"));
  /*   setDisabledImageDescriptor(ImageDescriptor.createFromFile(OpenAction.class,
         "/images/disabledOpen.gif"));*/
 		setToolTipText("Config_print_file");

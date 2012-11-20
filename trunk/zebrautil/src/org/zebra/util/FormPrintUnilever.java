@@ -13,13 +13,13 @@ import java.util.Iterator;
 //import org.apache.commons.configuration.ConfigurationException;
 //import org.apache.commons.configuration.ConfigurationFactory;
 
-import org.library.config.MXMLConfiguration;
+import org.library.config.MenuXMLConfiguration;
 import org.library.csv.CSV;
 import org.zebra.ui.Zebra;
 
 public class FormPrintUnilever {
 	PrintService psZebra = null;
-	MXMLConfiguration confZebra = null;
+	MenuXMLConfiguration confZebra = null;
 	CSV csv = new CSV(';');
 
 	public FormPrintUnilever(Zebra appZebra, String fileName, String prnName) {
@@ -31,8 +31,9 @@ public class FormPrintUnilever {
 				System.out.println(prnName + " is not found!");
 	
 				return;
-			} else
+			} else {
 				prnForm(csv, new BufferedReader(new FileReader(fileName)));
+			}
 		} catch (FileNotFoundException fnfe) {
 			// TODO Auto-generated catch block
 			fnfe.printStackTrace();
@@ -43,8 +44,9 @@ public class FormPrintUnilever {
 		PrintService psZebra = null;
 		String sPrinterName = null;
 
-		if (prnName == null || prnName.isEmpty())
+		if (prnName == null || prnName.isEmpty()) {
 			prnName = "zebra";
+		}
 
 		PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
 
@@ -81,8 +83,7 @@ public class FormPrintUnilever {
 		    				nameGoods = nameGoodsCSV.substring(0, 30)
 		    						   .concat("\\&")
 		    						   .concat(nameGoodsCSV.substring(30, nameGoodsCSV.length() >= 60 ? 60: nameGoodsCSV.length()));
-		    			}
-		    			else {
+		    			} else {
 		    				//берем целиком поскольку маленькая
 		    				nameGoods = nameGoodsCSV.substring(0, nameGoodsCSV.length());
 		    			}
@@ -106,9 +107,10 @@ public class FormPrintUnilever {
 							numCpy = 0;
 						}
 	
-		    	    	if (numCpy > 1)
+		    	    	if (numCpy > 1) {
 			    			s = s.concat(confZebra.getString("ZebraPrintFormNCPY").replace("%NUMCPY%", Integer.toString(numCpy)));
 //		    	    		s = s.concat("^PQ" + numCpy + "\r\n");
+		    	    	}
 		    		}
 		    	}
 		    	//конец лабела
