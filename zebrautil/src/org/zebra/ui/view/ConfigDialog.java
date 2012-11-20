@@ -6,12 +6,12 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-import org.library.config.MXMLConfiguration;
+import org.library.config.MenuXMLConfiguration;
 import org.zebra.ui.Zebra;
 
 
 public class ConfigDialog {
-	MXMLConfiguration confZebra;
+	MenuXMLConfiguration confZebra;
 	Shell shell;
 	String[] values;
 	String[] labels;

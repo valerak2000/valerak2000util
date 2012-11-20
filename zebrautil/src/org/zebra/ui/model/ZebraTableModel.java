@@ -39,9 +39,12 @@ public enum ZebraTableModel {
 	}  
 	private void loadZebraFile(String name) {	
     	labels.clear();
-		if (name == null) return;
-		file = new File(name);
 
+    	if (name == null) {
+			return;
+		}
+
+    	file = new File(name);
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
 		String[] data = new String[0];
@@ -61,7 +64,7 @@ public enum ZebraTableModel {
 
 			bufferedReader.close();
 			fileReader.close();
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException fnfe) {
 			showError(confZebra.getString("File_not_found") + "\n" + file.getName());
 
 			return;
@@ -131,7 +134,9 @@ public enum ZebraTableModel {
 	 * Converts an encoded <code>String</code> to a String array representing a table entry.
 	 */
 	private String[] decodeLine(String line) {
-		if (line == null) return null;
+		if (line == null) {
+			return null;
+		}
 		
 		String[] parsedLine = new String[tv.getTable().getColumnCount()];
 		Iterator<String> e = csv.parse(line).iterator();
