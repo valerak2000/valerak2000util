@@ -3,7 +3,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/swt"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/config"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jface"/>
+	<classpathentry kind="lib" path="/usr/Work/Java/Apache.org/commons/proper/lang/target/commons-lang3-3.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/usr/Work/Java/Apache.org/commons/proper/logging/target/commons-logging-1.1.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/usr/Work/Java/commons-configuration-1.9/commons-configuration-1.9.jar"/>
+	<classpathentry kind="lib" path="/usr/Work/Java/Apache.org/commons/beanutils/target/commons-beanutils-1.8.4-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/usr/Work/Java/Apache.org/commons/proper/collections/target/commons-collections-4.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
