@@ -89,8 +89,10 @@ void leftDelimeter() {
    	string delimeterName;
    	datetime firstTime;
    	int barFirstTime;
+   	int cntObj;
    
-	for (int i = 0; i < ObjectsTotal(); i++) {
+	cntObj = ObjectsTotal();
+	for (int i = 0; i < cntObj; i++) {
 		delimeterName = ObjectName(i); 
 
 		if (ObjectFind(delimeterName) != -1) {

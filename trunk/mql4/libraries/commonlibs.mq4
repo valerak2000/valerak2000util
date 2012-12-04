@@ -93,7 +93,7 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 	} else {
 //		ObjectDelete("moneyChk_object");
 	}
-//	Print(DoubleToStr(cmd, 0) + "-" + DoubleToStr(freeMargin, 0));
+//	Print(DoubleToStr(cmd, 0) + "-" + DoubleToStr((freeMargin / AccountBalance()) * 100, 0));
 
 // свободные средства/ средства на счету * 100 = уровень
 	if (((freeMargin / AccountBalance()) * 100) <= marginPercent || GetLastError() == ERR_NOT_ENOUGH_MONEY) {
