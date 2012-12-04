@@ -127,10 +127,10 @@ int start() {
 	
 	if (exTakeProfit == 0) {
 		//расчет величин профита и лося на периоде 2ч
-		takeProfitBuyVar = getProfitValue(workSymb, OP_BUY, 120, takeProfitVar);
-    	takeProfitSellVar = getProfitValue(workSymb, OP_SELL, 120, takeProfitVar);
-    	takeProfitVar = MathMax(takeProfitBuyVar, takeProfitSellVar) * 2.0;
-    	exTrailingProfStart = MathMax(takeProfitBuyVar, takeProfitSellVar) * 1.5;
+		takeProfitBuyVar = getProfitValue(workSymb, OP_BUY, 600, takeProfitVar);
+    	takeProfitSellVar = getProfitValue(workSymb, OP_SELL, 600, takeProfitVar);
+    	takeProfitVar = MathMax(takeProfitBuyVar, takeProfitSellVar) * 3.0;
+    	exTrailingProfStart = MathMax(takeProfitBuyVar, takeProfitSellVar) * 2;
     }
     //проверка торговых сигналов рынка - оракул
 	int mrktState = chkMarketState();
