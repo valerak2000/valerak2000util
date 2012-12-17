@@ -484,12 +484,16 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
 					tp = NormalizeDouble(getTp(symb, OP_BUY, 0, takeProfit, opPrice), Digits);
 
         		    if (NormalizeDouble(MathAbs(tp - takeProfOrd), Digits) <= NormalizeDouble(0.01 / numSign, Digits)) {
-        		        //при отличии более чем на 1% профит изменять
+        		        //при отличии менее чем на 1% профит не изменять
         				tp = takeProfOrd;
 	        		}
 	       		} else {
 		    		//прфт текущей цены
 					tp = NormalizeDouble(getTp(symb, OP_BUY, 0, takeProfit, 0.0), Digits);
+
+					if (takeProfOrd <= 0) {
+						takeProfOrd = tp;
+					}
 //        			tp = NormalizeDouble(Ask + takeProfit * Point, Digits);
         			//профит ордера в пунктах больше "текущего" на 1й или 2й порог
         			if (NormalizeDouble(takeProfOrd - opPrice, Digits) <= NormalizeDouble(tp - Ask, Digits)) {
@@ -533,13 +537,16 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
 					tp = NormalizeDouble(getTp(symb, OP_SELL, 0, takeProfit, opPrice), Digits);
 
         		    if (NormalizeDouble(MathAbs(tp - takeProfOrd), Digits) <= NormalizeDouble(0.01 / numSign, Digits)) {
-        		        //при отличии более чем на 1% профит изменять
+        		        //при отличии менее чем на 1% профит не изменять
         				tp = takeProfOrd;
         		    }
 	       		} else {
 		    		//прфт текущей цены
 					tp = NormalizeDouble(getTp(symb, OP_SELL, 0, takeProfit, 0.0), Digits);
 //		        	tp = NormalizeDouble(Bid - takeProfit * Point, Digits);
+					if (takeProfOrd <= 0) {
+						takeProfOrd = tp;
+					}
         			//профит ордера в пунктах больше "текущего" на 1й или 2й порог
 					//цена выше или ниже порога срабатывания трейлинга?
         			if (NormalizeDouble(opPrice - takeProfOrd, Digits) <= NormalizeDouble(Bid - tp, Digits)) {
@@ -587,13 +594,10 @@ void trailingProf(string symb, int ticket, double takeProfitKoef = 0.0, double t
 		//установить новый прфт или лоссь
 		if ((takeLossOrd != sl) || (takeProfOrd != tp)) {
     		if (OrderModify(ticket, opPrice, sl, tp, CLR_NONE) == false) {
-/*					Print(ticket, " Ask=", NormalizeDouble(Ask, Digits), " Bid=", NormalizeDouble(Bid, Digits),
+					Print(ticket, " Ask=", NormalizeDouble(Ask, Digits), " Bid=", NormalizeDouble(Bid, Digits),
 							" takeLossOrd=", NormalizeDouble(takeLossOrd, Digits), " takeProfOrd=", NormalizeDouble(takeProfOrd, Digits),
 							" opPrice=", NormalizeDouble(opPrice, Digits), 
-							" sl=", NormalizeDouble(sl, Digits), " tp=", NormalizeDouble(tp, Digits),
-							" currloss=", NormalizeDouble(opPrice - takeLossOrd, Digits),
-							" trailLoss=", NormalizeDouble(trailLoss * Point, Digits));
-*/
+							" sl=", NormalizeDouble(sl, Digits), " tp=", NormalizeDouble(tp, Digits));
     			chkError(GetLastError());
         	}
         }
