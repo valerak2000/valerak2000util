@@ -16,7 +16,7 @@ select ost.date as date, id_tovar, to.name as name, koln,kolnjir, prih,prihjir,;
         000000000.000 as rhozm_c,000000000.000 as rhozmjir_c,; && (04.02.07 Andrey)
         kolk,kolkjir, 00 as posx;
 from ost,to into table (filnam);
-where between(ost.date,m.date1,m.date2);
+where between(ost.date, m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin, m.goApp.oVars.oCurrentTask.oVars.dfltdateend);
       and id_tovar=m.idtov;
       and to.id=id_tovar;
 group by 1,2;

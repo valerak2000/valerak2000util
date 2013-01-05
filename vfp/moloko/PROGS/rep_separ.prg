@@ -1,26 +1,27 @@
 *отчет за декаду(сепарирование)
-*
 local filnam
 
+m.ddatebeg = m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin
+m.ddateend = m.goApp.oVars.oCurrentTask.oVars.dfltdateend
 setBase()
 *
 wait window nowai "Создание отчета...."
-filnam=sys(3)
 SET ENGINEBEHAVIOR 70
-select pas.date as date,;
+select pas.date,;
 		kolinm as sepm, koljirinm as sepjirm,;
 		kolpaht as sepsl, koljirpaht as sepjirsl,;
 		kolob as sepob, jirob as sepjirob,;
-		kolsm as seppot, koljirsm as sepjirpot;
-from pas into table (filnam);
-where between(date,flt.date1,flt.date2);
-	  and;
-	  id_pro='002   ';
+		kolsm as seppot, koljirsm as sepjirpot,;
+		pro.comment as pro_comment, edizm.name as edname;
+FROM PAS LEFT JOIN PRO ON PRO.ID = PAS.ID_PRO;
+		 LEFT JOIN EDIZM ON EDIZM.ID = PAS.ID_TARA;
+	INTO CURSOR PRINT_REP;
+where between(date, m.ddatebeg, m.ddateend);
+	  AND id_pro='002   ';
 order by 1
 SET ENGINEBEHAVIOR 90
-use (filnam) exclu alias rep_dek
 *
-select rep_dek
+SELECT PRINT_REP
 SUM ALL sepm,sepjirm,seppot,sepjirpot TO allm, alljirm,potm,potjir
 planm=ROUND(allm*0.0037,0)
 planjirm=ROUND(alljirm*0.0037,2)
@@ -29,17 +30,13 @@ deltjir=planjirm-potjir
 *
 wait window nowai "Создание завершено"
 GO TOP
-DO FORM selprint
-DO CASE
-CASE prin_prev=1
-	REPORT FORM separ NOCONSOLE PREVIEW 
-CASE prin_prev=2
-    REPORT FORM separ NOCONSOLE TO PRINTER PROMPT
-ENDCASE
+oListener = CREATEOBJECT("ReportListener")
+oListener.ListenerType=1 && Preview, or 0 for Print 
+
+REPORT FORM "..\REPORTS\separ" OBJECT oListener NOCONSOLE PREVIEW
 *удалить курсор
-if used('rep_dek')
-	use in rep_dek
+if used('PRINT_REP')
+	use in PRINT_REP
 endif
-delete file sys(5)+sys(2003)+'\'+filnam+'.dbf'
-close data
 *
+CLOSE DATABASES

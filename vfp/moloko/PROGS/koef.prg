@@ -1,3 +1,3 @@
-openTable(basep+'koef.dbf','sp')
+openTable(m.goApp.oVars.oCurrentTask.oVars.cDBPath+'koef.dbf','sp')
 browse
 use

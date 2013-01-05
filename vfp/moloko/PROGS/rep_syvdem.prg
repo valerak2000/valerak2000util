@@ -1,19 +1,26 @@
 *отчет за декаду(сыворотка)
 LPARAMETERS tcpro
 *
+m.ddatebeg = m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin
+m.ddateend = m.goApp.oVars.oCurrentTask.oVars.dfltdateend
 setBase()
 *
-select pro
-set order to 1
-seek m.tcpro
-select edizm
-set order to 1
-*
-select grpas
-*
-SUM round(div(kolm,round(kolgot/1000,3)),3),kolgot,ROUND(div(96*1000,suhm*(1-0.01*suhpaht)),3) TO s4,s10,s11;
-	for between(grpas.date,flt.date1,flt.date2) and inlist(id_pro,m.tcpro)
-*
+SET ENGINEBEHAVIOR 70
+select GRPAS.*,;
+		pro.comment as pro_comment, edizm.name as ed_name;
+FROM GRPAS LEFT JOIN PRO ON PRO.ID = GRPAS.ID_PRO;
+		   LEFT JOIN EDIZM ON EDIZM.ID = GRPAS.ID_TARA;
+	INTO CURSOR PRINT_REP;
+where between(date, m.ddatebeg, m.ddateend);
+	  AND id_pro = m.tcpro;
+order by 1
+SET ENGINEBEHAVIOR 90
+
+SELECT PRINT_REP
+SUM round(m.goApp.oFunction.div(kolm,round(kolgot/1000,3)),3), kolgot, ROUND(m.goApp.oFunction.div(96*1000,suhm*(1-0.01*suhpaht)),3), kolm, suhm, suhpaht, 1,;
+	ROUND(kolgot*suhm/100,2), kvlaga, kolsuhm, kolsuhgot;
+	TO s4, sKolgot, s11, sKolm, sSuhm, sSuhPaht, sKolRec, sKolsuh, sKvlaga, sKolsuhm, sKolsuhgot
+
 rjirm=0
 plotnot=0
 rsmom=0
@@ -25,32 +32,35 @@ rsmopa=0 &&((s8+s9)/s5)*100
 *ss3=s5*rsmopa
 rsuhsm=0 &&(ss2+ss3)/(s4+s5)
 *
-m.plallsm=m.s11*s10/1000
-m.faktallsm=s4*s10/1000
+s11 = ROUND(m.goApp.oFunction.div(96 * 1000, m.goApp.oFunction.div(m.sSuhm, m.sKolRec) * (1 - 0.01 * m.goApp.oFunction.div(m.sSuhpaht, m.sKolRec))), 3)
+
+plallsm = ROUND(m.s11 * ROUND(m.sKolgot / 1000, 3), 0)
+*!*		plallsm=m.s11*sKolgot/1000
+faktallsm = m.sKolm
+*!*	faktallsm=s4*sKolgot/1000
 *
-m.plall1sm=m.s11
-m.faktall1sm=s4
+plall1sm=m.s11
+faktall1sm = round(m.goApp.oFunction.div(m.sKolm, round(m.sKolgot / 1000, 3)), 3) &&div(m.s4, m.sKolRec)
 *
-m.nrjirsm=0
+nrjirsm=0
 *
-m.plallj=0
-m.faktallj=0
+plallj=0
+faktallj=0
 *
-m.plall1j=0
-m.faktall1j=0
-	*
-	GO TOP
-	set rela to id_tara into edizm
-	m.date1=flt.date1
-	m.date2=flt.date2
-	*
-	DO FORM selprint
-	*
-	DO CASE
-	CASE prin_prev=1
-		REPORT FORM grsyvor NOCONSOLE PREVIEW for between(grpas.date,flt.date1,flt.date2) and inlist(id_pro,m.tcpro)
-	CASE prin_prev=2
-	    REPORT FORM grsyvor NOCONSOLE TO PRINTER PROMPT for between(grpas.date,flt.date1,flt.date2) and inlist(id_pro,m.tcpro)
-	ENDCASE
+plall1j=0
+faktall1j=0
+
+planpot = round(m.sKolsuhgot * m.goApp.oFunction.div(m.sSuhpaht, m.sKolRec) / 100, 2)
+faktpot = m.sKolsuhm - m.sKolsuhgot
+*
+GO TOP
+oListener = CREATEOBJECT("ReportListener")
+oListener.ListenerType=1 && Preview, or 0 for Print 
+
+REPORT FORM "..\REPORTS\grsyvor_" OBJECT oListener NOCONSOLE PREVIEW
+*удалить курсор
+IF USED('PRINT_REP')
+	USE IN PRINT_REP
+ENDIF
+
 CLOSE DATABASES
-*

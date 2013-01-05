@@ -1,7 +1,5 @@
 *отчет за декаду(сушка сливок)
-PARAMETERS idtar
-*
-*setBase()
+LPARAMETERS tnidtar, tddatebeg as Date, tddateend as Date
 *
 STORE 0 TO m.plotnotob, rsmomob, koefm, rsmom, plotnot
 *
@@ -13,36 +11,37 @@ set order to 1
 *
 select sez
 fou=.f.
-IF seek(m.idtar)
-	scan while id_ed=m.idtar
-		if m.date1>=bmonth and m.date2<=emonth
+IF seek(m.tnidtar, "sez", "id_ed")
+	scan while id_ed = m.tnidtar
+		if m.tddatebeg >= bmonth and m.tddateend <= emonth
 			fou=.t.
 			exit
 		endif
 	endscan
 ENDIF
 *
-IF fou
+IF m.fou
 	SELECT grpas
 *		1				2	3		4	5		6			7		8			9		10		11	 12
-	SUM kolm*plotnsv,kolm,koljirm,kolob,kolpaht,kolsuhob,koljirob,kolsuhpaht,koljirpaht,kolgot,rsmom,1 TO s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,rsmom,coup;
-		FOR BETWEEN(grpas.date,m.date1,m.date2) and id_pro='004' and id_tara=m.idtar
+	SUM kolm*plotnsv,kolm,koljirm,kolob,kolpaht,kolsuhob,koljirob,kolsuhpaht,koljirpaht,kolgot,rsmom,1;
+		TO s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,rsmom,coup;
+		FOR BETWEEN(grpas.date, m.tddatebeg, m.tddateend ) and id_pro='004' and id_tara=m.tnidtar
 	*
-	m.rsmom=div(m.rsmom,coup)
-	m.plotnot=ROUND(div(s1,s2),2)
+	m.rsmom=m.goApp.oFunction.div(m.rsmom,coup)
+	m.plotnot=ROUND(m.goApp.oFunction.div(s1,s2),2)
 	m.rjirm=s3*100/s2	&&d
 	m.rsmom=(4.9*m.rjirm+m.plotnot)/4+0.5-m.rjirm
-	m.rsmoob=div(s7,s4)*100
+	m.rsmoob=m.goApp.oFunction.div(s7,s4)*100
 	m.rsmopa=0 &&div((s8+s9),s5)*100
-	m.rsomosl=div((100-m.rsmoob),10.615)
+	m.rsomosl=m.goApp.oFunction.div((100-m.rsmoob),10.615)
 	*
 	ss1=s2*m.rsmom/100
 	ss2=s4*m.rsomosl/100
 *	ss3=s5*m.rsmopa
 *	rsuhsm=div((ss1+ss2+ss3),(s2+s4+s5))
-	m.rsuhsm=div((ss1+ss2+m.s3+m.s7)*100,(s2+s4))
+	m.rsuhsm=m.goApp.oFunction.div((ss1+ss2+m.s3+m.s7)*100,(s2+s4))
 	*
-	m.nrsm=div(98.5*1000,m.rsuhsm*(1-0.01*0.79))
+	m.nrsm=m.goApp.oFunction.div(98.5*1000,m.rsuhsm*(1-0.01*0.79))
 *	m.nrsm=div(96.8*1000,m.rsuhsm*(1-0.01*sez.koef5))
 	*
 	m.plallsm=m.nrsm*s10/1000
@@ -64,15 +63,18 @@ IF fou
 	plallsm1=0
 	plallj1=0
 	*
-	SET RELATION TO id_tara INTO edizm
+	SELECT grpas.*;
+	FROM grpas INTO CURSOR PRINT_REP;
+	WHERE BETWEEN(grpas.DATE, m.tddatebeg, m.tddateend) AND id_pro='004' AND id_tara=m.tnidtar
+
+	oListener = CREATEOBJECT("ReportListener")
+	oListener.ListenerType=1 && Preview, or 0 for Print 
+	SELECT PRINT_REP
 	GO TOP
-	*
-	DO FORM selprint
-	*
-	DO CASE
-	CASE prin_prev=1
-		REPORT FORM grsuhka NOCONSOLE PREVIEW for BETWEEN(grpas.date,m.date1,m.date2) AND id_pro='004' AND id_tara=m.idtar
-	CASE prin_prev=2
-	    REPORT FORM grsuhka NOCONSOLE TO PRINTER PROMPT for BETWEEN(grpas.date,m.date1,m.date2) AND id_pro='004' AND id_tara=m.idtar
-	ENDCASE
+
+	REPORT FORM "..\REPORTS\grsuhka" OBJECT oListener NOCONSOLE PREVIEW
+
+	IF USED("PRINT_REP")
+		USE IN PRINT_REP
+	ENDIF
 ENDIF

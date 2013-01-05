@@ -220,13 +220,7 @@ ENDSCAN
 *
 WAIT WINDOW NOWAIT "Создание завершено"
 *
-DO FORM selprint
-DO CASE
-CASE prin_prev=1
-    report form dekad1 nocon preview
-CASE prin_prev=2
-    report form dekad1 nocon to print PROMPT
-ENDCASE 
+m.goApp.goForm("selprint", 0, .NULL., .NULL., ".\REPORTS\dekad1", "rep_dek")
 *удалить курсор
 if used('rep_dek')
     use in rep_dek

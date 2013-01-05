@@ -10,10 +10,8 @@ set order to 1
 *
 select grpas
 *
-*!*	SUM kolinm,kolgot,round(div(95*1000,suhm*(1-0.01*suhpaht)),3) TO s4,s10,s11;
-*!*		for between(pas.date,flt.date1,flt.date2) and id_pro='006'
-SUM round(div(kolm,round(kolgot/1000,3)),3),kolgot,ROUND(div(95*1000,suhm*(1-0.01*suhpaht)),3) TO s4,s10,s11;
-	for between(grpas.date,flt.date1,flt.date2) and id_pro='006'
+SUM round(m.goApp.oFunction.div(kolm,round(kolgot/1000,3)),3),kolgot,ROUND(div(95*1000,suhm*(1-0.01*suhpaht)),3) TO s4,s10,s11;
+	for between(grpas.date, m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin, m.goApp.oVars.oCurrentTask.oVars.dfltdateend) and id_pro='006'
 *
 rjirm=0
 plotnot=0
@@ -42,16 +40,16 @@ m.faktall1j=0
 	*
 	GO TOP
 	set rela to id_tara into edizm
-	m.date1=flt.date1
-	m.date2=flt.date2
+	m.date1=m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin
+	m.date2=m.goApp.oVars.oCurrentTask.oVars.dfltdateend
 	*
 	DO FORM selprint
 	*
 	DO CASE
 	CASE prin_prev=1
-		REPORT FORM grsyvor NOCONSOLE PREVIEW for between(grpas.date,flt.date1,flt.date2) and id_pro='006'
+		REPORT FORM grsyvor NOCONSOLE PREVIEW for between(grpas.date,m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin, m.goApp.oVars.oCurrentTask.oVars.dfltdateend) and id_pro='006'
 	CASE prin_prev=2
-	    REPORT FORM grsyvor NOCONSOLE TO PRINTER PROMPT for between(grpas.date,flt.date1,flt.date2) and id_pro='006'
+	    REPORT FORM grsyvor NOCONSOLE TO PRINTER PROMPT for between(grpas.date, m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin, m.goApp.oVars.oCurrentTask.oVars.dfltdateend) and id_pro='006'
 	ENDCASE
 CLOSE DATABASES
 *

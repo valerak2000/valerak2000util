@@ -75,14 +75,14 @@ LOCAL ldI, lnJ, foulog, laproview, lasumviewprih, lasumviewrash, lcidrash, lcidp
 					lasumviewprih[1, 2]=NVL(lasumviewprih[1, 2], 0)
 					*
 					INSERT INTO print_reppr (date, name_prih, kol_prih, koljir_prih, koled_prih);
-								   VALUES (m.ldI, IIF(lasumviewprih[1, 1]<>0, laproview[m.lnJ, 3], ''), lasumviewprih[1, 1], lasumviewprih[1, 2], ROUND(div(lasumviewprih[1, 1],laproview[m.lnJ, 7]),0))
+								   VALUES (m.ldI, IIF(lasumviewprih[1, 1]<>0, laproview[m.lnJ, 3], ''), lasumviewprih[1, 1], lasumviewprih[1, 2], ROUND(m.goApp.oFunction.div(lasumviewprih[1, 1],laproview[m.lnJ, 7]),0))
 				ENDIF
 				*
 				IF lasumviewrash[1, 1]<>0
 					lasumviewrash[1, 2]=NVL(lasumviewrash[1, 2], 0)
 					*
 					INSERT INTO print_rep (date, name_rash, kol_rash, koljir_rash, koled_rash, sootn);
-								     VALUES (m.ldI, IIF(lasumviewrash[1, 1]<>0, laproview[m.lnJ, 3], ''), lasumviewrash[1, 1], lasumviewrash[1, 2], ROUND(div(lasumviewrash[1, 1],laproview[m.lnJ, 7]), 0), 1)
+								     VALUES (m.ldI, IIF(lasumviewrash[1, 1]<>0, laproview[m.lnJ, 3], ''), lasumviewrash[1, 1], lasumviewrash[1, 2], ROUND(m.goApp.oFunction.div(lasumviewrash[1, 1],laproview[m.lnJ, 7]), 0), 1)
 				ENDIF
 			ENDIF
 		ENDFOR
@@ -272,10 +272,11 @@ LOCAL ldI, lnJ, foulog, laproview, lasumviewprih, lasumviewrash, lcidrash, lcidp
 
     date1=m.tddatebeg
     date2=m.tddateend
+    PRIVATE oListener
 	oListener=CREATEOBJECT("ReportListener")
-	oListener.ListenerType=1 && Preview, or 0 for Print 
-	SELECT print_rep
-	REPORT FORM (".\prih_rash_prod") OBJECT oListener TO PRINTER PROMPT
+	oListener.ListenerType=1 && Preview, or 0 for Print
+	m.goApp.goForm("selprint", 0, .NULL., .NULL., ".\REPORTS\prih_rash_prod", "rep_dek", "oListener")
+*	REPORT FORM (".\") OBJECT TO PRINTER PROMPT
 	*
 	USE IN cursgroup
 	USE IN print_rep

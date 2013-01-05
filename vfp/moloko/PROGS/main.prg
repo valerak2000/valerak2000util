@@ -1,9 +1,9 @@
 	SET ESCAPE ON
 	CLEAR ALL
-	SET PATH TO d:\work\upldrepl_winnew;d:\work\upldrepl_winnew\lib;d:\work\common;d:\work\lib;d:\work\lib.9;d:\work\lib.old;d:\work\magistr_common;d:\work\skl450n\prg
+	SET PATH TO ..\common;..\lib;..\lib.9; .\PROGS; .\FORMS; .\REPORTS
 	SET CLASSLIB TO .\lib\mtoolbar, .\lib\selectvalues, .\lib\PolCld
 	SET CLASSLIB TO select_values, base_gui, base_app, xml_ini, sfmenu, sfmenu_app ADDITIVE 
-	SET PROCEDURE TO MAIN ADDITIVE
+	SET PROCEDURE TO PROGS\MAIN ADDITIVE
 	SET MESSAGE TO
 	SET BELL OFF
 	CLEAR MACROS
@@ -45,7 +45,7 @@
 	IF m.goApp.oWinApi.findWindow(_SCREEN.Caption) = 0
 		SET ENGINEBEHAVIOR 80
 
-		DO MAIN.mpr
+		DO .\MENU\MAIN.mpr
 		*застолбим тулбар
 		TOOLB.MOVE(0,-1)
 		TOOLB.SHOW()
@@ -99,20 +99,20 @@ LOCAL lnFmIdx
 	ENDFOR
 
 PROCEDURE setBase
-	OPENTABLE(basep + 'tovar.dbf','to')
-	OPENTABLE(basep + 'organ.dbf','or')
-	OPENTABLE(basep + 'ostat.dbf','ost')
-	OPENTABLE(basep + 'typedoc.dbf','typ')
-	OPENTABLE(basep + 'nakl.dbf','nak')
-	OPENTABLE(basep + 'nakl_cont.dbf','nakc')
-	OPENTABLE(basep + 'production.dbf','pro')
-	OPENTABLE(basep + 'passw.dbf','pas')
-	OPENTABLE(basep + 'grppassw.dbf','grpas')
-	OPENTABLE(basep + 'grpass_cont.dbf','grpasc')
-	OPENTABLE(basep + 'koef.dbf','sp')
-	OPENTABLE(basep + 'edizm.dbf','edizm')
-	OPENTABLE(basep + 'sezon.dbf','sez')
-	OPENTABLE(basep + 'filt.dbf','flt')
+	OPENTABLE(m.basep + 'tovar.dbf','to')
+	OPENTABLE(m.basep + 'organ.dbf','or')
+	OPENTABLE(m.basep + 'ostat.dbf','ost')
+	OPENTABLE(m.basep + 'typedoc.dbf','typ')
+	OPENTABLE(m.basep + 'nakl.dbf','nak')
+	OPENTABLE(m.basep + 'nakl_cont.dbf','nakc')
+	OPENTABLE(m.basep + 'production.dbf','pro')
+	OPENTABLE(m.basep + 'passw.dbf','pas')
+	OPENTABLE(m.basep + 'grppassw.dbf','grpas')
+	OPENTABLE(m.basep + 'grpass_cont.dbf','grpasc')
+	OPENTABLE(m.basep + 'koef.dbf','sp')
+	OPENTABLE(m.basep + 'edizm.dbf','edizm')
+	OPENTABLE(m.basep + 'sezon.dbf','sez')
+	OPENTABLE(m.basep + 'filt.dbf','flt')
 	date1 = flt.date1
 	date2 = flt.date2
 RETURN
@@ -245,7 +245,7 @@ RETURN
 	setBase()
 	*спрaвочник товаров
 	SELECT 0
-	USE basep + 'tovar.dbf' AGAIN ORDER 1 ALIAS to1
+	USE m.goApp.oVars.oCurrentTask.oVars.cDBPath + 'tovar.dbf' AGAIN ORDER 1 ALIAS to1
 	SELECT TO
 	IF !SEEK(0)
 		INSERT INTO TO (ID,NAME) VALUE(0,'Пустой')
@@ -264,7 +264,7 @@ RETURN
 	
 	*спрaвочник контрагентов
 	SELECT 0
-	USE basep + 'organ.dbf' AGAIN ORDER 1 ALIAS or1
+	USE m.goApp.oVars.oCurrentTask.oVars.cDBPath+ 'organ.dbf' AGAIN ORDER 1 ALIAS or1
 
 	SELECT OR
 
@@ -287,7 +287,7 @@ RETURN
 	USE IN or1
 	
 	SELECT 0
-	USE basep + 'nakl.dbf' AGAIN ORDER 1 ALIAS nak1
+	USE m.goApp.oVars.oCurrentTask.oVars.cDBPath + 'nakl.dbf' AGAIN ORDER 1 ALIAS nak1
 	*упорядочивание номеров накладных
 	SELECT nak
 	SET RELATION TO ID INTO nak1, id_pas INTO pas ADDI
@@ -328,7 +328,7 @@ RETURN
 	SET RELATION TO
 	*паспорта
 	SELECT 0
-	USE basep + 'passw.dbf' AGAIN ORDER 1 ALIAS pas1
+	USE m.goApp.oVars.oCurrentTask.oVars.cDBPath + 'passw.dbf' AGAIN ORDER 1 ALIAS pas1
 	SELECT pas
 	SET RELATION TO ID INTO pas1
 	SCAN ALL
@@ -352,7 +352,7 @@ RETURN
 	USE IN pas1
 	*группир.паспорта
 	SELECT 0
-	USE basep + 'grppassw.dbf' AGAIN ORDER 1 ALIAS grpas1
+	USE m.goApp.oVars.oCurrentTask.oVars.cDBPath + 'grppassw.dbf' AGAIN ORDER 1 ALIAS grpas1
 	SELECT grpas
 	SET RELATION TO ID INTO grpas1
 	SCAN ALL
@@ -382,7 +382,7 @@ RETURN
 	SET RELATION TO
 	*остатки
 	SELECT 0
-	USE basep + 'ostat.dbf' AGAIN ORDER 1 ALIAS ost1
+	USE m.goApp.oVars.oCurrentTask.oVars.cDBPath + 'ostat.dbf' AGAIN ORDER 1 ALIAS ost1
 	SELECT ost
 	SET RELATION TO DTOS(DATE) + BINTOC(id_tovar) + BINTOC(id_tara) INTO ost1
 	SCAN ALL
