@@ -14,12 +14,12 @@ LOCAL ARRAY laproview[1,6], lasumviewprih[1,2], lasumviewrash[1,2], laarcursgrou
 	*
 	DIMENSION lcproview[1,4], lcsumviewprih[1,2], lcsumviewrash[1,2]
 	*
-	SELECT DISTINCT 0, NVL(PRODUCTION.ID,0000000000), PADR(RTRIM(NVL(PRODUCTION.COMMENT,''))+'('+RTRIM(NVL(EDIZM.NAME,''))+") "+RTRIM(NVL(TYPEDOC.NAME,''))+' '+RTRIM(NVL(OR.NAME,'')),70), NVL(EDIZM.ID,0000000000), NVL(OR.ID,0000000000), NVL(TYPEDOC.ID,0000000000);
+	SELECT DISTINCT 0, NVL(PRO.ID,0000000000), PADR(RTRIM(NVL(PRO.COMMENT,''))+'('+RTRIM(NVL(EDIZM.NAME,''))+") "+RTRIM(NVL(TYPEDOC.NAME,''))+' '+RTRIM(NVL(OR.NAME,'')),70), NVL(EDIZM.ID,0000000000), NVL(OR.ID,0000000000), NVL(TYPEDOC.ID,0000000000);
 	FROM NAK RIGHT JOIN PAS ON NAK.ID_PAS=PAS.ID;
 			  LEFT JOIN NAKC ON BINTOC(NAKC.ID_NAK)+BINTOC(NAKC.ID_TOVAR)+BINTOC(NAKC.ID_TARA)=BINTOC(NAK.ID)+BINTOC(m.tnidtovar)+BINTOC(m.tnidedz);
 			  LEFT JOIN TYPEDOC ON NAK.TYPEDOC==TYPEDOC.ID;
 			  LEFT JOIN OR ON NAK.ID_ORGAN=OR.ID;
-			  LEFT JOIN PRODUCTION ON PAS.ID_PRO=PRODUCTION.ID;
+			  LEFT JOIN PRO ON PAS.ID_PRO=PRO.ID;
 			  LEFT JOIN EDIZM ON EDIZM.ID=NAKC.ID_TARA INTO ARRAY laproview;
 	WHERE NAK.ID IN (SELECT ID_NAK FROM NAKC WHERE ID_TOVAR=m.tnidtovar AND ID_TARA=m.tnidedz) AND;
  		  BETWEEN(NAK.DATE,m.tddatebeg,m.tddateend);
@@ -88,14 +88,14 @@ LOCAL ARRAY laproview[1,6], lasumviewprih[1,2], lasumviewrash[1,2], laarcursgrou
 					lasumviewprih[1,2]=NVL(lasumviewprih[1,2],0)
 					*
 					INSERT INTO PRINT_REPPR (DATE, NAME_PRIH, KOL_PRIH, KOLJIR_PRIH, KOLED_PRIH);
-								   VALUES (m.ldI, IIF(lasumviewprih[1,1]#0,laproview[m.lnJ,3],''), lasumviewprih[1,1], lasumviewprih(1,2), div(lasumviewprih[1,1],m.lnvesedz))
+									 VALUES (m.ldI, IIF(lasumviewprih[1,1]#0,laproview[m.lnJ,3],''), lasumviewprih[1,1], lasumviewprih(1,2), m.goApp.oFunction.div(lasumviewprih[1,1],m.lnvesedz))
 				ENDIF
 				*
 				IF lasumviewrash[1,1]#0
 					lasumviewrash[1,2]=NVL(lasumviewrash[1,2],0)
 					*
 					INSERT INTO PRINT_REP (DATE, NAME_RASH, KOL_RASH, KOLJIR_RASH, KOLED_RASH);
-								     VALUES (m.ldI, IIF(lasumviewrash[1,1]#0,laproview[m.lnJ,3],''), lasumviewrash[1,1], lasumviewrash[1,2], div(lasumviewrash[1,1],m.lnvesedz))
+								   VALUES (m.ldI, IIF(lasumviewrash[1,1]#0,laproview[m.lnJ,3],''), lasumviewrash[1,1], lasumviewrash[1,2], m.goApp.oFunction.div(lasumviewrash[1,1],m.lnvesedz))
 				ENDIF
 			ENDIF
 		ENDFOR
@@ -114,7 +114,10 @@ LOCAL ARRAY laproview[1,6], lasumviewprih[1,2], lasumviewrash[1,2], laarcursgrou
 		DO CASE
 		CASE m.lncntrep=0
 		*добавляем записи из приходов
-			INSERT INTO PRINT_REP (DATE, NAME_PRIH, KOL_PRIH, KOLJIR_PRIH, KOLED_PRIH) SELECT DATE, NAME_PRIH, KOL_PRIH, KOLJIR_PRIH, KOLED_PRIH FROM PRINT_REPPR WHERE DATE=m.ldI
+			INSERT INTO PRINT_REP (DATE, NAME_PRIH, KOL_PRIH, KOLJIR_PRIH, KOLED_PRIH);
+				SELECT DATE, NAME_PRIH, KOL_PRIH, KOLJIR_PRIH, KOLED_PRIH;
+				FROM PRINT_REPPR;
+				WHERE DATE=m.ldI
 		CASE m.lncntrep>=m.lncntreppr
 		*сделать замену
 			SELECT PRINT_REPPR
@@ -162,7 +165,7 @@ LOCAL ARRAY laproview[1,6], lasumviewprih[1,2], lasumviewrash[1,2], laarcursgrou
 	*
 	SELECT PRINT_REP
 	SCAN
-		REPLACE KOLN WITH m.lnkoln, KOLNJIR WITH m.lnkolnjir, KOLNED WITH div(m.lnkoln,m.lnvesedz), KOLK WITH m.lnkoln+KOL_PRIH-KOL_RASH, KOLKJIR WITH m.lnkolnjir+KOLJIR_PRIH-KOLJIR_RASH, KOLKED WITH div(KOLK,m.lnvesedz)
+		REPLACE KOLN WITH m.lnkoln, KOLNJIR WITH m.lnkolnjir, KOLNED WITH m.goApp.oFunction.div(m.lnkoln,m.lnvesedz), KOLK WITH m.lnkoln+KOL_PRIH-KOL_RASH, KOLKJIR WITH m.lnkolnjir+KOLJIR_PRIH-KOLJIR_RASH, KOLKED WITH m.goApp.oFunction.div(KOLK,m.lnvesedz)
 		lnkoln=PRINT_REP.KOLK
 		lnkolnjir=PRINT_REP.KOLKJIR
 	ENDSCAN
@@ -218,7 +221,7 @@ LOCAL ARRAY laproview[1,6], lasumviewprih[1,2], lasumviewrash[1,2], laarcursgrou
 			FOR lnK=1 TO ALEN(laarcursgroup,1)
 				IF !(EMPTY(laarcursgroup[m.lnK,1]) AND EMPTY(laarcursgroup[m.lnK,4]))
 					INSERT INTO PRINT_REP (DATE, NAME_PRIH, KOL_PRIH, KOLJIR_PRIH, KOLED_PRIH, NAME_RASH, KOL_RASH, KOLJIR_RASH, KOLED_RASH, FLAG);
-								   VALUES (m.ldI, laarcursgroup[m.lnK,1], laarcursgroup[m.lnK,2], laarcursgroup[m.lnK,3], div(laarcursgroup[m.lnK,2],m.lnvesedz), laarcursgroup[m.lnK,4], laarcursgroup[m.lnK,5], laarcursgroup[m.lnK,6], div(laarcursgroup[m.lnK,5],m.lnvesedz), 1)
+								   VALUES (m.ldI, laarcursgroup[m.lnK,1], laarcursgroup[m.lnK,2], laarcursgroup[m.lnK,3], m.goApp.oFunction.div(laarcursgroup[m.lnK,2],m.lnvesedz), laarcursgroup[m.lnK,4], laarcursgroup[m.lnK,5], laarcursgroup[m.lnK,6], m.goApp.oFunction.div(laarcursgroup[m.lnK,5],m.lnvesedz), 1)
 				ENDIF
 			ENDFOR
 			*
@@ -275,21 +278,18 @@ LOCAL ARRAY laproview[1,6], lasumviewprih[1,2], lasumviewrash[1,2], laarcursgrou
 	*
 	FOR lnK=1 TO ALEN(laarcursgroup,1)
 		INSERT INTO PRINT_REP (DATE, NAME_PRIH, KOL_PRIH, KOLJIR_PRIH, KOLED_PRIH, NAME_RASH, KOL_RASH, KOLJIR_RASH, KOLED_RASH, KOLK, KOLKJIR, KOLKED, FLAG);
-					   VALUES (m.tddateend, laarcursgroup[m.lnK,1], laarcursgroup[m.lnK,2], laarcursgroup[m.lnK,3], div(laarcursgroup[m.lnK,2],m.lnvesedz), laarcursgroup[m.lnK,4], laarcursgroup[m.lnK,5], laarcursgroup[m.lnK,6], div(laarcursgroup[m.lnK,5],m.lnvesedz), m.lnkoln, m.lnkolnjir, div(m.lnkoln,m.lnvesedz), 2)
+					   VALUES (m.tddateend, laarcursgroup[m.lnK,1], laarcursgroup[m.lnK,2], laarcursgroup[m.lnK,3], m.goApp.oFunction.div(laarcursgroup[m.lnK,2],m.lnvesedz), laarcursgroup[m.lnK,4], laarcursgroup[m.lnK,5], laarcursgroup[m.lnK,6], m.goApp.oFunction.div(laarcursgroup[m.lnK,5],m.lnvesedz), m.lnkoln, m.lnkolnjir, m.goApp.oFunction.div(m.lnkoln,m.lnvesedz), 2)
 	ENDFOR
 	*
     WAIT CLEAR
     *
     =SEEK(m.tnidtovar,"TO","ID")
     *
-	oListener=CREATEOBJECT("ReportListener")
-	oListener.ListenerType=1 && Preview, or 0 for Print
-*!*		m.drepdatebeg=m.tddatebeg
-*!*		m.drepdateend=m.tddateend
-	*
-	SELECT PRINT_REP
-	REPORT FORM (".\GOT_TO_SKLAD") OBJECT oListener TO PRINTER PROMPT
+*!*		oListener=CREATEOBJECT("ReportListener")
+*!*		oListener.ListenerType=1 && Preview, or 0 for Print
+
+*!*	*	m.goApp.goForm("selprint", 0, .NULL., .NULL., "..\REPORTS\GOT_TO_SKLAD", "PRINT_REP", "oListener")
 	*
 	USE IN CURSGROUP
-	USE IN PRINT_REP
+*!*		USE IN PRINT_REP
 	USE IN PRINT_REPPR

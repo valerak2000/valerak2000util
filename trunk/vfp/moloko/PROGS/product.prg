@@ -1,3 +1,3 @@
-openTable(basep+'production.dbf','pro')
+openTable(m.goApp.oVars.oCurrentTask.oVars.cDBPath +'production.dbf','pro')
 browse
 use

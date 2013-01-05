@@ -1,15 +1,14 @@
 LPARAMETERS tlCalcOst
 local koln,kolnjir,kolnsuh,prih,prihjir,prihsuh,rash,rashjir,rashsuh,kolk,kolkjir,kolksuh,month,id_tovar,id_tara,orec
-	setEnvir()
-	SetBase()
+	setBase()
 
 	IF !USED('typedoc')
-		OPENTABLE(m.basep+'typedoc.dbf', 'typedoc', .t.)
+		OPENTABLE(m.goApp.oVars.oCurrentTask.oVars.cDBPath + 'typedoc.dbf', 'typedoc', "OPEN", .t.)
 	ENDIF
 	*расчет паспортов
 	glpereschet=.t.
-	begdate=flt.date1
-	enddate=flt.date2
+	begdate=m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin
+	enddate=m.goApp.oVars.oCurrentTask.oVars.dfltdateend
 
 	select edizm
 	set order to id
@@ -75,9 +74,9 @@ local koln,kolnjir,kolnsuh,prih,prihjir,prihsuh,rash,rashjir,rashsuh,kolk,kolkji
 		SET ORDER TO DATE
 		SET RELA TO ID_PRO INTO SP, ID_TARA INTO EDIZM ADDI
 
-		seek dtos(flt.date1)
+		seek dtos(m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin)
 
-		scan while date<=flt.date2
+		scan while date<=m.goApp.oVars.oCurrentTask.oVars.dfltdateend
 		    WAIT WINDOW "Идет перерасчет паспорта №"+PAS.NOMER+" от "+DTOC(PAS.DATE)+" "+PAS.ID_PRO NOWAIT
 
 		    do case

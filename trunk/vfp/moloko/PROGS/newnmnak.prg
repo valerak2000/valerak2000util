@@ -9,7 +9,7 @@ private nwnm,osel,otag,orec,ofil
     *
     set filter to
     select max(val(nomer)) as mnom from nak into cursor mnoms;
-    where left(typedoc,2)+dtos(date)=m.tpdoc+left(dtos(flt.date2),6)
+    where left(typedoc,2)+dtos(date)=m.tpdoc+left(dtos(m.goApp.oVars.oCurrentTask.oVars.dfltdateend),6)
     nwnm=str(NVL(mnoms.mnom,0)+1,10)
     *
     use in mnoms

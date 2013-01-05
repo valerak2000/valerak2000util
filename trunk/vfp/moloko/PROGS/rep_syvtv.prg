@@ -1,20 +1,28 @@
 *отчет за декаду(сом)
-*
+m.ddatebeg = m.goApp.oVars.oCurrentTask.oVars.dfltdatebegin
+m.ddateend = m.goApp.oVars.oCurrentTask.oVars.dfltdateend
+
 setBase()
 *
-select pro
-set order to 1
-seek '007'
-select edizm
-set order to 1
+SET ENGINEBEHAVIOR 70
+select GRPAS.*,;
+	pro.comment as pro_comment, edizm.name as ed_name;
+FROM GRPAS LEFT JOIN PRO ON PRO.ID = GRPAS.ID_PRO;
+		   LEFT JOIN EDIZM ON EDIZM.ID = GRPAS.ID_TARA;
+	INTO CURSOR PRINT_REP;
+where between(date, m.ddatebeg, m.ddateend);
+	  AND INLIST(id_pro, '007');
+order by 1
+SET ENGINEBEHAVIOR 90
+
+SELECT PRINT_REP
+SUM round(m.goApp.oFunction.div(kolm,round(kolgot/1000,3)),3),kolgot,ROUND(m.goApp.oFunction.div(95*1000,suhm*(1-0.01*suhpaht)),3);
+	TO s4,s10,s11
 *
-select grpas
-*
-*!*	SUM kolinm,kolgot,round(div(95*1000,suhm*(1-0.01*suhpaht)),3) TO s4,s10,s11;
-*!*		for between(pas.date,flt.date1,flt.date2) and id_pro='007'
-SUM round(div(kolm,round(kolgot/1000,3)),3),kolgot,ROUND(div(95*1000,suhm*(1-0.01*suhpaht)),3) TO s4,s10,s11;
-	for between(grpas.date,flt.date1,flt.date2) and id_pro='007'
-*
+sSuhpaht
+sKolRec
+skolsuhm
+skolsuhgot
 rjirm=0
 plotnot=0
 rsmom=0
@@ -39,19 +47,15 @@ m.faktallj=0
 *
 m.plall1j=0
 m.faktall1j=0
-	*
-	GO TOP
-	set rela to id_tara into edizm
-	m.date1=flt.date1
-	m.date2=flt.date2
-	*
-	DO FORM selprint
-	*
-	DO CASE
-	CASE prin_prev=1
-		REPORT FORM grsyvor NOCONSOLE PREVIEW for between(grpas.date,flt.date1,flt.date2) and id_pro='007'
-	CASE prin_prev=2
-	    REPORT FORM grsyvor NOCONSOLE TO PRINTER PROMPT for between(grpas.date,flt.date1,flt.date2) and id_pro='007'
-	ENDCASE
+
+GO TOP
+oListener = CREATEOBJECT("ReportListener")
+oListener.ListenerType=1 && Preview, or 0 for Print 
+
+REPORT FORM "..\REPORTS\grsyvor" OBJECT oListener NOCONSOLE PREVIEW
+*удалить курсор
+IF USED('PRINT_REP')
+	USE IN PRINT_REP
+ENDIF
+
 CLOSE DATABASES
-*

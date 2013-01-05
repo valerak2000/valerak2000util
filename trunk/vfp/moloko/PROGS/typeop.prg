@@ -1,4 +1,4 @@
-openTable(basep+'typedoc.dbf','typ')
+openTable(m.goApp.oVars.oCurrentTask.oVars.cDBPath +'typedoc.dbf','typ')
 browse
 use
 return
