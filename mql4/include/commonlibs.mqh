@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #import "commonlibs.ex4"
 bool chkError(int error);
-bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01);
+bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01, bool dsplSgnl = true);
 
 double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inPrice = 0.0);
 double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double inPrice = 0.0);
