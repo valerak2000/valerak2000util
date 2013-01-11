@@ -76,6 +76,33 @@ bool chkError(int error) {
     return (retStatus);     
 }
 
+void changeIndicatorMoney(int state) {
+	if (ObjectFind("moneyChk_object") == -1) {
+		ObjectCreate("moneyChk_object", OBJ_LABEL, 0, 0, 0);
+	} else {
+//		ObjectDelete("moneyChk_object");
+	}
+
+	ObjectSet("moneyChk_object", OBJPROP_CORNER, 1);
+	ObjectSet("moneyChk_object", OBJPROP_XDISTANCE, 5);
+	ObjectSet("moneyChk_object", OBJPROP_YDISTANCE, sgnlObjectPosY);
+	ObjectSetText("moneyChk_object", "$", 10);
+
+	switch (state) {
+		case stateDisableMoney:
+			ObjectSet("moneyChk_object", OBJPROP_COLOR, Gray);
+
+        	break;
+		case stateNoMoney:
+			ObjectSet("moneyChk_object", OBJPROP_COLOR, Red);
+
+        	break;
+		case stateHaveMoney:
+			ObjectSet("moneyChk_object", OBJPROP_COLOR, Lime);
+
+        	break;
+	}
+}
 //проверка доступных средств
 bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 	if (symb == "") {
@@ -83,27 +110,16 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 	}
 
 	double freeMargin = AccountFreeMarginCheck(symb, cmd, lot);
-	
-	if (ObjectFind("moneyChk_object") == -1) {
-		ObjectCreate("moneyChk_object", OBJ_LABEL, 0, 0, 0);
-		ObjectSet("moneyChk_object", OBJPROP_CORNER, 1);
-		ObjectSet("moneyChk_object", OBJPROP_XDISTANCE, 5);
-		ObjectSet("moneyChk_object", OBJPROP_YDISTANCE, sgnlObjectPosY);
-		ObjectSetText("moneyChk_object", "$", 10);
-	} else {
-//		ObjectDelete("moneyChk_object");
-	}
 //	Print(DoubleToStr(cmd, 0) + "-" + DoubleToStr((freeMargin / AccountBalance()) * 100, 0));
-
 // свободные средства/ средства на счету * 100 = уровень
 	if (((freeMargin / AccountBalance()) * 100) <= marginPercent || GetLastError() == ERR_NOT_ENOUGH_MONEY) {
-		ObjectSet("moneyChk_object", OBJPROP_COLOR, Red);
+		changeIndicatorMoney(stateNoMoney);
 //		Print("На счету свободных денег <" + DoubleToStr(marginPercent, 0) +"%");
 
 		return (false);
 	} else {
-		ObjectSet("moneyChk_object", OBJPROP_COLOR, Lime);
-
+		changeIndicatorMoney(stateHaveMoney);
+		
 		return (true);
 	}
 }
@@ -120,44 +136,44 @@ double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double
 	spread = MarketInfo(symb, MODE_SPREAD);
 
 	switch (cmd) {
-	case OP_BUY:
-		if (inPrice == 0.0) {
-			price = Ask;
-		} else {
-			price = inPrice;
-		}
+		case OP_BUY:
+			if (inPrice == 0.0) {
+				price = Ask;
+			} else {
+				price = inPrice;
+			}
 
-    	if (takeProfit != 0) {
-        	tp = NormalizeDouble(price + (spread + takeProfit) * Point, Digits);
-    	} else {
-        	if (takeProfitKoef > 0) {
-            	tp = NormalizeDouble(price + (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
-        	} else {
-        		tp = 0.0;
+    		if (takeProfit != 0) {
+        		tp = NormalizeDouble(price + (spread + takeProfit) * Point, Digits);
+    		} else {
+        		if (takeProfitKoef > 0) {
+            		tp = NormalizeDouble(price + (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
+        		} else {
+        			tp = 0.0;
+        		}
         	}
-        }
 
-        break;
-	case OP_SELL:
-		if (inPrice == 0.0) {
-			price = Bid;
-		} else {
-			price = inPrice;
-		}
+        	break;
+		case OP_SELL:
+			if (inPrice == 0.0) {
+				price = Bid;
+			} else {
+				price = inPrice;
+			}
 
-    	if (takeProfit != 0) {
-        	tp = NormalizeDouble(price - (spread + takeProfit) * Point, Digits);
-    	} else {
-        	if (takeProfitKoef > 0) {
-            	tp = NormalizeDouble(price - (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
-        	} else {
-        		tp = 0.0;
+    		if (takeProfit != 0) {
+        		tp = NormalizeDouble(price - (spread + takeProfit) * Point, Digits);
+    		} else {
+        		if (takeProfitKoef > 0) {
+            		tp = NormalizeDouble(price - (spread + MathFloor(takeProfitKoef * spread)) * Point, Digits);
+        		} else {
+        			tp = 0.0;
+        		}
         	}
-        }
 
-        break;
-    default:
-		tp = 0.0;    
+        	break;
+    	default:
+			tp = 0.0;    
     }
 
     return (NormalizeDouble(tp, Digits));

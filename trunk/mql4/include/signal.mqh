@@ -7,6 +7,10 @@
 #define sgnlSellOpenStop 	0x01000000
 #define sgnlSellCloseStop 	0x10000000
 #define sgnlNothing 		0x00000000
+
+#define stateNoMoney 		-1
+#define stateHaveMoney 		1
+#define stateDisableMoney	0
 //flet
 //trendUp
 //trendDown
