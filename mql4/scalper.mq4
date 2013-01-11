@@ -147,6 +147,8 @@ int start() {
 	if ((mrktState & sgnlSellClose) != 0) {
 		state = state + " SC";
 	}
+	//disable индикатор "денег"
+	changeIndicatorMoney(stateDisableMoney);
 	//моргнуть индикатором состояния
 	changeIndicatorState("SP=" + DoubleToStr(spread, 0)
 						 + " S=" + DoubleToStr(takeProfitSellVar, 0)

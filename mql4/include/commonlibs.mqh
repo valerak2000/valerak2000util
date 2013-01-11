@@ -27,6 +27,7 @@ int chkLongSignal(string symb);
 int chkTarzanSignal(string symb);
 int chkPatternSignal(string symb);
 
+void changeIndicatorMoney(int state);
 bool createIndicator(string expertName);
 bool closeIndicator();
 bool changeIndicatorState(string text);
