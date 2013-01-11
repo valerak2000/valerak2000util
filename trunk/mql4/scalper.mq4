@@ -456,7 +456,7 @@ bool chkAllowNewOrder(string symb, int cmd, double lot = 0.01, int magicNum = -1
 	//"текущий профит" должен быть "выше" профита некоторого уже открытого ордера (в том же направлении) на 25%, для текущих цен
 //	if (getNumberOfBarLastOrder(symb, 0, cmd, magicNum) > openDistanceBar && chkMoney(symb, cmd, minMarginPercent, lot) == true)
 	if (findLikePriceOrder(symb, cmd, magicNum, exTakeProfitKoef, takeProfitVar) == false
-			&& chkMoney(symb, cmd, exMinMarginPercent, lot) == true) {
+			&& chkMoney(symb, cmd, exMinMarginPercent, lot, exDsplSgnl) == true) {
 		return (true);
 	} else {
 		return (false);

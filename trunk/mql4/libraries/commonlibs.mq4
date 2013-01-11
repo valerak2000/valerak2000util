@@ -76,6 +76,18 @@ bool chkError(int error) {
     return (retStatus);     
 }
 
+//возвращает строкую расшифровку названи€ типа операции
+string getStringNameOfOperation(int cmd) {
+	switch (cmd) {
+		case OP_BUY:
+			return ("BUY");
+		case OP_SELL:
+			return ("SELL");
+		default:
+			return ("");
+	}
+}
+
 void changeIndicatorMoney(int state) {
 	if (ObjectFind("moneyChk_object") == -1) {
 		ObjectCreate("moneyChk_object", OBJ_LABEL, 0, 0, 0);
@@ -104,7 +116,7 @@ void changeIndicatorMoney(int state) {
 	}
 }
 //проверка доступных средств
-bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
+bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01, bool dsplSgnl = true) {
 	if (symb == "") {
 		symb = Symbol();
 	}
@@ -114,7 +126,10 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01) {
 // свободные средства/ средства на счету * 100 = уровень
 	if (((freeMargin / AccountBalance()) * 100) <= marginPercent || GetLastError() == ERR_NOT_ENOUGH_MONEY) {
 		changeIndicatorMoney(stateNoMoney);
-//		Print("Ќа счету свободных денег <" + DoubleToStr(marginPercent, 0) +"%");
+		
+		if (dsplSgnl == true) {
+			Print(symb + " " + getStringNameOfOperation(cmd) + " " + DoubleToStr(lot, 2) + " на счету свободных денег " + DoubleToStr((freeMargin / AccountBalance()) * 100, 0) + "%<" + DoubleToStr(marginPercent, 0) + "%");
+		}
 
 		return (false);
 	} else {
@@ -555,7 +570,7 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
 			if (OrderSymbol() == symb && OrderType() == cmd) {
-				double ordProf =OrderTakeProfit();
+				double ordProf = OrderTakeProfit();
 
 				if (ordProf > 0) {
 					//установлен профит
