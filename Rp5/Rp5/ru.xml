@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<weather created="rp5.ru" date="2013-5-16">
+	<point id="4429">
+		<point_id>4429</point_id>
+		<region_id>46</region_id>
+		<country_id>3</country_id>
+		<point_name>Краснодар</point_name>
+		<point_name_trim>Краснодар</point_name_trim>
+		<point_name2>в Краснодаре</point_name2>
+		<point_timestamp>1368709219</point_timestamp>
+		<gmt_add>4</gmt_add>
+		<point_date>Thu, 16 May 2013 13:00:19 +0400</point_date>
+		<point_date_time>2013-5-16 13:00 </point_date_time>
+				<timestep>
+					<time_step>12</time_step>
+					<datetime>2013-5-16 16:00</datetime>
+					<G>16</G>
+					<HHii>16:00</HHii>
+					<cloud_cover>100</cloud_cover>
+					<precipitation>1.9</precipitation>
+					<pressure>757</pressure>
+					<temperature>24</temperature>
+					<humidity>55</humidity>
+					<wind_direction>З</wind_direction>
+					<wind_velocity>5</wind_velocity>
+					<falls>1</falls>
+					<drops>2</drops>
+				</timestep>
+				<timestep>
+					<time_step>24</time_step>
+					<datetime>2013-5-17 04:00</datetime>
+					<G>4</G>
+					<HHii>04:00</HHii>
+					<cloud_cover>0</cloud_cover>
+					<precipitation>0.0</precipitation>
+					<pressure>758</pressure>
+					<temperature>15</temperature>
+					<humidity>85</humidity>
+					<wind_direction>Ю-З</wind_direction>
+					<wind_velocity>4</wind_velocity>
+					<falls>0</falls>
+					<drops>0</drops>
+				</timestep>
+				<timestep>
+					<time_step>36</time_step>
+					<datetime>2013-5-17 16:00</datetime>
+					<G>16</G>
+					<HHii>16:00</HHii>
+					<cloud_cover>45</cloud_cover>
+					<precipitation>1.7</precipitation>
+					<pressure>759</pressure>
+					<temperature>24</temperature>
+					<humidity>56</humidity>
+					<wind_direction>З</wind_direction>
+					<wind_velocity>6</wind_velocity>
+					<falls>1</falls>
+					<drops>2</drops>
+				</timestep>
+				<timestep>
+					<time_step>48</time_step>
+					<datetime>2013-5-18 04:00</datetime>
+					<G>4</G>
+					<HHii>04:00</HHii>
+					<cloud_cover>9</cloud_cover>
+					<precipitation>0.0</precipitation>
+					<pressure>758</pressure>
+					<temperature>14</temperature>
+					<humidity>85</humidity>
+					<wind_direction>Ю-З</wind_direction>
+					<wind_velocity>3</wind_velocity>
+					<falls>0</falls>
+					<drops>0</drops>
+				</timestep>
+	</point>
+</weather>
