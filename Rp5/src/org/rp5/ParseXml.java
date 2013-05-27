@@ -44,12 +44,11 @@ public class ParseXml extends DefaultHandler {
         Document doc = db.parse(wr);
         
         doc.getDocumentElement().normalize();
-        System.out.println("Root element ["+doc.getDocumentElement().getNodeName()+"]");
 
         XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
         
-        XPathExpression expr = xpath.compile("/weather/point/timestep");
+        XPathExpression expr = xpath.compile("//weather/point/timestep[time_step=24]");
         NodeList nodeLst = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
         for(int je = 0; je < nodeLst.getLength(); je++) {
             Node fstNode = nodeLst.item(je);
@@ -60,10 +59,11 @@ public class ParseXml extends DefaultHandler {
             	for(int je1 = 0; je1 < nodeLst1.getLength(); je1++) {
                     Node fstNode1 = nodeLst1.item(je1);
 
-                    if (fstNode1.getNodeName().equals("time_step")) {
-                    	timeStep = fstNode1.getFirstChild().getNodeValue();
+                    if (!fstNode1.getNodeName().equals("#text")) {
+                    	System.out.println(fstNode1.getNodeName() + "=" + fstNode1.getFirstChild().getNodeValue());
+/*                    	timeStep = fstNode1.getFirstChild().getNodeValue();
                 		
-                    	System.out.println("time_step=" + timeStep);
+                    	System.out.println("time_step=" + timeStep);*/
                 	}
                 }
             }
