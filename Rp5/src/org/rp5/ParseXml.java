@@ -1,25 +1,24 @@
 package org.rp5;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-import org.xml.sax.InputSource;
 
 public class ParseXml extends DefaultHandler {
 	/**
@@ -31,8 +30,9 @@ public class ParseXml extends DefaultHandler {
 	 * 5 - Count of keys 
 	 * @throws SAXException 
 	 * @throws ParserConfigurationException 
+	 * @throws XPathExpressionException 
 	 */
-	public void parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException {
+	public void parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
 		GetFieldSAX getFields = new GetFieldSAX();
 
 		XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -45,9 +45,12 @@ public class ParseXml extends DefaultHandler {
         
         doc.getDocumentElement().normalize();
         System.out.println("Root element ["+doc.getDocumentElement().getNodeName()+"]");
+
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
         
-        NodeList nodeLst=doc.getElementsByTagName("timestep");
-        System.out.println("timestep");
+        XPathExpression expr = xpath.compile("/weather/point/timestep");
+        NodeList nodeLst = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
         for(int je = 0; je < nodeLst.getLength(); je++) {
             Node fstNode = nodeLst.item(je);
             if(fstNode.getNodeType() == Node.ELEMENT_NODE) {

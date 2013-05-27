@@ -1,13 +1,7 @@
 package org.rp5;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.rp5.*;
 
 /**
  * @param args
@@ -26,7 +20,6 @@ public class Rp5 {
     	System.out.println(wr);
     	*/
     	InputStream ruIs = new FileInputStream("ru.xml");
-
 
     	ParseXml px = new ParseXml();
     	px.parseWeather(ruIs);
