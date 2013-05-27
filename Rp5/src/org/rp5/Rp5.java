@@ -7,8 +7,7 @@ import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.rp5.DownloadWeather;
-import org.rp5.ParseXml;
+import org.rp5.*;
 
 /**
  * @param args
@@ -22,7 +21,6 @@ import org.rp5.ParseXml;
  */
 public class Rp5 {
     public static void main(String[] args) throws Exception {
-    	String wr;
 /*    	DownloadWeather dw = new DownloadWeather();
     	wr = dw.getWeather();
     	System.out.println(wr);
