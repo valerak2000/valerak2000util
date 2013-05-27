@@ -1,10 +1,14 @@
 package org.rp5;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStream;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.rp5.DownloadWeather;
 import org.rp5.ParseXml;
-import org.xml.sax.SAXException;
 
 /**
  * @param args
@@ -17,14 +21,18 @@ import org.xml.sax.SAXException;
  * @throws ParserConfigurationException 
  */
 public class Rp5 {
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
     	String wr;
 /*    	DownloadWeather dw = new DownloadWeather();
     	wr = dw.getWeather();
     	System.out.println(wr);
     	*/
-    	wr = "";
+    	InputStream ruIs = new FileInputStream("ru.xml");
+
+
     	ParseXml px = new ParseXml();
-    	px.parseWeather(wr);
+    	px.parseWeather(ruIs);
+
+    	ruIs.close(); 
     }
 }

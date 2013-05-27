@@ -3,6 +3,7 @@ package org.rp5;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,102 +32,38 @@ public class ParseXml extends DefaultHandler {
 	 * @throws SAXException 
 	 * @throws ParserConfigurationException 
 	 */
-	public void parseWeather(String wr) throws ParserConfigurationException, SAXException, IOException {
+	public void parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException {
 		GetFieldSAX getFields = new GetFieldSAX();
 
 		XMLReader xr = XMLReaderFactory.createXMLReader();
 	    xr.setContentHandler(getFields);
 	    xr.setErrorHandler(getFields);
 	 
-	                // Parse each file provided on the
-	                // command line.
-        File ruxml=new File("ru.xml");
-//        FileReader r = new FileReader("ru.xml");
-//        xr.parse(new InputSource(r));
-		
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db=dbf.newDocumentBuilder();
-            Document doc = db.parse(ruxml);
-            
-            doc.getDocumentElement().normalize();
-            System.out.println("Root element ["+doc.getDocumentElement().getNodeName()+"]");
-            
-            NodeList nodeLst=doc.getElementsByTagName("timestep");
-            System.out.println("timestep");
-            for(int je = 0; je < nodeLst.getLength(); je++) {
-                Node fstNode = nodeLst.item(je);
-                if(fstNode.getNodeType() == Node.ELEMENT_NODE) {
-                	String timeStep;
-                	NodeList nodeLst1 = fstNode.getChildNodes();
-
-                	for(int je1 = 0; je1 < nodeLst1.getLength(); je1++) {
-                        Node fstNode1 = nodeLst1.item(je1);
-
-                        if (fstNode1.getNodeName().equals("time_step")) {
-                        	timeStep = fstNode1.getFirstChild().getNodeValue();
-                    		
-                        	System.out.println("time_step=" + timeStep);
-                    	}
-                    }
-
-//                	Element elj = (Element) fstNode.getNodeValue();
-//                    timeStep = elj.getAttribute("time_step").Integer.parseInt(;
-//                    xcoo=Integer.parseInt(scoo);
-//                    scoo=elj.getAttribute("y");
-//                    ycoo=Integer.parseInt(scoo);
-                }
-            }
-		} catch(Exception ei){
-			
-		}
-    }
-/*		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-
-		try {
-			parser.parse(new File("ru.xml"), getFields);
-			System.out.println("=" + getFields.getFieldXml());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
-}
-/*
-<coordinates>
-    <point x="1" y="2"></point>
-    <point x="3" y="4"></point>
-    <point x="5" y="6"></point>
-</coordinates>
-
-     String scoo;
-        int xcoo,ycoo;
-        File fXml=new File("expXml.xml");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db=dbf.newDocumentBuilder();
+        Document doc = db.parse(wr);
         
-        try
-        {
-            DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
-            DocumentBuilder db=dbf.newDocumentBuilder();
-            Document doc=db.parse(fXml);
-            
-            doc.getDocumentElement().normalize();
-            System.out.println("Root element ["+doc.getDocumentElement().getNodeName()+"]");
-            
-            NodeList nodeLst=doc.getElementsByTagName("point");
-            System.out.println("Points");
-            for(int je=0;je<nodeLst.getLength();je++)
-            {
-                Node fstNode=nodeLst.item(je);
-                if(fstNode.getNodeType()==Node.ELEMENT_NODE)
-                {
-                    Element elj=(Element)fstNode;
-                    scoo=elj.getAttribute("x");
-                    xcoo=Integer.parseInt(scoo);
-                    scoo=elj.getAttribute("y");
-                    ycoo=Integer.parseInt(scoo);
-                    System.out.println("x, y ["+xcoo+", "+ycoo+"]");
+        doc.getDocumentElement().normalize();
+        System.out.println("Root element ["+doc.getDocumentElement().getNodeName()+"]");
+        
+        NodeList nodeLst=doc.getElementsByTagName("timestep");
+        System.out.println("timestep");
+        for(int je = 0; je < nodeLst.getLength(); je++) {
+            Node fstNode = nodeLst.item(je);
+            if(fstNode.getNodeType() == Node.ELEMENT_NODE) {
+            	String timeStep;
+            	NodeList nodeLst1 = fstNode.getChildNodes();
+
+            	for(int je1 = 0; je1 < nodeLst1.getLength(); je1++) {
+                    Node fstNode1 = nodeLst1.item(je1);
+
+                    if (fstNode1.getNodeName().equals("time_step")) {
+                    	timeStep = fstNode1.getFirstChild().getNodeValue();
+                		
+                    	System.out.println("time_step=" + timeStep);
+                	}
                 }
             }
         }
-        catch(Exception ei){}
-    }
-*/
+	}
+}
