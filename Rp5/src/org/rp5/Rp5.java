@@ -15,16 +15,14 @@ import org.rp5.ParseXml;
  */
 public class Rp5 {
     public static void main(String[] args) throws Exception {
-/*    	DownloadWeather dw = new DownloadWeather();
-    	wr = dw.getWeather();
-    	System.out.println(wr);
-    	*/
-    	InputStream ruIs = new FileInputStream("ru.xml");
+    	DownloadWeather dw = new DownloadWeather();
+ 
+//    	InputStream ruIs = new FileInputStream("ru.xml");
 
     	ParseXml px = new ParseXml();
-    	px.parseWeather(ruIs);
-//        px.parseWeather(dw.getWeather());
+//    	px.parseWeather(ruIs);
+        px.parseWeather(dw.getWeather());
 
-    	ruIs.close(); 
+//    	ruIs.close(); 
     }
 }
