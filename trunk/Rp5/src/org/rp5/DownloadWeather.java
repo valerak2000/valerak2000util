@@ -11,16 +11,22 @@ import org.apache.commons.io.IOUtils;
 public class DownloadWeather {
     private String wr;
 
-    public String getWeather() throws Exception {
+    public InputStream getWeather() throws Exception {
         InputStream in = null;
+        InputStream out = null;
 
         try {
+        	System.setProperty("http.proxyHost", "172.16.0.91");
+        	System.setProperty("http.proxyPort", "16541");
+        	System.setProperty("http.proxyUser", "RSTYLE97\\kozlitin.va");
+        	System.setProperty("http.proxyPassword", "Rfvytgfl");
+        	
             URL url = new URL("http://rp5.ru/xml/4429/00000/ru");
             URLConnection uc = url.openConnection();
 
             try {
                 in = uc.getInputStream();
-                wr = IOUtils.toString(in);
+                out = IOUtils.toBufferedInputStream(in);//toString(in);
             } catch (IOException ioe) {
                 System.out.println("Oops- an IOException happened. " + ioe.getMessage());
                 ioe.printStackTrace();
@@ -34,6 +40,6 @@ public class DownloadWeather {
             System.exit(1);
         }
 
-        return (wr);
+        return (out);
     }
 }
