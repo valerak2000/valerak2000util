@@ -22,11 +22,12 @@ import com.btr.proxy.search.ProxySearch;
 public class Rp5 {
     public static void main(String[] args) throws Exception {
     	ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
-    	ProxySelector myProxySelector = proxySearch.getProxySelector();
-    	                
+/*    	   	ProxySearch.main(null);
+       	System.exit(0);*/
+    	
+       	ProxySelector myProxySelector = proxySearch.getProxySelector();
     	ProxySelector.setDefault(myProxySelector);
-    	System.out.println(myProxySelector);
-
+ 
     	DownloadWeather dw = new DownloadWeather();
  
 //    	InputStream ruIs = new FileInputStream("ru.xml");
