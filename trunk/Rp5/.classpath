@@ -3,5 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/Work/Rp5/libs/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="D:/Work/Rp5/libs/js.jar"/>
+	<classpathentry kind="lib" path="D:/Work/Rp5/libs/proxy-vole_20121203.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
