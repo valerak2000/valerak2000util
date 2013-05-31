@@ -2,8 +2,14 @@ package org.rp5;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
+
 import org.rp5.DownloadWeather;
 import org.rp5.ParseXml;
+
+import com.btr.proxy.search.ProxySearch;
 /**
  * @param args 1 - Path to DataBase
  *             2 - Name of DataBase
@@ -15,6 +21,12 @@ import org.rp5.ParseXml;
  */
 public class Rp5 {
     public static void main(String[] args) throws Exception {
+    	ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
+    	ProxySelector myProxySelector = proxySearch.getProxySelector();
+    	                
+    	ProxySelector.setDefault(myProxySelector);
+    	System.out.println(myProxySelector);
+
     	DownloadWeather dw = new DownloadWeather();
  
 //    	InputStream ruIs = new FileInputStream("ru.xml");
@@ -24,5 +36,6 @@ public class Rp5 {
         px.parseWeather(dw.getWeather());
 
 //    	ruIs.close(); 
+ 
     }
 }
