@@ -6,7 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
 
-import org.rp5.DownloadWeather;
+import org.rp5.DownloadWeatherRp5;
 import org.rp5.ParseXml;
 
 import com.btr.proxy.search.ProxySearch;
@@ -28,13 +28,13 @@ public class Rp5 {
        	ProxySelector myProxySelector = proxySearch.getProxySelector();
     	ProxySelector.setDefault(myProxySelector);
  
-    	DownloadWeather dw = new DownloadWeather();
+    	DownloadWeatherRp5 dwRp5 = new DownloadWeatherRp5();
  
 //    	InputStream ruIs = new FileInputStream("ru.xml");
 
     	ParseXml px = new ParseXml();
 //    	px.parseWeather(ruIs);
-        px.parseWeather(dw.getWeather());
+        px.parseWeather(dwRp5.getWeather("4429"));
 
 //    	ruIs.close(); 
  

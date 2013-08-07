@@ -2,6 +2,9 @@ package org.rp5;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -10,6 +13,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -17,6 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+import org.rp5.WeatherRp5;
 
 public class ParseXml extends DefaultHandler {
 	/**
@@ -29,8 +35,10 @@ public class ParseXml extends DefaultHandler {
 	 * @throws SAXException 
 	 * @throws ParserConfigurationException 
 	 * @throws XPathExpressionException 
+	 * @throws ParseException 
+	 * @throws DOMException 
 	 */
-	public void parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+	public void parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, DOMException, ParseException {
 		GetFieldSAX getFields = new GetFieldSAX();
 
 		XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -52,8 +60,10 @@ public class ParseXml extends DefaultHandler {
         for(int je = 0; je < nodeLst.getLength(); je++) {
             Node fstNode = nodeLst.item(je);
             if(fstNode.getNodeType() == Node.ELEMENT_NODE) {
-//	        	String timeStep;
-	        	NodeList nodeLst1 = fstNode.getChildNodes();
+            	//создать объект погоды
+            	WeatherRp5 wrp5 = new WeatherRp5();
+
+            	NodeList nodeLst1 = fstNode.getChildNodes();
 	        	//разбор элементов timestep
 	            for(int ji = 0; ji < nodeLst1.getLength(); ji++) {
 	                Node fstNode1 = nodeLst1.item(ji);
@@ -61,56 +71,63 @@ public class ParseXml extends DefaultHandler {
 	                switch (fstNode1.getNodeName()) {
 		                case "#text": break;
 		                case "time_step":
-			            	System.out.println("time_step=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.timeStep = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "datetime":
-			            	System.out.println("datetime=" + fstNode1.getFirstChild().getNodeValue());
+	                        //wrp5.dateTime = new SimpleDateFormat().parse(fstNode1.getFirstChild().getNodeValue().toString()); 
 		                	break;
 		                case "G":
-			            	System.out.println("G=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.g = fstNode1.getFirstChild().getNodeValue().toString();
 		                	break;
 		                case "HHii":
-			            	System.out.println("HHii=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.hhii = fstNode1.getFirstChild().getNodeValue().toString();
 		                	break;
 		                case "cloud_cover":
-			            	System.out.println("cloud_cover=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.cloudCover = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "precipitation":
-			            	System.out.println("precipitation=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.precipitation = Double.parseDouble(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "pressure":
-			            	System.out.println("pressure=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.pressure = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "temperature":
-			            	System.out.println("temperature=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.temperature = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "humidity":
-			            	System.out.println("humidity=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.humidity = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "wind_direction":
-			            	System.out.println("wind_direction=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.windDirection = fstNode1.getFirstChild().getNodeValue().toString();
 		                	break;
 		                case "wind_velocity":
-			            	System.out.println("wind_velocity=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.windVelocity = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "falls":
-			            	System.out.println("falls=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.falls = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "drops":
-			            	System.out.println("drops=" + fstNode1.getFirstChild().getNodeValue());
+		                	wrp5.drops = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                default:
 	                }
-/*	                if (!fstNode1.getNodeName().equals("#text")) {
-		            	System.out.println(fstNode1.getNodeName() + "=" + fstNode1.getFirstChild().getNodeValue());
-		/*                    	timeStep = fstNode1.getFirstChild().getNodeValue();
-		                		
-		                    	System.out.println("time_step=" + timeStep);
-		           	}*/
 	            }
 
-	            System.out.println();
+                wrp5.Print();
             }
         }
 	}
 }
+
+/*
+<point_id>4429</point_id>
+<region_id>46</region_id>
+<country_id>3</country_id>
+<point_name>Краснодар</point_name>
+<point_name_trim>Краснодар</point_name_trim>
+<point_name2>в Краснодаре</point_name2>
+<point_timestamp>1375877328</point_timestamp>
+<gmt_add>4</gmt_add>
+<point_date>Wed, 7 Aug 2013 12:08:48 +0400</point_date>
+<point_date_time>2013-8-07 12:08</point_date_time>
+*/
