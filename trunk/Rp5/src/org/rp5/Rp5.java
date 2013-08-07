@@ -1,9 +1,5 @@
 package org.rp5;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.ProxySelector;
 import java.util.List;
 
