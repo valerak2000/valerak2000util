@@ -25,6 +25,7 @@ drops - коэффициент количества снежинок или капель дождя для визуализации. Возмо
 */
 package org.rp5;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class WeatherRp5 {
@@ -44,7 +45,7 @@ public class WeatherRp5 {
 	
 	public void Print() {
 		System.out.println("time_step=" + timeStep);
-		System.out.println("datetime=" + dateTime);
+		System.out.println("datetime=" + new SimpleDateFormat("yyyy-MM-dd hh:mm").format(dateTime));
 		System.out.println("G=" + g);
 		System.out.println("HHii=" + hhii);
 		System.out.println("cloud_cover=" + cloudCover);
