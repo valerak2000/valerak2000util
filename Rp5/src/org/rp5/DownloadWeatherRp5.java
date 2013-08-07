@@ -9,9 +9,7 @@ import java.net.URLConnection;
 import org.apache.commons.io.IOUtils;
 
 public class DownloadWeatherRp5 {
-    private String wr;
-
-    public InputStream getWeather(String city) throws Exception {
+     public InputStream getWeather(String city) throws Exception {
         InputStream in = null;
         InputStream out = null;
 
