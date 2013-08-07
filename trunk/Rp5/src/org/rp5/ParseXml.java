@@ -74,7 +74,7 @@ public class ParseXml extends DefaultHandler {
 		                	wrp5.timeStep = Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "datetime":
-	                        //wrp5.dateTime = new SimpleDateFormat().parse(fstNode1.getFirstChild().getNodeValue().toString()); 
+	                        wrp5.dateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(fstNode1.getFirstChild().getNodeValue().toString()); 
 		                	break;
 		                case "G":
 		                	wrp5.g = fstNode1.getFirstChild().getNodeValue().toString();
