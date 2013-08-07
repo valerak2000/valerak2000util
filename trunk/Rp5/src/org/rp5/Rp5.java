@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
+import java.util.List;
 
 import org.rp5.DownloadWeatherRp5;
 import org.rp5.ParseXml;
@@ -33,8 +34,14 @@ public class Rp5 {
 //    	InputStream ruIs = new FileInputStream("ru.xml");
 
     	ParseXml px = new ParseXml();
+    	List<WeatherRp5> wrp5 = px.parseWeather(dwRp5.getWeather("4429"));
+        
+    	for(WeatherRp5 iwr5: wrp5) {
+    		iwr5.Print();
+    	}
+
 //    	px.parseWeather(ruIs);
-        px.parseWeather(dwRp5.getWeather("4429"));
+        
 
 //    	ruIs.close(); 
  

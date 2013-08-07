@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,7 +40,8 @@ public class ParseXml extends DefaultHandler {
 	 * @throws ParseException 
 	 * @throws DOMException 
 	 */
-	public void parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, DOMException, ParseException {
+	public List<WeatherRp5> parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, DOMException, ParseException {
+		List<WeatherRp5> rp5 = new ArrayList<WeatherRp5>();
 		GetFieldSAX getFields = new GetFieldSAX();
 
 		XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -113,9 +116,10 @@ public class ParseXml extends DefaultHandler {
 	                }
 	            }
 
-                wrp5.Print();
+                rp5.add(wrp5);
             }
         }
+        return rp5;
 	}
 }
 
