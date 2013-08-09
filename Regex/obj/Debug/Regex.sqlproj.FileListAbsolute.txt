@@ -1,0 +1,5 @@
+E:\Regex\Regex\bin\Debug\Regex.dacpac
+E:\Regex\Regex\bin\Debug\Regex.dll
+E:\Regex\Regex\bin\Debug\Regex.pdb
+E:\Regex\Regex\obj\Debug\Regex.dll
+E:\Regex\Regex\obj\Debug\Regex.pdb
