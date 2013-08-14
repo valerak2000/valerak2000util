@@ -1,26 +1,22 @@
 package org.zebra.util;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.print.*;
 import javax.print.attribute.*;
 import javax.print.attribute.standard.*;
-import java.util.Iterator;
 
-//import org.apache.commons.configuration.XMLConfiguration;
-//import org.apache.commons.configuration.ConfigurationException;
-//import org.apache.commons.configuration.ConfigurationFactory;
-
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.library.config.MenuXMLConfiguration;
-import org.library.csv.CSV;
 import org.zebra.ui.Zebra;
 
 public class FormPrintUnilever {
 	PrintService psZebra = null;
 	MenuXMLConfiguration confZebra = null;
-	CSV csv = new CSV(';');
+	CSVParser csv;
 
 	public FormPrintUnilever(Zebra appZebra, String fileName, String prnName) {
 		try {
@@ -32,11 +28,12 @@ public class FormPrintUnilever {
 	
 				return;
 			} else {
+				csv = new CSVParser(new FileReader(fileName), CSVFormat.EXCEL);
 				prnForm(csv, new BufferedReader(new FileReader(fileName)));
 			}
-		} catch (FileNotFoundException fnfe) {
+		} catch (IOException ioe) {
 			// TODO Auto-generated catch block
-			fnfe.printStackTrace();
+			ioe.printStackTrace();
 		}
 	}
 
@@ -64,7 +61,7 @@ public class FormPrintUnilever {
 		return psZebra;
 	}
 	
-	public void prnForm(CSV csv, BufferedReader fpBuff) {
+	public void prnForm(CSVParser csv, BufferedReader fpBuff) {
 		//сбросим старые настройки форм
 		String s = confZebra.getString("ZebraPrintBegin"), line, nameGoodsCSV, nameGoods;
 
@@ -74,10 +71,10 @@ public class FormPrintUnilever {
 				//кодировка 1251, плотность печати 11
 				s = s + confZebra.getString("ZebraPrintFormHeader");
 
-				for (Iterator<String> e = csv.parse(line).iterator(); e.hasNext();) {
+				for (CSVRecord record : csv) {
 		    		switch (i++) {
 		    		case 0:
-		    			nameGoodsCSV = e.next().toString().trim();
+		    			nameGoodsCSV = record.toString().trim();
 		    			//форматим строку
 		    			if (nameGoodsCSV.length() >= 30) {
 		    				nameGoods = nameGoodsCSV.substring(0, 30)
@@ -94,7 +91,7 @@ public class FormPrintUnilever {
 		    	    	break;
 		    	    case 1:
 		    			//бар-код EAN-13 плотность линий 3
-		    			s = s.concat(confZebra.getString("ZebraPrintFormEAN").replace("%EAN%", e.next().toString().trim()));
+		    			s = s.concat(confZebra.getString("ZebraPrintFormEAN").replace("%EAN%", record.toString().trim()));
 //		    			s = s.concat("^FO80,65^BY3^BEN,100,Y,N^FD" + e.next().toString().trim() + "^FS\r\n");
 	
 		    			break;
@@ -102,7 +99,7 @@ public class FormPrintUnilever {
 		    	    	int numCpy;
 	
 		    	    	try {
-		    	    		numCpy = Integer.parseInt(e.next().toString());						
+		    	    		numCpy = Integer.parseInt(record.toString());						
 						} catch (NumberFormatException ne) {
 							numCpy = 0;
 						}

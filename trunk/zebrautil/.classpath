@@ -6,5 +6,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/commonlibs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jface"/>
 	<classpathentry kind="lib" path="/usr/Work/Java/Apache.org/commons/proper/csv/target/commons-csv-1.0-SNAPSHOT.jar" sourcepath="/usr/Work/Java/Apache.org/commons/proper/csv"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/config"/>
+	<classpathentry kind="lib" path="/usr/Work/Java/commons-configuration-1.9/commons-configuration-1.9.jar"/>
+	<classpathentry kind="lib" path="/usr/Work/Java/commons-lang-2.6/commons-lang-2.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

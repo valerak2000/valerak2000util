@@ -11,8 +11,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.HashMap;
 
+import javax.naming.ConfigurationException;
 import javax.print.PrintException;
-//import javax.xml.transform.OutputKeys;
 
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -36,10 +36,7 @@ import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 
-import org.apache.commons.configuration.ConfigurationException;
-
 import org.library.config.MenuXMLConfiguration;
-import org.library.csv.CSV;
 import org.apache.commons.csv.*;
 //import org.library.swt.BasicApplication;
 
@@ -57,7 +54,7 @@ import org.zebra.util.FormPrintUnilever;
 
 public class Zebra extends ApplicationWindow {
 	// A static instance to the running application
-	final private static Zebra APP;
+	private static Zebra APP;
 	private TableViewer tv;
 
 	// The actions
@@ -69,23 +66,15 @@ public class Zebra extends ApplicationWindow {
 	private ExitAction exitAction;
 
 	private static MenuXMLConfiguration confZebra = null;
-
 	private static final String[] columnNames = new String[3];
-	private CSV csv = new CSV(';');
-
 	private static HashMap<String, ImageDescriptor> hashImages;
-
-	/**
-	 * Gets the running application
-	*/
-	public static final Zebra getApp() {
-	    return APP;
+	
+	{
+		APP = this;
 	}
 
-	public Zebra() throws ConfigurationException {
+	public Zebra() {
 		super(null);
-
-	    APP = this;
 
 	    hashImages = new HashMap<String, ImageDescriptor>();
 		hashImages.put("open", ImageDescriptor.createFromFile(Zebra.class, "/org/images/fileopen.png"));
@@ -108,7 +97,7 @@ public class Zebra extends ApplicationWindow {
 			columnNames[0] = confZebra.getString("Goods_name");
 			columnNames[1] = confZebra.getString("Goods_barcode");
 			columnNames[2] = confZebra.getString("Number_copies");
-		} catch (ConfigurationException cex) {
+		} catch (org.apache.commons.configuration.ConfigurationException cex) {
 		    // something went wrong, e.g. the file was not found
 			showError(cex.getMessage());
 
@@ -126,6 +115,13 @@ public class Zebra extends ApplicationWindow {
 	    addMenuBar();
 	    addCoolBar(SWT.NONE);
 	    addStatusLine();
+	}
+
+	/**
+	 * Gets the running application
+	*/
+	public static final Zebra getApp() {
+	    return APP;
 	}
 
 	public void run() {
@@ -477,7 +473,7 @@ public class Zebra extends ApplicationWindow {
 //				confZebra.setOutputProperty(OutputKeys.INDENT, "yes");
 				confZebra.save(stringWriter);
 				System.out.println(stringWriter.toString());
-			} catch (ConfigurationException cex) {
+			} catch (org.apache.commons.configuration.ConfigurationException cex) {
 			    // something went wrong, e.g. the file was not found
 				showError(cex.getMessage());
 			}
