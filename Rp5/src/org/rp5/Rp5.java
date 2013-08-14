@@ -1,14 +1,11 @@
 package org.rp5;
 
-<<<<<<< .mine
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-=======
->>>>>>> .r138
 import java.net.ProxySelector;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +34,10 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.rp5.DownloadWeatherRp5;
 import org.rp5.ParseXml;
+import org.rp5.ui.model.Rp5TableModel;
+import org.rp5.ui.view.AboutAction;
+import org.rp5.ui.view.ExitAction;
+import org.rp5.ui.view.Rp5ContentProvider;
 
 import com.btr.proxy.search.ProxySearch;
 /**
@@ -50,14 +51,14 @@ import com.btr.proxy.search.ProxySearch;
  */
 public class Rp5 extends ApplicationWindow {
 	// A static instance to the running application
-	final private static Rp5 APP;
+	private static Rp5 APP;
 	private TableViewer tv;
 
 	// The actions
-	private OpenAction openAction;
-	private CloseAction closeAction;
-	private ConfigAction configAction;
-	private PrintAction printAction;
+//	private OpenAction openAction;
+//	private CloseAction closeAction;
+//	private ConfigAction configAction;
+//	private PrintAction printAction;
 	private AboutAction aboutAction;
 	private ExitAction exitAction;
 
@@ -65,6 +66,9 @@ public class Rp5 extends ApplicationWindow {
 
 	private static HashMap<String, ImageDescriptor> hashImages;
 
+	{
+		APP = this;
+	}
 	/**
 	 * Gets the running application
 	*/
@@ -74,8 +78,6 @@ public class Rp5 extends ApplicationWindow {
 
 	public Rp5() {
 		super(null);
-
-	    APP = this;
 
 	    hashImages = new HashMap<String, ImageDescriptor>();
 		hashImages.put("open", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileopen.png"));
@@ -91,10 +93,10 @@ public class Rp5 extends ApplicationWindow {
 		columnNames[2] = "Number_copies";
 
 	    // Create the actions
-	    openAction = new OpenAction();
-	    closeAction = new CloseAction();
-	    configAction = new ConfigAction();
-	    printAction = new PrintAction();
+//	    openAction = new OpenAction();
+//	    closeAction = new CloseAction();
+//	    configAction = new ConfigAction();
+//	    printAction = new PrintAction();
 	    aboutAction = new AboutAction();
 	    exitAction = new ExitAction();
 
@@ -134,7 +136,7 @@ public class Rp5 extends ApplicationWindow {
 	    // Add the TableViewer
 	    final TableViewer tv = new TableViewer(composite, SWT.FULL_SELECTION);
 	    tv.setContentProvider(new Rp5ContentProvider());
-	    tv.setLabelProvider(new Rp5LabelProvider());
+//	    tv.setLabelProvider(new Rp5LabelProvider());
 //	    tv.setSorter(new ZebraViewerSorter());
 
 	    // Set up the table
@@ -189,9 +191,9 @@ public class Rp5 extends ApplicationWindow {
 	}	
 
 	protected void addTableContents(Object[] items) {
-		//обнулить таблицу
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		tv.getTable().setItemCount(0);
-		//назначить новые данные таблице
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		tv.setInput(Rp5TableModel.INSTANCE.getLabels());  
 
 /*        for(int i = 0; i < items.length; i++) {
@@ -209,7 +211,7 @@ public class Rp5 extends ApplicationWindow {
 	public void showError(String msg) {
 	    MessageDialog.openError(getShell(), "Error", msg);
 	}
-/*	//вывод сообщения об ошибке
+/*	//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	private void displayError(String msg) {
 		try {
 			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -236,12 +238,12 @@ public class Rp5 extends ApplicationWindow {
 	    mmng.add(fileMenu);
 
 	    // Add the actions to the File menu
-	    fileMenu.add(openAction);
-	    fileMenu.add(closeAction);
-	    fileMenu.add(new Separator());
-	    fileMenu.add(printAction);
-	    fileMenu.add(new Separator());
-	    fileMenu.add(configAction);
+//	    fileMenu.add(openAction);
+//	    fileMenu.add(closeAction);
+//	    fileMenu.add(new Separator());
+//	    fileMenu.add(printAction);
+//	    fileMenu.add(new Separator());
+//	    fileMenu.add(configAction);
 	    fileMenu.add(new Separator());
 	    fileMenu.add(exitAction);
 
@@ -250,7 +252,7 @@ public class Rp5 extends ApplicationWindow {
 	    mmng.add(helpMenu);
 
 	    // Add the actions to the Help menu
-	    helpMenu.add(aboutAction);
+//	    helpMenu.add(aboutAction);
 
 	    return mmng;
 	}
@@ -262,20 +264,20 @@ public class Rp5 extends ApplicationWindow {
 	    // Create the toolbar manager
 	    ToolBarManager tbm = new ToolBarManager(style);
 	    // Add the file actions
-	    tbm.add(openAction);
-	    tbm.add(closeAction);
+//	    tbm.add(openAction);
+//	    tbm.add(closeAction);
 
-	    tbm.add(new Separator());
-	    tbm.add(printAction);
+//	    tbm.add(new Separator());
+//	    tbm.add(printAction);
 
-	    tbm.add(new Separator());
-	    tbm.add(configAction);
+//	    tbm.add(new Separator());
+//	    tbm.add(configAction);
 
 	    // Add a separator
 	    tbm.add(new Separator());
 
 	    // Add the about action
-	    tbm.add(aboutAction);
+//	    tbm.add(aboutAction);
 
 	    tbm.add(new Separator());
 	    tbm.add(exitAction);
