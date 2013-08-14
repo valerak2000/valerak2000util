@@ -17,7 +17,6 @@ public partial class UserDefinedFunctions
     [Microsoft.SqlServer.Server.SqlFunction]
     public static SqlBoolean RegexMatch(SqlChars input, SqlString pattern)
     {
-        Regex regex = new Regex(pattern.Value, Options);
-        return regex.IsMatch(new string(input.Value));
+        return new Regex(pattern.Value, Options).IsMatch(new string(input.Value));
     }
 }
