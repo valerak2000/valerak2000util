@@ -1,4 +1,4 @@
-package org.rp5;
+package org.rp5.ui.model;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +24,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-import org.rp5.WeatherRp5;
+
+import org.rp5.ui.model.WeatherRp5;
 
 public class ParseXml extends DefaultHandler {
 	/**

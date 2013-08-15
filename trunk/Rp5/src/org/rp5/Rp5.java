@@ -32,9 +32,11 @@ import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.jface.window.ApplicationWindow;
-import org.rp5.DownloadWeatherRp5;
-import org.rp5.ParseXml;
+
+import org.rp5.ui.model.DownloadWeatherRp5;
+import org.rp5.ui.model.ParseXml;
 import org.rp5.ui.model.Rp5TableModel;
+import org.rp5.ui.model.WeatherRp5;
 import org.rp5.ui.view.AboutAction;
 import org.rp5.ui.view.ExitAction;
 import org.rp5.ui.view.Rp5ContentProvider;
