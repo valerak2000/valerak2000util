@@ -2,6 +2,8 @@ package org.rp5;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.InetSocketAddress;
@@ -9,6 +11,9 @@ import java.net.Proxy;
 import java.net.ProxySelector;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.naming.ConfigurationException;
+import javax.print.PrintException;
 
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -32,7 +37,6 @@ import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.jface.window.ApplicationWindow;
-
 import org.rp5.ui.model.DownloadWeatherRp5;
 import org.rp5.ui.model.ParseXml;
 import org.rp5.ui.model.Rp5TableModel;
@@ -40,6 +44,7 @@ import org.rp5.ui.model.WeatherRp5;
 import org.rp5.ui.view.AboutAction;
 import org.rp5.ui.view.ExitAction;
 import org.rp5.ui.view.Rp5ContentProvider;
+import org.rp5.ui.view.Rp5LabelProvider;
 
 import com.btr.proxy.search.ProxySearch;
 /**
@@ -61,11 +66,10 @@ public class Rp5 extends ApplicationWindow {
 //	private CloseAction closeAction;
 //	private ConfigAction configAction;
 //	private PrintAction printAction;
-	private AboutAction aboutAction;
-	private ExitAction exitAction;
+//	private AboutAction aboutAction;
+//	private ExitAction exitAction;
 
 	private static final String[] columnNames = new String[3];
-
 	private static HashMap<String, ImageDescriptor> hashImages;
 
 	{
@@ -81,15 +85,16 @@ public class Rp5 extends ApplicationWindow {
 	public Rp5() {
 		super(null);
 
-	    hashImages = new HashMap<String, ImageDescriptor>();
-		hashImages.put("open", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileopen.png"));
+		System.out.println("test");			
+//	    hashImages = new HashMap<String, ImageDescriptor>();
+/*		hashImages.put("open", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileopen.png"));
 		hashImages.put("close", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileclose.png"));
 		hashImages.put("print", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileprint.png"));
 		hashImages.put("configure", ImageDescriptor.createFromFile(Rp5.class, "/org/images/configure.png"));
 		hashImages.put("help", ImageDescriptor.createFromFile(Rp5.class, "/org/images/help.png"));
 		hashImages.put("about", ImageDescriptor.createFromFile(Rp5.class, "/org/images/about.png"));
 		hashImages.put("exit", ImageDescriptor.createFromFile(Rp5.class, "/org/images/exit.png"));
-
+*/
 		columnNames[0] = "Goods_name";
 		columnNames[1] = "Goods_barcode";
 		columnNames[2] = "Number_copies";
@@ -99,12 +104,12 @@ public class Rp5 extends ApplicationWindow {
 //	    closeAction = new CloseAction();
 //	    configAction = new ConfigAction();
 //	    printAction = new PrintAction();
-	    aboutAction = new AboutAction();
-	    exitAction = new ExitAction();
+//	    aboutAction = new AboutAction();
+//	    exitAction = new ExitAction();
 
-	    addMenuBar();
-	    addCoolBar(SWT.NONE);
-	    addStatusLine();
+//	    addMenuBar();
+//	    addCoolBar(SWT.NONE);
+//	    addStatusLine();
 	}
 
 	public void run() {
@@ -118,14 +123,12 @@ public class Rp5 extends ApplicationWindow {
 
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-//		this.shell = shell;
 
 		// Set the title bar text and the size
 		shell.setText("");
 		//reaction on close main window by "close button" 
 		shell.addShellListener(new ShellAdapter() {
 			public void shellClosed(ShellEvent e) {
-//				e.doit = closeZebraFile();
 			}
 		});
 	}
@@ -134,11 +137,11 @@ public class Rp5 extends ApplicationWindow {
 	    Composite composite = new Composite(parent, SWT.NONE);
 	    composite.setLayout(new GridLayout(1, false));
 
-
+/*
 	    // Add the TableViewer
 	    final TableViewer tv = new TableViewer(composite, SWT.FULL_SELECTION);
 	    tv.setContentProvider(new Rp5ContentProvider());
-//	    tv.setLabelProvider(new Rp5LabelProvider());
+	    tv.setLabelProvider(new Rp5LabelProvider());
 //	    tv.setSorter(new ZebraViewerSorter());
 
 	    // Set up the table
@@ -147,7 +150,7 @@ public class Rp5 extends ApplicationWindow {
 
 	    //set size of window like table
 	    getShell().setSize(tv.getTable().computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
-
+*/
 	    return composite;
 	}
 
@@ -193,9 +196,7 @@ public class Rp5 extends ApplicationWindow {
 	}	
 
 	protected void addTableContents(Object[] items) {
-		//�������� �������
 		tv.getTable().setItemCount(0);
-		//��������� ����� ������ �������
 		tv.setInput(Rp5TableModel.INSTANCE.getLabels());  
 
 /*        for(int i = 0; i < items.length; i++) {
@@ -213,8 +214,7 @@ public class Rp5 extends ApplicationWindow {
 	public void showError(String msg) {
 	    MessageDialog.openError(getShell(), "Error", msg);
 	}
-/*	//����� ��������� �� ������
-	private void displayError(String msg) {
+/*	private void displayError(String msg) {
 		try {
 			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 			box.setMessage(msg);
@@ -246,8 +246,8 @@ public class Rp5 extends ApplicationWindow {
 //	    fileMenu.add(printAction);
 //	    fileMenu.add(new Separator());
 //	    fileMenu.add(configAction);
-	    fileMenu.add(new Separator());
-	    fileMenu.add(exitAction);
+//	    fileMenu.add(new Separator());
+//	    fileMenu.add(exitAction);
 
 	    // Create the Help menu
 	    MenuManager helpMenu = new MenuManager("Help");
@@ -282,7 +282,7 @@ public class Rp5 extends ApplicationWindow {
 //	    tbm.add(aboutAction);
 
 	    tbm.add(new Separator());
-	    tbm.add(exitAction);
+//	    tbm.add(exitAction);
 
 	    return tbm;
 	}
@@ -377,17 +377,19 @@ public class Rp5 extends ApplicationWindow {
 	    saveAsAction.setEnabled(enable);
 	    addBookAction.setEnabled(enable);
 	    removeBookAction.setEnabled(enable);
-	    aboutAction.setEnabled(enable);
 	    showBookCountAction.setEnabled(enable);*/
-	    exitAction.setEnabled(enable);
+//	    aboutAction.setEnabled(enable);
+//	    exitAction.setEnabled(enable);
 	}
 
-    public static void main(String[] args) throws Exception {
-		new Rp5().run();
+	public static void main(String[] args) {
+		System.out.println("test0");			
+//    	Rp5 rp5 = new Rp5();
 
-    	ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
-/*    	   	ProxySearch.main(null);
-       	System.exit(0);*/
+//    	rp5.run();
+/*
+		ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
+//    	   	ProxySearch.main(null);
     	
        	ProxySelector myProxySelector = proxySearch.getProxySelector();
     	ProxySelector.setDefault(myProxySelector);
@@ -402,11 +404,10 @@ public class Rp5 extends ApplicationWindow {
     	for(WeatherRp5 iwr5: wrp5) {
     		iwr5.Print();
     	}
-
 //    	px.parseWeather(ruIs);
         
 
 //    	ruIs.close(); 
- 
+*/
     }
 }
