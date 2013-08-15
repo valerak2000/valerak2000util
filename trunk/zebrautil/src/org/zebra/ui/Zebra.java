@@ -35,13 +35,10 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
-
 import org.library.config.MenuXMLConfiguration;
-import org.apache.commons.csv.*;
-//import org.library.swt.BasicApplication;
-
-import org.zebra.ui.model.ZebraTableModel;
 import org.zebra.ui.view.AboutAction;
+import org.apache.commons.csv.*;
+import org.zebra.ui.model.ZebraTableModel;
 import org.zebra.ui.view.CloseAction;
 import org.zebra.ui.view.ConfigAction;
 import org.zebra.ui.view.ConfigDialog;
