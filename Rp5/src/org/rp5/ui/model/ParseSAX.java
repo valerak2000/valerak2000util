@@ -1,4 +1,4 @@
-package org.rp5;
+package org.rp5.ui.model;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
