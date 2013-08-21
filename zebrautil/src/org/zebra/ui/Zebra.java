@@ -144,7 +144,7 @@ public class Zebra extends ApplicationWindow {
 		});
 	}
 
-	protected Control createContents(Composite parent) {
+/*	protected Control createContents(Composite parent) {
 	    Composite composite = new Composite(parent, SWT.NONE);
 	    composite.setLayout(new GridLayout(1, false));
 
@@ -172,7 +172,8 @@ public class Zebra extends ApplicationWindow {
 	public MenuXMLConfiguration getConfZebra() {
 		return (MenuXMLConfiguration) confZebra;
 	}
-
+*/
+/*
 	protected Table createTable(TableViewer tv, int mode) {
 		Table table = tv.getTable();
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -185,7 +186,7 @@ public class Zebra extends ApplicationWindow {
 	    table.setHeaderVisible(true);
 	    table.setLinesVisible(true);
 
-/*	    // Create the cell editors
+	    // Create the cell editors
 	    CellEditor[] editors = new CellEditor[4];
 	    editors[0] = new TextCellEditor(table);
 	    editors[1] = new CheckboxCellEditor(table);
@@ -195,7 +196,7 @@ public class Zebra extends ApplicationWindow {
 	    // Set the editors, cell modifier, and column properties
 	    tv.setColumnProperties(columnNames);
 	    tv.setCellModifier(new PersonCellModifier(tv));
-	    tv.setCellEditors(editors);*/
+	    tv.setCellEditors(editors);
 
 	    return table;
 	}
@@ -216,13 +217,13 @@ public class Zebra extends ApplicationWindow {
 		//назначить новые данные таблице
 		tv.setInput(ZebraTableModel.INSTANCE.getLabels());  
 
-/*        for(int i = 0; i < items.length; i++) {
+        for(int i = 0; i < items.length; i++) {
 	        String[] item = (String[])items[i];
 	        TableItem ti = new TableItem(tv.getTable(), SWT.NONE);
 	        ti.setText(item);
-	    }*/
+	    }
 	}
-
+*/
 	/**
 	 * Shows an error
 	 *
