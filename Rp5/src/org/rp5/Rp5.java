@@ -153,11 +153,12 @@ public class Rp5 extends ApplicationWindow {
 */
 	    return composite;
 	}
-
+/*
 	public ImageDescriptor getImageFor(String cmd) {
 		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
 	}
-
+*/
+/*
 	protected Table createTable(TableViewer tv, int mode) {
 		Table table = tv.getTable();
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -170,7 +171,7 @@ public class Rp5 extends ApplicationWindow {
 	    table.setHeaderVisible(true);
 	    table.setLinesVisible(true);
 
-/*	    // Create the cell editors
+	    // Create the cell editors
 	    CellEditor[] editors = new CellEditor[4];
 	    editors[0] = new TextCellEditor(table);
 	    editors[1] = new CheckboxCellEditor(table);
@@ -180,11 +181,12 @@ public class Rp5 extends ApplicationWindow {
 	    // Set the editors, cell modifier, and column properties
 	    tv.setColumnProperties(columnNames);
 	    tv.setCellModifier(new PersonCellModifier(tv));
-	    tv.setCellEditors(editors);*/
+	    tv.setCellEditors(editors);
 
 	    return table;
 	}
-
+*/
+/*
 	protected TableColumn createTableColumn(Table table, int style, String title, int width) {
 	    TableColumn tc = new TableColumn(table, style);
 	    tc.setText(title);
@@ -194,18 +196,20 @@ public class Rp5 extends ApplicationWindow {
 
 	    return tc;
 	}	
-
+*/
+/*	
 	protected void addTableContents(Object[] items) {
 		tv.getTable().setItemCount(0);
 		tv.setInput(Rp5TableModel.INSTANCE.getLabels());  
 
-/*        for(int i = 0; i < items.length; i++) {
+       for(int i = 0; i < items.length; i++) {
 	        String[] item = (String[])items[i];
 	        TableItem ti = new TableItem(tv.getTable(), SWT.NONE);
 	        ti.setText(item);
-	    }*/
+	    }
 	}
-
+*/
+	
 	/**
 	 * Shows an error
 	 *
@@ -231,7 +235,8 @@ public class Rp5 extends ApplicationWindow {
 	 *
 	 * @return		The <code>Menu</code> widget that was created
 	 */
-	  protected MenuManager createMenuManager() {
+/*
+	protected MenuManager createMenuManager() {
 	    // Create the main menu
 	    MenuManager mmng = new MenuManager();
 
@@ -258,10 +263,11 @@ public class Rp5 extends ApplicationWindow {
 
 	    return mmng;
 	}
-
+*/
 	  /**
 	   * Creates the toolbar for the application
 	   */
+/*
 	protected ToolBarManager createToolBarManager(int style) {
 	    // Create the toolbar manager
 	    ToolBarManager tbm = new ToolBarManager(style);
@@ -286,10 +292,11 @@ public class Rp5 extends ApplicationWindow {
 
 	    return tbm;
 	}
-
+*/
 	/**
 	* Creates the coolbar for the application
 	*/
+/*
 	protected CoolBarManager createCoolBarManager(int style) {
 		// Create the coolbar manager
 		CoolBarManager cbm = new CoolBarManager(style);
@@ -299,14 +306,15 @@ public class Rp5 extends ApplicationWindow {
 
 		return cbm;
 	}
-
+*/
 	/**
 	* Creates the status line manager
 	*/
+/*
 	protected StatusLineManager createStatusLineManager() {
 		return new StatusLineManager();
 	}
-
+*/
 /*	private void createHelpMenu(Menu menuBar) {
 		//Help Menu
 		MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
@@ -370,18 +378,19 @@ public class Rp5 extends ApplicationWindow {
 	 *
 	 * @param enable true to enable, false to disable
 	*/
+/*
 	private void enableActions(boolean enable) {
-/*	    newAction.setEnabled(enable);
+	    newAction.setEnabled(enable);
 	    openAction.setEnabled(enable);
 	    saveAction.setEnabled(enable);
 	    saveAsAction.setEnabled(enable);
 	    addBookAction.setEnabled(enable);
 	    removeBookAction.setEnabled(enable);
-	    showBookCountAction.setEnabled(enable);*/
+	    showBookCountAction.setEnabled(enable);
 //	    aboutAction.setEnabled(enable);
 //	    exitAction.setEnabled(enable);
 	}
-
+*/
 	public static void main(String[] args) {
 		System.out.println("test0");			
 //    	Rp5 rp5 = new Rp5();
