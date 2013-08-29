@@ -70,7 +70,7 @@ public class Rp5 extends ApplicationWindow {
 //	private ExitAction exitAction;
 
 	private static final String[] columnNames = new String[3];
-	private static HashMap<String, ImageDescriptor> hashImages;
+//	private static HashMap<String, ImageDescriptor> hashImages;
 
 	{
 		APP = this;
@@ -95,9 +95,9 @@ public class Rp5 extends ApplicationWindow {
 		hashImages.put("about", ImageDescriptor.createFromFile(Rp5.class, "/org/images/about.png"));
 		hashImages.put("exit", ImageDescriptor.createFromFile(Rp5.class, "/org/images/exit.png"));
 */
-		columnNames[0] = "Goods_name";
-		columnNames[1] = "Goods_barcode";
-		columnNames[2] = "Number_copies";
+//		columnNames[0] = "Goods_name";
+//		columnNames[1] = "Goods_barcode";
+//		columnNames[2] = "Number_copies";
 
 	    // Create the actions
 //	    openAction = new OpenAction();
@@ -133,9 +133,9 @@ public class Rp5 extends ApplicationWindow {
 		});
 	}
 
-	protected Control createContents(Composite parent) {
-	    Composite composite = new Composite(parent, SWT.NONE);
-	    composite.setLayout(new GridLayout(1, false));
+//	protected Control createContents(Composite parent) {
+//	    Composite composite = new Composite(parent, SWT.NONE);
+//	    composite.setLayout(new GridLayout(1, false));
 
 /*
 	    // Add the TableViewer
@@ -151,8 +151,8 @@ public class Rp5 extends ApplicationWindow {
 	    //set size of window like table
 	    getShell().setSize(tv.getTable().computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
 */
-	    return composite;
-	}
+//	    return composite;
+//	}
 /*
 	public ImageDescriptor getImageFor(String cmd) {
 		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
@@ -392,10 +392,9 @@ public class Rp5 extends ApplicationWindow {
 	}
 */
 	public static void main(String[] args) {
-		System.out.println("test0");			
-//    	Rp5 rp5 = new Rp5();
+    	Rp5 rp5 = new Rp5();
 
-//    	rp5.run();
+    	rp5.run();
 /*
 		ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
 //    	   	ProxySearch.main(null);
