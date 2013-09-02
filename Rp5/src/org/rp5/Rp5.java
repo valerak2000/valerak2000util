@@ -21,30 +21,45 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.ColorCellEditor;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ApplicationWindow;
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.printing.PrintDialog;
-import org.eclipse.swt.printing.PrinterData;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.jface.window.ApplicationWindow;
-import org.rp5.ui.model.DownloadWeatherRp5;
-import org.rp5.ui.model.ParseXml;
+//import org.eclipse.jface.action.CoolBarManager;
+//import org.eclipse.jface.action.MenuManager;
+//import org.eclipse.jface.action.Separator;
+//import org.eclipse.jface.action.StatusLineManager;
+//import org.eclipse.jface.action.ToolBarManager;
+//import org.eclipse.jface.dialogs.MessageDialog;
+//import org.eclipse.jface.resource.ImageDescriptor;
+//import org.eclipse.jface.viewers.CellEditor;
+//import org.eclipse.jface.viewers.CheckboxCellEditor;
+//import org.eclipse.jface.viewers.ColorCellEditor;
+//import org.eclipse.jface.viewers.ComboBoxCellEditor;
+//import org.eclipse.jface.viewers.TableViewer;
+//import org.eclipse.jface.viewers.TextCellEditor;
+//import org.eclipse.jface.window.ApplicationWindow;
+//import org.eclipse.swt.*;
+//import org.eclipse.swt.events.*;
+//import org.eclipse.swt.graphics.*;
+//import org.eclipse.swt.layout.*;
+//import org.eclipse.swt.printing.PrintDialog;
+//import org.eclipse.swt.printing.PrinterData;
+//import org.eclipse.swt.widgets.*;
+//import org.eclipse.jface.window.ApplicationWindow;
+//import org.rp5.ui.model.DownloadWeatherRp5;
+//import org.rp5.ui.model.ParseXml;
 import org.rp5.ui.model.Rp5TableModel;
-import org.rp5.ui.model.WeatherRp5;
+//import org.rp5.ui.model.WeatherRp5;
 import org.rp5.ui.view.AboutAction;
 import org.rp5.ui.view.ExitAction;
 import org.rp5.ui.view.Rp5ContentProvider;
-import org.rp5.ui.view.Rp5LabelProvider;
+//import org.rp5.ui.view.Rp5LabelProvider;
+
+
+
+
+
+
 
 import com.btr.proxy.search.ProxySearch;
 /**
@@ -59,7 +74,7 @@ import com.btr.proxy.search.ProxySearch;
 public class Rp5 extends ApplicationWindow {
 	// A static instance to the running application
 	private static Rp5 APP;
-	private TableViewer tv;
+//	private TableViewer tv;
 
 	// The actions
 //	private OpenAction openAction;
@@ -72,9 +87,9 @@ public class Rp5 extends ApplicationWindow {
 	private static final String[] columnNames = new String[3];
 //	private static HashMap<String, ImageDescriptor> hashImages;
 
-	{
-		APP = this;
-	}
+//	{
+//		APP = this;
+//	}
 	/**
 	 * Gets the running application
 	*/
@@ -85,7 +100,6 @@ public class Rp5 extends ApplicationWindow {
 	public Rp5() {
 		super(null);
 
-		System.out.println("test");			
 //	    hashImages = new HashMap<String, ImageDescriptor>();
 /*		hashImages.put("open", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileopen.png"));
 		hashImages.put("close", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileclose.png"));
@@ -94,11 +108,11 @@ public class Rp5 extends ApplicationWindow {
 		hashImages.put("help", ImageDescriptor.createFromFile(Rp5.class, "/org/images/help.png"));
 		hashImages.put("about", ImageDescriptor.createFromFile(Rp5.class, "/org/images/about.png"));
 		hashImages.put("exit", ImageDescriptor.createFromFile(Rp5.class, "/org/images/exit.png"));
-*/
+
 //		columnNames[0] = "Goods_name";
 //		columnNames[1] = "Goods_barcode";
 //		columnNames[2] = "Number_copies";
-
+*/
 	    // Create the actions
 //	    openAction = new OpenAction();
 //	    closeAction = new CloseAction();
@@ -121,19 +135,29 @@ public class Rp5 extends ApplicationWindow {
 	    Display.getCurrent().dispose();
 	}
 
-	protected void configureShell(Shell shell) {
-		super.configureShell(shell);
+//	protected void configureShell(Shell shell) {
+//		super.configureShell(shell);
 
 		// Set the title bar text and the size
-		shell.setText("");
+//		shell.setText("");
 		//reaction on close main window by "close button" 
-		shell.addShellListener(new ShellAdapter() {
-			public void shellClosed(ShellEvent e) {
-			}
-		});
-	}
+//		shell.addShellListener(new ShellAdapter() {
+//			public void shellClosed(ShellEvent e) {
+//			}
+//		});
+//	}
 
+<<<<<<< .mine
+	protected Control createContents(Composite parent) {
+	    Label label = new Label(parent, SWT.CENTER);
+	    label.setText("Hello, World");
+	    return label;
+=======
 //	protected Control createContents(Composite parent) {
+//	    Composite composite = new Composite(parent, SWT.NONE);
+//	    composite.setLayout(new GridLayout(1, false));
+>>>>>>> .r155
+
 //	    Composite composite = new Composite(parent, SWT.NONE);
 //	    composite.setLayout(new GridLayout(1, false));
 
@@ -151,25 +175,31 @@ public class Rp5 extends ApplicationWindow {
 	    //set size of window like table
 	    getShell().setSize(tv.getTable().computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
 */
+<<<<<<< .mine
+//	    return composite;
+	}
+
+=======
 //	    return composite;
 //	}
 /*
-	public ImageDescriptor getImageFor(String cmd) {
-		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
-	}
+>>>>>>> .r155
+//	public ImageDescriptor getImageFor(String cmd) {
+//		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
+//	}
 */
 /*
-	protected Table createTable(TableViewer tv, int mode) {
-		Table table = tv.getTable();
-		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+//	protected Table createTable(TableViewer tv, int mode) {
+//		Table table = tv.getTable();
+//		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		for (int i = 0; i < columnNames.length; i++) {
-		    createTableColumn(table, SWT.NONE, columnNames[i], 150);
-		}
+//		for (int i = 0; i < columnNames.length; i++) {
+//		    createTableColumn(table, SWT.NONE, columnNames[i], 150);
+//		}
 
 //		addTableContents(new Object[] {new String[] {""}});
-	    table.setHeaderVisible(true);
-	    table.setLinesVisible(true);
+//	    table.setHeaderVisible(true);
+//	    table.setLinesVisible(true);
 
 	    // Create the cell editors
 	    CellEditor[] editors = new CellEditor[4];
@@ -183,8 +213,8 @@ public class Rp5 extends ApplicationWindow {
 	    tv.setCellModifier(new PersonCellModifier(tv));
 	    tv.setCellEditors(editors);
 
-	    return table;
-	}
+//	    return table;
+//	}
 */
 /*
 	protected TableColumn createTableColumn(Table table, int style, String title, int width) {
@@ -199,8 +229,8 @@ public class Rp5 extends ApplicationWindow {
 */
 /*	
 	protected void addTableContents(Object[] items) {
-		tv.getTable().setItemCount(0);
-		tv.setInput(Rp5TableModel.INSTANCE.getLabels());  
+//		tv.getTable().setItemCount(0);
+//		tv.setInput(Rp5TableModel.INSTANCE.getLabels());  
 
        for(int i = 0; i < items.length; i++) {
 	        String[] item = (String[])items[i];
