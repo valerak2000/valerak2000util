@@ -1,26 +1,7 @@
 package org.rp5;
 
-//
-//import java.io.File;
-//import java.io.FileInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.io.StringWriter;
-//import java.net.InetSocketAddress;
-//import java.net.Proxy;
-//import java.net.ProxySelector;
-//import java.util.HashMap;
-//import java.util.List;
+import java.util.HashMap;
 
-//import javax.naming.ConfigurationException;
-//import javax.print.PrintException;
-
-//import org.eclipse.jface.action.CoolBarManager;
-//import org.eclipse.jface.action.MenuManager;
-//import org.eclipse.jface.action.Separator;
-//import org.eclipse.jface.action.StatusLineManager;
-//import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -39,18 +20,17 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.printing.PrintDialog;
-import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
-//import org.rp5.ui.model.DownloadWeatherRp5;
-//import org.rp5.ui.model.ParseXml;
-//import org.rp5.ui.model.Rp5TableModel;
-//import org.rp5.ui.model.WeatherRp5;
-//import org.rp5.ui.view.AboutAction;
-//import org.rp5.ui.view.ExitAction;
-//import org.rp5.ui.view.Rp5ContentProvider;
-//import org.rp5.ui.view.Rp5LabelProvider;
-//import com.btr.proxy.search.ProxySearch;
+import org.rp5.ui.model.DownloadWeatherRp5;
+import org.rp5.ui.model.ParseXml;
+import org.rp5.ui.model.Rp5TableModel;
+import org.rp5.ui.model.WeatherRp5;
+import org.rp5.ui.view.AboutAction;
+import org.rp5.ui.view.ExitAction;
+import org.rp5.ui.view.Rp5ContentProvider;
+import org.rp5.ui.view.Rp5LabelProvider;
+
+import com.btr.proxy.search.ProxySearch;
 
 /**
  * @param args 1 - Path to DataBase
@@ -64,7 +44,7 @@ import org.eclipse.swt.widgets.*;
 public class Rp5 extends ApplicationWindow {
 	// A static instance to the running application
 	private static Rp5 APP;
-//	private TableViewer tv;
+	private TableViewer tv;
 
 	// The actions
 //	private OpenAction openAction;
@@ -72,10 +52,10 @@ public class Rp5 extends ApplicationWindow {
 //	private ConfigAction configAction;
 //	private PrintAction printAction;
 //	private AboutAction aboutAction;
-//	private ExitAction exitAction;
+	private ExitAction exitAction;
 
-//	private static final String[] columnNames = new String[3];
-//	private static HashMap<String, ImageDescriptor> hashImages;
+	private static final String[] columnNames = new String[3];
+	private static HashMap<String, ImageDescriptor> hashImages;
 
 	{
 		APP = this;
@@ -90,8 +70,8 @@ public class Rp5 extends ApplicationWindow {
 	public Rp5() {
 		super(null);
 
-//	    hashImages = new HashMap<String, ImageDescriptor>();
-/*		hashImages.put("open", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileopen.png"));
+	    hashImages = new HashMap<String, ImageDescriptor>();
+		hashImages.put("open", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileopen.png"));
 		hashImages.put("close", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileclose.png"));
 		hashImages.put("print", ImageDescriptor.createFromFile(Rp5.class, "/org/images/fileprint.png"));
 		hashImages.put("configure", ImageDescriptor.createFromFile(Rp5.class, "/org/images/configure.png"));
@@ -99,21 +79,21 @@ public class Rp5 extends ApplicationWindow {
 		hashImages.put("about", ImageDescriptor.createFromFile(Rp5.class, "/org/images/about.png"));
 		hashImages.put("exit", ImageDescriptor.createFromFile(Rp5.class, "/org/images/exit.png"));
 
-//		columnNames[0] = "Goods_name";
-//		columnNames[1] = "Goods_barcode";
-//		columnNames[2] = "Number_copies";
-*/
+		columnNames[0] = "Goods_name";
+		columnNames[1] = "Goods_barcode";
+		columnNames[2] = "Number_copies";
+
 	    // Create the actions
 //	    openAction = new OpenAction();
 //	    closeAction = new CloseAction();
 //	    configAction = new ConfigAction();
 //	    printAction = new PrintAction();
 //	    aboutAction = new AboutAction();
-//	    exitAction = new ExitAction();
+	    exitAction = new ExitAction();
 
-//	    addMenuBar();
-//	    addCoolBar(SWT.NONE);
-//	    addStatusLine();
+	    addMenuBar();
+	    addCoolBar(SWT.NONE);
+	    addStatusLine();
 	}
 
 	public void run() {
@@ -137,16 +117,11 @@ public class Rp5 extends ApplicationWindow {
 		});
 	}
 
-/*	protected Control createContents(Composite parent) {
-	    Label label = new Label(parent, SWT.CENTER);
-	    label.setText("Hello, World");
-	    return label;
-*/
 	protected Control createContents(Composite parent) {
 	    Composite composite = new Composite(parent, SWT.NONE);
 	    composite.setLayout(new GridLayout(1, false));
 
-/*
+
 	    // Add the TableViewer
 	    final TableViewer tv = new TableViewer(composite, SWT.FULL_SELECTION);
 	    tv.setContentProvider(new Rp5ContentProvider());
@@ -159,27 +134,26 @@ public class Rp5 extends ApplicationWindow {
 
 	    //set size of window like table
 	    getShell().setSize(tv.getTable().computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
-*/
+
 	    return composite;
 	}
+
+	public ImageDescriptor getImageFor(String cmd) {
+		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
+	}
+
+	protected Table createTable(TableViewer tv, int mode) {
+		Table table = tv.getTable();
+		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		for (int i = 0; i < columnNames.length; i++) {
+		    createTableColumn(table, SWT.NONE, columnNames[i], 150);
+		}
+
+		addTableContents(new Object[] {new String[] {""}});
+	    table.setHeaderVisible(true);
+	    table.setLinesVisible(true);
 /*
-//	public ImageDescriptor getImageFor(String cmd) {
-//		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
-//	}
-*/
-/*
-//	protected Table createTable(TableViewer tv, int mode) {
-//		Table table = tv.getTable();
-//		table.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-//		for (int i = 0; i < columnNames.length; i++) {
-//		    createTableColumn(table, SWT.NONE, columnNames[i], 150);
-//		}
-
-//		addTableContents(new Object[] {new String[] {""}});
-//	    table.setHeaderVisible(true);
-//	    table.setLinesVisible(true);
-
 	    // Create the cell editors
 	    CellEditor[] editors = new CellEditor[4];
 	    editors[0] = new TextCellEditor(table);
@@ -191,11 +165,11 @@ public class Rp5 extends ApplicationWindow {
 	    tv.setColumnProperties(columnNames);
 	    tv.setCellModifier(new PersonCellModifier(tv));
 	    tv.setCellEditors(editors);
-
-//	    return table;
-//	}
 */
-/*
+	    return table;
+	}
+
+
 	protected TableColumn createTableColumn(Table table, int style, String title, int width) {
 	    TableColumn tc = new TableColumn(table, style);
 	    tc.setText(title);
@@ -205,19 +179,19 @@ public class Rp5 extends ApplicationWindow {
 
 	    return tc;
 	}	
-*/
-/*	
+
+	
 	protected void addTableContents(Object[] items) {
 //		tv.getTable().setItemCount(0);
 //		tv.setInput(Rp5TableModel.INSTANCE.getLabels());  
 
-       for(int i = 0; i < items.length; i++) {
-	        String[] item = (String[])items[i];
+		for(int i = 0; i < items.length; i++) {
+	        String[] item = (String[]) items[i];
 	        TableItem ti = new TableItem(tv.getTable(), SWT.NONE);
 	        ti.setText(item);
 	    }
 	}
-*/
+
 	
 	/**
 	 * Shows an error
@@ -228,17 +202,6 @@ public class Rp5 extends ApplicationWindow {
 	    MessageDialog.openError(getShell(), "Error", msg);
 	}
 
-/*	private void displayError(String msg) {
-		try {
-			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			box.setMessage(msg);
-			box.open();
-		}
-		catch (Exception ex) {
-			System.out.println("Error:" + msg);			
-		}
-	}
-*/
 	/**
 	 * Creates the menu at the top of the shell where most
 	 * of the programs functionality is accessed.
@@ -262,7 +225,7 @@ public class Rp5 extends ApplicationWindow {
 //	    fileMenu.add(new Separator());
 //	    fileMenu.add(configAction);
 //	    fileMenu.add(new Separator());
-//	    fileMenu.add(exitAction);
+	    fileMenu.add(exitAction);
 
 	    // Create the Help menu
 	    MenuManager helpMenu = new MenuManager("Help");
@@ -298,7 +261,7 @@ public class Rp5 extends ApplicationWindow {
 //	    tbm.add(aboutAction);
 
 	    tbm.add(new Separator());
-//	    tbm.add(exitAction);
+	    tbm.add(exitAction);
 
 	    return tbm;
 	}
