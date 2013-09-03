@@ -1,25 +1,26 @@
 package org.rp5;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.util.HashMap;
-import java.util.List;
+//
+//import java.io.File;
+//import java.io.FileInputStream;
+//import java.io.FileNotFoundException;
+//import java.io.IOException;
+//import java.io.InputStream;
+//import java.io.StringWriter;
+//import java.net.InetSocketAddress;
+//import java.net.Proxy;
+//import java.net.ProxySelector;
+//import java.util.HashMap;
+//import java.util.List;
 
-import javax.naming.ConfigurationException;
-import javax.print.PrintException;
+//import javax.naming.ConfigurationException;
+//import javax.print.PrintException;
 
-import org.eclipse.jface.action.CoolBarManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.action.StatusLineManager;
-import org.eclipse.jface.action.ToolBarManager;
+//import org.eclipse.jface.action.CoolBarManager;
+//import org.eclipse.jface.action.MenuManager;
+//import org.eclipse.jface.action.Separator;
+//import org.eclipse.jface.action.StatusLineManager;
+//import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -48,20 +49,14 @@ import org.eclipse.swt.widgets.*;
 //import org.eclipse.jface.window.ApplicationWindow;
 //import org.rp5.ui.model.DownloadWeatherRp5;
 //import org.rp5.ui.model.ParseXml;
-import org.rp5.ui.model.Rp5TableModel;
+//import org.rp5.ui.model.Rp5TableModel;
 //import org.rp5.ui.model.WeatherRp5;
-import org.rp5.ui.view.AboutAction;
-import org.rp5.ui.view.ExitAction;
-import org.rp5.ui.view.Rp5ContentProvider;
+//import org.rp5.ui.view.AboutAction;
+//import org.rp5.ui.view.ExitAction;
+//import org.rp5.ui.view.Rp5ContentProvider;
 //import org.rp5.ui.view.Rp5LabelProvider;
+//import com.btr.proxy.search.ProxySearch;
 
-
-
-
-
-
-
-import com.btr.proxy.search.ProxySearch;
 /**
  * @param args 1 - Path to DataBase
  *             2 - Name of DataBase
@@ -84,7 +79,7 @@ public class Rp5 extends ApplicationWindow {
 //	private AboutAction aboutAction;
 //	private ExitAction exitAction;
 
-	private static final String[] columnNames = new String[3];
+//	private static final String[] columnNames = new String[3];
 //	private static HashMap<String, ImageDescriptor> hashImages;
 
 //	{
@@ -147,17 +142,11 @@ public class Rp5 extends ApplicationWindow {
 //		});
 //	}
 
-<<<<<<< .mine
 	protected Control createContents(Composite parent) {
 	    Label label = new Label(parent, SWT.CENTER);
 	    label.setText("Hello, World");
 	    return label;
-=======
 //	protected Control createContents(Composite parent) {
-//	    Composite composite = new Composite(parent, SWT.NONE);
-//	    composite.setLayout(new GridLayout(1, false));
->>>>>>> .r155
-
 //	    Composite composite = new Composite(parent, SWT.NONE);
 //	    composite.setLayout(new GridLayout(1, false));
 
@@ -175,13 +164,8 @@ public class Rp5 extends ApplicationWindow {
 	    //set size of window like table
 	    getShell().setSize(tv.getTable().computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
 */
-<<<<<<< .mine
 //	    return composite;
 	}
-
-=======
-//	    return composite;
-//	}
 /*
 >>>>>>> .r155
 //	public ImageDescriptor getImageFor(String cmd) {
@@ -422,9 +406,9 @@ public class Rp5 extends ApplicationWindow {
 	}
 */
 	public static void main(String[] args) {
-    	Rp5 rp5 = new Rp5();
-
-    	rp5.run();
+		new Rp5().run();
+//		Rp5 rp5 = new Rp5();
+//    	rp5.run();
 /*
 		ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
 //    	   	ProxySearch.main(null);
