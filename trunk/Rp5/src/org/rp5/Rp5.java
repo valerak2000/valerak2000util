@@ -21,32 +21,27 @@ package org.rp5;
 //import org.eclipse.jface.action.Separator;
 //import org.eclipse.jface.action.StatusLineManager;
 //import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.action.CoolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.StatusLineManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColorCellEditor;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.printing.PrintDialog;
+import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
-//import org.eclipse.jface.action.CoolBarManager;
-//import org.eclipse.jface.action.MenuManager;
-//import org.eclipse.jface.action.Separator;
-//import org.eclipse.jface.action.StatusLineManager;
-//import org.eclipse.jface.action.ToolBarManager;
-//import org.eclipse.jface.dialogs.MessageDialog;
-//import org.eclipse.jface.resource.ImageDescriptor;
-//import org.eclipse.jface.viewers.CellEditor;
-//import org.eclipse.jface.viewers.CheckboxCellEditor;
-//import org.eclipse.jface.viewers.ColorCellEditor;
-//import org.eclipse.jface.viewers.ComboBoxCellEditor;
-//import org.eclipse.jface.viewers.TableViewer;
-//import org.eclipse.jface.viewers.TextCellEditor;
-//import org.eclipse.jface.window.ApplicationWindow;
-//import org.eclipse.swt.*;
-//import org.eclipse.swt.events.*;
-//import org.eclipse.swt.graphics.*;
-//import org.eclipse.swt.layout.*;
-//import org.eclipse.swt.printing.PrintDialog;
-//import org.eclipse.swt.printing.PrinterData;
-//import org.eclipse.swt.widgets.*;
-//import org.eclipse.jface.window.ApplicationWindow;
 //import org.rp5.ui.model.DownloadWeatherRp5;
 //import org.rp5.ui.model.ParseXml;
 //import org.rp5.ui.model.Rp5TableModel;
@@ -82,9 +77,9 @@ public class Rp5 extends ApplicationWindow {
 //	private static final String[] columnNames = new String[3];
 //	private static HashMap<String, ImageDescriptor> hashImages;
 
-//	{
-//		APP = this;
-//	}
+	{
+		APP = this;
+	}
 	/**
 	 * Gets the running application
 	*/
@@ -130,25 +125,26 @@ public class Rp5 extends ApplicationWindow {
 	    Display.getCurrent().dispose();
 	}
 
-//	protected void configureShell(Shell shell) {
-//		super.configureShell(shell);
+	protected void configureShell(Shell shell) {
+		super.configureShell(shell);
 
 		// Set the title bar text and the size
-//		shell.setText("");
+		shell.setText("");
 		//reaction on close main window by "close button" 
-//		shell.addShellListener(new ShellAdapter() {
-//			public void shellClosed(ShellEvent e) {
-//			}
-//		});
-//	}
+		shell.addShellListener(new ShellAdapter() {
+			public void shellClosed(ShellEvent e) {
+			}
+		});
+	}
 
-	protected Control createContents(Composite parent) {
+/*	protected Control createContents(Composite parent) {
 	    Label label = new Label(parent, SWT.CENTER);
 	    label.setText("Hello, World");
 	    return label;
-//	protected Control createContents(Composite parent) {
-//	    Composite composite = new Composite(parent, SWT.NONE);
-//	    composite.setLayout(new GridLayout(1, false));
+*/
+	protected Control createContents(Composite parent) {
+	    Composite composite = new Composite(parent, SWT.NONE);
+	    composite.setLayout(new GridLayout(1, false));
 
 /*
 	    // Add the TableViewer
@@ -164,10 +160,9 @@ public class Rp5 extends ApplicationWindow {
 	    //set size of window like table
 	    getShell().setSize(tv.getTable().computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
 */
-//	    return composite;
+	    return composite;
 	}
 /*
->>>>>>> .r155
 //	public ImageDescriptor getImageFor(String cmd) {
 //		return (ImageDescriptor) hashImages.get(cmd.toLowerCase());
 //	}
@@ -232,6 +227,7 @@ public class Rp5 extends ApplicationWindow {
 	public void showError(String msg) {
 	    MessageDialog.openError(getShell(), "Error", msg);
 	}
+
 /*	private void displayError(String msg) {
 		try {
 			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -241,15 +237,15 @@ public class Rp5 extends ApplicationWindow {
 		catch (Exception ex) {
 			System.out.println("Error:" + msg);			
 		}
-	}*/
-
+	}
+*/
 	/**
 	 * Creates the menu at the top of the shell where most
 	 * of the programs functionality is accessed.
 	 *
 	 * @return		The <code>Menu</code> widget that was created
 	 */
-/*
+
 	protected MenuManager createMenuManager() {
 	    // Create the main menu
 	    MenuManager mmng = new MenuManager();
@@ -277,11 +273,11 @@ public class Rp5 extends ApplicationWindow {
 
 	    return mmng;
 	}
-*/
+
 	  /**
 	   * Creates the toolbar for the application
 	   */
-/*
+
 	protected ToolBarManager createToolBarManager(int style) {
 	    // Create the toolbar manager
 	    ToolBarManager tbm = new ToolBarManager(style);
@@ -306,11 +302,11 @@ public class Rp5 extends ApplicationWindow {
 
 	    return tbm;
 	}
-*/
+
 	/**
 	* Creates the coolbar for the application
 	*/
-/*
+
 	protected CoolBarManager createCoolBarManager(int style) {
 		// Create the coolbar manager
 		CoolBarManager cbm = new CoolBarManager(style);
@@ -320,15 +316,15 @@ public class Rp5 extends ApplicationWindow {
 
 		return cbm;
 	}
-*/
+
 	/**
 	* Creates the status line manager
 	*/
-/*
+
 	protected StatusLineManager createStatusLineManager() {
 		return new StatusLineManager();
 	}
-*/
+
 /*	private void createHelpMenu(Menu menuBar) {
 		//Help Menu
 		MenuItem item = new MenuItem(menuBar, SWT.CASCADE);
@@ -406,9 +402,8 @@ public class Rp5 extends ApplicationWindow {
 	}
 */
 	public static void main(String[] args) {
-		new Rp5().run();
-//		Rp5 rp5 = new Rp5();
-//    	rp5.run();
+		Rp5 rp5 = new Rp5();
+    	rp5.run();
 /*
 		ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
 //    	   	ProxySearch.main(null);
