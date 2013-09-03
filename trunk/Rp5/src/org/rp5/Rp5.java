@@ -54,7 +54,7 @@ public class Rp5 extends ApplicationWindow {
 //	private AboutAction aboutAction;
 	private ExitAction exitAction;
 
-	private static final String[] columnNames = new String[3];
+	private static final String[] columnNames = new String[13];
 	private static HashMap<String, ImageDescriptor> hashImages;
 
 	{
@@ -79,9 +79,19 @@ public class Rp5 extends ApplicationWindow {
 		hashImages.put("about", ImageDescriptor.createFromFile(Rp5.class, "/org/images/about.png"));
 		hashImages.put("exit", ImageDescriptor.createFromFile(Rp5.class, "/org/images/exit.png"));
 
-		columnNames[0] = "Goods_name";
-		columnNames[1] = "Goods_barcode";
-		columnNames[2] = "Number_copies";
+		columnNames[0] = "time_step";
+		columnNames[1] = "datetime";
+		columnNames[2] = "G";
+		columnNames[3] = "HHii";
+		columnNames[4] = "cloud_cover";
+		columnNames[5] = "precipitation";
+		columnNames[6] = "pressure";
+		columnNames[7] = "temperature";
+		columnNames[8] = "humidity";
+		columnNames[9] = "wind_direction";
+		columnNames[10] = "wind_velocity";
+		columnNames[11] = "falls";
+		columnNames[12] = "drops";
 
 	    // Create the actions
 //	    openAction = new OpenAction();
@@ -120,14 +130,11 @@ public class Rp5 extends ApplicationWindow {
 	protected Control createContents(Composite parent) {
 	    Composite composite = new Composite(parent, SWT.NONE);
 	    composite.setLayout(new GridLayout(1, false));
-
-
 	    // Add the TableViewer
 	    final TableViewer tv = new TableViewer(composite, SWT.FULL_SELECTION);
 	    tv.setContentProvider(new Rp5ContentProvider());
 	    tv.setLabelProvider(new Rp5LabelProvider());
 //	    tv.setSorter(new ZebraViewerSorter());
-
 	    // Set up the table
 	    createTable(tv, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION | 
                 		SWT.V_SCROLL | SWT.H_SCROLL);
@@ -185,11 +192,11 @@ public class Rp5 extends ApplicationWindow {
 //		tv.getTable().setItemCount(0);
 //		tv.setInput(Rp5TableModel.INSTANCE.getLabels());  
 
-		for(int i = 0; i < items.length; i++) {
-	        String[] item = (String[]) items[i];
-	        TableItem ti = new TableItem(tv.getTable(), SWT.NONE);
-	        ti.setText(item);
-	    }
+//		for(int i = 0; i < items.length; i++) {
+//	        String[] item = (String[]) items[i];
+//	        TableItem ti = new TableItem(tv.getTable(), SWT.NONE);
+//	        ti.setText(item);
+//	    }
 	}
 
 	
