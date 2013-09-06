@@ -1,0 +1,9 @@
+E:\hash\hash\bin\Debug\hash.dacpac
+E:\hash\hash\bin\Debug\hash.dll
+E:\hash\hash\bin\Debug\hash.pdb
+E:\hash\hash\obj\Debug\Model.xml
+E:\hash\hash\obj\Debug\refactor.xml
+E:\hash\hash\obj\Debug\postdeploy.sql
+E:\hash\hash\obj\Debug\predeploy.sql
+E:\hash\hash\obj\Debug\hash.dll
+E:\hash\hash\obj\Debug\hash.pdb
