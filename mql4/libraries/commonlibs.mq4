@@ -88,7 +88,7 @@ string getStringNameOfOperation(int cmd) {
 	}
 }
 
-void changeIndicatorMoney(int state) {
+void changeIndicatorMoney(int state, double percent) {
 	if (ObjectFind("moneyChk_object") == -1) {
 		ObjectCreate("moneyChk_object", OBJ_LABEL, 0, 0, 0);
 	} else {
@@ -96,7 +96,7 @@ void changeIndicatorMoney(int state) {
 	}
 
 	ObjectSet("moneyChk_object", OBJPROP_CORNER, 1);
-	ObjectSet("moneyChk_object", OBJPROP_XDISTANCE, 5);
+	ObjectSet("moneyChk_object", OBJPROP_XDISTANCE, 20);
 	ObjectSet("moneyChk_object", OBJPROP_YDISTANCE, sgnlObjectPosY);
 	ObjectSetText("moneyChk_object", "$", 10);
 
@@ -106,6 +106,7 @@ void changeIndicatorMoney(int state) {
 
         	break;
 		case stateNoMoney:
+			ObjectSetText("moneyChk_object", "$" + StringTrimLeft(StringTrimRight(DoubleToStr(percent, 0))) + "%", 10);
 			ObjectSet("moneyChk_object", OBJPROP_COLOR, Red);
 
         	break;
@@ -123,9 +124,10 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01, boo
 
 	double freeMargin = AccountFreeMarginCheck(symb, cmd, lot);
 //	Print(DoubleToStr(cmd, 0) + "-" + DoubleToStr((freeMargin / AccountBalance()) * 100, 0));
-// свободные средства/ средства на счету * 100 = уровень
-	if (((freeMargin / AccountBalance()) * 100) <= marginPercent || GetLastError() == ERR_NOT_ENOUGH_MONEY) {
-		changeIndicatorMoney(stateNoMoney);
+// свободные средства/ средства на счету * 100 = уровень\
+	double percentfree = (freeMargin / AccountBalance()) * 100;
+	if (percentfree <= marginPercent || GetLastError() == ERR_NOT_ENOUGH_MONEY) {
+		changeIndicatorMoney(stateNoMoney, percentfree);
 		
 		if (dsplSgnl == true) {
 			Print(symb + " " + getStringNameOfOperation(cmd) + " " + DoubleToStr(lot, 2) + " на счету свободных денег " + DoubleToStr((freeMargin / AccountBalance()) * 100, 0) + "%<" + DoubleToStr(marginPercent, 0) + "%");
@@ -133,7 +135,7 @@ bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01, boo
 
 		return (false);
 	} else {
-		changeIndicatorMoney(stateHaveMoney);
+		changeIndicatorMoney(stateHaveMoney, 0);
 		
 		return (true);
 	}

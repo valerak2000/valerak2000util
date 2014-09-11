@@ -148,7 +148,7 @@ int start() {
 		state = state + " SC";
 	}
 	//disable индикатор "денег"
-	changeIndicatorMoney(stateDisableMoney);
+	changeIndicatorMoney(stateDisableMoney, 0);
 	//моргнуть индикатором состояния
 	changeIndicatorState("SP=" + DoubleToStr(spread, 0)
 						 + " S=" + DoubleToStr(takeProfitSellVar, 0)
