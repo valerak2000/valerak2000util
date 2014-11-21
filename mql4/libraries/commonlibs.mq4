@@ -88,7 +88,7 @@ string getStringNameOfOperation(int cmd) {
 	}
 }
 
-void changeIndicatorMoney(int state, double percent) {
+void changeIndicatorMoney(int state, double percent_buy = 0, double percent_sell = 0) {
 	if (ObjectFind("moneyChk_object") == -1) {
 		ObjectCreate("moneyChk_object", OBJ_LABEL, 0, 0, 0);
 	} else {
@@ -96,9 +96,9 @@ void changeIndicatorMoney(int state, double percent) {
 	}
 
 	ObjectSet("moneyChk_object", OBJPROP_CORNER, 1);
-	ObjectSet("moneyChk_object", OBJPROP_XDISTANCE, 20);
+	ObjectSet("moneyChk_object", OBJPROP_XDISTANCE, 15);
 	ObjectSet("moneyChk_object", OBJPROP_YDISTANCE, sgnlObjectPosY);
-	ObjectSetText("moneyChk_object", "$", 10);
+	ObjectSetText("moneyChk_object", "$B" + StringTrimLeft(StringTrimRight(DoubleToStr(percent_buy, 0))) + "% S" + StringTrimLeft(StringTrimRight(DoubleToStr(percent_sell, 0))) + "%", 10);
 
 	switch (state) {
 		case stateDisableMoney:
@@ -106,7 +106,6 @@ void changeIndicatorMoney(int state, double percent) {
 
         	break;
 		case stateNoMoney:
-			ObjectSetText("moneyChk_object", "$" + StringTrimLeft(StringTrimRight(DoubleToStr(percent, 0))) + "%", 10);
 			ObjectSet("moneyChk_object", OBJPROP_COLOR, Red);
 
         	break;
@@ -117,25 +116,32 @@ void changeIndicatorMoney(int state, double percent) {
 	}
 }
 //проверка доступных средств
-bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01, bool dsplSgnl = true) {
+bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01, bool dsplMsg = true) {
 	if (symb == "") {
 		symb = Symbol();
 	}
 
 	double freeMargin = AccountFreeMarginCheck(symb, cmd, lot);
+	double freeMargin_buy = AccountFreeMarginCheck(symb, OP_BUY, lot);
+	double freeMargin_sell = AccountFreeMarginCheck(symb, OP_SELL, lot);
 //	Print(DoubleToStr(cmd, 0) + "-" + DoubleToStr((freeMargin / AccountBalance()) * 100, 0));
 // свободные средства/ средства на счету * 100 = уровень\
-	double percentfree = (freeMargin / AccountBalance()) * 100;
+	double percentfree = 0, percentfree_buy = 0, percentfree_sell = 0, accbal = AccountBalance();
+    if (accbal != 0) {
+		percentfree = (freeMargin / accbal) * 100;
+		percentfree_buy = (freeMargin_buy / accbal) * 100;
+		percentfree_sell = (freeMargin_sell / accbal) * 100;
+	}
 	if (percentfree <= marginPercent || GetLastError() == ERR_NOT_ENOUGH_MONEY) {
-		changeIndicatorMoney(stateNoMoney, percentfree);
+		changeIndicatorMoney(stateNoMoney, percentfree_buy, percentfree_sell);
 		
-		if (dsplSgnl == true) {
+		if (dsplMsg == true) {
 			Print(symb + " " + getStringNameOfOperation(cmd) + " " + DoubleToStr(lot, 2) + " на счету свободных денег " + DoubleToStr((freeMargin / AccountBalance()) * 100, 0) + "%<" + DoubleToStr(marginPercent, 0) + "%");
 		}
 
 		return (false);
 	} else {
-		changeIndicatorMoney(stateHaveMoney, 0);
+		changeIndicatorMoney(stateHaveMoney, percentfree_buy, percentfree_sell);
 		
 		return (true);
 	}
@@ -276,7 +282,6 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 		symb = Symbol();
 	}
 
-//Print("FreeMagin=", AccountFreeMargin(), " AccountEquity=", AccountEquity(), " AccountBalance=", AccountBalance());
     //создать ордер    
     while (Repeat == true) {
         if (IsTradeAllowed() == true) {
@@ -309,10 +314,6 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
             		tp = getTp(symb, OP_SELL, takeProfitKoef, takeProfit);
             		sl = getSl(symb, OP_SELL, stopLossKoef, stopLoss);
 
-/*					if (trailingUse == true) {
-						comment = comment +  "#TS#" + DoubleToStr(getTp(symb, OP_SELL, 0, trailingProfStart), Digits));
-					}
-*/
 	                ticket = OrderSend(symb, OP_SELL, lot, Bid, slipPage, sl, tp, comment, magicNum, 0, Red);
                 }
 
@@ -329,10 +330,6 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
                 RefreshRates();
             }
         } else {
-//        	Print(GetLastError());
-/*        	if (GetLastError() != 0)
-        		chkError(GetLastError());
-*/
         	Repeat = false;
         }
     }
@@ -365,7 +362,7 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
             	tp = 0.0;
         	}
 
-//
+
         	if (IsTradeAllowed() == true && (sl != 0.0 || tp != 0.0)) {
         		if (OrderModify(ticket, OrderOpenPrice(), sl, tp, CLR_NONE) == true) {
             		Repeat = false;
@@ -394,7 +391,6 @@ bool openOrder(string symb, int cmd, double lot, int magicNum, int slipPage = 1,
 //      		" balance=", AccountBalance(),
 //			" margin=", AccountFreeMargin(),
       		" %=", (AccountFreeMargin() / AccountBalance()) * 100);
-//      		" %=", (AccountFreeMargin() / AccountBalance()) * 100,
 	}
 
     return (ticket);
@@ -567,7 +563,7 @@ bool findLikePriceOrder(string symb, int cmd, int magicNum = -1, double takeProf
     }
 	//дельта цены для получения требуемого профита
 	tp = NormalizeDouble(getTp(symb, cmd, takeProfitKoef, takeProfit), Digits);
-	deltaTp = NormalizeDouble(MathAbs(NormalizeDouble(tp - price, Digits)) * 4.0, Digits);
+	deltaTp = NormalizeDouble(MathAbs(NormalizeDouble(tp - price, Digits)) * 10.0, Digits);
 
 	for (int i = 0; i < OrdersTotal(); i++) {
 		if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES) == true) {
@@ -641,8 +637,13 @@ int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProf
 	}
 //MathSqrt(1 / (sum(MathPow((High[i] - Low[i]) - avgProfBears / cntBarBears, 2))))
 	//ср.арифмитическое
-	avgProfBulls = avgProfBulls / cntBarBulls;
-	avgProfBears = avgProfBears / cntBarBears;
+	if (cntBarBulls == 0) {
+		avgProfBulls = 0;
+		avgProfBears = 0;
+	} else {
+		avgProfBulls = avgProfBulls / cntBarBulls;
+		avgProfBears = avgProfBears / cntBarBears;
+	}
 	//сумма квадратов разностей для бычих
 	for (i = 0; i < cntBarBulls; i++) {
 		sumBulls += MathPow(bulls[i] - avgProfBulls, 2);
@@ -674,8 +675,6 @@ int getProfitValue(string symb, int cmd, int controlPerod = 120, double takeProf
     default:
     	retProfValue = 0;
     }
-//	Print(DoubleToStr(avgProfBulls, 14), " ", DoubleToStr(MathCeil(MathSqrt(1.0 / cntBarBulls * sumBulls)), 14), " ", cntBarBulls, 
-//		  " ", DoubleToStr(avgProfBears, 14), " ", DoubleToStr(MathCeil(MathSqrt(1.0 / cntBarBears * sumBears)), 14), " ", cntBarBears);
 
    	return (retProfValue);
 }
@@ -703,13 +702,13 @@ int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeri
 	ObjectDelete("alligHistUp_object");
 	ObjectCreate("alligHistUp_object", OBJ_LABEL, 0, 0, 0);
 	ObjectSet("alligHistUp_object", OBJPROP_CORNER, 1);
-	ObjectSet("alligHistUp_object", OBJPROP_XDISTANCE, 37);
+	ObjectSet("alligHistUp_object", OBJPROP_XDISTANCE, 97);
 	ObjectSet("alligHistUp_object", OBJPROP_YDISTANCE, 12);
 
 	ObjectDelete("alligHistDown_object");
 	ObjectCreate("alligHistDown_object", OBJ_LABEL, 0, 0, 0);
 	ObjectSet("alligHistDown_object", OBJPROP_CORNER, 1);
-	ObjectSet("alligHistDown_object", OBJPROP_XDISTANCE, 37);
+	ObjectSet("alligHistDown_object", OBJPROP_XDISTANCE, 97);
 	ObjectSet("alligHistDown_object", OBJPROP_YDISTANCE, 17);
 
 	if (valMARdHist > valMAGrHist) {
@@ -729,13 +728,13 @@ int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeri
 	ObjectDelete("alligNowUp_object");
 	ObjectCreate("alligNowUp_object", OBJ_LABEL, 0, 0, 0);
 	ObjectSet("alligNowUp_object", OBJPROP_CORNER, 1);
-	ObjectSet("alligNowUp_object", OBJPROP_XDISTANCE, 30);
+	ObjectSet("alligNowUp_object", OBJPROP_XDISTANCE, 90);
 	ObjectSet("alligNowUp_object", OBJPROP_YDISTANCE, 12);
 
 	ObjectDelete("alligNowDown_object");
 	ObjectCreate("alligNowDown_object", OBJ_LABEL, 0, 0, 0);
 	ObjectSet("alligNowDown_object", OBJPROP_CORNER, 1);
-	ObjectSet("alligNowDown_object", OBJPROP_XDISTANCE, 30);
+	ObjectSet("alligNowDown_object", OBJPROP_XDISTANCE, 90);
 	ObjectSet("alligNowDown_object", OBJPROP_YDISTANCE, 17);
 
 	if (valMARdNow > valMAGrNow) {
@@ -888,7 +887,7 @@ int chkTarzanSignal(string symb) {
 	ObjectDelete("trandHist_object");
 	ObjectCreate("trandHist_object", OBJ_LABEL, 0, 0, 0);
 	ObjectSet("trandHist_object", OBJPROP_CORNER, 1);
-	ObjectSet("trandHist_object", OBJPROP_XDISTANCE, 20);
+	ObjectSet("trandHist_object", OBJPROP_XDISTANCE, 87);
 	ObjectSet("trandHist_object", OBJPROP_YDISTANCE, 15);
 
 	if (destUpHist == true) {
@@ -901,7 +900,7 @@ int chkTarzanSignal(string symb) {
 	//индикация тренда "сейчас"
 	ObjectCreate("trandNow_object", OBJ_LABEL, 0, 0, 0);
 	ObjectSet("trandNow_object", OBJPROP_CORNER, 1);
-	ObjectSet("trandNow_object", OBJPROP_XDISTANCE, 10);
+	ObjectSet("trandNow_object", OBJPROP_XDISTANCE, 80);
 	ObjectSet("trandNow_object", OBJPROP_YDISTANCE, 15);
 
 	if (destUpNow == true) {
@@ -952,6 +951,26 @@ int chkPatternSignal(string symb) {
 	return (signal);
 }
 
+int chkTradeLinesSignal(string symb) {
+	int signal = sgnlNothing;
+	int otstup = 0;
+	//Up
+	double price = ObjectGetValueByShift("TrendlineUp", 1);
+    if(price != 0) {
+	    if(iHigh(NULL, 0, 1) > price && iClose(NULL, 0, 1) < price && (iHigh(NULL, 0, 2) + otstup * Point != EMPTY_VALUE)) signal = signal | sgnlSellOpen | sgnlBuyClose;
+	    if(iOpen(NULL, 0, 1) < price && iClose(NULL, 0, 1) > price && (iLow(NULL, 0, 2) - otstup * Point != EMPTY_VALUE)) signal = signal | sgnlBuyOpen | sgnlSellClose;
+	    //PrintFormat("TrendlineUp=%f %i iHigh1=%f iClose=%f iHigh2=%f iLow=%f", price, signal, iHigh(NULL, 0, 1), iClose(NULL, 0, 1), iHigh(NULL, 0, 2), iLow(NULL, 0, 2));
+	}     
+	//Down
+	price = ObjectGetValueByShift("TrendlineDn", 1);
+    if(price != 0) {
+	    if(iLow(NULL, 0, 1) < price && iClose(NULL, 0, 1) > price && (iLow(NULL, 0, 2) - otstup * Point != EMPTY_VALUE)) signal = signal | sgnlBuyOpen | sgnlSellClose;
+	    if(iOpen(NULL, 0, 1) > price && iClose(NULL, 0, 1) < price && (iHigh(NULL, 0, 2) + otstup * Point != EMPTY_VALUE)) signal = signal | sgnlSellOpen | sgnlBuyClose;
+	    //PrintFormat("TrendlineDn=%f %i", price, signal);
+    }
+
+	return (signal);
+}
 //создать объект "индикатор-работы"
 bool createIndicator(string expertName) {
 	ObjectCreate("labelproj_object", OBJ_LABEL, 0, 0, 0);
