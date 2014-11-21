@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #import "commonlibs.ex4"
 bool chkError(int error);
-bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01, bool dsplSgnl = true);
+bool chkMoney(string symb, int cmd, double marginPercent, double lot = 0.01, bool dsplMsg = true);
 
 double getSl(string symb, int cmd, double stopLossKoef, int stopLoss, double inPrice = 0.0);
 double getTp(string symb, int cmd, double takeProfitKoef, int takeProfit, double inPrice = 0.0);
@@ -26,8 +26,9 @@ int chkAlligatorSignal(string symb, int jawsPeriod, int jawsShift, int teethPeri
 int chkLongSignal(string symb);
 int chkTarzanSignal(string symb);
 int chkPatternSignal(string symb);
+int chkTradeLinesSignal(string symb);
 
-void changeIndicatorMoney(int state, double percent);
+void changeIndicatorMoney(int state, double percent_buy = 0, double percent_sell = 0);
 bool createIndicator(string expertName);
 bool closeIndicator();
 bool changeIndicatorState(string text);
