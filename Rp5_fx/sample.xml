@@ -1,3 +1,5 @@
+https://pogoda.yandex.ru/static/cities.xml
+http://export.yandex.ru/weather-ng/forecasts/34929.xml
 This XML file does not appear to have any style information associated with it. The document tree is shown below.
 <forecast xmlns="http://weather.yandex.ru/forecast" city="Краснодар" country="Россия" region="35" lon="38.975277" zoom="13" id="34929" source="Station" country_id="1ed1c408a4ac822b728a2077a1d9935c" link="http://pogoda.yandex.ru/krasnodar/" part_id="5c9ab5ce0e39503a8d8906b6f039b6f7" geoid="35" lat="45.035407" exactname="Краснодар" part="Краснодарский край" slug="krasnodar">
 <fact>
