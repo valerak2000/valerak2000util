@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane stylesheets="@Rp5.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rp5.ui.view.WeatherRp5OverviewController">
+   <children>
+      <TableView fx:id="weatherRp5Table" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columns>
+          <TableColumn fx:id="timeStepColumn" editable="false" prefWidth="75.0" text="Временной шаг прогноза" />
+          <TableColumn fx:id="dateTimeColumn" editable="false" prefWidth="75.0" text="Момент прогноза" />
+          <TableColumn fx:id="gColumn" editable="false" prefWidth="75.0" text="Момент прогноза, час" />
+          <TableColumn fx:id="hhiiColumn" editable="false" prefWidth="75.0" text="Момент прогноза, час мин" />
+          <TableColumn fx:id="cloudCoverColumn" editable="false" prefWidth="75.0" text="Облачность (%)" />
+          <TableColumn fx:id="precipitationColumn" editable="false" prefWidth="75.0" text="Толщина осадков" />
+          <TableColumn fx:id="pressureColumn" editable="false" prefWidth="75.0" text="Атмосферное давление" />
+          <TableColumn fx:id="temperatureColumn" editable="false" prefWidth="75.0" text="Температура воздуха" />
+          <TableColumn fx:id="humidityColumn" editable="false" prefWidth="75.0" text="Относительная влажность воздуха (%)" />
+          <TableColumn fx:id="windDirectionColumn" editable="false" prefWidth="75.0" text="Направление ветра" />
+          <TableColumn fx:id="windVelocityColumn" editable="false" prefWidth="75.0" text="Скорость ветра" />
+          <TableColumn fx:id="fallsColumn" editable="false" prefWidth="75.0" text="Тип осадков" />
+          <TableColumn fx:id="dropsColumn" editable="false" prefWidth="75.0" text="Коэффициент количества снежинок или капель дождя" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </children>
+</AnchorPane>

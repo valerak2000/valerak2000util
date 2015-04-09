@@ -1,4 +1,4 @@
-package org.rp5.ui.view;
+package org.rp5.ui.controller;
 
 import java.io.File;
 

@@ -12,12 +12,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.controlsfx.dialog.Dialogs;
+import org.rp5.ui.controller.RootLayoutController;
+import org.rp5.ui.controller.WeatherRp5OverviewController;
 import org.rp5.ui.model.DownloadWeatherRp5;
 import org.rp5.ui.model.ParseXml;
 import org.rp5.ui.model.WeatherRp5;
 import org.rp5.ui.model.WeatherRp5ListWrapper;
-import org.rp5.ui.view.RootLayoutController;
-import org.rp5.ui.view.WeatherRp5OverviewController;
 
 import com.btr.proxy.search.ProxySearch;
 
