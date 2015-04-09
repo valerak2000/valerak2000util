@@ -2,7 +2,9 @@ package org.rp5;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ProxySelector;
 import java.util.HashMap;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.xml.bind.JAXBContext;
@@ -10,9 +12,14 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.controlsfx.dialog.Dialogs;
+import org.rp5.ui.model.DownloadWeatherRp5;
+import org.rp5.ui.model.ParseXml;
 import org.rp5.ui.model.WeatherRp5;
 import org.rp5.ui.model.WeatherRp5ListWrapper;
 import org.rp5.ui.view.RootLayoutController;
+import org.rp5.ui.view.WeatherRp5OverviewController;
+
+import com.btr.proxy.search.ProxySearch;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -38,7 +45,23 @@ public class Rp5 extends Application {
      */
     private ObservableList<WeatherRp5> weatherRp5Data = FXCollections.observableArrayList();
 
-	public Rp5() {
+	public Rp5() throws Exception {
+		//ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
+//	   	ProxySearch.main(null);
+	
+		//ProxySelector myProxySelector = proxySearch.getProxySelector();
+		//ProxySelector.setDefault(myProxySelector);
+
+		DownloadWeatherRp5 dwRp5 = new DownloadWeatherRp5();
+		ParseXml px = new ParseXml();
+		System.out.print(dwRp5.getWeather("4429").toString());
+		List<WeatherRp5> wrp5 = px.parseWeather(dwRp5.getWeather("4429"));
+		weatherRp5Data.addAll(wrp5);
+    
+/*	for(WeatherRp5 iwr5: wrp5) {
+		iwr5.Print();
+	}
+*/
 	}
 
     public static void main(String[] args) {
@@ -53,7 +76,7 @@ public class Rp5 extends Application {
         this.primaryStage.getIcons().add(new Image("file:resources/images/Rp5.png"));
 
         initRootLayout();
-       // showPersonOverview();
+        showWeatherRp5Overview();
     }
 
     /**
@@ -96,7 +119,28 @@ public class Rp5 extends Application {
 	    }
     }
 
-   	/**
+    /**
+     * Shows the WeatherRp5 overview inside the root layout.
+     */
+    public void showWeatherRp5Overview() {
+        try {
+            // Load person overview.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Rp5.class.getResource("ui/view/WeatherRp5Overview.fxml"));
+            AnchorPane weatherRp5Overview = (AnchorPane) loader.load();
+
+            // Set person overview into the center of root layout.
+            rootLayout.setCenter(weatherRp5Overview);
+
+            // Give the controller access to the main app.
+            WeatherRp5OverviewController controller = loader.getController();
+            controller.setMainApp(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Returns the main stage.
      * @return
      */

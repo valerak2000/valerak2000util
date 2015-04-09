@@ -10,21 +10,21 @@ import org.apache.commons.io.IOUtils;
 
 public class DownloadWeatherRp5 {
      public InputStream getWeather(String city) throws Exception {
-        InputStream in = null;
-        InputStream out = null;
+         InputStream in = null;
+         InputStream out = null;
 
         try {
-        	System.setProperty("http.proxyHost", "172.16.0.91");
+/*        	System.setProperty("http.proxyHost", "172.16.0.91");
         	System.setProperty("http.proxyPort", "16541");
         	System.setProperty("http.proxyUser", "RSTYLE97\\kozlitin.va");
         	System.setProperty("http.proxyPassword", "Rfvytgfl1");
-        	
-            URL url = new URL("http://rp5.ru/xml/" + city + "/00000/ru");
+*/        	
+//            URL url = new URL("http://rp5.ru/xml/" + city + "/00000/ru");
+            URL url = new URL("http://rp5.ru/" + city + "/ru");
             URLConnection uc = url.openConnection();
 
             try {
-                in = uc.getInputStream();
-                out = IOUtils.toBufferedInputStream(in);//toString(in);
+          		out = IOUtils.toBufferedInputStream(uc.getInputStream());
             } catch (IOException ioe) {
                 System.out.println("Oops- an IOException happened. " + ioe.getMessage());
                 ioe.printStackTrace();

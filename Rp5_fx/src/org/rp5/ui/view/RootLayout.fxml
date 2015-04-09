@@ -12,7 +12,7 @@
 
 <BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@Rp5.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rp5.ui.view.RootLayoutController">
    <top>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox BorderPane.alignment="CENTER">
          <children>
             <MenuBar>
               <menus>
