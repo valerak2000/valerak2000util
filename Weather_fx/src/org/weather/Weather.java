@@ -16,8 +16,8 @@ import org.weather.ui.controller.RootLayoutController;
 import org.weather.ui.controller.WeatherOverviewController;
 import org.weather.ui.model.DownloadWeather;
 import org.weather.ui.model.ParseXml;
-import org.weather.ui.model.Weather;
-import org.weather.ui.model.WeatherListWrapper;
+import org.weather.ui.model.WeatherDM;
+import org.weather.ui.model.WeatherDMListWrapper;
 
 import com.btr.proxy.search.ProxySearch;
 
@@ -43,7 +43,7 @@ public class Weather extends Application {
     /**
      * The data as an observable list of Weather.
      */
-    private ObservableList<Weather> weatherData = FXCollections.observableArrayList();
+    private ObservableList<WeatherDM> weatherData = FXCollections.observableArrayList();
 
 	public Weather() throws Exception {
 		//ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
@@ -51,13 +51,17 @@ public class Weather extends Application {
 	
 		//ProxySelector myProxySelector = proxySearch.getProxySelector();
 		//ProxySelector.setDefault(myProxySelector);
-
+/*
 		DownloadWeather dw = new DownloadWeather();
+//    	InputStream dw = new FileInputStream("ru.xml");
 		ParseXml px = new ParseXml();
 		System.out.print(dw.getWeather("4429").toString());
-		List<Weather> w = px.parseWeather(dw.getWeather("4429"));
+		List<WeatherDM> w = px.parseWeather(dw.getWeather("4429"));
+//    	List<WeatherDM> w = px.parseWeather(dw);
+//    	dw.close(); 
+
 		weatherData.addAll(w);
-    
+ */   
 /*	for(Weather iw: w) {
 		iw.Print();
 	}
@@ -73,7 +77,7 @@ public class Weather extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Weather");
 
-        this.primaryStage.getIcons().add(new Image("file:resources/images/Rp5.png"));
+        this.primaryStage.getIcons().add(new Image("file:resources/images/Weather.png"));
 
         initRootLayout();
         showWeatherOverview();
@@ -83,7 +87,7 @@ public class Weather extends Application {
      * Returns the data as an observable list of weather. 
      * @return
      */
-    public ObservableList<Weather> getWeatherData() {
+    public ObservableList<WeatherDM> getWeatherData() {
         return weatherData;
     }
 
@@ -195,11 +199,11 @@ public class Weather extends Application {
     public void loadWeatherDataFromFile(File file) {
         try {
             JAXBContext context = JAXBContext
-                    .newInstance(WeatherListWrapper.class);
+                    .newInstance(WeatherDMListWrapper.class);
             Unmarshaller um = context.createUnmarshaller();
 
             // Reading XML from the file and unmarshalling.
-            WeatherListWrapper wrapper = (WeatherListWrapper) um.unmarshal(file);
+            WeatherDMListWrapper wrapper = (WeatherDMListWrapper) um.unmarshal(file);
 
             weatherData.clear();
             weatherData.addAll(wrapper.getWeather());
@@ -223,12 +227,12 @@ public class Weather extends Application {
     public void savePersonDataToFile(File file) {
         try {
             JAXBContext context = JAXBContext
-                    .newInstance(WeatherListWrapper.class);
+                    .newInstance(WeatherDMListWrapper.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             // Wrapping our person data.
-            WeatherListWrapper wrapper = new WeatherListWrapper();
+            WeatherDMListWrapper wrapper = new WeatherDMListWrapper();
             wrapper.setWeather(weatherData);
 
             // Marshalling and saving XML to the file.

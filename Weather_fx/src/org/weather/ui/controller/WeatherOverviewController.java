@@ -10,38 +10,38 @@ import javafx.scene.control.TableView;
 import java.text.SimpleDateFormat;
 
 import org.weather.Weather;
-import org.weather.ui.model.Weather;
+import org.weather.ui.model.WeatherDM;
 
 
 public class WeatherOverviewController {
     @FXML
-    private TableView<Weather> weatherTable;
+    private TableView<WeatherDM> weatherTable;
     @FXML
-    private TableColumn<Weather, Integer> timeStepColumn;
+    private TableColumn<WeatherDM, Integer> timeStepColumn;
     @FXML
-    private TableColumn<Weather, String> dateTimeColumn;
+    private TableColumn<WeatherDM, String> dateTimeColumn;
     @FXML
-    private TableColumn<Weather, String> gColumn;
+    private TableColumn<WeatherDM, String> gColumn;
     @FXML
-    private TableColumn<Weather, String> hhiiColumn;
+    private TableColumn<WeatherDM, String> hhiiColumn;
     @FXML
-    private TableColumn<Weather, Integer> cloudCoverColumn;
+    private TableColumn<WeatherDM, Integer> cloudCoverColumn;
     @FXML
-    private TableColumn<Weather, Double> precipitationColumn;
+    private TableColumn<WeatherDM, Double> precipitationColumn;
     @FXML
-    private TableColumn<Weather, Integer> pressureColumn;
+    private TableColumn<WeatherDM, Integer> pressureColumn;
     @FXML
-    private TableColumn<Weather, Integer> temperatureColumn;
+    private TableColumn<WeatherDM, Integer> temperatureColumn;
     @FXML
-    private TableColumn<Weather, Integer> humidityColumn;
+    private TableColumn<WeatherDM, Integer> humidityColumn;
     @FXML
-    private TableColumn<Weather, String> windDirectionColumn;
+    private TableColumn<WeatherDM, String> windDirectionColumn;
     @FXML
-    private TableColumn<Weather, Integer> windVelocityColumn;
+    private TableColumn<WeatherDM, Integer> windVelocityColumn;
     @FXML
-    private TableColumn<Weather, Integer> fallsColumn;
+    private TableColumn<WeatherDM, Integer> fallsColumn;
     @FXML
-    private TableColumn<Weather, Integer> dropsColumn;
+    private TableColumn<WeatherDM, Integer> dropsColumn;
 
     // Reference to the main application.
     private Weather mainApp;
@@ -61,9 +61,9 @@ public class WeatherOverviewController {
     private void initialize() {
         // Initialize the person table with the two columns.
     	timeStepColumn.setCellValueFactory(cellData -> cellData.getValue().timeStepProperty().asObject());
-/*    	dateTimeColumn.setCellValueFactory(new PropertyValueFactory<Weather, Date>("dateTime"));
-    	dateTimeColumn.setCellValueFactory(new Callback<CellDataFeatures<Weather, Date>, ObservableValue<Date>>() {
-            @Override public ObservableValue<Date> call(CellDataFeatures<Weather, Date> p) {
+/*    	dateTimeColumn.setCellValueFactory(new PropertyValueFactory<WeatherDM, Date>("dateTime"));
+    	dateTimeColumn.setCellValueFactory(new Callback<CellDataFeatures<WeatherDM, Date>, ObservableValue<Date>>() {
+            @Override public ObservableValue<Date> call(CellDataFeatures<WeatherDM, Date> p) {
                 return new ReadOnlyObjectWrapper<Date>(new Date(p.getValue().getDateTime().toString()));
             }
         });
@@ -127,8 +127,8 @@ public class WeatherOverviewController {
      * Fills all text fields to show details about the weather.
      * If the specified weather is null, all text fields are cleared.
      * 
-     * @param weather or null
+     * @param newValue or null
      */
-    private void showWeatherDetails(Weather weather) {
+    private void showWeatherDetails(WeatherDM newValue) {
     }
 }
