@@ -5,9 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane stylesheets="@Rp5.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rp5.ui.view.WeatherRp5OverviewController">
+<AnchorPane stylesheets="@Weather.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.weather.ui.view.WeatherOverviewController">
    <children>
-      <TableView fx:id="weatherRp5Table" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TableView fx:id="weatherTable" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columns>
           <TableColumn fx:id="timeStepColumn" editable="false" prefWidth="75.0" text="Временной шаг прогноза" />
           <TableColumn fx:id="dateTimeColumn" editable="false" prefWidth="75.0" text="Момент прогноза" />

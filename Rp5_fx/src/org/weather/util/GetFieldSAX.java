@@ -1,4 +1,4 @@
-package org.rp5.util;
+package org.weather.util;
 
 import javax.xml.parsers.ParserConfigurationException;
 

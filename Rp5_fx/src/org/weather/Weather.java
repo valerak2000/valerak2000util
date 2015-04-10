@@ -1,4 +1,4 @@
-package org.rp5;
+package org.weather;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +12,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.controlsfx.dialog.Dialogs;
-import org.rp5.ui.controller.RootLayoutController;
-import org.rp5.ui.controller.WeatherRp5OverviewController;
-import org.rp5.ui.model.DownloadWeatherRp5;
-import org.rp5.ui.model.ParseXml;
-import org.rp5.ui.model.WeatherRp5;
-import org.rp5.ui.model.WeatherRp5ListWrapper;
+import org.weather.ui.controller.RootLayoutController;
+import org.weather.ui.controller.WeatherOverviewController;
+import org.weather.ui.model.DownloadWeather;
+import org.weather.ui.model.ParseXml;
+import org.weather.ui.model.Weather;
+import org.weather.ui.model.WeatherListWrapper;
 
 import com.btr.proxy.search.ProxySearch;
 
@@ -36,30 +36,30 @@ import javafx.stage.Stage;
  * @param args 
  * @throws
  */
-public class Rp5 extends Application {
+public class Weather extends Application {
 	// A static instance to the running application
     private Stage primaryStage;
     private BorderPane rootLayout;
     /**
-     * The data as an observable list of WeatherRp5.
+     * The data as an observable list of Weather.
      */
-    private ObservableList<WeatherRp5> weatherRp5Data = FXCollections.observableArrayList();
+    private ObservableList<Weather> weatherData = FXCollections.observableArrayList();
 
-	public Rp5() throws Exception {
+	public Weather() throws Exception {
 		//ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
 //	   	ProxySearch.main(null);
 	
 		//ProxySelector myProxySelector = proxySearch.getProxySelector();
 		//ProxySelector.setDefault(myProxySelector);
 
-		DownloadWeatherRp5 dwRp5 = new DownloadWeatherRp5();
+		DownloadWeather dw = new DownloadWeather();
 		ParseXml px = new ParseXml();
-		System.out.print(dwRp5.getWeather("4429").toString());
-		List<WeatherRp5> wrp5 = px.parseWeather(dwRp5.getWeather("4429"));
-		weatherRp5Data.addAll(wrp5);
+		System.out.print(dw.getWeather("4429").toString());
+		List<Weather> w = px.parseWeather(dw.getWeather("4429"));
+		weatherData.addAll(w);
     
-/*	for(WeatherRp5 iwr5: wrp5) {
-		iwr5.Print();
+/*	for(Weather iw: w) {
+		iw.Print();
 	}
 */
 	}
@@ -71,20 +71,20 @@ public class Rp5 extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Weather from Rp5");
+        this.primaryStage.setTitle("Weather");
 
         this.primaryStage.getIcons().add(new Image("file:resources/images/Rp5.png"));
 
         initRootLayout();
-        showWeatherRp5Overview();
+        showWeatherOverview();
     }
 
     /**
-     * Returns the data as an observable list of Persons. 
+     * Returns the data as an observable list of weather. 
      * @return
      */
-    public ObservableList<WeatherRp5> getWeatherRp5Data() {
-        return weatherRp5Data;
+    public ObservableList<Weather> getWeatherData() {
+        return weatherData;
     }
 
 	/**
@@ -95,7 +95,7 @@ public class Rp5 extends Application {
 	    try {
 	        // Load root layout from fxml file.
 	        FXMLLoader loader = new FXMLLoader();
-	        loader.setLocation(Rp5.class
+	        loader.setLocation(Weather.class
 	                .getResource("ui/view/RootLayout.fxml"));
 	        rootLayout = (BorderPane) loader.load();
 
@@ -113,27 +113,27 @@ public class Rp5 extends Application {
 	    }
 
 	    // Try to load last opened person file.
-	    File file = getWeatherRp5FilePath();
+	    File file = getWeatherFilePath();
 	    if (file != null) {
-	        loadWeatherRp5DataFromFile(file);
+	        loadWeatherDataFromFile(file);
 	    }
     }
 
     /**
-     * Shows the WeatherRp5 overview inside the root layout.
+     * Shows the Weather overview inside the root layout.
      */
-    public void showWeatherRp5Overview() {
+    public void showWeatherOverview() {
         try {
             // Load person overview.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Rp5.class.getResource("ui/view/WeatherRp5Overview.fxml"));
-            AnchorPane weatherRp5Overview = (AnchorPane) loader.load();
+            loader.setLocation(Weather.class.getResource("ui/view/WeatherOverview.fxml"));
+            AnchorPane weatherOverview = (AnchorPane) loader.load();
 
             // Set person overview into the center of root layout.
-            rootLayout.setCenter(weatherRp5Overview);
+            rootLayout.setCenter(weatherOverview);
 
             // Give the controller access to the main app.
-            WeatherRp5OverviewController controller = loader.getController();
+            WeatherOverviewController controller = loader.getController();
             controller.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();
@@ -149,14 +149,14 @@ public class Rp5 extends Application {
     }
 
     /**
-     * Returns the WeatherRp5 file preference, i.e. the file that was last opened.
+     * Returns the Weather file preference, i.e. the file that was last opened.
      * The preference is read from the OS specific registry. If no such
      * preference can be found, null is returned.
      * 
      * @return
      */
-    public File getWeatherRp5FilePath() {
-        Preferences prefs = Preferences.userNodeForPackage(Rp5.class);
+    public File getWeatherFilePath() {
+        Preferences prefs = Preferences.userNodeForPackage(Weather.class);
         String filePath = prefs.get("filePath", null);
         if (filePath != null) {
             return new File(filePath);
@@ -171,41 +171,41 @@ public class Rp5 extends Application {
      * 
      * @param file the file or null to remove the path
      */
-    public void setWeatherRp5FilePath(File file) {
-        Preferences prefs = Preferences.userNodeForPackage(Rp5.class);
+    public void setWeatherFilePath(File file) {
+        Preferences prefs = Preferences.userNodeForPackage(Weather.class);
         if (file != null) {
             prefs.put("filePath", file.getPath());
 
             // Update the stage title.
-            primaryStage.setTitle("Weather from Rp5 - " + file.getName());
+            primaryStage.setTitle("Weather - " + file.getName());
         } else {
             prefs.remove("filePath");
 
             // Update the stage title.
-            primaryStage.setTitle("Weather from Rp5");
+            primaryStage.setTitle("Weather");
         }
     }
 
     /**
-     * Loads WeatherRp5 data from the specified file. The current person data will
+     * Loads Weather data from the specified file. The current weather data will
      * be replaced.
      * 
      * @param file
      */
-    public void loadWeatherRp5DataFromFile(File file) {
+    public void loadWeatherDataFromFile(File file) {
         try {
             JAXBContext context = JAXBContext
-                    .newInstance(WeatherRp5ListWrapper.class);
+                    .newInstance(WeatherListWrapper.class);
             Unmarshaller um = context.createUnmarshaller();
 
             // Reading XML from the file and unmarshalling.
-            WeatherRp5ListWrapper wrapper = (WeatherRp5ListWrapper) um.unmarshal(file);
+            WeatherListWrapper wrapper = (WeatherListWrapper) um.unmarshal(file);
 
-            weatherRp5Data.clear();
-            weatherRp5Data.addAll(wrapper.getWeatherRp5());
+            weatherData.clear();
+            weatherData.addAll(wrapper.getWeather());
 
             // Save the file path to the registry.
-            setWeatherRp5FilePath(file);
+            setWeatherFilePath(file);
 
         } catch (Exception e) { // catches ANY exception
             Dialogs.create()
@@ -216,26 +216,26 @@ public class Rp5 extends Application {
     }
 
     /**
-     * Saves the current WeatherRp5 data to the specified file.
+     * Saves the current Weather data to the specified file.
      * 
      * @param file
      */
     public void savePersonDataToFile(File file) {
         try {
             JAXBContext context = JAXBContext
-                    .newInstance(WeatherRp5ListWrapper.class);
+                    .newInstance(WeatherListWrapper.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             // Wrapping our person data.
-            WeatherRp5ListWrapper wrapper = new WeatherRp5ListWrapper();
-            wrapper.setWeatherRp5(weatherRp5Data);
+            WeatherListWrapper wrapper = new WeatherListWrapper();
+            wrapper.setWeather(weatherData);
 
             // Marshalling and saving XML to the file.
             m.marshal(wrapper, file);
 
             // Save the file path to the registry.
-            setWeatherRp5FilePath(file);
+            setWeatherFilePath(file);
         } catch (Exception e) { // catches ANY exception
             Dialogs.create().title("Error")
                     .masthead("Could not save data to file:\n" + file.getPath())

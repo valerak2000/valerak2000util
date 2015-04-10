@@ -1,4 +1,4 @@
-package org.rp5.ui.controller;
+package org.weather.ui.controller;
 
 import java.text.DateFormat;
 
@@ -6,50 +6,51 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+
 import java.text.SimpleDateFormat;
 
-import org.rp5.Rp5;
-import org.rp5.ui.model.WeatherRp5;
+import org.weather.Weather;
+import org.weather.ui.model.Weather;
 
 
-public class WeatherRp5OverviewController {
+public class WeatherOverviewController {
     @FXML
-    private TableView<WeatherRp5> weatherRp5Table;
+    private TableView<Weather> weatherTable;
     @FXML
-    private TableColumn<WeatherRp5, Integer> timeStepColumn;
+    private TableColumn<Weather, Integer> timeStepColumn;
     @FXML
-    private TableColumn<WeatherRp5, String> dateTimeColumn;
+    private TableColumn<Weather, String> dateTimeColumn;
     @FXML
-    private TableColumn<WeatherRp5, String> gColumn;
+    private TableColumn<Weather, String> gColumn;
     @FXML
-    private TableColumn<WeatherRp5, String> hhiiColumn;
+    private TableColumn<Weather, String> hhiiColumn;
     @FXML
-    private TableColumn<WeatherRp5, Integer> cloudCoverColumn;
+    private TableColumn<Weather, Integer> cloudCoverColumn;
     @FXML
-    private TableColumn<WeatherRp5, Double> precipitationColumn;
+    private TableColumn<Weather, Double> precipitationColumn;
     @FXML
-    private TableColumn<WeatherRp5, Integer> pressureColumn;
+    private TableColumn<Weather, Integer> pressureColumn;
     @FXML
-    private TableColumn<WeatherRp5, Integer> temperatureColumn;
+    private TableColumn<Weather, Integer> temperatureColumn;
     @FXML
-    private TableColumn<WeatherRp5, Integer> humidityColumn;
+    private TableColumn<Weather, Integer> humidityColumn;
     @FXML
-    private TableColumn<WeatherRp5, String> windDirectionColumn;
+    private TableColumn<Weather, String> windDirectionColumn;
     @FXML
-    private TableColumn<WeatherRp5, Integer> windVelocityColumn;
+    private TableColumn<Weather, Integer> windVelocityColumn;
     @FXML
-    private TableColumn<WeatherRp5, Integer> fallsColumn;
+    private TableColumn<Weather, Integer> fallsColumn;
     @FXML
-    private TableColumn<WeatherRp5, Integer> dropsColumn;
+    private TableColumn<Weather, Integer> dropsColumn;
 
     // Reference to the main application.
-    private Rp5 mainApp;
+    private Weather mainApp;
 
     /**
      * The constructor.
      * The constructor is called before the initialize() method.
      */
-    public WeatherRp5OverviewController() {
+    public WeatherOverviewController() {
     }
 
     /**
@@ -60,9 +61,9 @@ public class WeatherRp5OverviewController {
     private void initialize() {
         // Initialize the person table with the two columns.
     	timeStepColumn.setCellValueFactory(cellData -> cellData.getValue().timeStepProperty().asObject());
-/*    	dateTimeColumn.setCellValueFactory(new PropertyValueFactory<WeatherRp5, Date>("dateTime"));
-    	dateTimeColumn.setCellValueFactory(new Callback<CellDataFeatures<WeatherRp5, Date>, ObservableValue<Date>>() {
-            @Override public ObservableValue<Date> call(CellDataFeatures<WeatherRp5, Date> p) {
+/*    	dateTimeColumn.setCellValueFactory(new PropertyValueFactory<Weather, Date>("dateTime"));
+    	dateTimeColumn.setCellValueFactory(new Callback<CellDataFeatures<Weather, Date>, ObservableValue<Date>>() {
+            @Override public ObservableValue<Date> call(CellDataFeatures<Weather, Date> p) {
                 return new ReadOnlyObjectWrapper<Date>(new Date(p.getValue().getDateTime().toString()));
             }
         });
@@ -104,10 +105,10 @@ public class WeatherRp5OverviewController {
         dropsColumn.setCellValueFactory(cellData -> cellData.getValue().dropsProperty().asObject());
 
         // Clear weather details.
-        showWeatherRp5Details(null);
+        showWeatherDetails(null);
         // Listen for selection changes and show the person details when changed.
-        weatherRp5Table.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> showWeatherRp5Details(newValue));
+        weatherTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> showWeatherDetails(newValue));
     }
 
     /**
@@ -115,19 +116,19 @@ public class WeatherRp5OverviewController {
      * 
      * @param mainApp
      */
-    public void setMainApp(Rp5 mainApp) {
+    public void setMainApp(Weather mainApp) {
         this.mainApp = mainApp;
 
         // Add observable list data to the table
-        weatherRp5Table.setItems(mainApp.getWeatherRp5Data());
+        weatherTable.setItems(mainApp.getWeatherData());
     }
     
     /**
      * Fills all text fields to show details about the weather.
      * If the specified weather is null, all text fields are cleared.
      * 
-     * @param weatherRp5 or null
+     * @param weather or null
      */
-    private void showWeatherRp5Details(WeatherRp5 weatherRp5) {
+    private void showWeatherDetails(Weather weather) {
     }
 }

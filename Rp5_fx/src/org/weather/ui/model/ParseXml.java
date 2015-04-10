@@ -1,4 +1,4 @@
-package org.rp5.ui.model;
+package org.weather.ui.model;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,11 +20,11 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.weather.util.GetFieldSAX;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-import org.rp5.util.GetFieldSAX;
 
 public class ParseXml extends DefaultHandler {
 	/**
@@ -35,8 +35,8 @@ public class ParseXml extends DefaultHandler {
 	 * @throws DOMException 
 	 * @throws ParseException 
 	 */
-	public List<WeatherRp5> parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, DOMException, ParseException {
-		List<WeatherRp5> rp5 = new ArrayList<WeatherRp5>();
+	public List<Weather> parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, DOMException, ParseException {
+		List<Weather> wth = new ArrayList<Weather>();
 		GetFieldSAX getFields = new GetFieldSAX();
 
 		XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -59,7 +59,7 @@ public class ParseXml extends DefaultHandler {
             Node fstNode = nodeLst.item(je);
             if(fstNode.getNodeType() == Node.ELEMENT_NODE) {
             	//создать объект погоды
-            	WeatherRp5 wrp5 = new WeatherRp5();
+            	Weather w = new Weather();
 
             	NodeList nodeLst1 = fstNode.getChildNodes();
 	        	//разбор элементов timestep
@@ -69,52 +69,52 @@ public class ParseXml extends DefaultHandler {
 	                switch (fstNode1.getNodeName()) {
 		                case "#text": break;
 		                case "time_step":
-		                	wrp5.setTimeStep(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setTimeStep(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                case "datetime":
-	                        wrp5.setDateTime(new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(fstNode1.getFirstChild().getNodeValue().toString())); 
+	                        w.setDateTime(new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(fstNode1.getFirstChild().getNodeValue().toString())); 
 		                	break;
 		                case "G":
-		                	wrp5.setG(fstNode1.getFirstChild().getNodeValue().toString());
+		                	w.setG(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "HHii":
-		                	wrp5.setHhii(fstNode1.getFirstChild().getNodeValue().toString());
+		                	w.setHhii(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "cloud_cover":
-		                	wrp5.setCloudCover(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setCloudCover(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                case "precipitation":
-		                	wrp5.setPrecipitation(Double.parseDouble(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setPrecipitation(Double.parseDouble(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                case "pressure":
-		                	wrp5.setPressure(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setPressure(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                case "temperature":
-		                	wrp5.setTemperature(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setTemperature(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                case "humidity":
-		                	wrp5.setHumidity(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setHumidity(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                case "wind_direction":
-		                	wrp5.setWindDirection(fstNode1.getFirstChild().getNodeValue().toString());
+		                	w.setWindDirection(fstNode1.getFirstChild().getNodeValue().toString());
 		                	break;
 		                case "wind_velocity":
-		                	wrp5.setWindVelocity(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setWindVelocity(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                case "falls":
-		                	wrp5.setFalls(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setFalls(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                case "drops":
-		                	wrp5.setDrops(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
+		                	w.setDrops(Integer.parseInt(fstNode1.getFirstChild().getNodeValue().toString()));
 		                	break;
 		                default:
 	                }
 	            }
 
-                rp5.add(wrp5);
+                wth.add(w);
             }
         }
-        return rp5;
+        return wth;
 	}
 }
 

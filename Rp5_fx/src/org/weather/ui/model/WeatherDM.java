@@ -23,7 +23,7 @@ wind_velocity - скорость ветра
 falls - тип осадков (0 - отсутствие осадков, 1 - дождь, 2 - дождь со снегом, 3 - снег)
 drops - коэффициент количества снежинок или капель дожд€ дл€ визуализации. ¬озможные значени€: 0.5, 1, 2, 3, 4, 5, 6, 7, 8. „ем больше это значение, тем количество или размер капель или снежинок должны быть больше.
  */
-package org.rp5.ui.model;
+package org.weather.ui.model;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -41,11 +41,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
- * Model class for a WeatherRp5.
+ * Model class for a WeatherDM.
  *
  * @author
  */
-public class WeatherRp5 {
+public class WeatherDM {
 	private final IntegerProperty timeStep;
 	private final ObjectProperty<Date> dateTime;
 	private final StringProperty g;
@@ -63,7 +63,7 @@ public class WeatherRp5 {
 	/**
 	 * Default constructor.
 	 */
-	public WeatherRp5() {
+	public WeatherDM() {
 		this(0, null, null, null, 0, 0, 0, 0, 0, null, 0, 0, 0);
 	}
 
@@ -84,7 +84,7 @@ public class WeatherRp5 {
 	 * @param falls
 	 * @param drops
 	 */
-	public WeatherRp5(int timeStep, Date dateTime, String g, String hhii,
+	public WeatherDM(int timeStep, Date dateTime, String g, String hhii,
 			int cloudCover, double precipitation, int pressure,
 			int temperature, int humidity, String windDirection,
 			int windVelocity, int falls, int drops) {

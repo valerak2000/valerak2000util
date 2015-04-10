@@ -1,4 +1,4 @@
-package org.rp5.ui.model;
+package org.weather.ui.model;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +8,7 @@ import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
 
-public class DownloadWeatherRp5 {
+public class DownloadWeather {
      public InputStream getWeather(String city) throws Exception {
          InputStream in = null;
          InputStream out = null;

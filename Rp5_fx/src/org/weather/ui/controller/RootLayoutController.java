@@ -1,4 +1,4 @@
-package org.rp5.ui.controller;
+package org.weather.ui.controller;
 
 import java.io.File;
 
@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 
 import org.controlsfx.dialog.Dialogs;
-import org.rp5.Rp5;
+import org.weather.Weather;
 
 
 /**
@@ -18,14 +18,14 @@ import org.rp5.Rp5;
  */
 public class RootLayoutController {
     // Reference to the main application
-    private Rp5 mainApp;
+    private Weather mainApp;
 
     /**
      * Is called by the main application to give a reference back to itself.
      * 
      * @param mainApp
      */
-    public void setMainApp(Rp5 mainApp) {
+    public void setMainApp(Weather mainApp) {
         this.mainApp = mainApp;
     }
 
@@ -34,8 +34,8 @@ public class RootLayoutController {
      */
     @FXML
     private void handleNew() {
-        mainApp.getWeatherRp5Data().clear();
-        mainApp.setWeatherRp5FilePath(null);
+        mainApp.getWeatherData().clear();
+        mainApp.setWeatherFilePath(null);
     }
 
     /**
@@ -54,7 +54,7 @@ public class RootLayoutController {
         File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
 
         if (file != null) {
-            mainApp.loadWeatherRp5DataFromFile(file);
+            mainApp.loadWeatherDataFromFile(file);
         }
     }
 
@@ -64,7 +64,7 @@ public class RootLayoutController {
      */
     @FXML
     private void handleSave() {
-        File personFile = mainApp.getWeatherRp5FilePath();
+        File personFile = mainApp.getWeatherFilePath();
         if (personFile != null) {
             mainApp.savePersonDataToFile(personFile);
         } else {
@@ -102,7 +102,7 @@ public class RootLayoutController {
     @FXML
     private void handleAbout() {
         Dialogs.create()
-            .title("Weather from Rp5")
+            .title("Weather")
             .masthead("About")
             .message("Author: Kozlitin valeriy\nWebsite: http://")
             .showInformation();

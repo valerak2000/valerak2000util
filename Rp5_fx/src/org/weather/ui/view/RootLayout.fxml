@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@Rp5.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.rp5.ui.view.RootLayoutController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@Weather.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.weather.ui.view.RootLayoutController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
