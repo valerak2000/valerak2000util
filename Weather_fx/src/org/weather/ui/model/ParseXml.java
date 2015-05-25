@@ -35,8 +35,8 @@ public class ParseXml extends DefaultHandler {
 	 * @throws DOMException 
 	 * @throws ParseException 
 	 */
-	public List<WeatherDM> parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, DOMException, ParseException {
-		List<WeatherDM> wth = new ArrayList<WeatherDM>();
+	public List<WeatherData> parseWeather(InputStream wr) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, DOMException, ParseException {
+		List<WeatherData> wth = new ArrayList<WeatherData>();
 		GetFieldSAX getFields = new GetFieldSAX();
 
 		XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -59,7 +59,7 @@ public class ParseXml extends DefaultHandler {
             Node fstNode = nodeLst.item(je);
             if(fstNode.getNodeType() == Node.ELEMENT_NODE) {
             	//создать объект погоды
-            	WeatherDM w = new WeatherDM();
+            	WeatherData w = new WeatherData();
 
             	NodeList nodeLst1 = fstNode.getChildNodes();
 	        	//разбор элементов timestep

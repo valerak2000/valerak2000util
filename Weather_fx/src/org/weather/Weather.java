@@ -16,8 +16,8 @@ import org.weather.ui.controller.RootLayoutController;
 import org.weather.ui.controller.WeatherOverviewController;
 import org.weather.ui.model.DownloadWeather;
 import org.weather.ui.model.ParseXml;
-import org.weather.ui.model.WeatherDM;
-import org.weather.ui.model.WeatherDMListWrapper;
+import org.weather.ui.model.WeatherData;
+import org.weather.ui.model.WeatherDataListWrapper;
 
 import com.btr.proxy.search.ProxySearch;
 
@@ -43,7 +43,7 @@ public class Weather extends Application {
     /**
      * The data as an observable list of Weather.
      */
-    private ObservableList<WeatherDM> weatherData = FXCollections.observableArrayList();
+    private ObservableList<WeatherData> weatherData = FXCollections.observableArrayList();
 
 	public Weather() throws Exception {
 		//ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
@@ -87,7 +87,7 @@ public class Weather extends Application {
      * Returns the data as an observable list of weather. 
      * @return
      */
-    public ObservableList<WeatherDM> getWeatherData() {
+    public ObservableList<WeatherData> getWeatherData() {
         return weatherData;
     }
 
@@ -199,11 +199,11 @@ public class Weather extends Application {
     public void loadWeatherDataFromFile(File file) {
         try {
             JAXBContext context = JAXBContext
-                    .newInstance(WeatherDMListWrapper.class);
+                    .newInstance(WeatherDataListWrapper.class);
             Unmarshaller um = context.createUnmarshaller();
 
             // Reading XML from the file and unmarshalling.
-            WeatherDMListWrapper wrapper = (WeatherDMListWrapper) um.unmarshal(file);
+            WeatherDataListWrapper wrapper = (WeatherDataListWrapper) um.unmarshal(file);
 
             weatherData.clear();
             weatherData.addAll(wrapper.getWeather());
@@ -227,12 +227,12 @@ public class Weather extends Application {
     public void savePersonDataToFile(File file) {
         try {
             JAXBContext context = JAXBContext
-                    .newInstance(WeatherDMListWrapper.class);
+                    .newInstance(WeatherDataListWrapper.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             // Wrapping our person data.
-            WeatherDMListWrapper wrapper = new WeatherDMListWrapper();
+            WeatherDataListWrapper wrapper = new WeatherDataListWrapper();
             wrapper.setWeather(weatherData);
 
             // Marshalling and saving XML to the file.

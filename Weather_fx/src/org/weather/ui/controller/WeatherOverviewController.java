@@ -10,38 +10,38 @@ import javafx.scene.control.TableView;
 import java.text.SimpleDateFormat;
 
 import org.weather.Weather;
-import org.weather.ui.model.WeatherDM;
+import org.weather.ui.model.WeatherData;
 
 
 public class WeatherOverviewController {
     @FXML
-    private TableView<WeatherDM> weatherTable;
+    private TableView<WeatherData> weatherTable;
     @FXML
-    private TableColumn<WeatherDM, Integer> timeStepColumn;
+    private TableColumn<WeatherData, Integer> timeStepColumn;
     @FXML
-    private TableColumn<WeatherDM, String> dateTimeColumn;
+    private TableColumn<WeatherData, String> dateTimeColumn;
     @FXML
-    private TableColumn<WeatherDM, String> gColumn;
+    private TableColumn<WeatherData, String> gColumn;
     @FXML
-    private TableColumn<WeatherDM, String> hhiiColumn;
+    private TableColumn<WeatherData, String> hhiiColumn;
     @FXML
-    private TableColumn<WeatherDM, Integer> cloudCoverColumn;
+    private TableColumn<WeatherData, Integer> cloudCoverColumn;
     @FXML
-    private TableColumn<WeatherDM, Double> precipitationColumn;
+    private TableColumn<WeatherData, Double> precipitationColumn;
     @FXML
-    private TableColumn<WeatherDM, Integer> pressureColumn;
+    private TableColumn<WeatherData, Integer> pressureColumn;
     @FXML
-    private TableColumn<WeatherDM, Integer> temperatureColumn;
+    private TableColumn<WeatherData, Integer> temperatureColumn;
     @FXML
-    private TableColumn<WeatherDM, Integer> humidityColumn;
+    private TableColumn<WeatherData, Integer> humidityColumn;
     @FXML
-    private TableColumn<WeatherDM, String> windDirectionColumn;
+    private TableColumn<WeatherData, String> windDirectionColumn;
     @FXML
-    private TableColumn<WeatherDM, Integer> windVelocityColumn;
+    private TableColumn<WeatherData, Integer> windVelocityColumn;
     @FXML
-    private TableColumn<WeatherDM, Integer> fallsColumn;
+    private TableColumn<WeatherData, Integer> fallsColumn;
     @FXML
-    private TableColumn<WeatherDM, Integer> dropsColumn;
+    private TableColumn<WeatherData, Integer> dropsColumn;
 
     // Reference to the main application.
     private Weather mainApp;
@@ -129,6 +129,6 @@ public class WeatherOverviewController {
      * 
      * @param newValue or null
      */
-    private void showWeatherDetails(WeatherDM newValue) {
+    private void showWeatherDetails(WeatherData newValue) {
     }
 }
