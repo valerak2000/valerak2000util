@@ -7,3 +7,4 @@ cp -p ./include/signal.mqh "/home/valera_k2000/.wine/drive_c/Program Files (x86)
 cp -p ./useFunction.mqh "/home/valera_k2000/.wine/drive_c/Program Files (x86)/MetaTrader 4 - RoboForex_real/experts/"
 cp -p ./scalper.mq4 "/home/valera_k2000/.wine/drive_c/Program Files (x86)/MetaTrader 4 - RoboForex_real/experts/"
 cp -p ./indicators/ticks.mq4 "/home/valera_k2000/.wine/drive_c/Program Files (x86)/MetaTrader 4 - RoboForex_real/experts/indicators/" 
+cp -p ./Scripts/OpenOrder.mq4 "/home/valera_k2000/.wine/drive_c/Program Files (x86)/MetaTrader 4 - RoboForex_real/MQL4/Scripts/" 
